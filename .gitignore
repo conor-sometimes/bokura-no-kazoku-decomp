@@ -1,0 +1,25 @@
+# Game data: never committed
+iso/
+disc/
+*.iso
+*.bin
+*.cue
+*.chd
+*.elf
+*.ELF
+/SLPS_*
+/SCPS_*
+/SLPM_*
+
+# Generated
+build/
+asm/
+assets/
+undefined_*_auto.txt
+.splat/
+
+# Project-local toolchain
+.venv/
+tools/gcc-*/
+tools/ee-*/
+__pycache__/
