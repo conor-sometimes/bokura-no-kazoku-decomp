@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# bk test|port|show|perm|vtest|fix|addm ... : run bk.py inside bokura-env (see tools/bk/README.md)
+D=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+cmd=$1; shift
+args=""; for a in "$@"; do args="$args '$a'"; done
+exec "$D/../../.bokura-env/bin/bokura-env" -c "python3 -I $D/bk.py $cmd $args"

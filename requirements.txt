@@ -1,0 +1,15 @@
+# Python tools for the round-trip build, all pinned (setup.sh installs them into .venv).
+splat64[mips]==0.34.1
+spimdisasm==1.35.0
+rabbitizer==1.16.2
+PyYAML==6.0.3
+pylibyaml==0.1.0
+intervaltree==3.2.1
+sortedcontainers==2.4.0
+tqdm==4.70.1
+colorama==0.4.6
+# pulled in by splat64[mips] (unused here, pinned anyway)
+n64img==0.3.3
+pygfxd==1.0.5
+crunch64==0.6.2
+pypng==0.20220715.0

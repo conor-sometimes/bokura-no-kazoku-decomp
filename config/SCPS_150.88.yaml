@@ -1,0 +1,173 @@
+# splat config: Bokura no Kazoku (Japan), boot ELF SCPS_150.88.
+# Segment boundaries come from the ELF's own section table (readelf -S).
+# File offset = vram - 0xFF000 for every loaded section.
+name: Bokura no Kazoku (Japan)
+sha1: 621ffd58de52794eaa3d33885ba1288f36e19365
+options:
+  basename: SCPS_150.88
+  target_path: disc/SCPS_150.88
+  base_path: ..
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+  ld_script_path: build/SCPS_150.88.ld
+  symbol_addrs_path: config/symbol_addrs.txt
+  undefined_funcs_auto_path: build/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/undefined_syms_auto.txt
+  platform: ps2
+  compiler: EEGCC
+  gp_value: 0x2F36F0
+  find_file_boundaries: False
+  create_undefined_funcs_auto: True
+  create_undefined_syms_auto: True
+  disasm_unknown: True
+  named_regs_for_c_funcs: False     # numeric registers in INCLUDE_ASM files (ee-as needs them)
+  string_encoding: ASCII
+  section_order: [".text", ".data", ".rodata", ".bss"]
+  subalign: null
+  ld_bss_is_noload: True
+  ld_align_segment_vram_end: False
+  ld_align_section_vram_end: False
+
+segments:
+  - name: main
+    type: code
+    start: 0x1000
+    vram: 0x100000
+    subalign: null
+    subsegments:
+      # .text 0x100000. Units: scripts/find_units.py (vtable order + RTTI names), see docs/units.md
+      - [0x1000, asm, crt0]              # .text 0x100000: crt0 (handwritten)
+      - [0x12A8, cpp, CBootMain]
+      - [0x15D8, cpp, CLogoMain]
+      - [0x1F68, cpp, CTitleMain]
+      - [0x71F0, cpp, CDemoMain]
+      - [0x88A8, cpp, CEndingMain]
+      - [0x9320, cpp, CFlagWork]
+      - [0xBEB0, cpp, CPadMgr]
+      - [0xBF00, cpp, IPadMgr]
+      - [0xC068, cpp, CFadeMgr]
+      - [0xC108, cpp, IFadeMgr]
+      - [0xC840, cpp, CSnapMgr]
+      - [0xC8B8, cpp, ISnapMgr]
+      - [0xCF88, cpp, CEFontWork]
+      - [0xDEE8, cpp, CTexCacheMgr]   # also t5TList1Z10CCacheInfo
+      - [0xDF40, cpp, CList]   # also CListTag CCacheInfo
+      - [0xE7F0, cpp, CFaceObj]
+      - [0xF4F0, cpp, CFaceRes]
+      - [0x10A70, cpp, CDiffMotionObj]
+      - [0x10F40, cpp, CModelRes]
+      - [0x11AB0, cpp, CMotionRes]
+      - [0x12178, cpp, CSwingBoneObj]
+      - [0x12748, cpp, CSwingBoneRes]
+      - [0x12E00, cpp, CCharaRes]
+      - [0x13FE0, cpp, CCharaObj]
+      - [0x18F98, cpp, CModelAccResMgr]
+      - [0x19210, cpp, CMapAttr]
+      - [0x1AC98, cpp, CMapRes]
+      - [0x1BDD0, cpp, CMapObj]
+      - [0x1CD00, cpp, CMapEffRes]
+      - [0x1DAE0, cpp, CMapEffObjRes]   # also CMapEffCurtainWork CMapEffWork CMapEffLeafWork CMapEffFlyWork CMapEffRainWork CMapEffSnowWork CMapEffAquariumWork CMapEffMirrorWork CMapEffBreathWork CMapEffSwingWork
+      - [0x27E18, cpp, CMapEffObj]
+      - [0x28850, cpp, CMapSndRes]
+      - [0x29110, cpp, CMapSndObj]
+      - [0x29870, cpp, CSndWorkReal]   # also CSceneObj t5TList1Z9CCharaObj
+      - [0x2D4A8, cpp, CSceneSet]
+      - [0x2E1C8, cpp, CCharaResObj]   # also CCharaResMgr
+      - [0x2E440, cpp, ICharaResMgr]
+      - [0x2E550, cpp, CMapResObj]   # also CMapResMgr
+      - [0x2E7A0, cpp, IMapResMgr]
+      - [0x2E8E8, cpp, CEnvResObj]   # also CEnvResMgr
+      - [0x2EC48, cpp, IEnvResMgr]
+      - [0x2ED80, cpp, CSvmRes]
+      - [0x2F608, cpp, CSvmWork]
+      - [0x32F10, cpp, CEventRes]
+      - [0x33270, cpp, CEventObj]
+      - [0x3E910, cpp, CEventMesRes]   # also CEventMesMgr t5TList1Z12CEventMesRes
+      - [0x3F668, cpp, CMovieObj]
+      - [0x402E8, cpp, CUserFlagMgr]
+      - [0x44A30, cpp, CSysFlag]
+      - [0x44A90, cpp, ISysFlag]   # also CCurFlag ICurFlag
+      - [0x46BD0, cpp, CResNameMgr]
+      - [0x47F60, cpp, CGameDBMgr]
+      - [0x51A70, cpp, CGameMain]
+      - [0x54410, cpp, CGameSeasonPrev]
+      - [0x59FC0, cpp, CGameSeasonPost]
+      - [0x5A850, cpp, CGameSchedule]   # also CGameScheduleUnit t5TList1Z17CGameScheduleUnit
+      - [0x60E28, cpp, CGameEventObj]
+      - [0x677D8, cpp, CGameResort]
+      - [0x69DC8, cpp, CInterfRes]   # also CInterfMgr
+      - [0x6A128, cpp, IInterfMgr]
+      - [0x6D778, cpp, CNameDBMgr]
+      - [0x6DF98, cpp, CPhotoEventObj]   # also CAlbumMgr
+      - [0x6E548, cpp, IAlbumMgr]
+      - [0x714F8, cpp, CPhotoDBMgr]
+      - [0x72D18, cpp, CResortDBMgr]
+      - [0x73C30, cpp, CMapDBExpr]   # also CMapDBMgr
+      - [0x74A68, cpp, CMenuNews]
+      - [0x75138, cpp, CMenuExGetMoney]
+      - [0x759F8, cpp, CMenuConfig]
+      - [0x77248, cpp, CMenuNosave]
+      - [0x77598, cpp, CMenuMemorial]
+      - [0x77B98, cpp, CMenuLoadMemorial]
+      - [0x7EF38, cpp, CMenuTutorSelect]
+      - [0x80D50, cpp, CMenuTutorSelected]
+      - [0x85CF8, cpp, CMenuExam]
+      - [0x87DF0, cpp, CChrSchoolWin]
+      - [0x88038, cpp, CChrBodyWin]
+      - [0x8B480, cpp, CMenuChildStatus]
+      - [0x8BF98, cpp, CMenuCommon]
+      - [0x8F750, cpp, CMenuPTJobMoney]
+      - [0x90528, cpp, CMenuGetMoney]
+      - [0x910B0, cpp, CMenuReviewResult]
+      - [0x92338, cpp, CMenuReviewSelect]
+      - [0x92E28, cpp, CMenuReviewStart]
+      - [0x93658, cpp, CMenuContinue]
+      - [0x939C8, cpp, CMenuAsksave]
+      - [0x93D38, cpp, CMenuAsksavequit]
+      - [0x95490, cpp, CMenuRecord]
+      - [0x99080, cpp, CCommandBase]
+      - [0x99670, cpp, CCommandSelect]
+      - [0x9B5E8, cpp, CCommandIncDec]
+      - [0x9B830, cpp, CStatusBase]
+      - [0x9DD98, cpp, CStatusWin]
+      - [0xA5F20, cpp, CMenuInputKanji]
+      - [0xA8758, cpp, CMenuSysscr32]
+      - [0xA8B68, cpp, CMenuSysscr31]
+      - [0xA9E28, cpp, CMenuSysscr27]
+      - [0xAB118, cpp, CMenuSysscr26]
+      - [0xAB710, cpp, CMenuSysscr25]
+      - [0xABB60, cpp, CMenuSysscr24]
+      - [0xAC000, cpp, CMenuSysscr23]
+      - [0xAC280, cpp, CMenuSysscr22]
+      - [0xAC690, cpp, CMenuSysscr11]
+      - [0xACA28, cpp, CMenuSysscr10]
+      - [0xACEC8, cpp, CMenuSysscr09]
+      - [0xAD148, cpp, CMenuSysscr08]
+      - [0xAD488, cpp, CMenuSysscr07]
+      - [0xAD820, cpp, CMenuSysscr06]
+      - [0xADCE8, cpp, CMenuSysscr05]
+      - [0xADF68, cpp, CMenuSysscr04]
+      - [0xAE2A8, cpp, CMenuSysscr03]
+      - [0xAE668, cpp, CMenuSysscr02]
+      - [0xAF0A8, cpp, CMenuSysscr01]
+      - [0xAF488, cpp, CMenuSysscr00]
+      - [0xAF800, cpp, CMenuSave]
+      - [0xB21E8, cpp, CMenuLoad]
+      - [0xB3AB0, cpp, CMenuBoot]
+      - [0xB4BA8, cpp, CMenuProcess]
+      - [0xB4C68, cpp, CMenuMgr]
+      - [0xB96A0, cpp, CLayoutRes]
+      - [0xBAD40, cpp, CLayoutObj]
+      - [0xBE6A8, cpp, CMiniGame1Res]   # also CMiniGame1
+      - [0xC5100, cpp, CMiniGame2Res]   # also CMiniGame2
+      - [0xCABB0, cpp, CMiniGame3Res]   # also CMiniGame3
+      - [0xD5B50, cpp, CMiniGame4Res]   # also CMiniGame4
+      - [0xDFA18, cpp, CMiniGame5Res]   # also CMiniGame5
+      - [0xE43E8, cpp, CMiniGame6Res]   # also CMiniGame6
+      - [0xEA1B8, asm, text_1e91b8]   # CAppMain on: C-style units, no vtables to split by
+      - [0x1A0230, data, ctors]          # .ctors .dtors .reginfo, pad, .data, .eh_frame, pad
+      - [0x1C4600, bin, vudata]          # .vudata    0x2C3600 (VU microcode, raw)
+      - [0x1D2800, rodata, rodata]       # .rodata    0x2D1800, pad, .gcc_except_table 0x2EB680
+  - [0x1EC6FC]
