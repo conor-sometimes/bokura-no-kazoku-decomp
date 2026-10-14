@@ -149,3 +149,33 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   constructors after the wrong class this way (`Init174138__9CMenuNews` is CMenuExGetMoney's). *(bokura)*
 - **Constructor store order**: the last field assignment in the source often comes out first (before
   the vptr store); `bk perm` found both orders in a few seconds. *(bokura)*
+
+## 2026-10-14: vtables lane 1 (menu screens, DB managers)
+
+- **Retail was built with `-fno-exceptions`**: with EH on, constructors that build a member or base
+  object get a cleanup region (`__rethrow`, `terminate__Fv`) and a final call is not a sibcall;
+  with the flag both match and nothing else changes. *(bokura)*
+- **Vptr at 0 in a class with fields = a field-less interface base**: the vptr goes after the
+  fields of the class that introduces the virtuals, so `IResNameMgr` (all pure, no dtor, RTTI
+  name only) must introduce them. Giving the interface an inline virtual dtor adds a second vptr
+  store in the derived dtor; leave the dtor to the derived class (it lands in the last slot). *(bokura)*
+- **Key method is not always the destructor**: the DB managers' slot 0 is an inline
+  `Release() { delete this; }` (linkonce, emitted elsewhere), so the key method is slot 1 and the
+  destructor can be matched with the vtable still in asm. *(bokura)*
+- **GNU as 2.10 can corrupt a macro expansion**: `lw $19, D_X($2)` assembled its `lui` as a copy of
+  the following `lw` once code before it changed (position-dependent). A file-scope
+  `asm(".p2align 3");` before the (already aligned) function fixed it (CNameDBMgr). *(bokura)*
+- **`bk`-style checks per unit**: compiling the whole unit and comparing its .text with retail at
+  the unit address (masking relocations) catches context-dependent codegen without a full link. *(bokura)*
+- **Template members and linkonce code**: classes whose virtuals are all inline (TArray<>,
+  CListTag) make a unit emit their vtables as linkonce sections when it constructs or destroys
+  them inline; constructors and destructors of classes holding them were left in asm. Calling
+  their inline members through `extern "C" func_XXXXXXXX(arr, ...)` matches. *(bokura)*
+- **Interface vtables without a key method**: when a field-less base is all pure, declare one
+  slot non-pure in the unit that only uses it, so the unit emits no vtable/typeinfo for it. *(bokura)*
+- **A value-returning virtual shows in the next call's registers**: `$3`/`$2` swapped around the
+  following vcall means the previous callee returns a value (3 cases, also for virtuals). *(bokura)*
+- **Lookup loops in CResortDBMgr wanted the index form** (`if (tbl[i].m_id == id) return &tbl[i];`);
+  the FindById inline template lesson did not apply there. *(bokura)*
+- **Pointer-to-member calls** (`(obj->*pmf)(args)`) compile to GCC 2.96's index/delta/pfn
+  sequence; two in CEventObj (large this offsets) keep an empty `b` delay slot that ours fills. *(bokura)*

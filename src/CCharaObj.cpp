@@ -1,29 +1,37 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CCharaObjPart1C {
+// CSwingBoneObj.cpp: vptr at 0x30.
+class CSwingBoneObj {
 public:
-
+    virtual ~CSwingBoneObj();
+    void Release();
 
     u8 pad0[0x2C];
     f32 m_unk2C;              // 0x2C
 };
-class CCharaObjPart20 {
+// CDiffMotionObj unit (another lane's): vptr at 0x24; 0x10FC98 releases it.
+class CDiffMotionObj {
 public:
-
+    virtual ~CDiffMotionObj();
 
     u8 pad0[0x18];
     f32 m_unk18;              // 0x18
+    u8 pad1C[0x8];
 };
-class CCharaObjPart24 {
+extern "C" void func_0010FC98(CDiffMotionObj *p);
+// CFaceObj.cpp: vptr at 0x50.
+class CFaceObj {
 public:
+    virtual ~CFaceObj();
+    void Release();
     void Func10DC80();
     void Func10DBD8();
     void Func10DB70();
 
-
     u8 pad0[0x18];
     s32 m_unk18;              // 0x18
+    u8 pad1C[0x34];
 };
 class CVec4 {
 public:
@@ -41,9 +49,10 @@ public:
     void Func252BB8();
 };
 
-class CCharaObjSub117F98 {
+// CModelAccResMgr (its unit starts after this file); only its size is needed here.
+class CModelAccResMgr {
 public:
-    CCharaObjSub117F98() throw();
+    CModelAccResMgr();
 
     u8 pad0[0x40];
 };
@@ -53,8 +62,9 @@ void Func24B600(char *dst, const char *src, s32 n);
 f32 Func1EAC30(s32 i);
 s32 Func113368(s32 i, s32 v);
 void Func117E38(void *dst, s32 *src);
-CCharaObjSub117F98 *CreateSub117F98();
+CModelAccResMgr *CreateSub117F98();
 extern void (*D_002B91B0)(void *p);
+extern "C" int func_001ECCA8(s32 h);
 extern u8 *D_002A5D0C;
 extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
 
@@ -73,6 +83,11 @@ public:
     void SetUnk354(u32 i, s32 v);
     s32 GetUnk354(u32 i);
     s32 Func113860(s32 v);
+    void Release113758();
+    void ReleaseSwing();
+    void ReleaseDiff();
+    void Func113128();
+    void Func114D70(s32 a, s32 b);
     void Func113898();
     s32 Func1138E8();
     s32 GetResIndex();
@@ -97,9 +112,9 @@ public:
     u8 pad0[0x14];
     CCharaRes *m_res;         // 0x14
     s32 m_unk18;              // 0x18
-    CCharaObjPart1C* m_part1C; // 0x1C
-    CCharaObjPart20* m_part20; // 0x20
-    CCharaObjPart24* m_part24; // 0x24
+    CSwingBoneObj* m_part1C;  // 0x1C
+    CDiffMotionObj* m_part20; // 0x20
+    CFaceObj* m_part24;       // 0x24
     void *m_unk28;            // 0x28
     void *m_unk2C;            // 0x2C
     void *m_unk30;            // 0x30
@@ -150,7 +165,6 @@ public:
 };
 
 //@sym memcpy 0x289DFC
-//@sym __18CCharaObjSub117F98 0x117F98
 //@sym __builtin_new 0x245648
 // @decl-end
 
@@ -158,7 +172,7 @@ INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00112FE0);
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113090);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113128);
+INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func113128__9CCharaObj);
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func113368__Fii);
 
@@ -166,7 +180,37 @@ INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113418);
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_001135F0);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113758);
+void CCharaObj::Release113758() {
+    if (m_res) {
+        Func114D70(0, -1);
+        Func113898();
+        ReleaseSwing();
+        ReleaseDiff();
+        if (m_unk34) {
+            D_002B91B0(m_unk34);
+            m_unk34 = 0;
+        }
+        if (m_unk28) {
+            D_002B91B0(m_unk28);
+            m_unk28 = 0;
+        }
+        if (m_unk2C) {
+            D_002B91B0(m_unk2C);
+            m_unk2C = 0;
+        }
+        if (m_part24) {
+            m_part24->Release();
+            delete m_part24;
+            m_part24 = 0;
+        }
+        if (m_unk70 >= 0) {
+            func_001ECCA8(m_unk70);
+            m_unk70 = -1;
+        }
+        Func113128();
+        m_res = 0;
+    }
+}
 
 s32 CCharaObj::Func113860(s32 v) {
     Func113898();
@@ -200,7 +244,13 @@ INCLUDE_RODATA("asm/nonmatchings/CCharaObj", D_002D3630);
 INCLUDE_RODATA("asm/nonmatchings/CCharaObj", D_002D3638);
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113978);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113BC0);
+void CCharaObj::ReleaseSwing() {
+    if (m_part1C) {
+        m_part1C->Release();
+        delete m_part1C;
+        m_part1C = 0;
+    }
+}
 
 void CCharaObj::SetPart1CUnk2C(f32 v) {
     if (m_part1C) {
@@ -210,7 +260,13 @@ void CCharaObj::SetPart1CUnk2C(f32 v) {
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113C38);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113E88);
+void CCharaObj::ReleaseDiff() {
+    if (m_part20) {
+        func_0010FC98(m_part20);
+        delete m_part20;
+        m_part20 = 0;
+    }
+}
 
 void CCharaObj::SetPart20Unk18(f32 v) {
     if (m_part20) {
@@ -498,6 +554,6 @@ s32 CCharaObj::Func117F10(s32 v) {
     return r;
 }
 
-CCharaObjSub117F98 *CreateSub117F98() {
-    return new CCharaObjSub117F98;
+CModelAccResMgr *CreateSub117F98() {
+    return new CModelAccResMgr;
 }

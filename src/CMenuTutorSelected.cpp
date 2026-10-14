@@ -1,12 +1,31 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CMenuTutorSelected {
+#include "CMenuProcess.h"
+#include "CBgWork.h"
+class CChrBodyWin {
 public:
-    int Func184420();
-    int CallFunc184420();
+    void Func188BA8();
+};
+extern CChrBodyWin *D_002A4308;
+extern "C" int func_00245818(void *p, s32 v);
+extern "C" void func_00189270(void *p, s32 v);
 
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuTutorSelected.
+class CMenuTutorSelected : public CMenuProcess {
+public:
+    CMenuTutorSelected();
+    virtual ~CMenuTutorSelected();
+    virtual s32 Update();
+    virtual s32 Draw();
 
+    CBgWork m_bg;             // 0x58
+    void *m_unk64;            // 0x64
+    u8 pad68[0x38];
+    s32 m_unkA0;              // 0xA0
+    s32 m_unkA4;              // 0xA4
+    s32 m_unkA8;              // 0xA8
+    s32 m_unkAC;              // 0xAC
 };
 
 //@sym memset 0x289FB0
@@ -94,7 +113,13 @@ extern const char D_002DABD0[];
 
 //@sym __builtin_delete 0x2456A8
 class CMenuTutorSelectedSub182098 { public: ~CMenuTutorSelectedSub182098(); };
-class CMenuTutorSelectedSub1843F0 { public: ~CMenuTutorSelectedSub1843F0(); };
+// Member of CMenuBoot at 0x70 (and of CMenuLoad/CMenuSave).
+class CMenuTutorSelectedSub1843F0 {
+public:
+    CMenuTutorSelectedSub1843F0();
+    ~CMenuTutorSelectedSub1843F0();
+    int Func184420();
+};
 
 //@sym __builtin_new 0x245648
 //@sym __27CMenuTutorSelectedSub184CF8 0x184CF8
@@ -109,17 +134,29 @@ public:
 //@sym strlen 0x28B3E8
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Init17FD50__16CMenuTutorSelect);
+CMenuTutorSelected::CMenuTutorSelected() {
+    m_unk64 = 0;
+    m_unkA0 = 0;
+    m_unkA4 = 0;
+    m_unkA8 = 0;
+    m_unkAC = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_0017FDA0);
+CMenuTutorSelected::~CMenuTutorSelected() {
+    func_00245818(&m_bg, 1);
+    D_002A4308->Func188BA8();
+    if (m_unk64) {
+        func_00189270(m_unk64, 3);
+        m_unk64 = 0;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAAB0);
-INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_0017FE58);
+INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Update__18CMenuTutorSelected);
 INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAAC0);
 INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAAE0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAB20);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_00181CA0);
+INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Draw__18CMenuTutorSelected);
 
 char *ToWide(char *dst, const char *src) {
     s32 n = strlen(src);
@@ -191,14 +228,14 @@ INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_00184090);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_001841D0);
 
-int CMenuTutorSelected::CallFunc184420() {
-    return Func184420();
+CMenuTutorSelectedSub1843F0::CMenuTutorSelectedSub1843F0() {
+    Func184420();
 }
 
 CMenuTutorSelectedSub1843F0::~CMenuTutorSelectedSub1843F0() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Func184420__18CMenuTutorSelected);
+INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Func184420__27CMenuTutorSelectedSub1843F0);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", func_00184458);
 

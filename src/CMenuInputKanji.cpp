@@ -1,19 +1,46 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CMenuInputKanji {
+#include "CProcess.h"
+
+// Interface without fields (its RTTI name only): the vptr is at 0. Slots 1 and 2 are inline
+// (0x29B570, 0x29B578).
+class IMenuInputKanji {
 public:
+    virtual s32 Func1A4FE0() = 0;
+    virtual s32 Func29B570() = 0;
+    virtual s32 Func29B578() = 0;
+    virtual s32 SetNameBuf(char *buf) = 0;
+    virtual s32 Func1A50C8() = 0;
+    virtual s32 Func1A64D0() = 0;
+};
+// Vtable 0x2C1B38: the key method is Func1A4FE0 (slot 0); the destructor is slot 6.
+class CMenuInputKanji : public IMenuInputKanji {
+public:
+    CMenuInputKanji(s32 kind);
+    virtual s32 Func1A4FE0();
+    virtual s32 Func29B570();
+    virtual s32 Func29B578();
+    virtual s32 SetNameBuf(char *buf);
+    virtual s32 Func1A50C8();
+    virtual s32 Func1A64D0();
+    virtual ~CMenuInputKanji();
     void SetUnk4C(s32 v);
 
-    u8 pad0[0x4C];
-    s32 m_unk4C;              // 0x4C
+    CStateMachine m_sm;       // 0x04
+    CBgWork m_bg;             // 0x4C
+    s32 m_unk58;              // 0x58
+    s32 m_kind;               // 0x5C
+    u8 pad60[0x820];
+    char *m_nameBuf;          // 0x880
 };
+s32 Func235DE0(const char *fmt, ...);
 
 void *operator new(unsigned int n);
-class CMenuInputKanji2 {
+// CMenuSysscr32 (its unit starts after these functions): only the fields FreeBuf uses.
+class CMenuSysscr32 {
 public:
-    void Init(s32 v);
-    void Init1A7758();
+    CMenuSysscr32() throw();
     void FreeBuf();
     s16 m0;                   // 0x0
     s16 m2;                   // 0x2
@@ -26,13 +53,17 @@ public:
     s32 m58;                  // 0x58
     u8 pad5C[0x8];
     void *m64;                // 0x64
+    u8 pad68[0xC];
 };
-CMenuInputKanji2 *NewMenuInputKanji2();
+CMenuSysscr32 *NewMenuInputKanji2();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", __19CStatusWinSub1A4F20i);
+CMenuInputKanji::CMenuInputKanji(s32 kind) {
+    m_kind = kind;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A4F78);
+CMenuInputKanji::~CMenuInputKanji() {
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A4FE0);
 
@@ -113,7 +144,17 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB20);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB40);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB60);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEBA0);
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A5048);
+s32 CMenuInputKanji::SetNameBuf(char *buf) {
+    s32 i;
+    if (!buf) {
+        return Func235DE0("*** NameBuf is NULL!\n");
+    }
+    m_nameBuf = buf;
+    for (i = m_kind ? 4 : 0; i < 8; i++) {
+        m_nameBuf[i * 2] = 0x81;
+        m_nameBuf[i * 2 + 1] = 0x40;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEBE0);
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A50C8);
@@ -141,7 +182,7 @@ INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A71F0);
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A72D8);
 
 void CMenuInputKanji::SetUnk4C(s32 v) {
-    m_unk4C = v;
+    m_bg.m_unk0 = v;
 }
 
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A7308);
@@ -150,13 +191,11 @@ INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A73B0);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", Func1A7658__14CMenuSub1A7658);
 
-CMenuInputKanji2 *NewMenuInputKanji2() {
-    CMenuInputKanji2 *p = (CMenuInputKanji2 *)operator new(0x74);
-    p->Init1A7758();
-    return p;
+CMenuSysscr32 *NewMenuInputKanji2() {
+    return new CMenuSysscr32;
 }
 
-void CMenuInputKanji2::FreeBuf() {
+void CMenuSysscr32::FreeBuf() {
     if (m64) {
         operator delete(m64);
         m64 = 0;

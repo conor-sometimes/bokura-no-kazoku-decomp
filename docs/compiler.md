@@ -1,6 +1,12 @@
 # Compiler
 
-**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing`.**
+**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing -fno-exceptions`.**
+
+`-fno-exceptions` added 2026-10-14 (vtables lane 1): with exceptions on, a constructor that
+builds a member or base with a constructor gets an EH cleanup region (`__rethrow`,
+`terminate__Fv`), and a constructor ending in a call keeps `jal` + `jr` where retail has the
+sibcall (`j Clear` in CResNameMgr's 0x145BD0). With the flag, both match, and the whole tree
+still matches. The `X() throw();` declarations added earlier for `new X` are no longer needed.
 
 `-fno-strict-aliasing` added 2026-10-14: functions that store through one type and load through
 another (0x121A78, 0x1253D0, 0x1087F8), or re-read a global after a store, only match with it,
@@ -50,10 +56,9 @@ Notes:
 - 2.96 makes sibling calls in C++ only when the callee's value is returned: a `void`
   function ending in a call keeps `jal` + `jr $ra`, a value-returning one becomes the
   "frame kept, `j callee`" shape. That is a matching hint for the return types.
-- `.eh_frame` is only 0x904 bytes and `.gcc_except_table` 0x7C, so most game units were
-  probably built with `-fno-exceptions`. The build currently uses the default
-  (exceptions on) and discards `.eh_frame` in the linker script; revisit when a unit with
-  EH data is decompiled.
+- `.eh_frame` is only 0x904 bytes and `.gcc_except_table` 0x7C: the game units were built
+  with `-fno-exceptions` (confirmed by constructors, see above); the build discards
+  `.eh_frame` in the linker script.
 
 ## Assembler
 

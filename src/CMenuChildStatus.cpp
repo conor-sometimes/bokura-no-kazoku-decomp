@@ -22,9 +22,9 @@ public:
     ~CMenuChildStatusSub18B9E0();
 };
 //@sym _$_25CMenuChildStatusSub18B9E0 0x18B9E0
+// Release18AF18 sits after CMenuCommon's factory: probably CMenuCommon's (unit starts late).
 class CMenuChildStatusObj {
 public:
-    int Func18AE18();
     void Release18AF18();
     u8 pad0[0x58];
     u8 m_unk58[0xC];          // 0x58
@@ -43,18 +43,83 @@ extern "C" void *func_00237C30(void *p);
 extern "C" int func_00238158(void *p, s32 v);
 extern "C" int func_001A0510(void *p);
 extern "C" int func_0018A1F0(void *p);
-int Func225088();
-int Func2250C0();
 void Func225240(s32 v);
+
+#include "CMenuProcess.h"
+#include "CBgWork.h"
+extern "C" void func_0018A410(void *p);
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuChildStatus.
+// Its release function (0x18A410) sits at the end of CChrBodyWin.cpp (unit text starts late).
+class CMenuChildStatus : public CMenuProcess {
+public:
+    CMenuChildStatus();
+    virtual ~CMenuChildStatus();
+    virtual s32 Update();
+    virtual s32 Draw();
+
+    CBgWork m_bg;             // 0x58
+    void *m_unk64;            // 0x64
+    void *m_unk68;            // 0x68
+    void *m_unk6C;            // 0x6C
+    u8 pad70[0x18];
+    s32 m_unk88;              // 0x88
+    u8 pad8C[0x4];
+    s32 m_unk90;              // 0x90
+};
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB028);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB038);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB068);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB090);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB0C0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB0C8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB1C8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB1F8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB218);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB228);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB250);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB270);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2A0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2B8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2C0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2C8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2D0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2D8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2E0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB2E8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB310);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB338);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB340);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB348);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB358);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB380);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB3B0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB3D8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB400);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB428);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB458);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB478);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB4B8);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", Init18A480__20CChrBodyWinSub18A410);
+CMenuChildStatus::CMenuChildStatus() {
+    m_unk64 = 0;
+    m_unk68 = 0;
+    m_unk6C = 0;
+    m_unk88 = 0;
+    m_unk90 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", func_0018A4D0);
+CMenuChildStatus::~CMenuChildStatus() {
+    func_0018A410(this);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", func_0018A548);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB4D8);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB4E0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB500);
+INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", Update__16CMenuChildStatus);
 
-int CMenuChildStatusObj::Func18AE18() {
+s32 CMenuChildStatus::Draw() {
     if (m_unk64 == 0) {
         Func225088();
         return Func2250C0();

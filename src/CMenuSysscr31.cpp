@@ -14,23 +14,53 @@ public:
 extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);
-class CMenuSysscr31 {
+#include "CMenuProcess.h"
+#include "CBgWork.h"
+#include "CCommandBase.h"
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuSysscr31.
+// Release1A7AF8 and the factory sit at the end of CMenuSysscr32.cpp (unit text starts late).
+class CMenuSysscr31 : public CMenuProcess {
 public:
+    CMenuSysscr31();
+    virtual ~CMenuSysscr31();
+    virtual s32 Update();
+    virtual s32 Draw();
+    void Release1A7AF8();
     void Release1A8DC0();
-    u8 pad0[0x58];
-    u8 m_unk58[0xC];          // 0x58
+
+    CBgWork m_bg;             // 0x58
     void *m_unk64;            // 0x64
-    void *m_unk68;            // 0x68
+    CCommandBase *m_cmd;      // 0x68
+    void *m_unk6C;            // 0x6C
+    u8 pad70[0x8];
+    s32 m_unk78;              // 0x78
+    s32 m_unk7C;              // 0x7C
+    s32 m_unk80;              // 0x80
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", Init1A7B68__13CMenuSysscr32);
+CMenuSysscr31::CMenuSysscr31() {
+    m_unk64 = 0;
+    m_cmd = 0;
+    m_unk78 = 0;
+    m_unk7C = 0;
+    m_unk80 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", func_001A7BB8);
+CMenuSysscr31::~CMenuSysscr31() {
+    Release1A7AF8();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", func_001A7C30);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", func_001A8AD8);
+
+INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF0F8);
+INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", Update__13CMenuSysscr31);
+INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF110);
+INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF118);
+INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF138);
+
+INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", Draw__13CMenuSysscr31);
 
 CMenuSysscr27 *CMenuSysscr27::Create() {
     CMenuSysscr27 *p = (CMenuSysscr27 *)operator new(0x78);
@@ -39,11 +69,11 @@ CMenuSysscr27 *CMenuSysscr27::Create() {
 }
 
 void CMenuSysscr31::Release1A8DC0() {
-    func_00245818(m_unk58, 1);
+    func_00245818(&m_bg, 1);
     D_002A4308->Func188BA8();
-    if (m_unk68) {
-        operator delete(m_unk68);
-        m_unk68 = 0;
+    if (m_cmd) {
+        operator delete(m_cmd);
+        m_cmd = 0;
     }
     if (m_unk64) {
         func_00189270(m_unk64, 3);

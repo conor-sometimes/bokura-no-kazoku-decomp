@@ -7,28 +7,37 @@ public:
     static CMenuSysscr07 *Create();
 };
 
-void Func235DE0(const char *fmt, ...);
-void Func225088();
-int Func2250C0();
-extern char D_002DF5D8[];
+#include "CMenuProcess.h"
+
 extern "C" int func_001A7658(void *p);
-class CMenuSysscr08 {
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuSysscr08.
+class CMenuSysscr08 : public CMenuProcess {
 public:
-    int Func1AC408();
-    u8 pad0[0x58];
+    CMenuSysscr08();
+    virtual ~CMenuSysscr08();
+    virtual s32 Update();
+    virtual s32 Draw();
+
     void *m_unk58;            // 0x58
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr08", __13CMenuSysscr08);
+CMenuSysscr08::CMenuSysscr08() {
+    m_unk58 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr08", func_001AC180);
+CMenuSysscr08::~CMenuSysscr08() {
+    if (m_unk58) {
+        delete m_unk58;
+        m_unk58 = 0;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr08", func_001AC200);
+INCLUDE_ASM("asm/nonmatchings/CMenuSysscr08", Update__13CMenuSysscr08);
 
-int CMenuSysscr08::Func1AC408() {
+s32 CMenuSysscr08::Draw() {
     if (m_unk58 == 0) {
-        Func235DE0(D_002DF5D8);
+        Func235DE0("*** SelectMenu is NULL!\n");
         Func225088();
         return Func2250C0();
     }

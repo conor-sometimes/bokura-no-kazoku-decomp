@@ -11,8 +11,25 @@ public:
     s32 m40;                  // 0x40
     u8 pad44[0x4];
 };
+#include "CProcess.h"
+class CStatusItem {
+public:
+    void Func1A3378();
+};
+class CStatusWin {
+public:
+    CStatusItem *Func1A0CF0(const char *name);
+};
+extern CStatusWin *D_002A5408;
+extern char D_002DD818[];
+// Command menu base. Vtable 0x2C1A40: Update and Draw, both pure in retail; Update is declared
+// non-pure here only so that this unit does not emit the vtable (it stays asm). The vptr follows
+// the fields at 0x4E8.
 class CCommandBase {
 public:
+    CCommandBase();
+    virtual s32 Update();
+    virtual s32 Draw() = 0;
     void SetMode198128(s32 mode);
     int GetRecC198328(s32 i);
     void Select198290(s32 i);
@@ -26,13 +43,15 @@ public:
     s32 NextRowItem();
     s32 PrevRowItem(s32 wrap);
 
-    u8 pad0[0x48];
-    void *m_win;              // 0x48
+    CStateMachine m_sm;       // 0x00
+    CStatusItem *m_win;       // 0x48
     s32 m_state;              // 0x4C
     CCommandBaseRec m_recs[16]; // 0x50
     s32 m_num;                // 0x4D0
     s32 m_cursor;             // 0x4D4
-    u8 pad4D8[0xC];
+    s32 m_unk4D8;             // 0x4D8
+    f32 m_unk4DC;             // 0x4DC
+    f32 m_unk4E0;             // 0x4E0
     s32 m_unk4E4;             // 0x4E4
 };
 
@@ -67,7 +86,22 @@ extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern char D_002DD820[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CCommandBase", func_00198080);
+CCommandBase::CCommandBase() {
+    s32 i;
+    m_win = D_002A5408->Func1A0CF0(D_002DD818);
+    if (m_win) {
+        m_win->Func1A3378();
+        m_state = 0;
+        for (i = 0; i < 16; i++) {
+            m_recs[i].m0 = 0;
+        }
+        m_num = 0;
+        m_cursor = 0;
+        m_unk4D8 = 0;
+        m_unk4DC = m_unk4E0 = 0.0f;
+        m_unk4E4 = 0;
+    }
+}
 
 void CCommandBase::SetMode198128(s32 mode) {
     char str[0x200];

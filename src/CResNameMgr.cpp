@@ -1,27 +1,7 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CPushBuf {
-public:
-    void Func248E00();
-    int Func248EB0();
-
-    u8 m_data[0xC];
-};
-class CResNameMgrSub145C88 {
-public:
-    void Init();
-    void Clear();
-
-    u8 pad0[0x4];
-    CPushBuf m_buf;           // 0x4
-    s32 m_unk10;              // 0x10
-    s32 m_unk14;              // 0x14
-    s32 m_unk18;              // 0x18
-    s32 m_unk1C;              // 0x1C
-    s32 m_unk20;              // 0x20
-    s32 m_unk24;              // 0x24
-};
+#include "CPushBuf.h"
 
 //@sym strcmp 0x28B190
 #include "libc.h"
@@ -32,33 +12,62 @@ public:
 };
 extern CFlagWork *D_002A26E4;
 struct CResNameEnt { s32 id; s32 v[2]; };
-class CResNameMgr {
+// Interface without fields (its RTTI name only): the vptr is at 0. Slot 0 is an inline
+// `delete this` (emitted elsewhere), so CResNameMgr's key method is Func145D18.
+class IResNameMgr {
 public:
+    virtual void Release() = 0;
+    virtual int Func145D18() = 0;
+    virtual void Init() = 0;
+    virtual int Load(int k) = 0;
+    virtual int GetValue(u32 kind, int id) = 0;
+};
+class CResNameMgr : public IResNameMgr {
+public:
+    CResNameMgr();
+    virtual void Release() { delete this; }
+    virtual int Func145D18();
+    virtual void Init();
+    virtual int Load(int k);
+    virtual int GetValue(u32 kind, int id);
+    virtual ~CResNameMgr();
+    void Clear();
     void Init146F60();
-    int Load(int k);
     int Func146658(int k);
     int Func146DE8(int k);
-    int GetValue(u32 kind, int id);
-    u8 pad0[0x20];
+
+    CPushBuf m_buf;           // 0x4
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
     CResNameEnt *m20;         // 0x20
     s32 m24;                  // 0x24
 };
+extern CResNameMgr *D_002A28D8;
 CResNameMgr *NewResNameMgr();
 int Season146608(int v);
 int FindString145CA8(const char **p, const char *s);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func145BD0__17CSysFlagSub145BD0);
+CResNameMgr::CResNameMgr() {
+    D_002A28D8 = this;
+    Clear();
+    return;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", func_00145C10);
+CResNameMgr::~CResNameMgr() {
+    Init();
+    D_002A28D8 = 0;
+}
 
-void CResNameMgrSub145C88::Clear() {
+void CResNameMgr::Clear() {
     m_unk10 = 0;
     m_unk14 = 0;
     m_unk18 = 0;
     m_unk1C = 0;
-    m_unk20 = 0;
-    m_unk24 = 0;
+    m20 = 0;
+    m24 = 0;
 }
 
 int FindString145CA8(const char **p, const char *s) {
@@ -104,7 +113,7 @@ INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7CE0);
 
 INCLUDE_ASM("asm/nonmatchings/CResNameMgr", func_00146410);
 
-void CResNameMgrSub145C88::Init() {
+void CResNameMgr::Init() {
     m_buf.Func248E00();
     Clear();
 }

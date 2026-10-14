@@ -1,12 +1,16 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CMapSndObjSub128190 {
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMapSndObj, its
+// only virtual. The vptr follows its fields at 0x8.
+class CMapSndObj {
 public:
+    CMapSndObj();
+    virtual ~CMapSndObj();
     int SetUnk4(s32 v);
     void ClearUnk4();
 
-    u8 pad0[0x4];
+    s32 m_unk0;               // 0x0
     s32 m_unk4;               // 0x4
 };
 
@@ -23,16 +27,21 @@ public:
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndObj", func_00128110);
+CMapSndObj::CMapSndObj() {
+    m_unk0 = 1;
+    m_unk4 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndObj", func_00128130);
+CMapSndObj::~CMapSndObj() {
+    ClearUnk4();
+}
 
-int CMapSndObjSub128190::SetUnk4(s32 v) {
+int CMapSndObj::SetUnk4(s32 v) {
     m_unk4 = v;
     return 1;
 }
 
-void CMapSndObjSub128190::ClearUnk4() {
+void CMapSndObj::ClearUnk4() {
     if (m_unk4) {
         m_unk4 = 0;
     }
@@ -63,7 +72,6 @@ INCLUDE_RODATA("asm/nonmatchings/CMapSndObj", D_002D4C78);
 INCLUDE_RODATA("asm/nonmatchings/CMapSndObj", D_002D4C80);
 INCLUDE_RODATA("asm/nonmatchings/CMapSndObj", D_002D4C88);
 INCLUDE_RODATA("asm/nonmatchings/CMapSndObj", jtbl_002D4C90);
-INCLUDE_RODATA("asm/nonmatchings/CMapSndObj", D_002D4CA8);
 
 CMapSndEntry *FindMapSndEntry(CMapSndEntry *e, s32 n, s32 key) {
     s32 i;

@@ -63,3 +63,33 @@ func_001AAB60 = 0x001AAB60; /* __13CMenuSysscr24 */
 func_001AB280 = 0x001AB280; /* __13CMenuSysscr22 */
 func_001ACCE8 = 0x001ACCE8; /* __13CMenuSysscr05 */
 func_001AE488 = 0x001AE488; /* __13CMenuSysscr00 */
+func_001AC820 = 0x001AC820; /* __13CMenuSysscr06 (CMenuSysscr07) */
+Func145BD0__17CSysFlagSub145BD0 = 0x00145BD0; /* __11CResNameMgr (ISysFlag) */
+func_001704F8 = 0x001704F8; /* __11CPhotoDBMgr (IAlbumMgr) */
+/* Members of CModelAccResMgr whose units belong to other lanes (2026-10-14, vt lane 1): name
+   these in symbol_addrs.txt with the owning unit and drop the lines. */
+__9CModelTbl = 0x0010FF40;
+_$_9CModelTbl = 0x0010FF88;
+__10CMotionTbl = 0x00110AB0;
+_$_10CMotionTbl = 0x00110AD0;
+__14CSwingBoneRes2 = 0x00111748;
+_$_14CSwingBoneRes2 = 0x00111760;
+__7CMapRes = 0x00119C98; /* CMapRes ctor (CMapRes unit, other lane), built by Func12D550 in CMapResObj.cpp */
+Init18A480__20CChrBodyWinSub18A410 = 0x0018A480; /* __16CMenuChildStatus (CChrBodyWin) */
+func_001B2AB0 = 0x001B2AB0; /* __9CMenuBoot (CMenuLoad) */
+Init17FD50__16CMenuTutorSelect = 0x0017FD50; /* __18CMenuTutorSelected (CMenuTutorSelect) */
+__21CEventMesResSub13DD98 = 0x0013D910; /* member of CEventRes; CEventMesRes unit (other lane) */
+_$_21CEventMesResSub13DD98 = 0x0013D958;
+func_00245678 = 0x00245678; /* __builtin_vec_new (CMotionRes) */
+func_00250840 = 0x00250840; /* Func250840__9CResCachePv (CGameResort) */
+/* CMapEffObjRes workers built by CMapEffObj factories (that unit is another lane's): */
+__18CMapEffCurtainWorkP10CMapEffObj = 0x0011D2D8;
+__15CMapEffLeafWorkP10CMapEffObj = 0x0011ED80;
+__14CMapEffFlyWorkP10CMapEffObj = 0x001207C0;
+__15CMapEffRainWorkP10CMapEffObj = 0x001215B0;
+__15CMapEffSnowWorkP10CMapEffObj = 0x00122440;
+__19CMapEffAquariumWorkP10CMapEffObj = 0x00123538;
+__17CMapEffBreathWorkP10CMapEffObj = 0x00125938;
+__16CMapEffSwingWorkP10CMapEffObj = 0x00126610;
+__8CSnapMgr = 0x0010B840; /* CSnapMgr ctor (CSnapMgr unit, other lane), built by AddSnapMgr in IFadeMgr.cpp */
+__9CDemoMaini = 0x001061F0; /* CDemoMain ctor (CDemoMain unit, other lane), built by AddDemoMain in CTitleMain.cpp */

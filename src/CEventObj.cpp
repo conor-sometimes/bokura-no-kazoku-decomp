@@ -46,9 +46,58 @@ public:
 class CResLoader250540 {
 public:
     int Func250540(int v);
+
+    u8 pad0[0x13C];
 };
-extern CResLoader250540 *D_002A0BE8;
-extern CResLoader250540 *D_002A0BE4;
+// The resource managers (CCharaResMgr, CMapResMgr, CEnvResMgr) as seen through their
+// interfaces: vptr after CResCache's 0x13C bytes. Slot 5 exists in CEnvResMgr only.
+class IResMgr : public CResLoader250540 {
+public:
+    virtual ~IResMgr();
+    virtual void V1();
+    virtual s32 *FindRes(s32 id);
+    virtual void Init(s32 size, s32 n);
+    virtual void CallFunc250368();
+    virtual void V5();
+};
+extern IResMgr *D_002A0BE8;
+extern IResMgr *D_002A0BE4;
+extern IResMgr *D_002A0BEC;
+extern "C" void func_00128E78(void *snd, s32 v);
+extern "C" void func_00128F10(void *snd, s32 v);
+// Script callbacks: an object and a pointer to member.
+class CEvHost {
+public:
+    virtual void V0();
+};
+// A task-like object (vptr at 0x4) asked whether time skipping is on (slot 17).
+class CEvClock {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14();
+    virtual void V15();
+    virtual void V16();
+    virtual int V17();
+
+    s32 m_unk0;               // 0x0
+};
+extern CEvClock *D_002A3568;
+int Func235DE0(const char *fmt, ...);
+typedef int (CEvHost::*CEvCallback3)(int a, int b, int c);
+typedef void (CEvHost::*CEvCallback2)(int a, int b);
 extern char D_002D5968[];
 extern char D_002D5A78[];
 struct CEventItem {
@@ -82,6 +131,10 @@ public:
     void Func1352C0(int level, const char *fmt, va_list ap);
     int Func138828(int i);
     int IsSpecial(int id);
+    int Call132F40(int a, int b, int c);
+    void Call1355E0(int a, int b);
+    void Release1354C0();
+    int SkipTime(int lo, int hi, int v);
 
     u8 pad0[0x4];
     s32 m4;                   // 0x4
@@ -100,6 +153,12 @@ public:
     s32 m_FCB4;               // 0xFCB4
     u8 padFCB8[0xFD00 - 0xFCB8];
     s32 m_FD00;               // 0xFD00
+    u8 padFD04[0x14];
+    CEvHost *m_FD18;          // 0xFD18
+    CEvCallback3 m_FD1C;      // 0xFD1C
+    u8 padFD24[0x24];
+    CEvHost *m_FD48;          // 0xFD48
+    CEvCallback2 m_FD4C;      // 0xFD4C
 };
 int IsNotDefault(const char *s);
 int CheckItemTag(CEventItem *p, const char *s);
@@ -152,7 +211,10 @@ void CEventObj::Func132EC0() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132F40);
+// Call132F40 (0x132F40): `if (m_FD18 && m_FD1C) return (m_FD18->*m_FD1C)(a, b, c); return 1;`
+// matches except that retail leaves the virtual path's `b` delay slot empty (plus an alignment
+// nop) where ours fills it with the dsra32.
+INCLUDE_ASM("asm/nonmatchings/CEventObj", Call132F40__9CEventObjiii);
 
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5670);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5678);
@@ -239,11 +301,23 @@ void CEventObj::Log135458(const char *fmt, ...) {
     va_end(ap);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001354C0);
+void CEventObj::Release1354C0() {
+    func_00128E78((void *)m4, 0);
+    func_00128F10((void *)m4, 0);
+    D_002A0BE8->CallFunc250368();
+    D_002A0BEC->V5();
+    D_002A0BE4->CallFunc250368();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135558);
+void InitResMgrs135558() {
+    D_002A0BE8->Init(-1, -1);
+    D_002A0BEC->CallFunc250368();
+    D_002A0BE4->Init(-1, -1);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001355E0);
+// Call1355E0 (0x1355E0): `if (m_FD48 && m_FD4C) (m_FD48->*m_FD4C)(a, b);`, same delay-slot
+// difference as Call132F40.
+INCLUDE_ASM("asm/nonmatchings/CEventObj", Call1355E0__9CEventObjii);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135690);
 
@@ -251,7 +325,19 @@ int AnyResLoading() {
     return (D_002A0BE8->Func250540(0) != 0) | (D_002A0BE4->Func250540(0) != 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135988);
+int CEventObj::SkipTime(int lo, int hi, int v) {
+    if (D_002A3568->V17()) {
+        int old = v;
+        if (!(v < lo)) {
+            v = lo + (v - lo) / 2;
+            if (!(v < hi)) {
+                v = hi;
+            }
+        }
+        Func235DE0("skip time : %d->%d (%d,%d)\n", old, v, lo, hi);
+    }
+    return v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", Func135A28__15CEventObj135A28);
 

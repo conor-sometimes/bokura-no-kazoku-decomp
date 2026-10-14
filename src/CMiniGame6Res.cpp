@@ -110,6 +110,28 @@ public:
     u8 m_unk10[0x24];         // 0x10
     u8 m_unk34[0x24];         // 0x34
 };
+
+// Renderer object at D_002BA0B0 and another at D_002B9E10 (vptr at 0).
+class CMg6Gfx {
+public:
+    virtual void Release();
+    virtual int SetName(const char *s);
+    virtual void V2();
+    virtual void SetSize(s32 w, s32 h);
+    virtual void SetCell(s32 w, s32 h);
+};
+extern CMg6Gfx *D_002BA0B0;
+extern CMg6Gfx *D_002B9E10;
+extern char D_002E1CA0[];
+extern "C" void func_00245880();
+extern "C" void func_00251BB8();
+extern "C" void func_0024F298(void *(*f)(s32));
+extern "C" void func_0024F2C0(void (*f)());
+extern "C" void *func_0024F420();
+extern "C" void func_0024F610(void *p);
+void *Alloc1E7E58(s32 size);
+void CallMiniGame6Hook();
+void Func1E9168(void *a);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E33E8);
@@ -262,9 +284,28 @@ void Func1E8030() {
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E80A0);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E8B58);
+void InitMiniGame6() {
+    func_00245880();
+    func_00251BB8();
+    D_002BA0B0->SetSize(0x280, 0x1C0);
+    D_002BA0B0->SetCell(0x10, 0x10);
+    D_002BA0B0->SetName(D_002E1CA0);
+    func_0024F298(Alloc1E7E58);
+    func_0024F2C0(CallMiniGame6Hook);
+    Func1E9168(D_002A5BB4 = func_0024F420());
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E8C28);
+void ExitMiniGame6() {
+    if (D_002A5BB4) {
+        func_0024F610(D_002A5BB4);
+    }
+    if (D_002BA0B0) {
+        D_002BA0B0->Release();
+    }
+    if (D_002B9E10) {
+        D_002B9E10->Release();
+    }
+}
 
 void Func1E8CA8() {
     s32 n = D_002A5BA0;

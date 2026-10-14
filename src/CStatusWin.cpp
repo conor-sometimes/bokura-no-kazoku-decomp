@@ -132,6 +132,7 @@ public:
     u8 pad0[0x90] __attribute__((aligned(16)));
 };
 
+void *operator new(unsigned int n);
 class CStatusWinSub1A0A10 {
 public:
     ~CStatusWinSub1A0A10();
@@ -156,7 +157,6 @@ public:
     f32 m_unk84;              // 0x84
 };
 
-//@sym __19CStatusWinSub1A4F20i 0x1A4F20
 //@sym __builtin_new 0x245648
 //@sym __builtin_vec_delete 0x2456D0
 //@sym _$_19CStatusWinSub1A1BF0 0x1A1BF0
@@ -193,9 +193,10 @@ void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
 void *Func24A4C0(const char *name);
-class CStatusWinSub1A4F20 {
+// The kanji input window (CMenuInputKanji.cpp); only its size is needed here.
+class CMenuInputKanji {
 public:
-    CStatusWinSub1A4F20(s32 kind) throw();
+    CMenuInputKanji(s32 kind);
 
     u8 pad0[0x894];
 };
@@ -444,7 +445,11 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A03E8);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A0510);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A09D8);
+CStatusWinSub1A0A10 *NewStatusWinSub1A0A10() {
+    CStatusWinSub1A0A10 *p = (CStatusWinSub1A0A10 *)operator new(0x18);
+    p->Init();
+    return p;
+}
 
 // Returns int but has no return statement (that is why $v1 holds the address).
 int CStatusWinSub1A0A10::Init() {
@@ -609,12 +614,12 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A40C8);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A4298__10CUnk1A4298);
 
-CStatusWinSub1A4F20 *CreateStatusWinSub1A4F20(u32 kind) {
+CMenuInputKanji *CreateStatusWinSub1A4F20(u32 kind) {
     if (kind >= 3) {
         Func235DE0(D_002DEAC0, kind);
         kind = 0;
     }
-    return new CStatusWinSub1A4F20(kind);
+    return new CMenuInputKanji(kind);
 }
 
 s32 CStatusWinSub1A4A40::Load() {

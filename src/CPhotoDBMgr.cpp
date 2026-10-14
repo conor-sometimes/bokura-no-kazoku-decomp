@@ -1,19 +1,37 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CPushBuf {
+#include "CPushBuf.h"
+// Interface without fields (its RTTI name only): the vptr is at 0.
+class IPhotoDBMgr {
 public:
-    void Func248E00();
-    int Func248EB0();
-
-    u8 m_data[0xC];
+    virtual void Release() = 0;
+    virtual int Func1705C0() = 0;
+    virtual void Init() = 0;
+    virtual int Func29A2E0() = 0;
+    virtual int Func29A2E8() = 0;
+    virtual int Func29A320() = 0;
+    virtual int Func171448(char *out, s32 id, s32 idx) = 0;
+    virtual int Func171510() = 0;
+    virtual int Func171838() = 0;
 };
-class CPhotoDBMgrSub1705B0 {
+// Vtable 0x2C1510: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
+// Func1705C0, not the destructor (slot 9). Slots 3-5 are inline too.
+class CPhotoDBMgr : public IPhotoDBMgr {
 public:
-    void Init();
+    CPhotoDBMgr();
+    virtual void Release() { delete this; }
+    virtual int Func1705C0();
+    virtual void Init();
+    virtual int Func29A2E0();
+    virtual int Func29A2E8();
+    virtual int Func29A320();
+    virtual int Func171448(char *out, s32 id, s32 idx);
+    virtual int Func171510();
+    virtual int Func171838();
+    virtual ~CPhotoDBMgr();
     void Clear();
 
-    u8 pad0[0x4];
     CPushBuf m_buf;           // 0x4
     u8 pad10[0x8];
     s32 m_unk18;              // 0x18
@@ -21,10 +39,13 @@ public:
     s32 m_unk20;              // 0x20
 };
 
-extern "C" void func_00171D18(void *p);
+// CResortDBMgr's factory sits at the end of this file (its unit text starts late).
 class CResortDBMgr {
 public:
+    CResortDBMgr();
     static CResortDBMgr *Create();
+
+    u8 pad0[0x30];
 };
 
 struct CPhotoRec {
@@ -143,13 +164,86 @@ class CPhotoDBMgrSub1711A0 {
 public:
     int Parse(CPhotoCamTbl *tbl, s32 i, void *src);
 };
+extern CPhotoDBMgr *D_002A36C0;
+
+// The current-flag object (vtable 0x2C0900, vptr at 0x1C); slot 29 is GetBit1454F0.
+class CCurFlag {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14();
+    virtual void V15();
+    virtual void V16();
+    virtual void V17();
+    virtual void V18();
+    virtual void V19();
+    virtual void V20();
+    virtual void V21();
+    virtual void V22();
+    virtual void V23();
+    virtual void V24();
+    virtual void V25();
+    virtual void V26();
+    virtual void V27();
+    virtual void V28();
+    virtual int GetBit1454F0(u32 a, u32 b);
+
+    u8 pad0[0x1C];
+};
+extern CCurFlag *D_002A26E4;
+// Records keyed by a day (m_day) and an optional flag bit (m_bit < 0: none): the last record
+// whose day has been reached and whose bit is set.
+struct CPhotoDayRec10 {
+    s32 m_day;                // 0x0
+    s32 m_bit;                // 0x4
+    u8 pad8[0x8];
+};
+struct CPhotoDayRec40 {
+    s32 m_day;                // 0x0
+    s32 m_bit;                // 0x4
+    u8 pad8[0x38];
+};
+template <class T> inline T *FindLatest(T *tbl, s32 n, s32 day) {
+    s32 i;
+    s32 best = -1;
+    for (i = 0; i < n; i++) {
+        if (tbl[i].m_bit >= 0 && !D_002A26E4->GetBit1454F0(day, tbl[i].m_bit)) {
+            continue;
+        }
+        if (!(day < tbl[i].m_day)) {
+            best = i;
+        }
+    }
+    if (best >= 0) {
+        return &tbl[best];
+    }
+    return 0;
+}
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_001704F8);
+CPhotoDBMgr::CPhotoDBMgr() {
+    D_002A36C0 = this;
+    Clear();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00170538);
+CPhotoDBMgr::~CPhotoDBMgr() {
+    Init();
+    D_002A36C0 = 0;
+}
 
-void CPhotoDBMgrSub1705B0::Clear() {
+void CPhotoDBMgr::Clear() {
     m_unk18 = 0;
     m_unk1C = 0;
     m_unk20 = 0;
@@ -241,7 +335,7 @@ int CPhotoDBMgrSub171378::Parse(CPhotoPosTbl *tbl, s32 i, void *src) {
     return 1;
 }
 
-void CPhotoDBMgrSub1705B0::Init() {
+void CPhotoDBMgr::Init() {
     m_buf.Func248E00();
     Clear();
 }
@@ -264,16 +358,22 @@ INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171510);
 
 INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171838);
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171980);
+extern "C" CPhotoNameRec *func_00171980(void *tbl, s32 n, s32 id) {
+    return (CPhotoNameRec *)FindLatest((CPhotoDayRec10 *)tbl, n, id);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171A58);
+extern "C" void *func_00171A58(void *tbl, s32 n, s32 id) {
+    return FindLatest((CPhotoDayRec40 *)tbl, n, id);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171B30);
+extern "C" void *func_00171B30(void *tbl, s32 n, s32 id) {
+    return FindLatest((CPhotoDayRec40 *)tbl, n, id);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171C08);
+extern "C" void *func_00171C08(void *tbl, s32 n, s32 id) {
+    return FindLatest((CPhotoDayRec10 *)tbl, n, id);
+}
 
 CResortDBMgr *CResortDBMgr::Create() {
-    CResortDBMgr *p = (CResortDBMgr *)operator new(0x30);
-    func_00171D18(p);
-    return p;
+    return new CResortDBMgr;
 }

@@ -68,8 +68,16 @@ public:
     s32 m8[16];               // 0x8
 };
 
+// Script host object called back through a pointer to member (m_host->*m_cb).
+class CSvmWork;
+class CSvmHost {
+public:
+    virtual void V0();
+};
+typedef int (CSvmHost::*CSvmCallback)(CSvmWork *w, int a, int b);
 class CSvmWork {
 public:
+    int Callback130048(int a, int b);
     f32 SlotAsFloat(s32 i, f32 def);
     void Restore12FF48();
     void Save12FE60();
@@ -110,7 +118,9 @@ public:
     CSvmData *m_data;         // 0x0
     CSvmRand m_rand;          // 0x4
     CSvmWorkSub5A4 m_unk8;    // 0x8
-    u8 pad50[0x18];
+    CSvmHost *m_host;         // 0x50
+    CSvmCallback m_cb;        // 0x54
+    u8 pad5C[0xC];
     s32 m_trace;              // 0x68
     s32 m_unk6C;              // 0x6C
     char m_msg[0x404];        // 0x70
@@ -494,7 +504,12 @@ void CSvmWork::Restore12FF48() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_00130048);
+int CSvmWork::Callback130048(int a, int b) {
+    if (m_host && m_cb) {
+        return (m_host->*m_cb)(this, a, b);
+    }
+    return 0;
+}
 
 s32 CValueHolder::GetField5F0() {
     return m_field5F0;

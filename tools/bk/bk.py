@@ -48,7 +48,7 @@ def compile_(decl,funcs,out,tag='t'):
     decl=unit_decl(funcs)+'\n'+decl
     src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
     cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
-    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-I'+R+'/include','-Wa,-I'+R+'/include','-c','-o',out,cpp],capture_output=True,text=True)
+    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-fno-exceptions','-I'+R+'/include','-Wa,-I'+R+'/include','-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)
 R_MIPS={4:'R_MIPS_26',5:'R_MIPS_HI16',6:'R_MIPS_LO16'}

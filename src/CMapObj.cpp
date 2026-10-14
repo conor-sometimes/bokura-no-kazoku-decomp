@@ -15,13 +15,36 @@ struct CMapObjEntry {
     s32 m_unk8;               // 0x8
     s32 m_flag;               // 0xC
 };
-class CMapSndObjSub128190 {
+class CMapSndObj {
 public:
+    CMapSndObj();
+    virtual ~CMapSndObj();
     void ClearUnk4();
     void SetUnk4(s32 v);
+
+    s32 m_unk0;               // 0x0
+    s32 m_unk4;               // 0x4
 };
+// CMapEffObj.cpp: vptr after its four fields.
+class CMapEffObj {
+public:
+    CMapEffObj();
+    virtual ~CMapEffObj();
+    void EnableAll();
+    void Release();
+    int Load(void *list);
+
+    s32 m_unk0;               // 0x0
+    s32 m_unk4;               // 0x4
+    s32 m_unk8;               // 0x8
+    s32 m_unkC;               // 0xC
+};
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMapObj, its only
+// virtual. The vptr follows its fields at 0x30.
 class CMapObj {
 public:
+    CMapObj();
+    virtual ~CMapObj();
     s32 GetFlag11B030(s32 i);
     void Func11AF60();
     void SetFlag11B070(s32 i);
@@ -29,18 +52,22 @@ public:
     void ClearEntry11B0B0(s32 i);
     void Release11AFB8();
     CMapObjSub11B070 *m_unk0; // 0x0
-    void *m_unk4;             // 0x4
-    CMapSndObjSub128190 *m_unk8; // 0x8
+    CMapEffObj *m_unk4;       // 0x4
+    CMapSndObj *m_unk8;       // 0x8
     CMapObjEntry *m_entries;  // 0xC
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    u8 pad18[0x8];
+    s32 m_unk20;              // 0x20
+    s32 m_unk24;              // 0x24
+    s32 m_unk28;              // 0x28
+    s32 m_unk2C;              // 0x2C
 };
 
 extern "C" void *func_00245DD0(s32 size);
-extern "C" void func_001272B0(void *p, s32 v);
-extern "C" void func_001274E0(void *p);
 extern "C" void func_001281B8(void *p);
 
 extern void (*D_002B91B0)(void *p);
-extern "C" void func_00127418(void *p);
 
 extern "C" s32 func_0011B268(s32 psm);
 extern "C" void func_00227BF0(u64 tex, s32 a, s32 b, s32 w, s32 h, u8 *src);
@@ -48,21 +75,40 @@ extern "C" void func_00227BF0(u64 tex, s32 a, s32 b, s32 w, s32 h, u8 *src);
 extern "C" void func_001EFF48(u64 tex, s32 a, s32 b, s32 w, s32 h, u8 *src, s32 k);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapObj", func_0011ADD0);
+CMapObj::CMapObj() {
+    m_unk20 = 0x80;
+    m_unk24 = 0x80;
+    m_unk28 = 0x80;
+    m_unk2C = 0x80;
+    m_unk0 = 0;
+    m_entries = 0;
+    m_unk10 = 0;
+    m_unk14 = 0;
+    m_unk4 = new CMapEffObj;
+    m_unk8 = new CMapSndObj;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapObj", func_0011AE58);
+CMapObj::~CMapObj() {
+    Func11AF60();
+    if (m_unk8) {
+        delete m_unk8;
+    }
+    if (m_unk4) {
+        delete m_unk4;
+    }
+}
 
 void CMapObj::Init11AF00(CMapObjSub11B070 *d) {
     Func11AF60();
     m_unk0 = d;
     m_entries = (CMapObjEntry *)func_00245DD0(d->m_count * 16);
-    func_001272B0(m_unk4, d->m_unk1C);
+    m_unk4->Load((void *)d->m_unk1C);
     m_unk8->SetUnk4(d->m_unk20);
 }
 
 void CMapObj::Func11AF60() {
     m_unk8->ClearUnk4();
-    func_00127418(m_unk4);
+    m_unk4->Release();
     if (m_entries) {
         D_002B91B0(m_entries);
         m_entries = 0;
@@ -76,7 +122,7 @@ void CMapObj::Release11AFB8() {
             ClearEntry11B0B0(i);
         }
     }
-    func_001274E0(m_unk4);
+    m_unk4->EnableAll();
     func_001281B8(m_unk8);
 }
 
@@ -102,6 +148,7 @@ void CMapObj::ClearEntry11B0B0(s32 i) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapObj", Func11B118__9CSndOwnerPvi);
 
+INCLUDE_RODATA("asm/nonmatchings/CMapObj", D_002D3D88);
 INCLUDE_ASM("asm/nonmatchings/CMapObj", func_0011B268);
 
 void Blit11B2C0(u64 tex, s32 a, s32 b, s32 w, s32 y, s32 h, u8 *base) {

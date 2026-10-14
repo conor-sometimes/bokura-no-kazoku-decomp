@@ -1,24 +1,37 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CPushBuf {
-public:
-    void Func248E00();
-    u8 m_data[0xC];
-};
+#include "CPushBuf.h"
 //@sym memset 0x289FB0
 #include "libc.h"
-class CNameDBMgr {
+// Interface without fields (its RTTI name only): the vptr is at 0.
+class INameDBMgr {
 public:
-    void Push16CDC0(s32 kind, const char *name);
-    void Init();
+    virtual void Release() = 0;
+    virtual int Func16C848() = 0;
+    virtual void Init() = 0;
+    virtual int Func16CBD0() = 0;
+    virtual void Push16CDC0(s32 kind, const char *name) = 0;
+};
+// Vtable 0x2C1398: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
+// Func16C848, not the destructor (slot 5).
+class CNameDBMgr : public INameDBMgr {
+public:
+    CNameDBMgr();
+    virtual void Release() { delete this; }
+    virtual int Func16C848();
+    virtual void Init();
+    virtual int Func16CBD0();
+    virtual void Push16CDC0(s32 kind, const char *name);
+    virtual ~CNameDBMgr();
     static CNameDBMgr *Create(void *a);
-    u8 pad0[0x4];
+
     CPushBuf m_buf;           // 0x4
     u8 m_unk10[0x28];         // 0x10
     u8 m_unk38[0x28];         // 0x38
 };
 extern "C" void func_0016CF98(void *p, void *a);
+extern CNameDBMgr *D_002A35B0;
 
 class CFlagWork;
 extern CFlagWork *D_002A5358;
@@ -35,9 +48,16 @@ extern char D_002D9CE8[];
 extern "C" s32 func_0016C6D8(s32 kind);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", __10CNameDBMgr);
+CNameDBMgr::CNameDBMgr() {
+    D_002A35B0 = this;
+    memset(m_unk38, 0, 0x28);
+    memset(m_unk10, 0, 0x28);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", func_0016C7D0);
+CNameDBMgr::~CNameDBMgr() {
+    Init();
+    D_002A35B0 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", func_0016C848);
 
@@ -61,6 +81,10 @@ void Func16CB08(s32 type, s32 base, void *src) {
 
 INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", func_0016CBD0);
 
+// GNU as 2.10 bug: without a fresh frag here it assembles the `lui` of `lw $19, D_002A3610($2)`
+// as a copy of the following `lw` (position-dependent; appeared when the ctor became C++). The
+// function is 8-aligned anyway, so this emits nothing.
+asm(".p2align 3");
 void CNameDBMgr::Push16CDC0(s32 kind, const char *name) {
     s32 idx = func_0016C6D8(kind);
     if (idx < 0) return;
