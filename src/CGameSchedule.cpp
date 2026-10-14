@@ -27,6 +27,8 @@ INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159C50);
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159CF0);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159E18);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D8FD8);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D8FF8);
 
 void CGameScheduleSub159F58::Advance() {
     if (m_cur) {
@@ -42,6 +44,19 @@ INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015A090);
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015A120);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015A158);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9158);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9160);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9168);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9170);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9180);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9190);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D91A0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D91B0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D91C8);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D91E0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D91E8);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9200);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9218);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015D3E0);
 
@@ -112,5 +127,9 @@ INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F780);
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F958);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F9E0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9528);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9540);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9560);
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9570);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015FDE0);

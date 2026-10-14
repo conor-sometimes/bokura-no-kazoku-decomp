@@ -27,6 +27,9 @@ public:
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEndingMain", func_001078A8);
+INCLUDE_RODATA("asm/nonmatchings/CEndingMain", D_002D1B58);
+INCLUDE_RODATA("asm/nonmatchings/CEndingMain", D_002D1B78);
+INCLUDE_RODATA("asm/nonmatchings/CEndingMain", D_002D1BB8);
 
 INCLUDE_ASM("asm/nonmatchings/CEndingMain", func_00107978);
 

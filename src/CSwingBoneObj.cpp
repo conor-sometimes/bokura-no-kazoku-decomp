@@ -17,6 +17,7 @@ INCLUDE_ASM("asm/nonmatchings/CSwingBoneObj", func_001111B0);
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneObj", func_00111210);
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneObj", func_00111260);
+INCLUDE_RODATA("asm/nonmatchings/CSwingBoneObj", D_002D3390);
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneObj", func_00111438);
 

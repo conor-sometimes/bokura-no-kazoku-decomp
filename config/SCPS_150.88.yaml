@@ -12,7 +12,7 @@ options:
   build_path: build
   asset_path: assets
   ld_script_path: build/SCPS_150.88.ld
-  symbol_addrs_path: config/symbol_addrs.txt
+  symbol_addrs_path: [config/symbol_addrs.txt, config/vtables.txt, config/rodata_syms.txt]   # vtables.txt: scripts/data_units.py --syms; rodata_syms.txt: tools/bk/dataconv.py
   undefined_funcs_auto_path: build/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/undefined_syms_auto.txt
   platform: ps2
@@ -167,7 +167,241 @@ segments:
       - [0xDFA18, cpp, CMiniGame5Res]   # also CMiniGame5
       - [0xE43E8, cpp, CMiniGame6Res]   # also CMiniGame6
       - [0xEA1B8, asm, text_1e91b8]   # CAppMain on: C-style units, no vtables to split by
-      - [0x1A0230, data, ctors]          # .ctors .dtors .reginfo, pad, .data, .eh_frame, pad
+      - [0x1A0230, data, ctors]          # .ctors .dtors .reginfo, pad, .data up to the vtables
+      # Vtables (.gnu.linkonce.d._vt$*), one piece per unit in link order: scripts/data_units.py, docs/units.md
+      - [0x1C0A40, data, vt_CBootMain]
+      - [0x1C0A98, data, vt_CLogoMain]
+      - [0x1C0AF0, data, vt_CTitleMain]
+      - [0x1C0B48, data, vt_CDemoMain]
+      - [0x1C0BA0, data, vt_CEndingMain]
+      - [0x1C0BF8, data, vt_CFlagWork]
+      - [0x1C0C20, data, vt_CPadMgr]   # also IPadMgr
+      - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr
+      - [0x1C0E10, data, vt_CSnapMgr]   # also ISnapMgr
+      - [0x1C0F10, data, vt_CEFontWork]
+      - [0x1C0F30, data, vt_CTexCacheMgr]   # also CList
+      - [0x1C0FD8, data, vt_CFaceObj]
+      - [0x1C0FF0, data, vt_CFaceRes]
+      - [0x1C1008, data, vt_CDiffMotionObj]
+      - [0x1C1020, data, vt_CModelRes]
+      - [0x1C1038, data, vt_CMotionRes]
+      - [0x1C1050, data, vt_CSwingBoneObj]
+      - [0x1C1068, data, vt_CSwingBoneRes]
+      - [0x1C1080, data, vt_CCharaRes]
+      - [0x1C1098, data, vt_CCharaObj]
+      - [0x1C10B0, data, vt_CModelAccResMgr]
+      - [0x1C10F8, data, vt_CMapAttr]
+      - [0x1C1140, data, vt_CMapRes]
+      - [0x1C1158, data, vt_CMapObj]
+      - [0x1C1170, data, vt_CMapEffRes]
+      - [0x1C11A0, data, vt_CMapEffObjRes]   # also CMapEffObj
+      - [0x1C1410, data, vt_CMapSndRes]
+      - [0x1C1440, data, vt_CMapSndObj]
+      - [0x1C1458, data, vt_CSndWorkReal]
+      - [0x1C1488, data, vt_CSceneSet]
+      - [0x1C14D0, data, vt_CCharaResObj]   # also ICharaResMgr
+      - [0x1C1568, data, vt_CMapResObj]   # also IMapResMgr
+      - [0x1C1600, data, vt_CEnvResObj]   # also IEnvResMgr
+      - {start: 0x1C16A8, type: .data, name: CSvmRes, linker_section: .gnu.linkonce.d.*}
+      - [0x1C16C0, data, vt_CSvmWork]
+      - [0x1C16F0, data, vt_CEventRes]
+      - [0x1C1708, data, vt_CEventObj]
+      - [0x1C1738, data, vt_CEventMesRes]
+      - [0x1C17C0, data, vt_CMovieObj]
+      - [0x1C17D8, data, vt_CUserFlagMgr]
+      - [0x1C1900, data, vt_CSysFlag]   # also ISysFlag
+      - [0x1C1C88, data, vt_CResNameMgr]
+      - [0x1C1CC8, data, vt_CGameDBMgr]
+      - [0x1C1F80, data, vt_CGameMain]
+      - [0x1C1FD8, data, vt_CGameSeasonPrev]
+      - [0x1C2030, data, vt_CGameSeasonPost]
+      - [0x1C2088, data, vt_CGameSchedule]
+      - [0x1C2110, data, vt_CGameEventObj]
+      - [0x1C2128, data, vt_CGameResort]
+      - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr
+      - [0x1C2398, data, vt_CNameDBMgr]
+      - [0x1C23D8, data, vt_CPhotoEventObj]   # also IAlbumMgr
+      - [0x1C2510, data, vt_CPhotoDBMgr]
+      - [0x1C2570, data, vt_CResortDBMgr]
+      - [0x1C25F0, data, vt_CMapDBExpr]
+      - {start: 0x1C2690, type: .data, name: CMenuNews, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C26B8, type: .data, name: CMenuExGetMoney, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C26E0, type: .data, name: CMenuConfig, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2708, type: .data, name: CMenuNosave, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2730, type: .data, name: CMenuMemorial, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2758, data, vt_CMenuLoadMemorial]
+      - [0x1C2780, data, vt_CMenuTutorSelect]
+      - [0x1C27A8, data, vt_CMenuTutorSelected]
+      - [0x1C27D0, data, vt_CMenuExam]
+      - [0x1C27F8, data, vt_CChrSchoolWin]
+      - [0x1C2840, data, vt_CChrBodyWin]
+      - [0x1C2888, data, vt_CMenuChildStatus]
+      - [0x1C28B0, data, vt_CMenuCommon]
+      - [0x1C28D8, data, vt_CMenuPTJobMoney]
+      - [0x1C2900, data, vt_CMenuGetMoney]
+      - {start: 0x1C2928, type: .data, name: CMenuReviewResult, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2950, data, vt_CMenuReviewSelect]
+      - {start: 0x1C2978, type: .data, name: CMenuReviewStart, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C29A0, type: .data, name: CMenuContinue, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C29C8, type: .data, name: CMenuAsksave, linker_section: .gnu.linkonce.d.*}
+      - [0x1C29F0, data, vt_CMenuAsksavequit]
+      - [0x1C2A18, data, vt_CMenuRecord]
+      - [0x1C2A40, data, vt_CCommandBase]
+      - [0x1C2A60, data, vt_CCommandSelect]
+      - [0x1C2A80, data, vt_CCommandIncDec]   # also CStatusBase
+      - [0x1C2AE8, data, vt_CStatusWin]
+      - [0x1C2B38, data, vt_CMenuInputKanji]
+      - [0x1C2B80, data, vt_CMenuSysscr32]
+      - [0x1C2BA8, data, vt_CMenuSysscr31]
+      - [0x1C2BD0, data, vt_CMenuSysscr27]
+      - {start: 0x1C2BF8, type: .data, name: CMenuSysscr26, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2C20, data, vt_CMenuSysscr25]
+      - {start: 0x1C2C48, type: .data, name: CMenuSysscr24, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2C70, data, vt_CMenuSysscr23]
+      - {start: 0x1C2C98, type: .data, name: CMenuSysscr22, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2CC0, type: .data, name: CMenuSysscr11, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2CE8, type: .data, name: CMenuSysscr10, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2D10, type: .data, name: CMenuSysscr09, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2D38, data, vt_CMenuSysscr08]
+      - [0x1C2D60, data, vt_CMenuSysscr07]
+      - [0x1C2D88, data, vt_CMenuSysscr06]
+      - {start: 0x1C2DB0, type: .data, name: CMenuSysscr05, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2DD8, type: .data, name: CMenuSysscr04, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2E00, type: .data, name: CMenuSysscr03, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2E28, data, vt_CMenuSysscr02]
+      - [0x1C2E50, data, vt_CMenuSysscr01]
+      - {start: 0x1C2E78, type: .data, name: CMenuSysscr00, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2EA0, data, vt_CMenuSave]
+      - [0x1C2EC8, data, vt_CMenuLoad]
+      - [0x1C2EF0, data, vt_CMenuBoot]
+      - {start: 0x1C2F18, type: .data, name: CMenuProcess, linker_section: .gnu.linkonce.d.*}
+      - [0x1C2F40, data, vt_CMenuMgr]
+      - [0x1C2FF8, data, vt_CLayoutRes]
+      - [0x1C3010, data, vt_CLayoutObj]
+      - [0x1C3028, data, vt_CMiniGame1Res]
+      - [0x1C30A8, data, vt_CMiniGame2Res]
+      - [0x1C3128, data, vt_CMiniGame3Res]
+      - [0x1C31A8, data, vt_CMiniGame4Res]
+      - [0x1C3228, data, vt_CMiniGame5Res]
+      - [0x1C32A8, data, vt_CMiniGame6Res]
+      - [0x1C3328, data, vt_tail]   # C-style code and libraries
+      - [0x1C3C98, data, eh_frame]       # .eh_frame 0x2C2C98, pad
       - [0x1C4600, bin, vudata]          # .vudata    0x2C3600 (VU microcode, raw)
-      - [0x1D2800, rodata, rodata]       # .rodata    0x2D1800, pad, .gcc_except_table 0x2EB680
+      # .rodata 0x2D1800, one piece per unit (each ends with its RTTI names): scripts/data_units.py
+      - [0x1D2800, rodata, ro_CBootMain]
+      - [0x1D2870, .rodata, CLogoMain]
+      - [0x1D2910, .rodata, CTitleMain]
+      - [0x1D2A48, .rodata, CDemoMain]
+      - [0x1D2B38, .rodata, CEndingMain]
+      - [0x1D2BC8, .rodata, CFlagWork]
+      - [0x1D2CB0, rodata, ro_CPadMgr]   # also IPadMgr
+      - [0x1D2F08, rodata, ro_CFadeMgr]   # also IFadeMgr
+      - [0x1D2F28, rodata, ro_CSnapMgr]   # also ISnapMgr
+      - [0x1D3008, .rodata, CEFontWork]
+      - [0x1D3038, rodata, ro_CTexCacheMgr]   # also CList
+      - [0x1D3DB0, .rodata, CFaceObj]
+      - [0x1D3DC0, rodata, ro_CFaceRes]
+      - [0x1D4030, .rodata, CDiffMotionObj]
+      - [0x1D40A0, .rodata, CModelRes]
+      - [0x1D4250, rodata, ro_CMotionRes]
+      - [0x1D4348, .rodata, CSwingBoneObj]
+      - [0x1D43A0, .rodata, CSwingBoneRes]
+      - [0x1D4400, rodata, ro_CCharaRes]
+      - [0x1D4588, .rodata, CCharaObj]
+      - [0x1D4780, .rodata, CModelAccResMgr]
+      - [0x1D4820, rodata, ro_CMapAttr]
+      - [0x1D4C28, .rodata, CMapRes]
+      - [0x1D4D88, rodata, ro_CMapObj]
+      - [0x1D4E58, rodata, ro_CMapEffRes]
+      - [0x1D5240, rodata, ro_CMapEffObjRes]   # also CMapEffObj
+      - [0x1D5A08, .rodata, CMapSndRes]
+      - [0x1D5C38, .rodata, CMapSndObj]
+      - [0x1D5CB8, .rodata, CSndWorkReal]
+      - [0x1D5E10, .rodata, CSceneSet]
+      - [0x1D5ED8, rodata, ro_CCharaResObj]   # also ICharaResMgr
+      - [0x1D5F70, rodata, ro_CMapResObj]   # also IMapResMgr
+      - [0x1D6040, rodata, ro_CEnvResObj]   # also IEnvResMgr
+      - [0x1D6160, .rodata, CSvmRes]
+      - [0x1D6200, rodata, ro_CSvmWork]
+      - [0x1D6600, .rodata, CEventRes]
+      - [0x1D6670, .rodata, CEventObj]
+      - [0x1D68B0, .rodata, CEventMesRes]
+      - [0x1D6D58, .rodata, CMovieObj]
+      - [0x1D6ED8, .rodata, CUserFlagMgr]
+      - [0x1D7930, rodata, ro_CSysFlag]   # also ISysFlag
+      - [0x1D8B90, .rodata, CResNameMgr]
+      - [0x1D8D80, rodata, ro_CGameDBMgr]
+      - [0x1D9930, .rodata, CGameMain]
+      - [0x1D9CA8, .rodata, CGameSeasonPrev]
+      - [0x1D9EA8, .rodata, CGameSeasonPost]
+      - [0x1D9F20, .rodata, CGameSchedule]
+      - [0x1DA590, .rodata, CGameEventObj]
+      - [0x1DA8F8, rodata, ro_CGameResort]
+      - [0x1DAAD0, rodata, ro_CInterfRes]   # also IInterfMgr
+      - [0x1DAC30, rodata, ro_CNameDBMgr]
+      - [0x1DAD10, rodata, ro_CPhotoEventObj]   # also IAlbumMgr
+      - [0x1DAEC8, rodata, ro_CPhotoDBMgr]
+      - [0x1DB058, .rodata, CResortDBMgr]
+      - [0x1DB200, rodata, ro_CMapDBExpr]
+      - [0x1DB390, .rodata, CMenuNews]
+      - [0x1DB440, .rodata, CMenuExGetMoney]
+      - [0x1DB490, .rodata, CMenuConfig]
+      - [0x1DB530, .rodata, CMenuNosave]
+      - [0x1DB5A8, .rodata, CMenuMemorial]
+      - [0x1DB648, .rodata, CMenuLoadMemorial]
+      - [0x1DB7B0, .rodata, CMenuTutorSelect]
+      - [0x1DBAB0, .rodata, CMenuTutorSelected]
+      - [0x1DBB38, .rodata, CMenuExam]
+      - [0x1DBD98, rodata, ro_CChrSchoolWin]
+      - [0x1DBFD0, .rodata, CChrBodyWin]
+      - [0x1DC028, rodata, ro_CMenuChildStatus]
+      - [0x1DC558, rodata, ro_CMenuCommon]
+      - [0x1DC5E0, rodata, ro_CMenuPTJobMoney]
+      - [0x1DCAC8, rodata, ro_CMenuGetMoney]
+      - [0x1DCB28, .rodata, CMenuReviewResult]
+      - [0x1DCBC0, rodata, ro_CMenuReviewSelect]
+      - [0x1DCC80, .rodata, CMenuReviewStart]
+      - [0x1DCD38, .rodata, CMenuContinue]
+      - [0x1DCDB8, .rodata, CMenuAsksave]
+      - [0x1DCE38, rodata, ro_CMenuAsksavequit]
+      - [0x1DCE80, .rodata, CMenuRecord]
+      - [0x1DE7D8, rodata, ro_CCommandBase]
+      - [0x1DE928, .rodata, CCommandSelect]
+      - [0x1DE9B8, rodata, ro_CCommandIncDec]   # also CStatusBase
+      - [0x1DEA28, .rodata, CStatusWin]
+      - [0x1DEED0, .rodata, CMenuInputKanji]
+      - [0x1DFEB8, .rodata, CMenuSysscr32]
+      - [0x1E00F8, rodata, ro_CMenuSysscr31]
+      - [0x1E0190, rodata, ro_CMenuSysscr27]
+      - [0x1E0208, .rodata, CMenuSysscr26]
+      - [0x1E02E0, rodata, ro_CMenuSysscr25]
+      - [0x1E0368, .rodata, CMenuSysscr24]
+      - [0x1E03A8, rodata, ro_CMenuSysscr23]
+      - [0x1E03F8, .rodata, CMenuSysscr22]
+      - [0x1E0478, .rodata, CMenuSysscr11]
+      - [0x1E04F8, .rodata, CMenuSysscr10]
+      - [0x1E0538, .rodata, CMenuSysscr09]
+      - [0x1E0588, rodata, ro_CMenuSysscr08]
+      - [0x1E0608, rodata, ro_CMenuSysscr07]
+      - [0x1E0688, rodata, ro_CMenuSysscr06]
+      - [0x1E06C0, .rodata, CMenuSysscr05]
+      - [0x1E0710, .rodata, CMenuSysscr04]
+      - [0x1E0790, .rodata, CMenuSysscr03]
+      - [0x1E0810, rodata, ro_CMenuSysscr02]
+      - [0x1E08C0, rodata, ro_CMenuSysscr01]
+      - [0x1E0940, .rodata, CMenuSysscr00]
+      - [0x1E0980, rodata, ro_CMenuSave]
+      - [0x1E0B70, rodata, ro_CMenuLoad]
+      - [0x1E0CB8, .rodata, CMenuBoot]
+      - [0x1E0DA0, .rodata, CMenuProcess]
+      - [0x1E0DB0, rodata, ro_CMenuMgr]
+      - [0x1E0F50, .rodata, CLayoutRes]
+      - [0x1E1BE8, .rodata, CLayoutObj]
+      - [0x1E1D50, rodata, ro_CMiniGame1Res]
+      - [0x1E1F00, .rodata, CMiniGame2Res]
+      - [0x1E2190, .rodata, CMiniGame3Res]
+      - [0x1E23A8, rodata, ro_CMiniGame4Res]
+      - [0x1E25C8, .rodata, CMiniGame5Res]
+      - [0x1E28B0, rodata, ro_CMiniGame6Res]
+      - [0x1E2C20, rodata, ro_tail]   # C-style code and libraries, .gcc_except_table
   - [0x1EC6FC]

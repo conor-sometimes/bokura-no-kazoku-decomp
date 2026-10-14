@@ -1,22 +1,28 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CMenuProcess {
-public:
-    void SetState4();
-    void SetState6();
-    void SetUnk50(s32 v);
+#include "CMenuProcess.h"
 
-    u8 pad0[0x48];
-    s32 m_state;              // 0x48
-    u8 pad4C[0x4];
-    s32 m_unk50;              // 0x50
+//@sym __builtin_new 0x245648
+//@sym __8CMenuMgr 0x1B3C68
+class CMenuMgr {
+public:
+    CMenuMgr() throw();
+
+    u8 pad0[0xE0];
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuProcess", func_001B3BA8);
+CMenuProcess::CMenuProcess() {
+    m_unk4 = -1;
+    m_unk2 = 0;
+    m_unk0 = 0;
+    m_state = 0;
+    m_unk4C = -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuProcess", func_001B3BD0);
+CMenuProcess::~CMenuProcess() {
+}
 
 void CMenuProcess::SetState4() {
     m_state = 4;
@@ -30,4 +36,6 @@ void CMenuProcess::SetUnk50(s32 v) {
     m_unk50 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuProcess", func_001B3C30);
+CMenuMgr *CreateCMenuMgr() {
+    return new CMenuMgr;
+}

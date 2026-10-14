@@ -25,7 +25,11 @@ INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00101140);
 
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_001011C8);
 
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1910);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1918);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1920);
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00101240);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1988);
 
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00101308);
 
@@ -42,7 +46,15 @@ void CTitleMain::Func101450() {
     Func1056A8();
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1990);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D19B0);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D19F0);
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", Func101480__10CTitleMain);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A10);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A18);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A20);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A28);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A30);
 
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", Func1056A8__10CTitleMain);
 
@@ -56,3 +68,4 @@ INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00105BC8);
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00105CB0);
 
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00106190);
+INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A38);

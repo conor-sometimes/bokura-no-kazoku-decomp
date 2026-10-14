@@ -32,6 +32,10 @@ public:
 //@sym FindB__9CSceneSeti 0x12D070
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4E10);
+INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4E48);
+INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4E88);
+INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4EC8);
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C4A8);
 
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C4F0);
@@ -50,7 +54,7 @@ INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C7E0);
 
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C8D0);
 
-INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CB00);
+INCLUDE_ASM("asm/nonmatchings/CSceneSet", Func12CB00__9CSceneSeti);
 
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CBF0);
 
@@ -74,7 +78,7 @@ s32 CSceneSet::GetAUnk50(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CD30);
 
-INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CF40);
+INCLUDE_ASM("asm/nonmatchings/CSceneSet", Func12CF40__9CSceneSeti);
 
 INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CFF0);
 

@@ -21,4 +21,11 @@ Phases from the decomp skill; each has a clear done signal.
 - [ ] **5. C++ pipeline**: game code to C++ units, `INCLUDE_ASM` per function, class layouts
       from the mangled names (`CSceneCharaSet`, `TArray`, `TAllocator`, ...).
 - [ ] **6. The batch loop**: fan-in order, permuter for near-misses, HARD.md for the stuck.
+      2026-10-14: 980/2303 unit functions matched (4.68% of .text) after three parallel lanes on the
+      small functions and the per-unit data split (task #64, docs/units.md).
+  - [ ] **6a. Vtables** (goal set 2026-10-14): match the 584 functions that store a vptr or call
+        through one (106k instructions), three lanes by unit. Done when each is matched or in
+        HARD.md with its exact diff. Constructors, virtual calls and non-key virtuals need no data
+        change; a class's key method (usually the destructor) needs its unit converted first
+        (docs/units.md, levels 2-3).
 - [ ] **7. Mod build**: every pointer a symbol, then shiftable.

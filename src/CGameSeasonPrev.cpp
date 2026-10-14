@@ -23,7 +23,7 @@ public:
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00153410);
+INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", Init153410__18CGameMainRes153410i);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00153550);
 
@@ -37,7 +37,25 @@ void CGameSeasonPrev::CallFunc16E518() {
     m_part->m_unk230.Func16E518();
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8CA8);
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00153710);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8CF0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D10);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D50);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D60);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D68);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D70);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D78);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D80);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8D90);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DA0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DB0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DC0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DD0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DE0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8DF0);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8E00);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8E10);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00156120);
 
@@ -62,6 +80,7 @@ INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00157738);
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00157860);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00157978);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPrev", D_002D8E90);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPrev", func_00157AE8);
 

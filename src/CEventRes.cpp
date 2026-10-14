@@ -7,5 +7,6 @@ INCLUDE_ASM("asm/nonmatchings/CEventRes", func_00131F50);
 INCLUDE_ASM("asm/nonmatchings/CEventRes", func_00131FC8);
 
 INCLUDE_ASM("asm/nonmatchings/CEventRes", func_00132130);
+INCLUDE_RODATA("asm/nonmatchings/CEventRes", D_002D5660);
 
 INCLUDE_ASM("asm/nonmatchings/CEventRes", func_00132208);

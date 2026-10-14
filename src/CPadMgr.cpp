@@ -1,3 +1,3 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/CPadMgr", func_0010AEB0);
+INCLUDE_ASM("asm/nonmatchings/CPadMgr", __7CPadMgr);

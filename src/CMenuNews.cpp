@@ -1,30 +1,50 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
+
 class CUnk1A4298 {
 public:
     int Func1A4298();
 };
-class CMenuNews {
-public:
-    int CallFunc1A4298();
 
-    u8 pad0[0x58];
-    CUnk1A4298* m_unk58;      // 0x58
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuNews.
+class CMenuNews : public CMenuProcess {
+public:
+    CMenuNews();
+    virtual ~CMenuNews();
+    virtual s32 Update();
+    virtual s32 Draw();
+
+    CUnk1A4298 *m_unk58;      // 0x58
+};
+
+class CMenuExGetMoney {
+public:
+    CMenuExGetMoney() throw();
+
+    u8 pad0[0x78];
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00173A68);
+CMenuNews::CMenuNews() {
+    m_unk58 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00173AA0);
+CMenuNews::~CMenuNews() {
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00173B08);
+INCLUDE_ASM("asm/nonmatchings/CMenuNews", Update__9CMenuNews);
+INCLUDE_RODATA("asm/nonmatchings/CMenuNews", D_002DA3D0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuNews", D_002DA3F0);
 
-int CMenuNews::CallFunc1A4298() {
+s32 CMenuNews::Draw() {
     return m_unk58->Func1A4298();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00174020);
+CMenuExGetMoney *CreateCMenuExGetMoney() {
+    return new CMenuExGetMoney;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00174058);
 

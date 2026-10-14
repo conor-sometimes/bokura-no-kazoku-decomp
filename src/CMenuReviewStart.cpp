@@ -1,11 +1,43 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", func_00191E28);
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", func_00191E60);
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuReviewStart.
+class CMenuReviewStart : public CMenuProcess {
+public:
+    CMenuReviewStart();
+    virtual ~CMenuReviewStart();
+    virtual s32 Update();
+    virtual s32 Draw();
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", func_00191EC8);
+    s32 m_unk58;              // 0x58
+    s32 m_unk5C;              // 0x5C
+};
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", func_00192558);
+//@sym __builtin_new 0x245648
+class CMenuContinue {
+public:
+    CMenuContinue() throw();
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", func_00192620);
+    u8 pad0[0x60];
+};
+// @decl-end
+
+CMenuReviewStart::CMenuReviewStart() {
+    m_unk58 = 0;
+    m_unk5C = 0;
+}
+
+CMenuReviewStart::~CMenuReviewStart() {
+}
+
+INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", Update__16CMenuReviewStart);
+INCLUDE_RODATA("asm/nonmatchings/CMenuReviewStart", D_002DBCC0);
+INCLUDE_RODATA("asm/nonmatchings/CMenuReviewStart", D_002DBCE0);
+
+INCLUDE_ASM("asm/nonmatchings/CMenuReviewStart", Draw__16CMenuReviewStart);
+
+CMenuContinue *CreateCMenuContinue() {
+    return new CMenuContinue;
+}

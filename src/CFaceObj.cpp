@@ -17,6 +17,7 @@ public:
 };
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/CFaceObj", D_002D2DB0);
 INCLUDE_ASM("asm/nonmatchings/CFaceObj", func_0010D7F0);
 
 INCLUDE_ASM("asm/nonmatchings/CFaceObj", func_0010D878);

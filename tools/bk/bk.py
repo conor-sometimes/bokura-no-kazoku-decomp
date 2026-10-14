@@ -42,28 +42,42 @@ def unit_decl(funcs):
     if not os.path.exists(p): return ''
     m=re.search(r'^// @decl-begin[^\n]*\n(.*?)^// @decl-end\n',open(p).read(),re.M|re.S)
     return m.group(1) if m else ''
-def compile_(decl,funcs,out):
+class CompileError(Exception): pass
+def compile_(decl,funcs,out,tag='t'):
+    # tag: per-process scratch name so parallel compiles don't share t.cpp
     decl=unit_decl(funcs)+'\n'+decl
     src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
-    open(W+'/t.cpp','w').write(src)
-    r=subprocess.run([CC,'-O2','-G0','-I'+R+'/include','-Wa,-I'+R+'/include','-c','-o',out,W+'/t.cpp'],capture_output=True,text=True)
-    if r.returncode: print(r.stderr); sys.exit(1)
-    syms=[]
-    for l in subprocess.run([OD,'-t',out],capture_output=True,text=True).stdout.splitlines():
-        p=l.split()
-        if len(p)>=6 and p[-3]=='.text' and 'F' in p[2:-3]: syms.append((int(p[0],16),int(p[-2],16),p[-1]))
+    cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
+    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-I'+R+'/include','-Wa,-I'+R+'/include','-c','-o',out,cpp],capture_output=True,text=True)
+    if r.returncode: raise CompileError(r.stderr)
+    return read_obj(out)
+R_MIPS={4:'R_MIPS_26',5:'R_MIPS_HI16',6:'R_MIPS_LO16'}
+def read_obj(path):
+    # parse the ELF32 LE object directly (no objdump/objcopy): .text bytes, FUNC symbols in .text
+    # sorted by offset, .text relocations {offset: type}, undefined symbol names
+    b=open(path,'rb').read()
+    shoff,=struct.unpack_from('<I',b,0x20); shnum,shstrndx=struct.unpack_from('<HH',b,0x30)
+    sh=[struct.unpack_from('<10I',b,shoff+40*i) for i in range(shnum)]
+    nm=lambda tab,o: b[sh[tab][4]+o:b.index(b'\0',sh[tab][4]+o)].decode()
+    names=[nm(shstrndx,s[0]) for s in sh]
+    ti=names.index('.text'); text=b[sh[ti][4]:sh[ti][4]+sh[ti][5]]
+    syms=[];und=[];relocs={}
+    for i,s in enumerate(sh):
+        if s[1]==2:  # SHT_SYMTAB
+            for k in range(s[5]//16):
+                st_name,val,size,info,_,shndx=struct.unpack_from('<IIIBBH',b,s[4]+16*k)
+                if shndx==ti and info&0xf==2: syms.append((val,size,nm(s[6],st_name)))
+                elif shndx==0 and st_name: und.append(nm(s[6],st_name))
+        elif s[1]==9 and s[7]==ti:  # SHT_REL for .text
+            for k in range(s[5]//8):
+                off,info=struct.unpack_from('<II',b,s[4]+8*k)
+                if info&0xff in R_MIPS: relocs[off]=R_MIPS[info&0xff]
     syms.sort()
-    return syms
+    return syms,text,relocs,und
 def words(b,off,n): return [struct.unpack_from('<I',b,off+4*i)[0] for i in range(n)]
-def test(path,quiet=False):
-    decl,funcs=parse(path)
-    o=W+'/t.o'; syms=compile_(decl,funcs,o)
-    # sections may define extra functions (e.g. inline helpers emitted); match by order of non-inline? assume 1:1
-    if len(syms)!=len(funcs): print('symbol count',len(syms),'!= funcs',len(funcs),[s[2] for s in syms])
-    text=subprocess.run([OD.replace('objdump','objcopy'),'-O','binary','-j','.text',o,'/dev/stdout'],capture_output=True).stdout
-    rel=subprocess.run([OD,'-r','-j','.text',o],capture_output=True,text=True).stdout
-    relocs={int(m.group(1),16):m.group(2) for m in re.finditer(r'^([0-9a-f]{8})\s+(R_MIPS_\w+)',rel,re.M)}
-    res=[]
+def score(funcs,obj):
+    # [(addr,name,bad,ours,theirs)]: bad = differing words (relocated fields masked), +1000 on size mismatch
+    syms,text,relocs,und=obj; res=[]
     for (addr,body),(off,size,name) in zip(funcs,syms):
         c=ctx[hex(addr)]; n=c['n']
         mine=words(text,off,size//4); theirs=words(rom,addr-0xFF000,n)
@@ -77,7 +91,17 @@ def test(path,quiet=False):
             if r=='R_MIPS_26': m=0xFC000000
             if (x&m)!=(y&m): bad+=1
         res.append((addr,name,bad,len(mine),n))
-        if not quiet: print(f"{addr:#x} {name}: {'MATCH' if bad==0 else f'DIFF {bad} (ours {len(mine)} / {n} insns)'}")
+    return res
+def test(path,quiet=False):
+    decl,funcs=parse(path)
+    o=W+'/t.o'
+    try: obj=compile_(decl,funcs,o)
+    except CompileError as e: print(e); sys.exit(1)
+    # sections may define extra functions (e.g. inline helpers emitted); match by order of non-inline? assume 1:1
+    if len(obj[0])!=len(funcs): print('symbol count',len(obj[0]),'!= funcs',len(funcs),[s[2] for s in obj[0]])
+    res=score(funcs,obj)
+    if not quiet:
+        for addr,name,bad,ours,n in res: print(f"{addr:#x} {name}: {'MATCH' if bad==0 else f'DIFF {bad} (ours {ours} / {n} insns)'}")
     return res
 def port(path):
     decl,funcs=parse(path)
@@ -97,7 +121,7 @@ def port(path):
     # undefined references: callees named after their address (FuncXXXXXX) or //@sym NAME ADDR
     known=open(R+'/config/symbol_addrs.txt').read()
     extra=dict((m.group(1),int(m.group(2),16)) for m in re.finditer(r'^//@sym (\S+) (0x[0-9A-Fa-f]+)',open(path).read(),re.M))
-    und=[l.split()[-1] for l in subprocess.run([OD,'-t',W+'/t.o'],capture_output=True,text=True).stdout.splitlines() if '*UND*' in l]
+    und=read_obj(W+'/t.o')[3]
     for u in und:
         if re.match(r'^(func|D|jtbl)_[0-9A-F]+$',u) or (u+' =') in known or any(x.startswith(u+' =') for x in syms): continue
         a=extra.get(u)
@@ -129,7 +153,7 @@ def port(path):
     print(f'ported {len(funcs)} into {unit}.cpp, {len(syms)} renames'); fix_includes()
 def show(path, addr):
     addr=int(addr,16); decl,funcs=parse(path)
-    o=W+'/t.o'; syms=compile_(decl,funcs,o)
+    o=W+'/t.o'; syms=compile_(decl,funcs,o)[0]
     idx=[a for a,b in funcs].index(addr); off,size,name=syms[idx]
     d=subprocess.run([OD,'-d','-r','--start-address=%d'%off,'--stop-address=%d'%(off+size),o],capture_output=True,text=True).stdout
     mine=[l.split('\t',2)[-1] for l in d.splitlines() if re.match(r'\s+[0-9a-f]+:\t',l)]
@@ -160,26 +184,60 @@ if __name__=='__main__':
     elif cmd=='port': port(sys.argv[2])
     elif cmd=='show': show(sys.argv[2],sys.argv[3])
     elif cmd=='fix': fix_includes()
-def perm(path, addr):
-    # permute the statement lines ending in '//@p' of function ADDR; report matching orders
-    import itertools
-    addr=int(addr,16); t=open(path).read()
-    parts=re.split(r'(^//@func[^\n]*\n)',t,flags=re.M)
-    for i in range(1,len(parts),2):
-        if int(parts[i].split()[1],16)==addr: break
-    body=parts[i+1].split('\n')
+_P={}
+def _perm_init(decl,addr,head,idx,body):
+    _P.update(decl=decl,addr=addr,head=head,idx=idx,body=body,tag=f'perm{os.getpid()}')
+def _perm_score(order):
+    # compile only function ADDR with the //@p lines in this order; return (bad, order)
+    b=list(_P['body'])
+    for k,l in zip(_P['idx'],order): b[k]=l
+    funcs=[(_P['addr'],_P['head']+'\n'.join(b))]
+    try: obj=compile_(_P['decl'],funcs,f"{W}/{_P['tag']}.o",_P['tag'])
+    except CompileError: return (10**6,order)
+    return (score(funcs,obj)[0][2],order)
+def perm(path, addr, jobs=None, limit=5040):
+    # permute the statement lines ending in '//@p' of function ADDR, in parallel, compiling only that
+    # function. Up to LIMIT orders: all of them (best first on ties); more: swap hill-climbing with
+    # random restarts, keeping a swap when the diff count doesn't get worse.
+    import itertools,math,random
+    from multiprocessing import Pool
+    addr=int(addr,16); decl,funcs=parse(path)
+    body=dict(funcs)[addr].split('\n')
+    head=''  # the body already starts at the function's first line
     idx=[k for k,l in enumerate(body) if l.rstrip().endswith('//@p')]
-    lines=[body[k] for k in idx]; hits=[]
-    for p in itertools.permutations(lines):
-        b=list(body)
-        for k,l in zip(idx,p): b[k]=l
-        parts2=list(parts); parts2[i+1]='\n'.join(b)
-        open(W+'/perm.snip','w').write(''.join(parts2))
-        res=test(W+'/perm.snip',quiet=True)
-        r=[x for x in res if x[0]==addr][0]
-        if r[2]==0: hits.append(p); print('MATCH order:'); print('\n'.join(p)); break
-    if not hits: print('no permutation matches')
-if __name__=='__main__' and sys.argv[1]=='perm': perm(sys.argv[2],sys.argv[3])
+    lines=tuple(body[k] for k in idx); n=len(lines)
+    jobs=jobs or max(1,(os.cpu_count() or 2)//2)
+    seen={}
+    with Pool(jobs,_perm_init,(decl,addr,head,idx,body)) as pool:
+        def run(orders):
+            new=[o for o in dict.fromkeys(orders) if o not in seen]
+            for bad,o in pool.imap_unordered(_perm_score,new,chunksize=4):
+                seen[o]=bad
+                if bad==0: return o
+            return None
+        base=run([lines])
+        print(f'{n} lines, {math.factorial(n)} orders, start DIFF {seen[lines]}, {jobs} jobs')
+        if base is not None: print('MATCH (as written)'); return
+        if math.factorial(n)<=limit:
+            hit=run(itertools.permutations(lines))
+        else:
+            hit=None; rng=random.Random(0); cur=lines
+            for _ in range(limit//max(1,n*(n-1)//2)+1):
+                swaps=[]
+                for a in range(n):
+                    for c in range(a+1,n):
+                        l=list(cur); l[a],l[c]=l[c],l[a]; swaps.append(tuple(l))
+                hit=run(swaps)
+                if hit: break
+                best=min(swaps,key=lambda o:seen[o])
+                if seen[best]<=seen[cur] and best!=cur: cur=best
+                else: l=list(cur); rng.shuffle(l); cur=tuple(l); run([cur])
+                if len(seen)>=limit: break
+    if hit: print('MATCH order:'); print('\n'.join(hit))
+    else:
+        best=min(seen,key=seen.get)
+        print(f'no order matches ({len(seen)} tried); best DIFF {seen[best]}:'); print('\n'.join(best))
+if __name__=='__main__' and sys.argv[1]=='perm': perm(sys.argv[2],sys.argv[3],*(int(x) for x in sys.argv[4:6]))
 def addm(unit, cls, member):
     # add a member declaration to class CLS in UNIT's decl block
     p=f'{R}/src/{unit}.cpp'; s=open(p).read()

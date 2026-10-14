@@ -17,11 +17,40 @@ public:
     u8 pad4[0x4];
     s32 m_version;            // 0x8
 };
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CSvmRes. The vptr
+// follows its own fields.
+class CSvmRes {
+public:
+    CSvmRes();
+    virtual ~CSvmRes();
+    void Release();
+
+    s32 m_unk0;               // 0x00
+    s32 m_unk4;               // 0x04
+    s32 m_unk8;               // 0x08
+    s32 m_unkC;               // 0x0C
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    // vptr 0x20
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DD80);
+CSvmRes::CSvmRes() {
+    m_unk0 = 0;
+    m_unk4 = 0;
+    m_unk8 = 0;
+    m_unkC = 0;
+    m_unk10 = 0;
+    m_unk14 = 0;
+    m_unk18 = 0;
+    m_unk1C = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DDB0);
+CSvmRes::~CSvmRes() {
+    Release();
+}
 
 int CSvmHeader::IsValid() {
     if (m_magic == 0x44435347) {
@@ -34,11 +63,12 @@ int CSvmHeader::IsValid() {
 
 INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DE40);
 
+INCLUDE_RODATA("asm/nonmatchings/CSvmRes", D_002D5160);
 INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DEC0);
 
 INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DFB0);
 
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012E058);
+INCLUDE_ASM("asm/nonmatchings/CSvmRes", Release__7CSvmRes);
 
 void CValue::Reset() {
     m_type = -1;

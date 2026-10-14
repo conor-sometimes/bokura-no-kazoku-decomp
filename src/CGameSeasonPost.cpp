@@ -1,5 +1,8 @@
 #include "common.h"
 
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPost", D_002D8EA8);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPost", D_002D8EC8);
+INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPost", D_002D8F08);
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPost", func_00158FC0);
 
 INCLUDE_ASM("asm/nonmatchings/CGameSeasonPost", func_00159050);

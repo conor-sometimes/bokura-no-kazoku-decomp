@@ -12,6 +12,10 @@ public:
 };
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD928);
+INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD940);
+INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD960);
+INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD9A0);
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_00198670);
 
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_001986A8);

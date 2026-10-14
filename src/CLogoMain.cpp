@@ -16,6 +16,12 @@ public:
 };
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D1870);
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D1880);
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D1890);
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D18A0);
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D18C0);
+INCLUDE_RODATA("asm/nonmatchings/CLogoMain", D_002D1900);
 INCLUDE_ASM("asm/nonmatchings/CLogoMain", func_001005D8);
 
 INCLUDE_ASM("asm/nonmatchings/CLogoMain", func_00100630);

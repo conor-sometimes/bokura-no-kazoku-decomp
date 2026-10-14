@@ -16,8 +16,26 @@ public:
     void Set(s32 v);
 };
 
+struct CChrBodyEntry {
+    s32 m0;                   // 0x0
+    void *m4;                 // 0x4
+    u8 pad8[0x20];
+    void *m28;                // 0x28
+    u8 pad2C[0x20];
+};
 class CChrBodyWin {
 public:
+    void SetUnk384(f32 v);
+    ~CChrBodyWin();
+    void Init1883D0();
+    void Clear1884B0();
+    void GetColor(s32 *rgb, s32 *a);
+    int GetFlag187A00(s32 id);
+    int Check1888B8();
+    void Set189348(s32 a, s32 b);
+    void SetChar(s32 c);
+    int GetFlag187610(s32 id, s32 k);
+    void Open(s32 i);
     int CallFunc1091B0(s32 id);
     void CallFunc188BA8();
     void Func188BA8();
@@ -36,10 +54,28 @@ public:
     s32 m_mode;               // 0x4C
     u8 pad50[0x4];
     s32 m_unk54;              // 0x54
-    u8 pad58[0xC];
+    s32 m_unk58b;             // 0x58
+    u8 pad5C[0x8];
     CStatusBase* m_status;    // 0x64
     u8 pad68[0x4];
     CStatusBaseSub19AE68* m_unk6C; // 0x6C
+    u8 pad70[0x128];
+    CChrBodyEntry m_ent[6];   // 0x198
+    s32 m_unk360;             // 0x360
+    s32 m_unk364;             // 0x364
+    s32 m_unk368;             // 0x368
+    u8 pad36C[0x4];
+    s32 m_unk370;             // 0x370
+    f32 m_unk374;             // 0x374
+    f32 m_unk378;             // 0x378
+    s32 m_unk37C;             // 0x37C
+    s32 m_unk380;             // 0x380
+    f32 m_unk384;             // 0x384
+    s32 m_unk388;             // 0x388
+    f32 m_unk38C;             // 0x38C
+    f32 m_unk390;             // 0x390
+    f32 m_unk394;             // 0x394
+    f32 m_unk398;             // 0x398
 };
 
 class CChrBodyWinSub188748 {
@@ -62,8 +98,42 @@ public:
     u8 pad384[0x4];
     s32 m_unk388;             // 0x388
 };
+
+//@sym memset 0x289FB0
+#include "libc.h"
+void *operator new(unsigned int n);
+int Func235DE0(const char *fmt, ...);
+extern CFlagWork *D_002A4638;
+extern CFlagWork *D_002A5358;
+extern CFlagWork *D_002A26E4;
+extern CChrBodyWin *D_002A4308;
+extern void (*D_002B91B0)(void *p);
+extern char D_002DB400[], D_002DB380[], D_002DB310[];
+class CChrBodySub189270 {
+public:
+    void Func189270(int v);
+};
+class CChrBodySub245818 {
+public:
+    void Func245818(int v);
+};
+class CChrBodyWinSub18A410 {
+public:
+    void Init18A480();
+    void Close();
+    u8 pad0[0x58];
+    CChrBodySub245818 m58;    // 0x58
+    u8 pad59[0xB];
+    CChrBodySub189270 *m64;   // 0x64
+    void *m68;                // 0x68
+};
+CChrBodyWin *NewChrBodyWin();
+CChrBodyWinSub18A410 *NewChrBodyWinSub18A410();
+
+inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DAFD0);
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187038);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187088);
@@ -85,10 +155,21 @@ extern "C" void func_001872D8() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001872E0);
+INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DB018);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001875D8);
+CChrBodyWin *NewChrBodyWin() {
+    CChrBodyWin *p = (CChrBodyWin *)operator new(0x3A0);
+    p->Init1883D0();
+    return p;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187610);
+int CChrBodyWin::GetFlag187610(s32 id, s32 k) {
+    if (m_unk380) {
+        if (k == 1) return D_002A464C->Func1091B0(id + 0xB4);
+        return D_002A4638->Func1091B0(id + 0xB4);
+    }
+    return D_002A5358->Func1091B0(id + 0xA0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187680);
 
@@ -96,7 +177,10 @@ INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187758);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001878F8);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187A00);
+int CChrBodyWin::GetFlag187A00(s32 id) {
+    if (m_unk380) return D_002A4638->Func1091B0(id + 0xAE);
+    return D_002A5358->Func1091B0(id + 0x9A);
+}
 
 int CChrBodyWin::CallFunc1091B0(s32 id) {
     return D_002A464C->Func1091B0(id + 0xAE);
@@ -110,11 +194,37 @@ INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187ED0);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188098);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001883D0);
+void CChrBodyWin::Init1883D0() {
+    D_002A4308 = this;
+    m_unk360 = 8;
+    m_unk364 = 8;
+    m_unk368 = 8;
+    m_unk370 = 16;
+    m_unk374 = 0.0f;
+    m_unk378 = 1.0f;
+    m_unk37C = 0;
+    m_unk380 = 0;
+    m_unk384 = 0.0f;
+    m_unk388 = 0;
+    m_unk38C = 1.0f;
+    m_unk390 = 1.0f;
+    m_unk394 = 1.0f;
+    m_unk398 = 1.0f;
+    memset(this, 0, 0x188);
+    Clear1884B0();
+    return;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188450);
+CChrBodyWin::~CChrBodyWin() {
+    CallFunc188BA8();
+    D_002A4308 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001884B0);
+void CChrBodyWin::Clear1884B0() {
+    int i;
+    for (i = 5; i >= 0; i--) m_ent[i].m0 = 0;
+    Func188BA8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001884F0);
 
@@ -140,13 +250,30 @@ void CChrBodyWinSub188748::SetUnk388(s32 v) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188778);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func188778__11CChrBodyWinPfN31);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001888B8);
+int CChrBodyWin::Check1888B8() {
+    int a = GetFlag187A00(m_unk37C);
+    if (a != CallFunc1091B0(m_unk37C) && m_unk380) return 1;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188910);
+void CChrBodyWin::GetColor(s32 *rgb, s32 *a) {
+    if (rgb) {
+        rgb[0] = m_unk360;
+        rgb[1] = m_unk364;
+        rgb[2] = m_unk368;
+    }
+    if (a) *a = m_unk370;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188948);
+void CChrBodyWin::Open(s32 i) {
+    if (i < 0 || D_002A26E4->Func1091B0(0x27) - 1 < i) Func235DE0(D_002DB310, i);
+    else {
+        m_ent[i].m0 = 1;
+        Func188BA8();
+    }
+}
 
 void CChrBodyWinSub188748::SetUnk380(s32 v) {
     m_unk380 = v;
@@ -162,11 +289,31 @@ void CChrBodyWinSub188748::SetUnk378(f32 v) {
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001889F8);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func188BA8__11CChrBodyWin);
+void CChrBodyWin::Func188BA8() {
+    int i;
+    for (i = 0; i < 6; i++) {
+        if (m_ent[i].m4) {
+            D_002B91B0(m_ent[i].m4);
+            m_ent[i].m4 = 0;
+        }
+        if (m_ent[i].m28) {
+            D_002B91B0(m_ent[i].m28);
+            m_ent[i].m28 = 0;
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188C30);
+void CChrBodyWin::SetChar(s32 c) {
+    if (c < 0 || D_002A26E4->Func1091B0(0x27) - 1 < c) {
+        Func235DE0(D_002DB380, c);
+        c = 0;
+    }
+    m_unk37C = c;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188C98);
+void CChrBodyWin::SetUnk384(f32 v) {
+    m_unk384 = Clamp01(v);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188CD8);
 
@@ -229,6 +376,10 @@ INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001895F8);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_0018A1F0);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_0018A3D8);
+CChrBodyWinSub18A410 *NewChrBodyWinSub18A410() {
+    CChrBodyWinSub18A410 *p = (CChrBodyWinSub18A410 *)operator new(0x94);
+    p->Init18A480();
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_0018A410);

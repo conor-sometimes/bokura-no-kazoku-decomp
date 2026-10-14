@@ -15,9 +15,19 @@
             "\t.include \"" FOLDER "/" #NAME ".s\"\n"                             \
             "\t.set reorder\n"                                                    \
             "\t.set at\n")
+/*
+ * INCLUDE_RODATA pulls in a .rodata symbol of a unit whose .rodata comes from its object
+ * (docs/units.md) and that splat could not attach to a function: splat writes
+ * asm/nonmatchings/<unit>/<sym>.s for each one the .cpp names. Place it where the original
+ * compile emitted it (usually right after the function that uses it).
+ */
+#define INCLUDE_RODATA(FOLDER, NAME)                                              \
+    __asm__("\t.include \"" FOLDER "/" #NAME ".s\"\n"                             \
+            "\t.section .text\n")
 __asm__(".include \"macro.inc\"\n");
 #else
 #define INCLUDE_ASM(FOLDER, NAME)
+#define INCLUDE_RODATA(FOLDER, NAME)
 #endif
 
 #endif

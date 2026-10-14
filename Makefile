@@ -16,10 +16,10 @@ PYTHON   := .venv/bin/python
 
 ASFLAGS  := -EL -march=r5900 -mabi=eabi -no-pad-sections -G 0 -Iinclude
 
-# Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 (docs/compiler.md). The driver runs
+# Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 -fno-strict-aliasing (docs/compiler.md). The driver runs
 # cc1plus and its own GNU as 2.10-ee, which also assembles the INCLUDE_ASM'd functions.
 EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
-CXXFLAGS := -O2 -G0 -Iinclude -Wa,-Iinclude
+CXXFLAGS := -O2 -G0 -fno-strict-aliasing -Iinclude -Wa,-Iinclude
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
 
@@ -27,9 +27,13 @@ SPLIT    := build/.split
 all: check
 
 # splat writes asm/, assets/ and the linker script; re-run it when the yaml or symbols change.
-$(SPLIT): $(CONFIG) config/symbol_addrs.txt $(BASEROM)
+# splat doesn't delete files of pieces that no longer exist, so start from an empty asm/.
+$(SPLIT): $(CONFIG) config/symbol_addrs.txt config/vtables.txt config/rodata_syms.txt $(BASEROM)
 	@mkdir -p build
+	rm -rf asm
 	$(PYTHON) -m splat split $(CONFIG)
+	python3 -I scripts/data_syms.py $(CONFIG) asm > build/data_syms_auto.txt
+	python3 -I scripts/rodata_align.py asm
 	@touch $@
 split: $(SPLIT)
 
@@ -65,7 +69,7 @@ build/assets/%.bin.o: assets/%.bin
 	printf '.section .data, "wa"\n.incbin "%s"\n' $< | $(AS) $(ASFLAGS) -o $@ -
 
 build/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
-	$(LD) -EL --no-warn-rwx-segments -T build/undefined_syms_auto.txt -T build/undefined_funcs_auto.txt \
+	$(LD) -EL --no-warn-rwx-segments -T build/undefined_syms_auto.txt -T build/undefined_funcs_auto.txt -T build/data_syms_auto.txt -T config/aliases.ld \
 	    -Map build/$(TARGET).map -T $(LDSCRIPT) -o $@
 
 # Loaded image (.text through .gcc_except_table) as one flat blob, then the ELF container around it.

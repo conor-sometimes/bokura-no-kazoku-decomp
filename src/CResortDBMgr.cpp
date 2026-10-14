@@ -58,6 +58,8 @@ INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171DE8);
 INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171EC0);
 
 INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171F68);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0D8);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0E0);
 
 INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_001722D8);
 
@@ -66,6 +68,22 @@ INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172498);
 INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172640);
 
 INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172690);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA108);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA118);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA128);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA138);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA148);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA158);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA160);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA170);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA180);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA190);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1A0);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1B0);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1C0);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1D0);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1E0);
+INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA1F0);
 
 void CResortDBMgrSub171DD0::Init() {
     m_buf.Func248E00();

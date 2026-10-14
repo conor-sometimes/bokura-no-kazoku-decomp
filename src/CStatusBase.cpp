@@ -26,6 +26,9 @@ public:
     f32 GetItemUnk34();
     s32 GetItemState();
     void Advance2To3();
+    void Func19A8C0();
+    void Start();
+    void Func19A990();
 
     u8 pad0[0x48];
     CStatusItem* m_item;      // 0x48
@@ -38,14 +41,18 @@ class CStatusBaseSub19AE68 {
 public:
     void Set(s32 v);
     s32 GetUnk18();
+    void Func19AE78();
+    void Func19AEC0();
+    void Func19ADD0(s32 c);
 
     s32 m_unk0;               // 0x0
     u8 pad4[0x4];
     s32 m_unk8;               // 0x8
     s32 m_unkC;               // 0xC
     s32 m_unk10;              // 0x10
-    u8 pad14[0x4];
+    s32 m_unk14;              // 0x14
     s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
 };
 
 class CStatusBaseSub19AF50 {
@@ -55,12 +62,42 @@ public:
     CStatusItem* m_item;      // 0x0
 };
 
+struct CStatusHueTable {
+    u8 pad0[0xC];
+    f32 m_vals[0xFD];         // 0xC
+};
+struct CStatusVec4 { f32 x, y, z, w; };
 class CStatusBaseSub19B8C8 {
 public:
     void Init();
+    ~CStatusBaseSub19B8C8();
+    void Func19C0F0();
+    void SetUnk8(u32 v);
+    void SetUnk14(s32 i);
+    f32 GetHue(s32 a, s32 b);
+    void SetUnk18(u32 v);
+    void Reset19B938();
 
-    u8 pad0[0x4];
-    s32 m_unk4;               // 0x4
+    s32 m_unk0;               // 0x0
+    CStatusHueTable *m_unk4;  // 0x4
+    s32 m_unk8;               // 0x8
+    f32 m_unkC;               // 0xC
+    f32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    u32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    f32 m_unk20;              // 0x20
+    f32 m_unk24;              // 0x24
+    u8 pad28[0x8];
+    CStatusVec4 m_unk30[4];   // 0x30
+    CStatusVec4 m_unk70[4];   // 0x70
+    s32 m_unkB0;              // 0xB0
+    s32 m_unkB4;              // 0xB4
+    s32 m_unkB8;              // 0xB8
+    u8 padBC[0x4];
+    s32 m_unkC0;              // 0xC0
+    u8 padC4[0x8];
+    s32 m_unkCC;              // 0xCC
 };
 
 class CStatusBaseSub19C400 {
@@ -86,15 +123,50 @@ public:
     u8 pad4[0x14];
     s32 m_unk18;              // 0x18
 };
+
+void *operator new(unsigned int n);
+int Func235DE0(const char *fmt, ...);
+class CFlagWork {
+public:
+    int Func1091B0(s32 id);
+};
+extern CFlagWork *D_002A4B60;
+extern CFlagWork *D_002A26E4;
+class CChrBodyWin {
+public:
+    void Func188778(f32 *a, f32 *b, f32 *c, f32 *d);
+    void SetUnk384(f32 v);
+    void SetChar(s32 c);
+};
+extern CChrBodyWin *D_002A4308;
+extern void (*D_002B91B0)(void *p);
+extern char D_002DDCE8[], D_002DDAE8[], D_002DDD10[], D_002DDB18[], D_002DDAB8[], D_002DDD30[], D_002DDD50[];
+void Func270C50(CStatusVec4 *dst, CStatusVec4 *src);
+CStatusBaseSub19B8C8 *NewStatusSub19B8C8();
+int IsBodyAlphaZero();
+
+inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+int LerpInt(int a, int b, f32 t);
+int StepDigit(int *out, int *p, int base, int range, f32 t);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A830);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A858);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A8C0);
+void CStatusBase::Func19A8C0() {
+    if (m_item) {
+        m_item->Func1A3628();
+        m_state = 1;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A900);
+void CStatusBase::Start() {
+    if (m_item) {
+        m_item->Start();
+        m_state = 4;
+    }
+}
 
 f32 CStatusBase::GetItemUnk34() {
     return m_item ? m_item->m_unk34 : 0.0f;
@@ -111,7 +183,9 @@ void CStatusBase::Advance2To3() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A990);
+void CStatusBase::Func19A990() {
+    if (m_state == 3) m_unk54 = D_002A4B60->Func1091B0(0x22);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A9D8);
 
@@ -130,7 +204,16 @@ void CStatusBaseSub19AD70::ItemStart() {
     m_unk18 = 4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019ADD0);
+void CStatusBaseSub19AE68::Func19ADD0(s32 c) {
+    if (c < 0 || D_002A26E4->Func1091B0(0x27) - 1 < c) {
+        Func235DE0(D_002DDAB8, c);
+        c = 0;
+    }
+    D_002A4308->SetChar(c);
+    D_002A4308->SetUnk384(0.0f);
+    m_unk1C = 0;
+    m_unk14 = c;
+}
 
 void CStatusBaseSub19AE68::Set(s32 v) {
     m_unk8 = v;
@@ -138,7 +221,10 @@ void CStatusBaseSub19AE68::Set(s32 v) {
     m_unkC = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AE78);
+void CStatusBaseSub19AE68::Func19AE78() {
+    if (m_unk18 != 2) Func235DE0(D_002DDAE8, m_unk18);
+    m_unk18 = 3;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AEC0);
 
@@ -153,32 +239,64 @@ f32 CStatusBaseSub19AF50::GetItemUnk34() {
     return m_item->m_unk34;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AF60);
+int IsBodyAlphaZero() {
+    f32 c, d, a, b;
+    int r = 0;
+    D_002A4308->Func188778(&a, &b, &c, &d);
+    if (c == 0.0f) r = 1;
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AFA8);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B1F8);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B858);
+CStatusBaseSub19B8C8 *NewStatusSub19B8C8() {
+    CStatusBaseSub19B8C8 *p = (CStatusBaseSub19B8C8 *)operator new(0xD0);
+    p->Init();
+    return p;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B890);
+f32 CStatusBaseSub19B8C8::GetHue(s32 a, s32 b) {
+    return m_unk4[a].m_vals[b] / 360.0f;
+}
 
 void CStatusBaseSub19B8C8::Init() {
     D_002A53D4 = this;
     m_unk4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B8D8);
+CStatusBaseSub19B8C8::~CStatusBaseSub19B8C8() {
+    Func19C0F0();
+    D_002A53D4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B938);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019BA00);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C0F0);
+void CStatusBaseSub19B8C8::Func19C0F0() {
+    if (m_unk4) {
+        D_002B91B0(m_unk4);
+        m_unk4 = 0;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C130);
+void CStatusBaseSub19B8C8::SetUnk8(u32 v) {
+    if (v >= 2) {
+        Func235DE0(D_002DDCE8, v);
+        v = 0;
+    }
+    m_unk8 = v;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C170);
+void CStatusBaseSub19B8C8::SetUnk14(s32 i) {
+    if (i < 0 || m_unk0 - 1 < i) {
+        Func235DE0(D_002DDD10, i);
+        return;
+    }
+    m_unk14 = i;
+}
 
 void SetStatusColor(f32 r, f32 g, f32 b, f32 a) {
     D_002A53D8 = r;
@@ -187,7 +305,24 @@ void SetStatusColor(f32 r, f32 g, f32 b, f32 a) {
     D_002A53E4 = a;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C1E0);
+void CStatusBaseSub19B8C8::SetUnk18(u32 v) {
+    f32 f;
+    if (!m_unkCC) {
+        Func235DE0(D_002DDD30, 0);
+        return;
+    }
+    if (v >= 15) {
+        Func235DE0(D_002DDD50, v);
+        return;
+    }
+    m_unk18 = v;
+    f = GetHue(m_unk14, v);
+    if (m_unk20 != f) {
+        m_unk1C = 0;
+        m_unk20 = f;
+        m_unk24 = f;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C278);
 
@@ -202,6 +337,8 @@ INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C428);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C730);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019CC90);
+int LerpInt(int a, int b, f32 t) {
+    return (int)(((f32)b - (f32)a) * Clamp01(t) + (f32)a + 0.5f);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019CCF8);

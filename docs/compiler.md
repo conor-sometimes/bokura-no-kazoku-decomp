@@ -1,6 +1,10 @@
 # Compiler
 
-**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0`.**
+**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing`.**
+
+`-fno-strict-aliasing` added 2026-10-14: functions that store through one type and load through
+another (0x121A78, 0x1253D0, 0x1087F8), or re-read a global after a store, only match with it,
+and the whole tree still matches with it on.
 Confirmed 2026-10-13 on eight small functions: all eight match byte for byte with this
 compiler and flag set, and no other candidate matches all of them.
 
