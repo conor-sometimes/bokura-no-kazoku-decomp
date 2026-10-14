@@ -1,6 +1,76 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
+
+// Members and globals shared by the memory-card screens (CMenuLoadMemorial, CMenuSave, CMenuLoad).
+extern "C" int func_00245818(void *p, s32 v);
+extern "C" int func_001B7EF8(void *p);
+class CBgWork {
+public:
+    CBgWork();
+    ~CBgWork();
+
+    u8 pad0[0xC];
+};
+// Constructor 0x1843D8 (CallFunc184420__18CMenuTutorSelected), destructor 0x1843F0.
+class CMenuTutorSelectedSub1843F0 {
+public:
+    CMenuTutorSelectedSub1843F0();
+    ~CMenuTutorSelectedSub1843F0();
+
+    u8 pad0[0x50];
+};
+// Constructor 0x182070 (Init__27CMenuTutorSelectedSub182108), destructor 0x182098.
+class CMenuTutorSelectedSub182098 {
+public:
+    CMenuTutorSelectedSub182098();
+    ~CMenuTutorSelectedSub182098();
+
+    u8 pad0[0x10];
+};
+class CMenuMgrSub1B6BA8 {
+public:
+    ~CMenuMgrSub1B6BA8();
+    void Release1B6F00();
+};
+class CUnk2A55B0 {
+public:
+    ~CUnk2A55B0();
+    void Free1B7E28();
+};
+extern CMenuMgrSub1B6BA8 *D_002A55AC;
+extern CUnk2A55B0 *D_002A55B0;
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuLoadMemorial.
+class CMenuLoadMemorial : public CMenuProcess {
+public:
+    CMenuLoadMemorial();
+    virtual ~CMenuLoadMemorial();
+    virtual s32 Update();
+    virtual s32 Draw();
+
+    CBgWork m_bg;             // 0x58
+    s32 m_unk64;              // 0x64
+    u8 pad68[0x8];
+    CMenuTutorSelectedSub1843F0 m_unk70; // 0x70
+    CMenuTutorSelectedSub182098 m_unkC0; // 0xC0
+};
+
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+u8 *Func237570(int n);
+void Func237A88(void *p, int v);
+void *Func237C30(void *p);
+int Func238158(void *p, int v);
+void Func225240(int v);
+extern "C" int func_001836E8(void *p);
+extern "C" int func_001848E0(void *p);
+extern "C" int func_001B66E8(void *p);
+extern void *D_002A5538;
+
 extern void *D_002A3AF8;
 
 class CStatusItem {
@@ -8,13 +78,15 @@ public:
     void Func1A3378();
     void Func1A3628();
     void Start();
+
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
 };
 class CStatusWin {
 public:
     CStatusItem *Func1A0CF0(const char *name);
 };
 extern CStatusWin *D_002A5408;
-int Func235DE0(const char *fmt, ...);
 
 class CMenuLoadMemorialSub178778 {
 public:
@@ -135,6 +207,8 @@ extern char D_002DA7B0[], D_002DA7C0[], D_002DA7E8[], D_002DA808[], D_002DA830[]
 void *operator new(unsigned int n);
 class CMenuLoadMemorialSub17A8D8b {
 public:
+    void Create();
+    void Update();
     void Hide();
     void Func17AFC8();
     void Start();
@@ -177,14 +251,45 @@ CMenuLoadMemorialSub17DC50 *NewMemorialSub17DC50();
 int MemorialMenuFunc17B4A0();
 
 inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+
+extern char D_002DA938[], D_002DA948[], D_002DA958[], D_002DAA20[];
+extern "C" void func_001A40C8(CStatusItem *p);
+extern "C" void func_001A3DC8(void *p, s32 i, s32 v);
+class CMenuRecordWin {
+public:
+    void Func1A3740(s32 i, const char *s);
+};
+// Calendar window part (0x17DD28; the class is not identified yet).
+class CMenuLoadMemorialCal {
+public:
+    void SetDays(s32 n);
+
+    u8 pad0[0x64];
+    CMenuRecordWin *m_win;    // 0x64
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", __17CMenuLoadMemorial);
+CMenuLoadMemorial::CMenuLoadMemorial() {
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_00176BE0);
+CMenuLoadMemorial::~CMenuLoadMemorial() {
+    func_00245818(&m_bg, 1);
+    if (D_002A55AC) {
+        if (D_002A55B0) {
+            while (func_001B7EF8(D_002A55B0)) {
+            }
+        }
+        D_002A55AC->Release1B6F00();
+        delete D_002A55AC;
+    }
+    if (D_002A55B0) {
+        D_002A55B0->Free1B7E28();
+        delete D_002A55B0;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA648);
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_00176D30);
+INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", Update__17CMenuLoadMemorial);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA660);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA668);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA670);
@@ -200,9 +305,19 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA758);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA768);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA778);
 INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA788);
-INCLUDE_RODATA("asm/nonmatchings/CMenuLoadMemorial", D_002DA798);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_001785A0);
+s32 CMenuLoadMemorial::Draw() {
+    char buf[32];
+    u8 *p = Func237570(0x70);
+    Func237A88(p, 7);
+    Func238158(Func237C30(p + 0x60), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(func_001836E8(&m_unkC0));
+    ((CUnk237E90 *)(p + 0x40))->Func237E90(func_001848E0(&m_unk70));
+    ((CUnk237E90 *)(p + 0x50))->Func237E90(func_001B66E8(D_002A5538));
+    Func225088();
+    Func225240((s32)p);
+    Func2250C0();
+}
 
 int CMenuLoadMemorialSub178778::Create() {
     m_unk0 = D_002A5408->Func1A0CF0(D_002DA7B0);
@@ -364,7 +479,33 @@ void CMenuLoadMemorialSub17A8D8b::Start() {
     if (m_items[2]) m_items[2]->Start();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017B098);
+void CMenuLoadMemorialSub17A8D8b::Update() {
+    switch (m_state) {
+    case 0:
+        break;
+    case 1:
+        if (m_items[0]->m_state == 2 && m_items[1]->m_state == 2 && m_items[2]->m_state == 2) {
+            m_state = 2;
+        }
+        break;
+    case 2:
+        break;
+    case 3:
+        if (m_items[0]->m_state == 0 && m_items[1]->m_state == 0 && m_items[2]->m_state == 0) {
+            m_state = 0;
+        }
+        break;
+    }
+    if (m_items[0]) {
+        func_001A40C8(m_items[0]);
+    }
+    if (m_items[1]) {
+        func_001A40C8(m_items[1]);
+    }
+    if (m_items[2]) {
+        func_001A40C8(m_items[2]);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017B1A8);
 
@@ -506,6 +647,23 @@ void CMenuLoadMemorialSub17DC50::Init() {
     m_unk7C = i;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017DD28);
+void CMenuLoadMemorialCal::SetDays(s32 n) {
+    s32 i;
+    if (m_win) {
+        for (i = 0; i < 30; i++) {
+            func_001A3DC8(m_win, i, 0);
+        }
+        func_001A3DC8(m_win, n - 1, 1);
+        func_001A3DC8(m_win, n + 5, 1);
+        func_001A3DC8(m_win, n + 11, 1);
+        func_001A3DC8(m_win, n + 17, 1);
+        for (i = 0; i < n; i++) {
+            func_001A3DC8(m_win, i + 0x18, 1);
+        }
+        for (i = 0; i < 6; i++) {
+            m_win->Func1A3740(i + 0x23, D_002DAA20);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017DE18);

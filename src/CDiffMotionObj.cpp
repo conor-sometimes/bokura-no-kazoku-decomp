@@ -19,11 +19,36 @@ public:
     u8 pad0[8];
     s32 m8;
 };
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CDiffMotionObj.
+// CDiffMotionObjSub10FB10 is the same object's part from 0x14.
+class CDiffMotionObj {
+public:
+    CDiffMotionObj();
+    virtual ~CDiffMotionObj();
+    void Func10FC98();
+
+    s32 m_unk0;               // 0x00
+    s32 m_unk4;               // 0x04
+    s32 m_unk8;               // 0x08
+    s32 m_unkC;               // 0x0C
+    s32 m_unk10;              // 0x10
+    u8 pad14[0x10];
+    // vptr 0x24
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CDiffMotionObj", func_0010FA70);
+CDiffMotionObj::CDiffMotionObj() {
+    m_unk8 = -1;
+    m_unk0 = 0;
+    m_unk4 = 0;
+    m_unkC = 0;
+    m_unk10 = 0;
+    ((CDiffMotionObjSub10FB10 *)this)->Reset();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CDiffMotionObj", func_0010FAB0);
+CDiffMotionObj::~CDiffMotionObj() {
+    Func10FC98();
+}
 
 void CDiffMotionObjSub10FB10::Reset() {
     m_unk14 = 1;
@@ -33,9 +58,8 @@ void CDiffMotionObjSub10FB10::Reset() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CDiffMotionObj", func_0010FB30);
-INCLUDE_RODATA("asm/nonmatchings/CDiffMotionObj", D_002D3088);
 
-INCLUDE_ASM("asm/nonmatchings/CDiffMotionObj", func_0010FC98);
+INCLUDE_ASM("asm/nonmatchings/CDiffMotionObj", Func10FC98__14CDiffMotionObj);
 
 f32 CDiffMotionObj10FD20::GetFrame() {
     if (m8 < 0) return 0.0f;

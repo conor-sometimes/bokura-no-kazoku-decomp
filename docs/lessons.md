@@ -179,3 +179,46 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   the FindById inline template lesson did not apply there. *(bokura)*
 - **Pointer-to-member calls** (`(obj->*pmf)(args)`) compile to GCC 2.96's index/delta/pfn
   sequence; two in CEventObj (large this offsets) keep an empty `b` delay slot that ours fills. *(bokura)*
+## 2026-10-14: vtables lane 2 (menu screens, task classes, CGameDBMgr)
+- **Task classes derive from the library CProcess/CTask** (include/CProcess.h): CTask has one field and its
+  vptr at 4; the library constructor, destructor, operator new/delete and the empty slot functions get
+  names in config/aliases.ld, so a unit whose vtable mixes its own and library slots can go to level 3. *(bokura)*
+- **Interfaces need a declared (undefined) virtual destructor**, or an inline base constructor makes the
+  unit emit the interface's vtable as linkonce data (ISnapMgr, IFadeMgr). For CGameDBMgr (slot 0 is an
+  inline "delete this", destructor last) the class declares an undefined `Release` first. *(bokura)*
+- **A base without a vtable of its own adds its RTTI name to the unit's .rodata**: CMotionRes holds
+  CMotionTbl as a member, not a base. *(bokura)*
+- **A 0..1 clamp then multiply only matches with the clamped value in a local** (`f32 r = Clamp01(v);
+  m = (s32)(n * r);`); the four HARD.md clamp setters match this way. *(bokura)*
+- **Empty `case` labels shape the switch tree**: `case 0: case 2: break;` next to the real cases (and
+  `case END: goto out;` in the menu state machines) give retail's compare order. *(bokura)*
+- **Void virtual callees**: a `lui $3`/v0 slot address around a virtual call means the slot returns void;
+  a callee returning a value shows up as `lui $3` after a plain call (func_0010BF88). *(bokura)*
+- **Position of a local object's declaration changes scheduling** (CEndingMain: `CEndingDate date;`
+  between two statements matched where top-of-block did not). *(bokura)*
+- **`(y << 5) * w / 8` keeps retail's sll+mult**; `y * 32 * w / 8` folds to `y * w * 4`. *(bokura)*
+- **Member objects whose constructor/destructor live in another lane's unit**: either alias the ctor name
+  in aliases.ld or keep the member POD and call `func_X(&m, ...)` / `func_X(&m, 2)` explicitly in the body;
+  the code is the same. *(bokura)*
+## 2026-10-14: lane vt3 (vtable functions: ctors, dtors, virtual calls)
+- **Member vs base shows in the destructor's in_chrg**: a member's dtor is called with 2, a base's
+  with 0 (CLayoutRes destroys its CPushBuf with 2, so CPushBuf is a member, not a base). *(bokura)*
+- **A vtable-less base adds its RTTI name to the unit's .rodata**: when a level-3 unit's .rodata
+  grows by a name's length, the class has no such base; use a member or a cast instead. *(bokura)*
+- **The vptr goes after all of the introducing class's own fields** (checked: `{int x; virtual;
+  int y;}` puts x, y, then the vptr). A class whose vptr is at 0 but has fields gets a field-less
+  interface base (CMenuMgr, CUserFlagMgr, CMapEffWork). *(bokura)*
+- **Declare a class's destructor (non-inline) in every TU that constructs it**, or GCC treats it
+  as having no key method and emits a linkonce vtable, implicit dtor and typeinfo function. *(bokura)*
+- **Calls into other lanes' units by mangled name go through config/aliases.ld** (`__8CPushBuf`,
+  `__9CEventRes`, `_$_8CProcess`...); bk port now accepts names defined there. *(bokura)*
+- **A key method in a snippet can't go through `bk port`** (the snippet object references
+  `__rtti_user`): paste it into the .cpp, name it in symbol_addrs.txt, then `dataconv apply/fix`. *(bokura)*
+- **Forward loops `for (i = 0; i < n; i++) a[i] = -1;` come out as retail's count-down loops**;
+  writing the count-down by hand changed the constant order. *(bokura)*
+- **`&m_ids[k]` at a large offset**: retail computes `this + (k*4 + 0xFF30)`, which only matched
+  through a helper doing that sum in a local (CGameEventObj IdPtr). *(bokura)*
+- **A compiled jump table can land 8 bytes later than retail** after an INCLUDE_RODATA block
+  (CMovieObj 0x13EC28); check rocheck after porting a switch. *(bokura)*
+- **CDemoMain's constructor leaves member-ctor delay slots empty** from the third member on while
+  ours fills them: maybe that unit was built with exceptions (retail has 0x7C of .gcc_except_table). *(bokura)*

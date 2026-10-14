@@ -3,6 +3,8 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 class CPushBuf {
 public:
+    CPushBuf();
+    ~CPushBuf();
     void Func248E00();
     int Func248EB0();
     void *Func248CC8(s32 size, s32 a, s32 b);
@@ -39,6 +41,19 @@ public:
     CLayoutPart *m_parts;     // 0x18
     s32 m_numParts;           // 0x1C
 };
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CLayoutRes.
+// CLayoutResSub1B8748 is this class's non-virtual part: the destructor destroys the CPushBuf
+// as a member (in_chrg 2), so CPushBuf is a member here, not a base.
+class CLayoutRes {
+public:
+    CLayoutRes();
+    virtual ~CLayoutRes();
+    CLayoutResSub1B8748 *Sub() { return (CLayoutResSub1B8748 *)this; }
+
+    CPushBuf m_buf;           // 0x00
+    u8 padC[0x14];
+    // vptr 0x20
+};
 extern "C" int strcmp(const char *a, const char *b);
 extern void (*D_002B91B0)(void *p);
 const char *Func24ADE0(const char *p, char *buf, s32 n);
@@ -50,9 +65,13 @@ long Func289140(const char *s);
 //@sym strcmp 0x28B190
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B86A0);
+CLayoutRes::CLayoutRes() {
+    Sub()->Clear();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B86D8);
+CLayoutRes::~CLayoutRes() {
+    Sub()->Release();
+}
 
 void CLayoutResSub1B8748::Clear() {
     m_entries = 0;
@@ -275,4 +294,3 @@ s32 CLayoutResSub1B8748::ReadInts(const char *key, s32 *out, s32 n) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B9CE8);
-INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0BD8);

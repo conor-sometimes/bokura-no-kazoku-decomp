@@ -51,10 +51,14 @@ public:
     s32 m_unk8;               // 0x8
 };
 
-class CMapEffObjRes {
+#include "CList.h"
+class CMapEffObjRes : public CListTag {
 public:
+    CMapEffObjRes();
+    virtual ~CMapEffObjRes();
+    virtual s32 Load(const char *path);
+    virtual void Vf11CF20();
     void Init();
-    s32 Load(const char *path);
     s32 Func11CC28();
     s32 LoadHandles();
     s32 LoadTables();
@@ -62,7 +66,6 @@ public:
     void Func11CD60(s32 i, s32 v);
     s32 Func11CE50();
 
-    u8 pad0[0x10];
     s32 m_tables[31];         // 0x10
     s32 m_handles[13];        // 0x8C
     CMapEffEntry m_entries[7]; // 0xC0
@@ -84,28 +87,83 @@ public:
     CMapEffNode *m_free;      // 0x48
 };
 
-class CMapEffRainWork {
+// Effect work base: vptr at 0, no fields of its own (vtable _vt$11CMapEffWork).
+class CMapEffWork {
 public:
+    virtual ~CMapEffWork();
+    virtual void Vf295830();
+    virtual void Vf295838();
+    virtual void Vf295840();
+    virtual void Vf295848();
+};
+
+// The effect area as the work constructors read it (same object as CMapEffParam).
+struct CMapEffArea {
+    u8 pad0[0x10];
+    CVec4 m_pts[16];          // 0x10
+    s32 m_count;              // 0x110
+    u8 pad114[0x8];
+    s32 m_unk11C;             // 0x11C
+    s32 m_unk120;             // 0x120
+    s32 m_unk124;             // 0x124
+    s32 m_unk128;             // 0x128
+};
+struct CMapEffRect {
+    f32 x0, z0, x1, z1;
+};
+struct CMapEffDrop {
+    u8 pad0[0x20];
+};
+struct CMapEffFlake {
+    CMapEffFlake *m_next;     // 0x0
+    u8 pad4[0x18];
+    f32 m_unk1C;              // 0x1C
+    u8 pad20[0x10];
+};
+extern "C" void *func_00245678(u32 n);
+class CMapEffRainWork : public CMapEffWork {
+public:
+    CMapEffRainWork(CMapEffArea *p);
+    virtual ~CMapEffRainWork();
+    void Func121810(CMapEffDrop *d, s32 v);
     void Spawn(const CVec4 *v);
     void Step();
     void Func121DE8(s32 unused, CMapEffTarget *t);
     void Func121E28(CMapEffTarget *t);
     void Func122088(CMapEffTarget *t);
 
-    CMapEffObjRes *m_res;     // 0x0
     CMapEffParam *m_param;    // 0x4
-    u8 pad8[0x2C];
+    s32 m_unk8;               // 0x8
+    u8 padC[0x4];
+    CMapEffRect m_rect;       // 0x10
+    f32 m_unk20;              // 0x20
+    f32 m_unk24;              // 0x24
+    CMapEffDrop *m_drops;     // 0x28
+    s32 m_unk2C;              // 0x2C
+    CMapEffFlake *m_flakes;   // 0x30
     CMapEffNode *m_active;    // 0x34
     CMapEffNode *m_free;      // 0x38
 };
 
-class CMapEffSnowWork {
+class CMapEffSnowWork : public CMapEffWork {
 public:
+    CMapEffSnowWork(CMapEffArea *p);
+    virtual ~CMapEffSnowWork();
     void Func122DD8(s32 v);
     void CallFunc122DD8(s32 unused, s32 v);
     void FreeAll();
 
-    u8 pad0[0x3C];
+    CMapEffArea *m_param;     // 0x4
+    s32 m_unk8;               // 0x8
+    u8 padC[0x4];
+    CMapEffRect m_rect;       // 0x10
+    f32 m_unk20;              // 0x20
+    f32 m_unk24;              // 0x24
+    f32 m_unk28;              // 0x28
+    f32 m_unk2C;              // 0x2C
+    f32 m_unk30;              // 0x30
+    f32 m_unk34;              // 0x34
+    CMapEffFlake *m_flakes;   // 0x38
     CMapEffNode *m_active;    // 0x3C
     CMapEffNode *m_free;      // 0x40
 };
@@ -116,14 +174,31 @@ public:
     s32 m_count;              // 0x4
 };
 
-class CMapEffAquariumSlot {
+class CMapEffAquariumFish {
 public:
-    u8 pad0[0x13C];
-    s32 m_busy;               // 0x13C
+    CMapEffAquariumFish() {
+        m_unk0 = 0;
+        m_unk4 = 0;
+        m_unk8 = 0;
+    }
+    s32 m_unk0;               // 0x0
+    s32 m_unk4;               // 0x4
+    s32 m_unk8;               // 0x8
 };
 
-class CMapEffAquariumWork {
+class CMapEffAquariumSlot {
 public:
+    u8 pad0[0x110];
+    CMapEffAquariumFish m_fish; // 0x110
+    u8 pad11C[0x14];
+    s32 m_busy;               // 0x130
+    u8 pad134[0xC];
+};
+
+class CMapEffAquariumWork : public CMapEffWork {
+public:
+    CMapEffAquariumWork(CMapEffAquariumSub *sub);
+    virtual ~CMapEffAquariumWork();
     void Func1236C8(s32 i);
     void Func1247F8();
     void Func123590();
@@ -137,9 +212,8 @@ public:
     void UpdateAll();
     void Func124540();
 
-    u8 pad0[0x3804];
-    CMapEffAquariumSlot m_slots[8]; // 0x3804
-    u8 pad4204[0xC];
+    u8 pad4[0x380C];
+    CMapEffAquariumSlot m_slots[8]; // 0x3810
     u32 m_seed;               // 0x4210
     CMapEffAquariumSub *m_sub; // 0x4214
     s32 m_unk4218;            // 0x4218
@@ -170,13 +244,34 @@ public:
     s32 m_unk14;              // 0x14
 };
 
-class CMapEffBreathWork {
+struct CMapEffBreathNode {
+    CMapEffBreathNode *m_next; // 0x0
+    s32 m_unk4;               // 0x4
+    s32 m_unk8;               // 0x8
+};
+struct CMapEffBreathPart {
+    CMapEffBreathPart *m_next; // 0x0
+    u8 pad4[0x3C];
+};
+class CMapEffBreathWork : public CMapEffWork {
 public:
+    CMapEffBreathWork(CMapEffParam *p);
+    virtual ~CMapEffBreathWork();
     void Func1259C8(s32 v);
     void Func125A18(s32 v);
     void Func125BA8(s32 v);
     void Func125C38();
     void Func126068();
+
+    CMapEffParam *m_param;    // 0x4
+    s32 m_unk8;               // 0x8
+    CMapEffBreathNode m_nodes[16]; // 0xC
+    s32 m_unkCC;              // 0xCC
+    CMapEffBreathNode *m_freeNodes; // 0xD0
+    u8 padD4[0xC];
+    CMapEffBreathPart m_parts[256]; // 0xE0
+    s32 m_unk40E0;            // 0x40E0
+    CMapEffBreathPart *m_freeParts; // 0x40E4
 };
 
 class CMapEffSwingDef {
@@ -193,8 +288,10 @@ public:
     s32 m_unk4;               // 0x4
 };
 
-class CMapEffSwingWork {
+class CMapEffSwingWork : public CMapEffWork {
 public:
+    CMapEffSwingWork(CMapEffSwingParam *p);
+    virtual ~CMapEffSwingWork();
     void Func126BD8();
     void Func1266B0();
     void Func126860(s32 i);
@@ -203,7 +300,7 @@ public:
     void Func126AC0();
     void Func126C48(s32 a, s32 i);
 
-    u8 pad0[0x8];
+    s32 m_unk4;               // 0x4
     CMapEffSwingParam *m_unk8; // 0x8
     s32 m_unkC;               // 0xC
     s32 m_def;                // 0x10
@@ -262,7 +359,16 @@ extern s32 D_002A07D4;
 extern s32 D_002A07D8;
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011CAE0);
+CMapEffObjRes::CMapEffObjRes() {
+    s32 i;
+    for (i = 0; i < 31; i++) m_tables[i] = -1;
+    for (i = 0; i < 13; i++) m_handles[i] = -1;
+    for (i = 0; i < 7; i++) {
+        m_entries[i].m_handle = -1;
+        m_entries[i].m_unk4 = 0;
+        m_entries[i].m_unk8 = 0;
+    }
+}
 
 s32 CMapEffObjRes::Load(const char *path) {
     u8 buf[0x100];
@@ -536,7 +642,14 @@ void CMapEffSnowWork::CallFunc122DD8(s32 unused, s32 v) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122DD8__15CMapEffSnowWorki);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123538);
+CMapEffAquariumWork::CMapEffAquariumWork(CMapEffAquariumSub *sub) {
+    m_seed = 1;
+    m_sub = sub;
+    m_unk4220 = -1;
+    m_unk421C = -1;
+    m_unk4218 = 0;
+    m_count = 0;
+}
 
 void CMapEffAquariumWork::Func123590() {
     u32 *p = &m_seed;
@@ -625,7 +738,23 @@ void MapEffToGrid(s32 *out, const CVec4 *v) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00125410);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00125938);
+CMapEffBreathWork::CMapEffBreathWork(CMapEffParam *p) {
+    s32 i;
+    m_unk8 = 1;
+    m_unkCC = 0;
+    m_freeNodes = 0;
+    m_param = p;
+    for (i = 0; i < 16; i++) {
+        m_nodes[i].m_next = m_freeNodes;
+        m_freeNodes = &m_nodes[i];
+    }
+    m_unk40E0 = 0;
+    m_freeParts = 0;
+    for (i = 0; i < 256; i++) {
+        m_parts[i].m_next = m_freeParts;
+        m_freeParts = &m_parts[i];
+    }
+}
 
 void CMapEffBreathWork::Func1259C8(s32 v) {
     Func125A18(v);
@@ -646,7 +775,13 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func126068__17CMapEffBreathWork);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00126170);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00126610);
+CMapEffSwingWork::CMapEffSwingWork(CMapEffSwingParam *p) {
+    m_unk4 = 1;
+    m_unk8 = p;
+    m_unkC = -1;
+    m_def = -1;
+    m_unk90 = 0;
+}
 
 f32 CMapEffWork126640::GetKindTime(CMapEffWork126640 *w, s32 i) {
     f32 r = 0.0f;

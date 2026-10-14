@@ -13,18 +13,18 @@ public:
 };
 class CSvmWork : public CValueHolder {
 public:
+    CSvmWork() throw();
+    int SlotAsInt(s32 i, s32 def);
     void SetResultInt(s32 v);
     void Func12E858();
     void Func130138(const char *s);
     void Func131720();
 };
-class CFlagWork {
-public:
-    int Func1091B0(int id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
+#include "CGameDBMgr.h"
 class CPushBuf {
 public:
+    CPushBuf() throw();
     void Func248E00();
     int Func248EB0();
     char *Func248D38(const char *s);
@@ -35,7 +35,7 @@ struct UserFlagKey20 { const char *name; u8 pad[0x10]; };
 struct UserFlagKey8 { const char *name; u8 pad[0x4]; };
 struct UserFlagSvmArg { u8 pad[0xC]; s32 flags; s32 lo; s32 hi; s32 flagOfs; };
 struct UserFlagTable { const char *name; s32 id; u8 pad[0x18]; };
-struct UserFlagEntry { u8 pad[0x8]; u32 type; };
+struct UserFlagEntry { const char *name; s32 m_unk4; u32 type; };
 struct UserFlagStrPair { char *key; char *value; };
 extern UserFlagTable D_002A0D40[];
 extern char *D_002A1954;
@@ -46,6 +46,7 @@ extern char D_002D6250[];
 extern char D_002D6260[];
 extern char D_002D6450[];
 extern char D_002D6458[];
+extern char D_002D6488[];
 extern "C" void *bsearch(const void *key, const void *base, unsigned int n, unsigned int size, int (*cmp)(const void *, const void *));
 extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
 void *operator new(unsigned int n);
@@ -58,28 +59,90 @@ const char *Func24AD10(const char *s, char *buf, int a, int n);
 const char *Func24AB90(const char *s, const char *set);
 void Func24ABE0(char *s, const char *set);
 void Func235DE0(const char *fmt, ...);
-class CSysFlag {
-public:
-    void Init143A30();
-    u8 pad[0x20];
-};
 class CUserFlagWriter {
 public:
+    CUserFlagWriter() {}
+    CUserFlagWriter(char *p) { m_ptr = p; }
     int Write(const void *src, int n);
     int Func1401B8(int v);
     char *m_ptr;
 };
-class CUserFlagMgr {
+// Interface of CUserFlagMgr (its slots 0-33); slot 0 deletes through the destructor (slot 34).
+class IUserFlagMgr {
 public:
-    int Func140088(CUserFlagWriter w, const char *s);
+    virtual void Release();
+    virtual void Vf298B20();
+    virtual void Vf13F948();
+    virtual void Reset140040();
+    virtual void Vf298B48();
+    virtual void Vf298B68();
+    virtual void Vf298B70();
+    virtual void Vf298BB0();
+    virtual void Vf298C10();
+    virtual void Vf298C20();
+    virtual void Vf298CC0();
+    virtual void Vf298D48();
+    virtual void Vf298D68();
+    virtual void Vf298D78();
+    virtual void Vf298D88();
+    virtual void Vf298EE0();
+    virtual int Func140088(CUserFlagWriter w, const char *s);
+    virtual int RunScript(const char *src, int quiet);
+    virtual int RunScriptF(const char *fmt, int quiet, ...);
+    virtual int Dispatch1411B8(int a, u32 id, int b);
+    virtual int Dispatch141280(int a, u32 id, int b);
+    virtual int Vf1412D0(int a, u32 id, int b);
+    virtual void Vf298D90();
+    virtual void Vf298D98();
+    virtual void Vf298E38();
+    virtual void Vf298EC0();
+    virtual void SetBit(int name);
+    virtual int GetBit(int name);
+    virtual void Vf298EC8();
+    virtual void Vf298ED0();
+    virtual void Vf298ED8();
+    virtual int Update143328(int name);
+    virtual int Update143478(int name);
+    virtual int Update1436E0(int name);
+};
+extern void *(*D_002B91A4)(u32 n);
+extern void (*D_002B91B0)(void *p);
+// Heap buffer with its allocator and free functions.
+class CUserFlagBuf {
+public:
+    CUserFlagBuf() {
+        m_alloc = D_002B91A4;
+        m_free = D_002B91B0;
+        m_ptr = 0;
+        m_cap = 0;
+        m_size = 0;
+    }
+
+    void *(*m_alloc)(u32 n);  // 0x00
+    void (*m_free)(void *p);  // 0x04
+    void *m_ptr;              // 0x08
+    s32 m_size;               // 0x0C
+    s32 m_cap;                // 0x10
+};
+class CUserFlagMgr : public IUserFlagMgr {
+public:
+    CUserFlagMgr() throw();
+    virtual ~CUserFlagMgr();
+    virtual int RunScriptF(const char *fmt, int quiet, ...);
+    virtual int Dispatch141280(int a, u32 id, int b);
+    virtual int Vf1412D0(int a, u32 id, int b);
+    virtual int Update143328(int name);
+    virtual int Update143478(int name);
+    virtual int Update1436E0(int name);
+    virtual int Func140088(CUserFlagWriter w, const char *s);
     int Func140EE0(CUserFlagWriter *w, const char **s);
     void *FindFlag(const char *name);
     void *FindFlag2(const char *name);
-    void Reset140040();
-    void Func13F488(int v);
+    virtual void Reset140040();
+    void Func13F488(int v) throw();
     void Func1432E0(CSvmWork *w, UserFlagSvmArg *p, int n);
-    void SetBit(int name);
-    int GetBit(int name);
+    virtual void SetBit(int name);
+    virtual int GetBit(int name);
     int Func140EA0(CUserFlagWriter *w, const char **s);
     int Func140D40(CUserFlagWriter *w, const char **s);
     UserFlagTable *FindTable(int id);
@@ -91,9 +154,9 @@ public:
     void Func13F648Vprint(const char *tag, const char *fmt, va_list ap);
     int ParseToken(char *dst, const char **s);
     int SingleBit(u32 mask, int exact);
-    int RunScript(const char *src, int quiet);
+    virtual int RunScript(const char *src, int quiet);
     int Clamp142BD8(UserFlagSvmArg *p, int ofs, int v);
-    int Dispatch1411B8(int a, u32 id, int b);
+    virtual int Dispatch1411B8(int a, u32 id, int b);
     int Func141560(int a, u32 id, int b);
     int Func141768(int a, u32 id, int b);
     int Func141F68(int a, u32 id, int b);
@@ -102,7 +165,8 @@ public:
     int CheckId(int id, int a2);
     int ParsePairs(const char *s, UserFlagStrPair *out);
 
-    u8 pad0[0x10];
+    // vptr 0x0
+    u8 pad4[0xC];
     UserFlagEntry *m_entries[0x180]; // 0x10
         CPushBuf m_buf;           // 0x610
     s32 m_unk61C;             // 0x61C
@@ -112,19 +176,32 @@ public:
     void *m_unk62C;           // 0x62C
     s32 m_unk630;             // 0x630
     CSvmWork m_svm;           // 0x634
-    u8 pad635[0x58F4 - 0x635];
+    u8 pad635[0x2F88 - 0x635];
+    CSvmWork m_svm2;          // 0x2F88
+    u8 pad2F89[0x58E0 - 0x2F89];
+    CUserFlagBuf m_buf58E0;   // 0x58E0
     s32 m_unk58F4;            // 0x58F4
     u8 pad58F8[0x5910 - 0x58F8];
     u32 m_unk5910;            // 0x5910
+    CUserFlagBuf m_buf5914;   // 0x5914
+    s32 m_unk5928;            // 0x5928
 };
 //@sym bsearch 0x289160
 //@sym memcpy 0x289DFC
 //@sym __builtin_new 0x245648
 
 //@sym bsearch 0x289160
+
+extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
+
+extern CUserFlagMgr *D_002A0D38;
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", __12CUserFlagMgr);
+CUserFlagMgr::CUserFlagMgr() throw() {
+    D_002A0D38 = this;
+    Func13F488(1);
+    return;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F390);
 
@@ -456,7 +533,15 @@ int CUserFlagMgr::RunScript(const char *src, int quiet) {
     return m_svm.ValueAsInt();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_001410E8);
+int CUserFlagMgr::RunScriptF(const char *fmt, int quiet, ...) {
+    char src[0x400];
+    char out[0x400];
+    va_list ap;
+    va_start(ap, quiet);
+    vsprintf(src, fmt, ap);
+    if (Func140088(CUserFlagWriter(out), src) < 0) return -1;
+    return RunScript(out, quiet);
+}
 
 int CUserFlagMgr::Dispatch1411B8(int a, u32 id, int b) {
     if (id < 0x180) {
@@ -474,10 +559,66 @@ int CUserFlagMgr::Dispatch1411B8(int a, u32 id, int b) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00141280);
+int CUserFlagMgr::Dispatch141280(int a, u32 id, int b) {
+    int r;
+    m_unk58F4++;
+    r = Dispatch1411B8(a, id, b);
+    m_unk58F4--;
+    return r;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6458);
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_001412D0);
+INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6488);
+int CUserFlagMgr::Vf1412D0(int a, u32 id, int b) {
+    UserFlagEntry *e;
+    if (id < 0x180) {
+        e = m_entries[id];
+        if (e) {
+            s32 t = e->type;
+            CSvmWork *w = (CSvmWork *)a;
+            if ((u32)t < 7) {
+                switch (t) {
+                case 2:
+                    Func1432E0(w, (UserFlagSvmArg *)e, m_unk5928 / 4);
+                    return 0;
+                case 3:
+                    Func1432E0(w, (UserFlagSvmArg *)e, m_unk5928 % 4);
+                    return 0;
+                case 4:
+                    Func1432E0(w, (UserFlagSvmArg *)e, m_unk5928 / 4 + 0x19);
+                    return 0;
+                }
+            } else if ((u32)(t - 7) < 0x10) {
+                switch (t) {
+                case 8:
+                case 9:
+                    if (e->m_unk4 == 0x34) {
+                        Func1432E0(w, (UserFlagSvmArg *)e, D_002A2988->Vf14F918(m_unk5928, w->SlotAsInt(0, 0)));
+                        return 0;
+                    }
+                    break;
+                case 0xF:
+                    Func1432E0(w, (UserFlagSvmArg *)e, D_002A2988->Vf14F918(m_unk5928, w->SlotAsInt(0, 0)) >= 0);
+                    return 0;
+                }
+            } else if ((u32)(t - 0x17) < 7) {
+            } else if ((u32)(t - 0x1E) < 7) {
+                return Func142318(a, id, b);
+            } else if ((u32)(t - 0x25) < 0x10) {
+                return Func1425D8(a, id, b);
+            } else {
+                goto unknown;
+            }
+            goto prohibit;
+        }
+    }
+unknown:
+    Func235DE0(D_002D6458, id);
+    return 0;
+prohibit:
+    Func235DE0(D_002D6488, e->name);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func141560__12CUserFlagMgriUii);
 
@@ -534,11 +675,75 @@ void CUserFlagMgr::Func1432E0(CSvmWork *w, UserFlagSvmArg *p, int n) {
     w->SetResultInt(r);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00143328);
+int CUserFlagMgr::Update143328(int name) {
+    s32 v[0x100];
+    s32 i;
+    int changed = 0;
+    s32 id = Func1456A8(name);
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        if (id >= 0 && i != id) continue;
+        if (D_002A26E4->GetNamed(0xBE, i)) {
+            D_002A26E4->SetNamed(0xBE, i, 0);
+            if (D_002A2988->Vf14CC00(v, i) > 0) {
+                D_002A26E4->Func108FF0(i + 0xD6, v[0]);
+                changed = 1;
+            }
+        }
+    }
+    if (changed) SetBit(name);
+    return changed;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00143478);
+int CUserFlagMgr::Update143478(int name) {
+    s32 v[0x100];
+    s32 i;
+    int changed = 0;
+    s32 id = Func1456A8(name);
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        s32 r;
+        if (id >= 0 && i != id) continue;
+        r = D_002A26E4->GetNamed(0x166, name);
+        if (r) {
+            CGameDBRec *p = D_002A2988->Find234(r);
+            if (p && p->m_unk14 == 0xD) {
+                if (p->m_unk18 != D_002A26E4->GetNamed(0xB8, i)) {
+                    D_002A26E4->SetNamed(0xB8, i, p->m_unk18);
+                    changed = 1;
+                }
+                continue;
+            }
+        }
+        if (D_002A2988->Vf14D430(v, i) > 0) {
+            if (D_002A26E4->GetNamed(0xB8, i) != v[0]) {
+                D_002A26E4->SetNamed(0xB8, i, v[0]);
+                changed = 1;
+            }
+        }
+    }
+    if (changed) {
+        SetBit(name);
+        D_002A26E4->SetNamed(0xBE, name, D_002A26E4->GetNamed(0xBE, name) | 0x40);
+    }
+    return changed;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_001436E0);
+int CUserFlagMgr::Update1436E0(int name) {
+    s32 v[0x100];
+    s32 i;
+    int changed = 0;
+    s32 id = Func1456A8(name);
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        if (id >= 0 && i != id) continue;
+        if (D_002A2988->Vf14D5F8(v, i) > 0) {
+            if (D_002A26E4->Func1091B0(i + 0xB8) != v[0]) {
+                D_002A26E4->Func108FF0(i + 0xB8, v[0]);
+                changed = 1;
+            }
+        }
+    }
+    if (changed) SetBit(name);
+    return changed;
+}
 
 void CUserFlagMgr::SetBit(int name) {
     int b = Func1456A8(name);

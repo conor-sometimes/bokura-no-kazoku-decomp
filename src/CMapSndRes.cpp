@@ -18,20 +18,30 @@ public:
     s32 m_unk140;             // 0x140
 };
 
+// TArray<tagMapSndStepInfo, 16, TAllocator<tagMapSndStepInfo> > (template code at 0x295Dxx).
+extern "C" void func_00295DA0(void *p);
 class CUnk295E20 {
 public:
     void Func295E20(int v);
+
+    u8 pad0[0x18];
 };
+// Vtable 0x2C0410 still asm; the destructor (key method) stays INCLUDE_ASM.
 class CMapSndRes {
 public:
+    CMapSndRes();
+    virtual ~CMapSndRes();
     void Func127928();
     void CallFunc127928();
+    s32 Save(char *buf);
+    s32 Load(const char *text);
 
     s32 m_unk0;               // 0x0
     u8 pad4[0xC];
     CMapSndResSub1278F8 m_unk10; // 0x10
     u8 pad154[0xC];
     CUnk295E20 m_unk160;      // 0x160
+    // vptr 0x178
 };
 
 class CMapSndResSub127C10 {
@@ -44,11 +54,30 @@ public:
     s32 m34;                  // 0x34
     s32 m38;                  // 0x38
 };
+
+struct CTextStream {
+    char *m_cur;
+};
+extern "C" s32 func_0024B818(CTextStream *s, const char *fmt, ...);
+extern "C" s32 func_00127968(CTextStream *s, const char *name, void *rec);
+extern "C" s32 func_00295E40(CUnk295E20 *a);
+extern "C" void *func_00295E48(CUnk295E20 *a, s32 i);
+extern const char *D_002A0B38;
+extern const char *D_002A0B3C;
+extern const char *D_002A0B40;
+extern const char *D_002A0B44;
+const char *Func24AF10(void *text, const char *key);
+extern "C" void func_0024B298(const char *text, const char *key, s32 *v, s32 def);
+extern "C" const char *func_00127AB0(const char *text, const char *name, void *rec);
+extern "C" s32 func_0024AF90(const char *text, const char *name);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndRes", func_00127850);
+CMapSndRes::CMapSndRes() {
+    func_00295DA0(&m_unk160);
+    Func127928();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndRes", func_00127888);
+INCLUDE_ASM("asm/nonmatchings/CMapSndRes", _$_10CMapSndRes);
 
 void CMapSndResSub1278F8::Reset() {
     m_unk0 = 0;
@@ -106,9 +135,39 @@ void CMapSndResSub127C10::Init() {
     m30 = 80.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndRes", func_00127C48);
+s32 CMapSndRes::Save(char *buf) {
+    CTextStream s;
+    s32 n, i;
+    s.m_cur = buf;
+    n = func_0024B818(&s, "# map sound data\n\n");
+    n += func_0024B818(&s, "[%s]\n\t%s=%d\n\n", D_002A0B38, D_002A0B44, m_unk0);
+    n += func_00127968(&s, D_002A0B3C, &m_unk10);
+    if (func_00295E40(&m_unk160) > 0) {
+        for (i = 0; i < func_00295E40(&m_unk160); i++) {
+            n += func_00127968(&s, D_002A0B40, func_00295E48(&m_unk160, i));
+        }
+    }
+    return n;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndRes", func_00127D38);
+s32 CMapSndRes::Load(const char *text) {
+    const char *p;
+    s32 i;
+    if (*Func24AF10((void *)text, D_002A0B38) != 0) {
+        func_0024B298(text, D_002A0B44, &m_unk0, 0x80);
+    }
+    func_00127AB0(text, D_002A0B3C, &m_unk10);
+    m_unk160.Func295E20(func_0024AF90(text, D_002A0B40));
+    p = text;
+    for (i = 0; i < func_00295E40(&m_unk160); i++) {
+        p = func_00127AB0(p, D_002A0B40, func_00295E48(&m_unk160, i));
+    }
+    ((CMapSndResSub127C10 *)&m_unk10)->Init();
+    for (i = 0; i < func_00295E40(&m_unk160); i++) {
+        ((CMapSndResSub127C10 *)func_00295E48(&m_unk160, i))->Init();
+    }
+    return 1;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMapSndRes", D_002D4B98);
 INCLUDE_ASM("asm/nonmatchings/CMapSndRes", func_00127E70);

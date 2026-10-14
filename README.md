@@ -3,9 +3,9 @@
 <!-- progress:start -->
 **Progress** (functions in C++ (of all .text), 2026-10-14):
 
-`█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░` **4.68%** of code bytes (79,536 / 1,700,400)  
-`████░░░░░░░░░░░░░░░░░░░░░░░░░░` **13.57%** of functions (980 / 7,223)  
-Game code alone (the 2,303 functions in the C++ units): 980 matched, 8.34% of its bytes.
+`██░░░░░░░░░░░░░░░░░░░░░░░░░░░░` **7.68%** of code bytes (130,664 / 1,700,400)  
+`█████░░░░░░░░░░░░░░░░░░░░░░░░░` **17.87%** of functions (1,291 / 7,223)  
+Game code alone (the 2,303 functions in the C++ units): 1,291 matched, 13.69% of its bytes.
 <!-- progress:end -->
 
 Target: **Bokura no Kazoku - My Family Growing Up in the 21st Century (Japan)**,
@@ -31,7 +31,7 @@ The boot executable inside it, `SCPS_150.88`: SHA-1 `621ffd58de52794eaa3d33885ba
 | Built | 2005-01-28 (file dates) |
 | SDK | 2.8 era (`MODULES/IOPRP280.IMG`), Sony libraries (libsd, libmc, libpad, libmtap, libmpeg, libgraph) |
 | Language | C++: GCC 2.9x name mangling (`t6TArray3Z14CSceneCharaSeti_16_Z...`), `.eh_frame` + `.gcc_except_table` |
-| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing`: confirmed on 8 functions (docs/compiler.md) |
+| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing -fno-exceptions`: confirmed on 8 functions (docs/compiler.md) |
 | VU code | `.vutext` / `.vudata` (VU microcode, `dvp-as`): stays assembly |
 | Game data | `DATA/*.XAP` archives (MAP 140 MB, CHR 86 MB, ENV 33 MB, MENU 18 MB, ...) |
 

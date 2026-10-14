@@ -12,11 +12,23 @@ public:
     CSwingBone *m0;           // 0x0
     s32 m4;                   // 0x4
 };
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CSwingBoneRes.
+// CSwingBoneRes2 is the same object's non-virtual part.
+class CSwingBoneRes {
+public:
+    virtual ~CSwingBoneRes();
+
+    CSwingBone *m0;           // 0x0
+    s32 m4;                   // 0x4
+    // vptr 0x8
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_00111748);
 
-INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_00111760);
+CSwingBoneRes::~CSwingBoneRes() {
+    ((CSwingBoneRes2 *)this)->Func111CF8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_001117C0);
 
@@ -41,7 +53,6 @@ int CSwingBoneRes2::Load(void *data) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_00111BA8);
-INCLUDE_RODATA("asm/nonmatchings/CSwingBoneRes", D_002D33F0);
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", Func111CF8__14CSwingBoneRes2);
 

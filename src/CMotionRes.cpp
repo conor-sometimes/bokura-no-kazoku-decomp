@@ -17,6 +17,16 @@ public:
     s32 m_max;                // 0x8
 };
 
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMotionRes.
+class CMotionRes {
+public:
+    CMotionRes();
+    virtual ~CMotionRes();
+
+    CMotionTbl m_tbl;         // 0x0
+    // vptr 0xC
+};
+
 //@sym memset 0x289FB0
 #include "libc.h"
 extern "C" s32 func_00110B30(CMotionRec *recs, s32 a, s32 b);
@@ -25,11 +35,25 @@ extern "C" void *func_00245678(u32 size);
 extern void (*D_002B91B0)(void *p);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMotionRes", func_00110AB0);
+CMotionRes::CMotionRes() {
+    m_tbl.m_recs = 0;
+    m_tbl.m_num = 0;
+    m_tbl.m_max = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMotionRes", func_00110AD0);
+CMotionRes::~CMotionRes() {
+    m_tbl.Release();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMotionRes", func_00110B30);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D3258);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D3260);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D3268);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D3288);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D3290);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D32B0);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D32B8);
+INCLUDE_RODATA("asm/nonmatchings/CMotionRes", D_002D32C0);
 
 int CMotionTbl::Init(s32 a, s32 b) {
     Release();

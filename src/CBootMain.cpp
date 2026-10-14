@@ -11,8 +11,9 @@ class CBootMain : public CProcess {
 public:
     CBootMain();
     virtual ~CBootMain();
-    virtual void VFunc3();
+    virtual void Update();
 
+    u8 pad18[0x14];
     CStateMachine m_sm;       // 0x2C
 };
 
@@ -21,7 +22,7 @@ class CLogoMain : public CProcess {
 public:
     CLogoMain();
 
-    u8 pad2C[0xB0];
+    u8 pad18[0xC4];
 };
 // @decl-end
 
@@ -33,7 +34,7 @@ CBootMain::~CBootMain() {
 
 INCLUDE_RODATA("asm/nonmatchings/CBootMain", D_002D1800);
 INCLUDE_RODATA("asm/nonmatchings/CBootMain", D_002D1820);
-INCLUDE_ASM("asm/nonmatchings/CBootMain", VFunc3__9CBootMain);
+INCLUDE_ASM("asm/nonmatchings/CBootMain", Update__9CBootMain);
 
 void Func100588(void *a) {
     CLogoMain *p = new CLogoMain;

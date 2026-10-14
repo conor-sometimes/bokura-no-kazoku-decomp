@@ -2,11 +2,24 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "libc.h"
+#include "CFlagWork.h"
+#include "CTask.h"
+// Menu screen base (CMenuProcess unit; include/CMenuProcess.h has the full class, but its
+// Func235DE0 returns s32 while this unit's callers use it as void).
 class CMenuProcess {
 public:
+    virtual ~CMenuProcess();
+    virtual s32 Update() = 0;
+    virtual s32 Draw() = 0;
     void SetUnk50(s32 v);
     void SetState4();
     void SetState6();
+
+    u8 pad0[0x48];
+    s32 m_state;              // 0x48
+    s32 m_unk4C;              // 0x4C
+    s32 m_unk50;              // 0x50
+    // vptr 0x54
 };
 class CStatusWinSub1A0A10 {
 public:
@@ -25,16 +38,11 @@ public:
     u64 SwapUnk188(u64 v);
     u64 SwapUnk190(u64 v);
 };
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
 extern CStatusWinSub1A0A10 *D_002A5408;
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 extern CChrBodyWin *D_002A4308;
 extern void *D_002A53D4;
 extern CFlagWork *D_002A4B60;
-extern void *D_002A26E4;
 extern void *D_002A551C;
 extern void *D_002A5528;
 extern void (*D_002B91B0)(void *p);
@@ -94,8 +102,39 @@ public:
     void Func25CB90(s32 a, s32 b, s32 c);
 };
 
-class CMenuMgr {
+// CMenuMgr's vtable slots (_vt$8CMenuMgr); the vptr is at 0, so they come from a field-less base.
+class IMenuMgr {
 public:
+    virtual ~IMenuMgr();
+    virtual void Slot1();
+    virtual void Slot2();
+    virtual void Slot3();
+    virtual void Slot4();
+    virtual void Slot5();
+    virtual void Slot6();
+    virtual s32 GetPad(s32 *a, s32 *b, s32 *c);
+    virtual void Slot8();
+    virtual void Slot9();
+    virtual void Slot10();
+    virtual void Slot11();
+    virtual void Slot12();
+    virtual void Slot13();
+    virtual void Slot14();
+    virtual void Slot15();
+    virtual void Slot16();
+    virtual void Slot17();
+    virtual void UpdateProc();
+    virtual s32 DrawProc();
+    virtual void Slot20();
+};
+
+class CMenuMgr : public IMenuMgr {
+public:
+    virtual ~CMenuMgr();
+    virtual s32 GetPad(s32 *a, s32 *b, s32 *c);
+    virtual void UpdateProc();
+    virtual s32 DrawProc();
+    void DebugPrint1B85D8();
     void SetUnk70(s32 v);
     int GetMenuId();
     void SndFunc25C648(s32 a);
@@ -110,7 +149,8 @@ public:
     void SetVolume1B4578(s32 a, f32 v);
     void Start1B4418(u32 id, s32 arg);
 
-    u8 pad0[0x50];
+    u8 pad4[0x48];
+    s32 m_unk4C;              // 0x4C
     u64 m_unk50;              // 0x50
     u64 m_unk58;              // 0x58
     CMenuProcess *m_proc;     // 0x60
@@ -305,6 +345,8 @@ public:
     s32 GetUnk34(u32 i);
     int AllSet1B73E8();
     void Alloc1B6CA8();
+    void Load1B6FA8();
+    void Load1B7008();
 
     s32 m_unk0;               // 0x0
     void *m_unk4;             // 0x4
@@ -374,7 +416,6 @@ extern char D_002E0760[];
 extern char D_002E07A8[];
 extern char D_002E07D8[];
 extern char D_002A5540[][32];
-extern void *D_002A26E0;
 extern CUnk2A55B0 *D_002A55B0;
 extern CMenuProcess *(*D_002A5470[])(CMenuMgr *mgr, u32 id);
 extern "C" s32 func_001089D0(void *p, s32 v);
@@ -444,6 +485,38 @@ extern char D_002E05B8[];
 
 class CMenuMgrSub1B6BA8;
 extern "C" s32 func_001EE198(s32 a, s32 b);
+
+class CPadMgr : public CTask {
+public:
+    virtual s32 Vf293408();
+    virtual s32 Vf293410();
+    virtual s32 Vf293420();
+    virtual s32 Vf293418();
+    virtual void SetUnk18(s32 v);
+    virtual s32 Vf293428();
+};
+extern CPadMgr *D_0029F390;
+// Debug text printer at D_002BA0B0 (library side).
+class CDbgText2BA0B0 {
+public:
+    virtual void Vf0();
+    virtual void Vf1();
+    virtual void Vf2();
+    virtual void Vf3();
+    virtual void Vf4();
+    virtual void SetColor(f32 r, f32 g, f32 b, f32 a);
+    virtual void Vf6();
+    virtual void SetPos(f32 x, f32 y);
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void Vf11();
+    virtual void Vf12();
+    virtual s32 Print(const char *s);
+};
+extern CDbgText2BA0B0 *D_002BA0B0;
+extern char D_002DFF10[], D_002E09C0[];
+extern "C" int sprintf(char *buf, const char *fmt, ...);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", __8CMenuMgr);
@@ -501,7 +574,18 @@ void CMenuMgr::SetUnk70(s32 v) {
     m_unk70 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B4318);
+s32 CMenuMgr::GetPad(s32 *a, s32 *b, s32 *c) {
+    if (m_unk70 && D_0029F390->Vf293428()) {
+        *a = D_0029F390->Vf293410();
+        *b = D_0029F390->Vf293408();
+        *c = D_0029F390->Vf293418();
+    } else {
+        *a = 0;
+        *b = 0;
+        *c = 0;
+    }
+    return m_unk70 != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B4418);
 
@@ -546,7 +630,13 @@ int CMenuMgr::SndFunc25C990(s32 a) {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B45E8);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B46C8);
+s32 CMenuMgr::DrawProc() {
+    if (m_proc && m_unk68 != 0 && m_unk68 != 5) {
+        return m_proc->Draw();
+    }
+    Func225088();
+    return Func2250C0();
+}
 
 CMenuMgrSub1B4768 *CMenuMgrSub1B4768::Create() {
     CMenuMgrSub1B4768 *p = (CMenuMgrSub1B4768 *)operator new(0x60);
@@ -979,9 +1069,24 @@ void CMenuMgrSub1B6BA8::Release1B6F00() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B6FA8);
+void CMenuMgrSub1B6BA8::Load1B6FA8() {
+    if (m_unk4 && D_002A26E0) {
+        func_00108A20(D_002A26E0, (s32)m_unk4);
+        D_002A26E0->Vf143BD0();
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B7008);
+void CMenuMgrSub1B6BA8::Load1B7008() {
+    if (m_unk4 && D_002A26E0) {
+        CFlagWork tmp(0, -1);
+        tmp.CopyFrom(D_002A26E0);
+        tmp.Func108700();
+        func_00108A20(&tmp, (s32)m_unk4);
+        D_002A26E0->Merge144440(&tmp);
+        D_002A26E0->Load143BD8((CCurFlag *)D_002A26E4);
+        D_002A26E0->Save((u8 *)m_unk4);
+    }
+}
 
 s32 CMenuMgrSub1B6BA8::GetUnkC(u32 i) {
     if (i >= 10) {
@@ -1129,4 +1234,10 @@ s32 CUnk2A55B0::Size1B8500() {
     return (total + 17) / 10 * 10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B85D8);
+void CMenuMgr::DebugPrint1B85D8() {
+    char buf[0x400];
+    sprintf(buf, D_002E09C0, m_unk4C, m_proc, m_unk64, m_unk68);
+    D_002BA0B0->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    D_002BA0B0->SetPos(388.0f, 40.0f);
+    D_002BA0B0->Print(buf);
+}

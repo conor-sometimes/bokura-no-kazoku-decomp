@@ -14,7 +14,7 @@ public:
     void Func101368(const char *s, s32 v);
     void CallFunc101368(s32 v);
     void ReleaseTextures();
-    int VFunc7();
+    int Func7();
 
     u8 pad0[0x74];
     CMemTex m_tex74;          // 0x74
@@ -95,7 +95,7 @@ class CDemoMain : public CProcess {
 public:
     CDemoMain(s32 k);
 
-    u8 pad2C[0x10224];
+    u8 pad18[0x10238];
 };
 class CFlagWork {
 public:
@@ -123,7 +123,7 @@ void ReleaseResMgrs1011C8() {
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1910);
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1918);
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1920);
-int CTitleMain::VFunc7() {
+int CTitleMain::Func7() {
     if (Func249248((void *)"data/title.xap")) {
         func_00254248(&m_tex74, "title.tm2");
         func_00254248(&m_texA0, "copyright.tm2");

@@ -1,6 +1,32 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CProcess.h"
+#include "CUserFlagMgr.h"
+
+// Event message manager (CEventMesRes unit), global D_002A0CE0; only virtual calls here.
+class CEventMesMgr {
+public:
+    virtual ~CEventMesMgr();
+    virtual void Func1();
+    virtual void Func2();
+    virtual void Func3(const char *s);
+};
+extern CEventMesMgr *D_002A0CE0;
+extern char D_002D9930[];
+extern "C" void func_00150D98(void *p);
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CGameResort.
+class CGameResort : public CProcess {
+public:
+    CGameResort(s32 a, s32 b, s32 c, s32 d);
+    virtual ~CGameResort();
+    virtual void Update();
+    void Func167EF8();
+
+    u8 pad18[0x60];
+    void *m_unk78;            // 0x78
+};
 extern "C" void func_00168DC8(void *p);
 class CInterfRes {
 public:
@@ -46,12 +72,18 @@ extern "C" int func_001153E8(void *p);
 extern "C" int func_00167310(void *p, s32 i, s32 k);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_001667D8);
+INCLUDE_ASM("asm/nonmatchings/CGameResort", __11CGameResortiiii);
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9930);
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166AB0);
+CGameResort::~CGameResort() {
+    D_002A0D38->V10();
+    func_00150D98(m_unk78);
+    D_002A0CE0->Func3(D_002D9930);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166B68);
 
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9940);
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166D40);
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166F80);
@@ -93,16 +125,22 @@ int CGameResortObj::Func167268() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167310);
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D99A0);
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_001675A0);
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D99F8);
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167A48);
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167C40);
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167EF8);
+void CGameResort::Func167EF8() {
+    D_002A0D38->V10();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167F30);
+INCLUDE_ASM("asm/nonmatchings/CGameResort", Update__11CGameResort);
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9A60);
+INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9A80);
 
 CInterfRes *CInterfRes::Create() {
     CInterfRes *p = (CInterfRes *)operator new(0x14);

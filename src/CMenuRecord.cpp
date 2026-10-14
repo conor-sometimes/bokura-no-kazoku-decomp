@@ -1,11 +1,47 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-class CMenuRecord {
+#include "CMenuProcess.h"
+#include "CBgWork.h"
+class CMenuAsksavequitObj {
 public:
+    void Release194300();
+};
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuRecord.
+class CMenuRecord : public CMenuProcess {
+public:
+    CMenuRecord();
+    virtual ~CMenuRecord();
+    virtual s32 Update();
+    virtual s32 Draw();
     int GetMenuId();
 
-
+    CBgWork m_bg;             // 0x58
+    s32 m_unk64;              // 0x64
+    s32 m_unk68;              // 0x68
+    s32 m_unk6C;              // 0x6C
+    s32 m_unk70;              // 0x70
+    u8 pad74[0x8];
+    s32 m_unk7C;              // 0x7C
+    s32 m_unk80;              // 0x80
+    s32 m_unk84;              // 0x84
+    s32 m_unk88;              // 0x88
+    s32 m_unk8C;              // 0x8C
+    s32 m_unk90;              // 0x90
+    s32 m_unk94;              // 0x94
+    u8 pad98[0x4];
+    s32 m_unk9C;              // 0x9C
+    u8 padA0[0x90];
+    s32 m_unk130;             // 0x130
+    s32 m_unk134;             // 0x134
+    s32 m_unk138;             // 0x138
+    s32 m_unk13C;             // 0x13C
+    s32 m_unk140;             // 0x140
+    s32 m_unk144;             // 0x144
+    s32 m_unk148;             // 0x148
+    s32 m_unk14C;             // 0x14C
+    s32 m_unk150;             // 0x150
+    s32 m_unk154;             // 0x154
 };
 
 extern const char D_002DD7F8[];
@@ -72,9 +108,35 @@ public:
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00194490);
+CMenuRecord::CMenuRecord() {
+    m_unk64 = 0;
+    m_unk68 = 0;
+    m_unk6C = 0;
+    m_unk90 = -1;
+    m_unk130 = -1;
+    m_unk134 = -1;
+    m_unk138 = -1;
+    m_unk70 = 0;
+    m_unk7C = 0;
+    m_unk80 = 0;
+    m_unk84 = 0;
+    m_unk88 = 0;
+    m_unk8C = 0;
+    m_unk94 = 0;
+    m_unk9C = 0;
+    m_unk13C = 0;
+    m_unk140 = 0;
+    m_unk148 = 0;
+    m_unk14C = 0;
+    m_unk150 = 0;
+    m_unk144 = -1;
+    m_unk154 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00194528);
+CMenuRecord::~CMenuRecord() {
+    func_00245818(&m_bg, 1);
+    ((CMenuAsksavequitObj *)this)->Release194300();
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DBE80);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DBE90);
@@ -336,7 +398,7 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD630);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD648);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD660);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD668);
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_001945C0);
+INCLUDE_ASM("asm/nonmatchings/CMenuRecord", Update__11CMenuRecord);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD6B8);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD6D8);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD718);
@@ -350,9 +412,8 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD770);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD780);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD790);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD7A0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD7C8);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00196388);
+INCLUDE_ASM("asm/nonmatchings/CMenuRecord", Draw__11CMenuRecord);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00196938);
 

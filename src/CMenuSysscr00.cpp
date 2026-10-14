@@ -3,6 +3,7 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "CMenuProcess.h"
 
+class CStatusItem;
 class CUnk1A4298 {
 public:
     int Func1A4298();
@@ -15,9 +16,11 @@ public:
     virtual ~CMenuSysscr00();
     virtual s32 Update();
     virtual s32 Draw();
-    void Init1AE800();        // CMenuSave's constructor (that unit's name for it)
+    void Init1AE800();
+    CStatusItem *Item() { return (CStatusItem *)m_unk58; }        // CMenuSave's constructor (that unit's name for it)
 
     CUnk1A4298 *m_unk58;    // 0x58
+    f32 m_unk5C;              // 0x5C
 };
 
 void *operator new(unsigned int n);

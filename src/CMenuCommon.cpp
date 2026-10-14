@@ -1,6 +1,8 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
+
 class CStatusItem {
 public:
     void Func1A3628();
@@ -58,7 +60,6 @@ public:
     void Move1B6488(f32 x, f32 y);
 };
 extern CMenuMgrSub1B6418 *D_002A5538;
-void Func235DE0(const char *fmt, ...);
 extern char D_002DB9D0[];
 extern char D_002DB8F8[];
 extern "C" void func_001A3840(CStatusItem *p, s32 i);
@@ -66,10 +67,17 @@ extern "C" void func_001A3CF8(CStatusItem *p, f32 *x, f32 *y, s32 i);
 extern "C" void *func_0010BF88(void *p);
 extern "C" s32 func_001A4060(void *p, s32 v);
 extern "C" void func_00256260(void *p, s32 v);
-extern "C" void func_0018E750(void *p);
+// CMenuCommonSub18E638 is this class (its unit's text starts before 0x18E638).
+class CMenuPTJobMoney {
+public:
+    CMenuPTJobMoney() throw();
+
+    u8 pad0[0x80];
+};
 class CMenuCommonSub18E638 {
 public:
     static CMenuCommonSub18E638 *Create();
+    void SetRate(f32 v);
     void SetScale(f32 v);
 
     u8 pad0[0x6C];
@@ -141,16 +149,35 @@ extern "C" int func_00238158(void *p, s32 v);
 extern "C" int func_0018CEF0(void *p);
 extern "C" int func_0019B1F8(void *p);
 extern "C" int func_0018E1E0(void *p);
-int Func225088();
-int Func2250C0();
 void Func225240(s32 v);
-class CMenuCommonWin {
+extern "C" void func_00245818(void *p, s32 v);
+class CBgWork {
 public:
-    int Func18B7B0();
-    u8 pad0[0x64];
+    CBgWork();
+    ~CBgWork();
+
+    u8 pad0[0xC];
+};
+
+// 0x18AF18 (CMenuChildStatus.cpp's name for it) works on this class.
+class CMenuChildStatusObj {
+public:
+    void Release18AF18();
+};
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuCommon.
+class CMenuCommon : public CMenuProcess {
+public:
+    CMenuCommon();
+    virtual ~CMenuCommon();
+    virtual s32 Update();
+    virtual s32 Draw();
+
+    CBgWork m_bg;             // 0x58
     void *m_unk64;            // 0x64
     void *m_unk68;            // 0x68
     void *m_unk6C;            // 0x6C
+    s32 m_unk70;              // 0x70
 };
 
 extern void *D_002A5408;
@@ -222,15 +249,31 @@ public:
 void *Func245D00(s32 size);
 extern "C" void func_0018B880(void *p, char *buf, s32 v, s32 k);
 extern "C" int func_001869C8(CMenuChildStatusRec *r, char *buf);
+
+inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018AF98);
+CMenuCommon::CMenuCommon() {
+    m_unk64 = 0;
+    m_unk70 = 0;
+    m_unk68 = 0;
+    m_unk6C = 0;
+    m_unk4C = -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018AFE8);
+CMenuCommon::~CMenuCommon() {
+    func_00245818(&m_bg, 1);
+    ((CMenuChildStatusObj *)this)->Release18AF18();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018B080);
+INCLUDE_RODATA("asm/nonmatchings/CMenuCommon", D_002DB558);
+INCLUDE_RODATA("asm/nonmatchings/CMenuCommon", D_002DB560);
+INCLUDE_RODATA("asm/nonmatchings/CMenuCommon", D_002DB568);
+INCLUDE_RODATA("asm/nonmatchings/CMenuCommon", D_002DB570);
+INCLUDE_RODATA("asm/nonmatchings/CMenuCommon", D_002DB590);
+INCLUDE_ASM("asm/nonmatchings/CMenuCommon", Update__11CMenuCommon);
 
-int CMenuCommonWin::Func18B7B0() {
+s32 CMenuCommon::Draw() {
     u8 *p = func_00237570(0x40);
     func_00237A88(p, 4);
     func_00238158(func_00237C30(p + 0x30), 1);
@@ -508,11 +551,15 @@ INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E100);
 INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E1E0);
 
 CMenuCommonSub18E638 *CMenuCommonSub18E638::Create() {
-    CMenuCommonSub18E638 *p = (CMenuCommonSub18E638 *)operator new(0x80);
-    func_0018E750(p);
-    return p;
+    return (CMenuCommonSub18E638 *)new CMenuPTJobMoney;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E670);
+void CMenuCommonSub18E638::SetRate(f32 v) {
+    f32 r = Clamp01(v);
+    m_unk74 = (s32)(m_unk6C * r);
+    m_unk78 = (s32)(f32)m_unk74 + D_002A5358->Func1091B0(0x24D);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E700);
+void CMenuCommonSub18E638::SetScale(f32 v) {
+    m_unk7C = 2.0f - Clamp01(v);
+}

@@ -1,6 +1,7 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CProcess.h"
 extern "C" void func_001B9B30(void *p);
 struct CMiniGame4Data {
     u8 pad0[0x40];
@@ -53,9 +54,73 @@ public:
     f32 m_unk1508;            // 0x1508
 };
 
-extern "C" void *func_0024F2E8(s32 size);
 extern "C" void func_0024F5C0(void *a, void *b, s32 c);
-extern "C" void func_001D4D10(void *p, s32 a, s32 b);
+
+int Func251B88();
+extern char D_002E1438[];
+// Member classes of CMiniGame4 (library / CLayoutRes code, not named yet): constructors are
+// called explicitly.
+extern "C" void func_001B9D40(void *p);
+extern "C" void func_0025C230(void *p);
+
+// Same layout as the state block at the start of CMenuProcess.
+class CMiniGameTimer {
+public:
+    CMiniGameTimer() {
+        m_unk4 = -1;
+        m_unk2 = 0;
+        m_unk0 = 0;
+    }
+
+    s16 m_unk0;               // 0x0
+    s16 m_unk2;               // 0x2
+    s32 m_unk4;               // 0x4
+};
+
+// The mini game task (vtable 0x2C21A8, still asm; ~CMiniGame4 stays INCLUDE_ASM).
+// CMiniGame4ResObj above is the same object.
+class CMiniGame4 : public CProcess {
+public:
+    CMiniGame4(s32 a, s32 b);
+    virtual ~CMiniGame4();
+    virtual void Update();
+    virtual void Draw();
+
+    u8 pad18[0x14];
+    s32 m_unk2C;              // 0x2C
+    s32 m_unk30;              // 0x30
+    CMiniGameTimer m_timer;   // 0x34
+    u8 pad3C[0x44];
+    u8 m_layout[13][0x170];   // 0x80
+    CRand m_rand;             // 0x1330
+    u8 m_unk1334[0xB0];       // 0x1334
+    s32 m_unk13E4;            // 0x13E4
+    u8 pad13E8[0x4];
+    s32 m_must[2];            // 0x13EC
+    s32 m_unk13F4;            // 0x13F4
+    u8 pad13F8[0x38];
+    s32 m_unk1430;            // 0x1430
+    s32 m_unk1434;            // 0x1434
+    s32 m_unk1438;            // 0x1438
+    s32 m_unk143C;            // 0x143C
+    s32 m_unk1440;            // 0x1440
+    s32 m_unk1444;            // 0x1444
+    s32 m_unk1448;            // 0x1448
+    u8 pad144C[0x50];
+    s32 m_unk149C;            // 0x149C
+    s32 m_unk14A0;            // 0x14A0
+    u8 pad14A4[0x8];
+    s32 m_unk14AC;            // 0x14AC
+    s32 m_unk14B0;            // 0x14B0
+    s32 m_unk14B4;            // 0x14B4
+    u8 pad14B8[0x4C];
+    s32 m_unk1504;            // 0x1504
+    s32 m_unk1508;            // 0x1508
+    s32 m_unk150C;            // 0x150C
+    s32 m_unk1510;            // 0x1510
+    s32 m_unk1514;            // 0x1514
+    u8 pad1518[0x8];
+};
 
 extern char D_002E14A0[];
 extern "C" const char *func_0024AF10(const char *s, const char *key);
@@ -82,14 +147,13 @@ void CMiniGame4ResObj::Release1D4C68() {
 }
 
 void Func1D4CA0(void *a, s32 b, s32 c) {
-    void *p = func_0024F2E8(0x1520);
-    func_001D4D10(p, b, c);
+    CMiniGame4 *p = new CMiniGame4(b, c);
     func_0024F5C0(a, p, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D4D10);
+INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", __10CMiniGame4ii);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D4E98);
+INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", _$_10CMiniGame4);
 
 int CMiniGame4ResObj::ParseCfg1D4FA8() {
     char key[256];

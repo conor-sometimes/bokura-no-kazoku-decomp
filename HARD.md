@@ -91,3 +91,36 @@ vptr functions are writable now; 103 key methods wait for their unit's conversio
 - **Jump tables in unsplit .rodata**: 0x10BAC8, 0x11B268, 0x10E8D0, 0x14F760, 0x14F550, 0x14F830 (the data split may unblock these).
 - **VU0 macro ops**: 0x1AE3F8, 0x18E100, 0x1B6570.
 - **0x198430 / 0x1B4E70**: still `beql`, DIFF 1, 6 more variants tried.
+
+## Vtables round leftovers (goal 6a, 2026-10-14)
+
+Exact notes for most are in the source next to the INCLUDE_ASM line.
+
+Cross-cutting:
+- **Key-method dtors of merged units** (a unit shares an object with another, so it can't go to
+  level 3): CMapEffObj and its work dtors, IMapResMgr, IFadeMgr, CSnapMgr, CCharaResObj,
+  CEnvResObj, 0x16D548, 0x143A90/0x144808, 0x10CF40, 0x168DF0. Blocked on task 48cfd5db.
+- **Vtable pieces holding a second class's vtable**: CMapSndRes (TArray template vtable),
+  CMiniGame1/4 (with _vt$CMiniGameNRes). CMiniGame2/3/5 also need CMiniGameNRes::Load first.
+- **Inline template / CListTag code would emit linkonce vtables**: CSceneSet, CMapAttr, CMapDBExpr
+  ctors and dtors, CSvmWork dtor, CCharaObj 0x112FE0/0x113090.
+- **Layout unresolved**: CStatusWin (methods write this+0x58, which the dtor 0x19D0A8 treats as the
+  vptr); CLayoutObj (vptr 0x164 with fields at 0x170+). Try tools/bk/structs.py first.
+- **Branch-likely / delay slots**: 0x1863F0 (bnel vs bnez), 0x185868, 0x163DD0 (beqz vs beqzl),
+  0x132F40/0x1355E0 (retail leaves the virtual path's `b` slot empty), 0x16D2D8 (both jal slots
+  empty), 0x1061F0 CDemoMain ctor (member-ctor slots empty from the third member: that unit may
+  have been built with exceptions, it has 0x7C bytes of .gcc_except_table).
+- **Operand order of addu**: 0x14CAF0, 0x172A60, 0x199108, 0x108FF0 (DIFF 1-3).
+
+Per lane:
+- Lane 1: 0x10DD38 (branch layout), 0x10DFD0 (10-argument call), 0x1A01C8 and 0x146B58 (DIFF 15).
+- Lane 2: 0x1AB0B8/0x1AE160 menu Update state machines (DIFF 53: retail cross-jumps the shared
+  "flag = 1; state = next" tail); 0x13D910 CEventMesRes ctor and 0x12D1C8 (m0 stored before the
+  vptr); 0x1D4D10 CMiniGame4 ctor (retail keeps a 2-iteration loop); 0x1866D0 (mul.s order);
+  0x17A828 (epilogue ld order).
+- Lane 3: 0x1447A8 CCurFlag ctor (lui scheduling), 0x15F0D8 (regalloc), 0x15E860 (branch vs
+  movz), 0x15A090 (divide by 3), 0x15E2A8, 0x16D870/0x16D660 (this+4 / this+0xE0 kept in a
+  register), 0x1B45E8 (cross-jump), 0x13E800 (DIFF 2 after perm), 0x13EC28 (matches but its jump
+  table lands 8 bytes late in .rodata), 0x122440/0x1215B0 (bbox loop), 0x1AE528 (done loop
+  threaded away), CChrBodyWin and CMenuSysscr27 (class decls need restructuring).
+- Solved this round from older entries: the 0..1 clamps 0x18E700, 0x18E670, 0x18F4D8, 0x18F448.

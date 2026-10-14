@@ -119,7 +119,7 @@ def port(path):
         s=pat.sub(lambda m: body,s)
         if r[1]!=old: syms.append(f'{r[1]} = {addr:#010x}; // type:func')
     # undefined references: callees named after their address (FuncXXXXXX) or //@sym NAME ADDR
-    known=open(R+'/config/symbol_addrs.txt').read()
+    known=open(R+'/config/symbol_addrs.txt').read()+open(R+'/config/aliases.ld').read()+open(R+'/config/vtables.txt').read()
     extra=dict((m.group(1),int(m.group(2),16)) for m in re.finditer(r'^//@sym (\S+) (0x[0-9A-Fa-f]+)',open(path).read(),re.M))
     und=read_obj(W+'/t.o')[3]
     for u in und:

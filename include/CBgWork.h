@@ -14,4 +14,7 @@ public:
     s32 m_unk4;               // 0x4
 };
 
+// Sets the background mode (library, 0x245818).
+extern "C" int func_00245818(void *p, s32 v);
+
 #endif

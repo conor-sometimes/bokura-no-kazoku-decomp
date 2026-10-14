@@ -29,12 +29,15 @@ public:
     void Func19A8C0();
     void Start();
     void Func19A990();
+    void Select19A858(u32 k);
+    virtual void Refresh(u32 k);
 
     u8 pad0[0x48];
     CStatusItem* m_item;      // 0x48
     s32 m_state;              // 0x4C
-    u8 pad50[0x4];
+    u32 m_unk50;              // 0x50
     s32 m_unk54;              // 0x54
+    // vptr 0x58
 };
 
 class CStatusBaseSub19AE68 {
@@ -148,11 +151,22 @@ int IsBodyAlphaZero();
 inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
 int LerpInt(int a, int b, f32 t);
 int StepDigit(int *out, int *p, int base, int range, f32 t);
+
+extern char D_002DDA38[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A830);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A858);
+void CStatusBase::Select19A858(u32 k) {
+    if (k >= 6) {
+        Func235DE0(D_002DDA38, k);
+        return;
+    }
+    if (m_unk50 != k) {
+        m_unk50 = k;
+        Refresh(k);
+    }
+}
 
 void CStatusBase::Func19A8C0() {
     if (m_item) {

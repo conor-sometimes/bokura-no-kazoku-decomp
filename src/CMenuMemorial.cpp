@@ -27,6 +27,32 @@ public:
 
     u8 pad0[0x7DC0];
 };
+
+class CMenuMgrSub1B6BA8 {
+public:
+    int Check1B7428(u32 i);
+};
+extern CMenuMgrSub1B6BA8 *D_002A55AC;
+class CMenuTutorSelectedSub182108 {
+public:
+    void GetCursorPos(f32 *x, f32 *y);
+};
+class CMenuMgrSub1B6418 {
+public:
+    void Move1B6488(f32 x, f32 y);
+};
+extern CMenuMgrSub1B6418 *D_002A5538;
+extern "C" void func_001829E8(void *p, s32 v);
+// CMenuLoadMemorial's unit starts here (its text starts before its first vtable function).
+class CMenuLoadMemorialPart {
+public:
+    void Func176AE0();
+
+    u8 pad0[0x64];
+    s32 m_unk64;              // 0x64
+    u8 pad68[0x58];
+    CMenuTutorSelectedSub182108 m_unkC0; // 0xC0
+};
 // @decl-end
 
 CMenuMemorial::CMenuMemorial() {
@@ -48,6 +74,19 @@ CMenuLoadMemorial *CreateCMenuLoadMemorial() {
     return new CMenuLoadMemorial;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMemorial", func_00176AE0);
+void CMenuLoadMemorialPart::Func176AE0() {
+    f32 x, y;
+    func_001829E8(&m_unkC0, m_unk64);
+    m_unkC0.GetCursorPos(&x, &y);
+    D_002A5538->Move1B6488(x, y);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMemorial", func_00176B38);
+int HasMemorialSave() {
+    s32 i;
+    for (i = 0; i < 30; i++) {
+        if (D_002A55AC->Check1B7428(i) == 1) {
+            return 1;
+        }
+    }
+    return 0;
+}

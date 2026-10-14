@@ -25,6 +25,26 @@ public:
 
     u8 pad0[0x78];
 };
+
+class CFlagWork {
+public:
+    int Func1091B0(s32 id);
+};
+extern CFlagWork *D_002A5358;
+inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+// CMenuExGetMoney's unit starts here (its text starts before its first vtable function).
+class CMenuExGetMoneyPart {
+public:
+    void SetRate(f32 v);
+    void SetScale(f32 v);
+
+    u8 pad0[0x64];
+    s32 m_unk64;              // 0x64
+    u8 pad68[0x4];
+    s32 m_unk6C;              // 0x6C
+    s32 m_unk70;              // 0x70
+    f32 m_unk74;              // 0x74
+};
 // @decl-end
 
 CMenuNews::CMenuNews() {
@@ -46,6 +66,12 @@ CMenuExGetMoney *CreateCMenuExGetMoney() {
     return new CMenuExGetMoney;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_00174058);
+void CMenuExGetMoneyPart::SetRate(f32 v) {
+    f32 r = Clamp01(v);
+    m_unk6C = (s32)(m_unk64 * r);
+    m_unk70 = (s32)(f32)m_unk6C + D_002A5358->Func1091B0(0x24D);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuNews", func_001740E8);
+void CMenuExGetMoneyPart::SetScale(f32 v) {
+    m_unk74 = 2.0f - Clamp01(v);
+}

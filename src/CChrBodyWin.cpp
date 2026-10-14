@@ -321,7 +321,7 @@ INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188F30);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189018);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189270);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", _$_12CChrBodyData);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189348);
 

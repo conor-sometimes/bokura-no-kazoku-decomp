@@ -12,7 +12,7 @@ class CTitleMain : public CProcess {
 public:
     CTitleMain();
 
-    u8 pad2C[0x7A4];
+    u8 pad18[0x7B8];
 };
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CLogoMain.
@@ -20,11 +20,12 @@ class CLogoMain : public CProcess {
 public:
     CLogoMain();
     virtual ~CLogoMain();
-    virtual void VFunc3();
-    virtual void VFunc5();
-    virtual void VFunc7();
+    virtual void Update();
+    virtual void Draw();
+    virtual s32 Func7();
     virtual void ReleaseTextures();
 
+    u8 pad18[0x14];
     CMemTex m_tex2C;          // 0x2C
     CMemTex m_tex58;          // 0x58
     CStateMachine m_sm;       // 0x84
@@ -43,16 +44,16 @@ CLogoMain::CLogoMain() {
 CLogoMain::~CLogoMain() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLogoMain", VFunc7__9CLogoMain);
+INCLUDE_ASM("asm/nonmatchings/CLogoMain", Func7__9CLogoMain);
 
 void CLogoMain::ReleaseTextures() {
     m_tex2C.Func2546F0();
     m_tex58.Func2546F0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLogoMain", VFunc3__9CLogoMain);
+INCLUDE_ASM("asm/nonmatchings/CLogoMain", Update__9CLogoMain);
 
-INCLUDE_ASM("asm/nonmatchings/CLogoMain", VFunc5__9CLogoMain);
+INCLUDE_ASM("asm/nonmatchings/CLogoMain", Draw__9CLogoMain);
 
 void AddTitleMain(CTaskList24F5C0 *list) {
     CTitleMain *p = new CTitleMain;

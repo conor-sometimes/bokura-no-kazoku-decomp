@@ -1,34 +1,48 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
+
 extern "C" void func_001AE488(void *p);
 class CMenuSysscr00 {
 public:
     static CMenuSysscr00 *Create();
 };
 
-void Func235DE0(const char *fmt, ...);
-void Func225088();
-int Func2250C0();
-extern char D_002DF910[];
 extern "C" int func_001A7658(void *p);
-class CMenuSysscr01 {
+class CMenuSub1A7658 {
 public:
-    int Func1AE378();
-    u8 pad0[0x58];
-    void *m_unk58;            // 0x58
+    u8 pad0[0x5C];
+};
+
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuSysscr01.
+class CMenuSysscr01 : public CMenuProcess {
+public:
+    CMenuSysscr01();
+    virtual ~CMenuSysscr01();
+    virtual s32 Update();
+    virtual s32 Draw();
+
+    CMenuSub1A7658 *m_unk58;  // 0x58
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr01", func_001AE0A8);
+CMenuSysscr01::CMenuSysscr01() {
+    m_unk58 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr01", func_001AE0E0);
+CMenuSysscr01::~CMenuSysscr01() {
+    if (m_unk58) {
+        delete m_unk58;
+        m_unk58 = 0;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr01", func_001AE160);
+INCLUDE_ASM("asm/nonmatchings/CMenuSysscr01", Update__13CMenuSysscr01);
 
-int CMenuSysscr01::Func1AE378() {
+s32 CMenuSysscr01::Draw() {
     if (m_unk58 == 0) {
-        Func235DE0(D_002DF910);
+        Func235DE0("*** SelectMenu is NULL!\n");
         Func225088();
         return Func2250C0();
     }

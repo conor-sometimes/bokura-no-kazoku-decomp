@@ -1,6 +1,8 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CMenuProcess.h"
+
 class CMenuAsksavequitSub193E18 {
 public:
     void ClearUnk10();
@@ -78,8 +80,6 @@ extern "C" void func_00237A88(void *p, s32 v);
 extern "C" void *func_00237C30(void *p);
 extern "C" int func_00238158(void *p, s32 v);
 extern "C" int func_001B66E8(void *p);
-int Func225088();
-int Func2250C0();
 void Func225240(s32 v);
 class CMenuAsksavequitWin {
 public:
@@ -102,11 +102,16 @@ class CMenuRecordWin {
 public:
     void Func1A39A8(f32 *v, s32 *n, s32 k);
 };
-class CMenuAsksavequitWin2 {
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuAsksavequit.
+class CMenuAsksavequit : public CMenuProcess {
 public:
-    void Func193180();
-    u8 pad0[0x58];
+    CMenuAsksavequit();
+    virtual ~CMenuAsksavequit();
+    virtual s32 Update();
+    virtual s32 Draw();
+
     CUnk1A4298 *m_unk58;      // 0x58
+    s32 m_unk5C;              // 0x5C
 };
 
 extern char D_002DD5F0[];
@@ -123,7 +128,6 @@ public:
     int Func247B00();
 };
 extern "C" CMiniGame6Obj *func_002460C8();
-void Func235DE0(const char *fmt, ...);
 class CMenuAsksavequitImg {
 public:
     int Load193E28(const char *name);
@@ -138,21 +142,59 @@ public:
     s32 m_unk2C;              // 0x2C
     s32 m_unk30;              // 0x30
 };
+
+// Sound player (global D_002A5468); slot 14 plays a system sound.
+class CSePlayer {
+public:
+    virtual ~CSePlayer();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual void F7();
+    virtual void F8();
+    virtual void F9();
+    virtual void F10();
+    virtual void F11();
+    virtual void F12();
+    virtual void F13();
+    virtual void Play(s32 id);
+};
+extern CSePlayer *D_002A5468;
+// Cursor of a selection list (the class is in the next unit; not identified yet).
+class CMenuCursorList {
+public:
+    void Up();
+    void Down();
+
+    u8 pad0[0x8C];
+    s32 m_cur;                // 0x8C
+    s32 m_prev;               // 0x90
+    u8 pad94[0x8];
+    s32 m_num;                // 0x9C
+    u8 padA0[0xA8];
+    s32 m_mute;               // 0x148
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", Init192D38__12CMenuAsksave);
+CMenuAsksavequit::CMenuAsksavequit() {
+    m_unk58 = 0;
+    m_unk5C = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00192D70);
+CMenuAsksavequit::~CMenuAsksavequit() {
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00192DD8);
+INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", Update__16CMenuAsksavequit);
 
-void CMenuAsksavequitWin2::Func193180() {
+s32 CMenuAsksavequit::Draw() {
     f32 v[2];
     if (m_unk58 == 0) {
         Func225088();
         Func2250C0();
-        return;
-    }
+    } else {
     u8 *p = func_00237570(0x40);
     func_00237A88(p, 4);
     CUnk237E90 *q = (CUnk237E90 *)(p + 0x20);
@@ -167,11 +209,12 @@ void CMenuAsksavequitWin2::Func193180() {
     Func225088();
     Func225240((s32)p);
     Func2250C0();
+    }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_001932B8);
+INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", __19CMenuAsksavequitWini);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00193358);
+INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", Func193358__19CMenuAsksavequitWin);
 
 int CMenuAsksavequitWin::Func193D68() {
     u8 *p = func_00237570(0x40);
@@ -261,6 +304,30 @@ void CMenuAsksavequitObj::Release194300() {
     D_002A4308->Func188BA8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00194390);
+void CMenuCursorList::Up() {
+    if (m_num == 1) {
+        return;
+    }
+    m_prev = m_cur;
+    m_cur = m_cur - 1;
+    if (m_cur < 0) {
+        m_cur = m_num - 1;
+    }
+    if (m_prev != m_cur && !m_mute) {
+        D_002A5468->Play(0x17);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00194410);
+void CMenuCursorList::Down() {
+    if (m_num == 1) {
+        return;
+    }
+    m_prev = m_cur;
+    m_cur = m_cur + 1;
+    if (m_num - 1 < m_cur) {
+        m_cur = 0;
+    }
+    if (m_prev != m_cur && !m_mute) {
+        D_002A5468->Play(0x17);
+    }
+}

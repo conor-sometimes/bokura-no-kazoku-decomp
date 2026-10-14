@@ -172,26 +172,26 @@ segments:
       - {start: 0x1C0A40, type: .data, name: CBootMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0A98, type: .data, name: CLogoMain, linker_section: .gnu.linkonce.d.*}
       - [0x1C0AF0, data, vt_CTitleMain]
-      - [0x1C0B48, data, vt_CDemoMain]
-      - [0x1C0BA0, data, vt_CEndingMain]
-      - [0x1C0BF8, data, vt_CFlagWork]
+      - {start: 0x1C0B48, type: .data, name: CDemoMain, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C0BA0, type: .data, name: CEndingMain, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C0BF8, type: .data, name: CFlagWork, linker_section: .gnu.linkonce.d.*}
       - [0x1C0C20, data, vt_CPadMgr]   # also IPadMgr
       - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr
       - [0x1C0E10, data, vt_CSnapMgr]   # also ISnapMgr
       - [0x1C0F10, data, vt_CEFontWork]
       - [0x1C0F30, data, vt_CTexCacheMgr]   # also CList
       - {start: 0x1C0FD8, type: .data, name: CFaceObj, linker_section: .gnu.linkonce.d.*}
-      - [0x1C0FF0, data, vt_CFaceRes]
-      - [0x1C1008, data, vt_CDiffMotionObj]
-      - [0x1C1020, data, vt_CModelRes]
-      - [0x1C1038, data, vt_CMotionRes]
+      - {start: 0x1C0FF0, type: .data, name: CFaceRes, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C1008, type: .data, name: CDiffMotionObj, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C1020, type: .data, name: CModelRes, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C1038, type: .data, name: CMotionRes, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C1050, type: .data, name: CSwingBoneObj, linker_section: .gnu.linkonce.d.*}
-      - [0x1C1068, data, vt_CSwingBoneRes]
-      - [0x1C1080, data, vt_CCharaRes]
+      - {start: 0x1C1068, type: .data, name: CSwingBoneRes, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C1080, type: .data, name: CCharaRes, linker_section: .gnu.linkonce.d.*}
       - [0x1C1098, data, vt_CCharaObj]
       - [0x1C10B0, data, vt_CModelAccResMgr]
       - [0x1C10F8, data, vt_CMapAttr]
-      - [0x1C1140, data, vt_CMapRes]
+      - {start: 0x1C1140, type: .data, name: CMapRes, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C1158, type: .data, name: CMapObj, linker_section: .gnu.linkonce.d.*}
       - [0x1C1170, data, vt_CMapEffRes]
       - [0x1C11A0, data, vt_CMapEffObjRes]   # also CMapEffObj
@@ -207,17 +207,17 @@ segments:
       - {start: 0x1C16F0, type: .data, name: CEventRes, linker_section: .gnu.linkonce.d.*}
       - [0x1C1708, data, vt_CEventObj]
       - [0x1C1738, data, vt_CEventMesRes]
-      - [0x1C17C0, data, vt_CMovieObj]
+      - {start: 0x1C17C0, type: .data, name: CMovieObj, linker_section: .gnu.linkonce.d.*}
       - [0x1C17D8, data, vt_CUserFlagMgr]
       - [0x1C1900, data, vt_CSysFlag]   # also ISysFlag
       - [0x1C1C88, data, vt_CResNameMgr]
       - [0x1C1CC8, data, vt_CGameDBMgr]
       - [0x1C1F80, data, vt_CGameMain]
-      - [0x1C1FD8, data, vt_CGameSeasonPrev]
-      - [0x1C2030, data, vt_CGameSeasonPost]
+      - {start: 0x1C1FD8, type: .data, name: CGameSeasonPrev, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2030, type: .data, name: CGameSeasonPost, linker_section: .gnu.linkonce.d.*}
       - [0x1C2088, data, vt_CGameSchedule]
       - [0x1C2110, data, vt_CGameEventObj]
-      - [0x1C2128, data, vt_CGameResort]
+      - {start: 0x1C2128, type: .data, name: CGameResort, linker_section: .gnu.linkonce.d.*}
       - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr
       - [0x1C2398, data, vt_CNameDBMgr]
       - [0x1C23D8, data, vt_CPhotoEventObj]   # also IAlbumMgr
@@ -229,23 +229,23 @@ segments:
       - {start: 0x1C26E0, type: .data, name: CMenuConfig, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2708, type: .data, name: CMenuNosave, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2730, type: .data, name: CMenuMemorial, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2758, data, vt_CMenuLoadMemorial]
-      - [0x1C2780, data, vt_CMenuTutorSelect]
+      - {start: 0x1C2758, type: .data, name: CMenuLoadMemorial, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2780, type: .data, name: CMenuTutorSelect, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C27A8, type: .data, name: CMenuTutorSelected, linker_section: .gnu.linkonce.d.*}
-      - [0x1C27D0, data, vt_CMenuExam]
+      - {start: 0x1C27D0, type: .data, name: CMenuExam, linker_section: .gnu.linkonce.d.*}
       - [0x1C27F8, data, vt_CChrSchoolWin]
       - [0x1C2840, data, vt_CChrBodyWin]
       - {start: 0x1C2888, type: .data, name: CMenuChildStatus, linker_section: .gnu.linkonce.d.*}
-      - [0x1C28B0, data, vt_CMenuCommon]
-      - [0x1C28D8, data, vt_CMenuPTJobMoney]
-      - [0x1C2900, data, vt_CMenuGetMoney]
+      - {start: 0x1C28B0, type: .data, name: CMenuCommon, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C28D8, type: .data, name: CMenuPTJobMoney, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2900, type: .data, name: CMenuGetMoney, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2928, type: .data, name: CMenuReviewResult, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2950, data, vt_CMenuReviewSelect]
+      - {start: 0x1C2950, type: .data, name: CMenuReviewSelect, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2978, type: .data, name: CMenuReviewStart, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C29A0, type: .data, name: CMenuContinue, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C29C8, type: .data, name: CMenuAsksave, linker_section: .gnu.linkonce.d.*}
-      - [0x1C29F0, data, vt_CMenuAsksavequit]
-      - [0x1C2A18, data, vt_CMenuRecord]
+      - {start: 0x1C29F0, type: .data, name: CMenuAsksavequit, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2A18, type: .data, name: CMenuRecord, linker_section: .gnu.linkonce.d.*}
       - [0x1C2A40, data, vt_CCommandBase]
       - [0x1C2A60, data, vt_CCommandSelect]
       - [0x1C2A80, data, vt_CCommandIncDec]   # also CStatusBase
@@ -257,26 +257,26 @@ segments:
       - {start: 0x1C2BF8, type: .data, name: CMenuSysscr26, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2C20, type: .data, name: CMenuSysscr25, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2C48, type: .data, name: CMenuSysscr24, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2C70, data, vt_CMenuSysscr23]
+      - {start: 0x1C2C70, type: .data, name: CMenuSysscr23, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2C98, type: .data, name: CMenuSysscr22, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2CC0, type: .data, name: CMenuSysscr11, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2CE8, type: .data, name: CMenuSysscr10, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2D10, type: .data, name: CMenuSysscr09, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2D38, type: .data, name: CMenuSysscr08, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2D60, data, vt_CMenuSysscr07]
+      - {start: 0x1C2D60, type: .data, name: CMenuSysscr07, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2D88, type: .data, name: CMenuSysscr06, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2DB0, type: .data, name: CMenuSysscr05, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2DD8, type: .data, name: CMenuSysscr04, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2E00, type: .data, name: CMenuSysscr03, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2E28, data, vt_CMenuSysscr02]
-      - [0x1C2E50, data, vt_CMenuSysscr01]
+      - {start: 0x1C2E28, type: .data, name: CMenuSysscr02, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2E50, type: .data, name: CMenuSysscr01, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2E78, type: .data, name: CMenuSysscr00, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2EA0, data, vt_CMenuSave]
-      - [0x1C2EC8, data, vt_CMenuLoad]
+      - {start: 0x1C2EA0, type: .data, name: CMenuSave, linker_section: .gnu.linkonce.d.*}
+      - {start: 0x1C2EC8, type: .data, name: CMenuLoad, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2EF0, type: .data, name: CMenuBoot, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2F18, type: .data, name: CMenuProcess, linker_section: .gnu.linkonce.d.*}
       - [0x1C2F40, data, vt_CMenuMgr]
-      - [0x1C2FF8, data, vt_CLayoutRes]
+      - {start: 0x1C2FF8, type: .data, name: CLayoutRes, linker_section: .gnu.linkonce.d.*}
       - [0x1C3010, data, vt_CLayoutObj]
       - [0x1C3028, data, vt_CMiniGame1Res]
       - [0x1C30A8, data, vt_CMiniGame2Res]
@@ -300,13 +300,13 @@ segments:
       - [0x1D3008, .rodata, CEFontWork]
       - [0x1D3038, rodata, ro_CTexCacheMgr]   # also CList
       - [0x1D3DB0, .rodata, CFaceObj]
-      - [0x1D3DC0, rodata, ro_CFaceRes]
+      - [0x1D3DC0, .rodata, CFaceRes]
       - [0x1D4030, .rodata, CDiffMotionObj]
       - [0x1D40A0, .rodata, CModelRes]
-      - [0x1D4250, rodata, ro_CMotionRes]
+      - [0x1D4250, .rodata, CMotionRes]
       - [0x1D4348, .rodata, CSwingBoneObj]
       - [0x1D43A0, .rodata, CSwingBoneRes]
-      - [0x1D4400, rodata, ro_CCharaRes]
+      - [0x1D4400, .rodata, CCharaRes]
       - [0x1D4588, .rodata, CCharaObj]
       - [0x1D4780, .rodata, CModelAccResMgr]
       - [0x1D4820, rodata, ro_CMapAttr]
@@ -336,7 +336,7 @@ segments:
       - [0x1D9EA8, .rodata, CGameSeasonPost]
       - [0x1D9F20, .rodata, CGameSchedule]
       - [0x1DA590, .rodata, CGameEventObj]
-      - [0x1DA8F8, rodata, ro_CGameResort]
+      - [0x1DA8F8, .rodata, CGameResort]
       - [0x1DAAD0, rodata, ro_CInterfRes]   # also IInterfMgr
       - [0x1DAC30, rodata, ro_CNameDBMgr]
       - [0x1DAD10, rodata, ro_CPhotoEventObj]   # also IAlbumMgr
@@ -355,15 +355,15 @@ segments:
       - [0x1DBD98, rodata, ro_CChrSchoolWin]
       - [0x1DBFD0, .rodata, CChrBodyWin]
       - [0x1DC028, .rodata, CMenuChildStatus]
-      - [0x1DC558, rodata, ro_CMenuCommon]
-      - [0x1DC5E0, rodata, ro_CMenuPTJobMoney]
-      - [0x1DCAC8, rodata, ro_CMenuGetMoney]
+      - [0x1DC558, .rodata, CMenuCommon]
+      - [0x1DC5E0, .rodata, CMenuPTJobMoney]
+      - [0x1DCAC8, .rodata, CMenuGetMoney]
       - [0x1DCB28, .rodata, CMenuReviewResult]
-      - [0x1DCBC0, rodata, ro_CMenuReviewSelect]
+      - [0x1DCBC0, .rodata, CMenuReviewSelect]
       - [0x1DCC80, .rodata, CMenuReviewStart]
       - [0x1DCD38, .rodata, CMenuContinue]
       - [0x1DCDB8, .rodata, CMenuAsksave]
-      - [0x1DCE38, rodata, ro_CMenuAsksavequit]
+      - [0x1DCE38, .rodata, CMenuAsksavequit]
       - [0x1DCE80, .rodata, CMenuRecord]
       - [0x1DE7D8, rodata, ro_CCommandBase]
       - [0x1DE928, .rodata, CCommandSelect]
@@ -376,22 +376,22 @@ segments:
       - [0x1E0208, .rodata, CMenuSysscr26]
       - [0x1E02E0, .rodata, CMenuSysscr25]
       - [0x1E0368, .rodata, CMenuSysscr24]
-      - [0x1E03A8, rodata, ro_CMenuSysscr23]
+      - [0x1E03A8, .rodata, CMenuSysscr23]
       - [0x1E03F8, .rodata, CMenuSysscr22]
       - [0x1E0478, .rodata, CMenuSysscr11]
       - [0x1E04F8, .rodata, CMenuSysscr10]
       - [0x1E0538, .rodata, CMenuSysscr09]
       - [0x1E0588, .rodata, CMenuSysscr08]
-      - [0x1E0608, rodata, ro_CMenuSysscr07]
+      - [0x1E0608, .rodata, CMenuSysscr07]
       - [0x1E0688, .rodata, CMenuSysscr06]
       - [0x1E06C0, .rodata, CMenuSysscr05]
       - [0x1E0710, .rodata, CMenuSysscr04]
       - [0x1E0790, .rodata, CMenuSysscr03]
-      - [0x1E0810, rodata, ro_CMenuSysscr02]
-      - [0x1E08C0, rodata, ro_CMenuSysscr01]
+      - [0x1E0810, .rodata, CMenuSysscr02]
+      - [0x1E08C0, .rodata, CMenuSysscr01]
       - [0x1E0940, .rodata, CMenuSysscr00]
-      - [0x1E0980, rodata, ro_CMenuSave]
-      - [0x1E0B70, rodata, ro_CMenuLoad]
+      - [0x1E0980, .rodata, CMenuSave]
+      - [0x1E0B70, .rodata, CMenuLoad]
       - [0x1E0CB8, .rodata, CMenuBoot]
       - [0x1E0DA0, .rodata, CMenuProcess]
       - [0x1E0DB0, rodata, ro_CMenuMgr]

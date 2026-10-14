@@ -58,8 +58,18 @@ public:
     u8 pad4[0x18];
 };
 
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CFlagWork. Slots 1
+// and 2 are empty inline notifications (0x2932F0, 0x2932F8; names in aliases.ld).
 class CFlagWork {
 public:
+    CFlagWork(s32 a, s32 b);
+    virtual ~CFlagWork();
+    virtual void Notify1(s32 id);
+    virtual void Notify2(s32 id);
+    void Func108448(s32 a, s32 b);
+    s32 Load(u8 *buf);
+    void SetStr(s32 id, const char *s);
+    void Func108FF0(s32 id, s32 v);
     void Func109738();
     void CallFunc109738();
     void Func10ACF0();
@@ -80,6 +90,7 @@ public:
     s32 m_numDefs;            // 0x10
     u8 *m_data;               // 0x14
     s32 m_dataSize;           // 0x18
+    // vptr 0x1C
 };
 
 s32 MaxRangeHi(CFlagRange *r, s32 n);
@@ -117,11 +128,32 @@ void Func1EB838(void *p);
 //@sym memcpy 0x289DFC
 //@sym __nw__5CTaskUi 0x24F2E8
 //@sym __7CPadMgr 0x10AEB0
+
+extern "C" unsigned int strlen(const char *s);
+extern "C" char *strcpy(char *dst, const char *src);
+struct CFlagLimit {
+    s32 m_min;
+    s32 m_max;
+};
+extern CFlagLimit D_0029F2F0[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108320);
+CFlagWork::CFlagWork(s32 a, s32 b) {
+    m_unk0 = 1;
+    m_ranges = 0;
+    m_numRanges = 0;
+    m_defs = 0;
+    m_numDefs = 0;
+    m_data = 0;
+    m_dataSize = 0;
+    if (a) {
+        Func108448(a, b);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108370);
+CFlagWork::~CFlagWork() {
+    Reset();
+}
 
 s32 MaxRangeHi(CFlagRange *r, s32 n) {
     s32 m = -1;
@@ -145,7 +177,7 @@ CFlagRange *FindRange(CFlagRange *r, s32 n, s32 id) {
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108448);
+INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108448__9CFlagWorkii);
 
 void CFlagWork::Reset() {
     if (m_unk0 == 0) {
@@ -227,7 +259,19 @@ s32 CFlagWork::Save(u8 *buf) {
     return n + s.Write(m_data, m_dataSize);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108A20);
+s32 CFlagWork::Load(u8 *buf) {
+    CFlagStream s;
+    s32 size;
+    s.m_cur = buf;
+    s.Read32(&size);
+    if (size != m_dataSize) {
+        Func235DE0("*** imcomplete size (%d != %d)\n", size, m_dataSize);
+        return 0;
+    }
+    s.Read(m_data, size);
+    Notify1(-1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108AA8);
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C68);
@@ -250,7 +294,31 @@ s32 CFlagWork::GetType(s32 id) {
 }
 
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C98);
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108EA0);
+void CFlagWork::SetStr(s32 id, const char *s) {
+    CFlagDef *d;
+    if (!s) {
+        s = D_002D1C98;
+    }
+    if (id < 0 || id > m_numDefs - 1) {
+        return;
+    }
+    d = &m_defs[id];
+    if ((d->m_type & 0xF) != 1) {
+        return;
+    }
+    if ((s32)strlen(s) < d->m_size) {
+        strcpy((char *)m_data + d->m_off, s);
+    } else {
+        memcpy(m_data + d->m_off, s, d->m_size - 1);
+        m_data[d->m_off + d->m_size - 1] = 0;
+    }
+    if (m_defs[id].m_type & 0x20) {
+        Notify2(id);
+    }
+    if (m_defs[id].m_type & 0x10) {
+        Notify1(id);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108FF0__9CFlagWorkii);
 
@@ -377,4 +445,3 @@ s32 AddPadMgr(CTaskList24F5C0 *list) {
     CPadMgr *t = new CPadMgr;
     return list->Func24F5C0(t, 0);
 }
-INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1CA0);
