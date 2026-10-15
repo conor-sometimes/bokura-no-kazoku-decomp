@@ -13,6 +13,70 @@ extern TypeInfo D_2EB7F8;
 extern const char D_002D5660[];
 }
 struct VDel_2975F0 { u8 pad[0x13c]; virtual ~VDel_2975F0(); };
+
+#include "linkonce.h"
+extern "C" {
+extern void *(*D_002B91A4)(u32 n);
+extern void *(*D_002B91AC)(void *p, u32 n);
+extern void (*D_002B91B0)(void *p);
+void *memcpy(void *, const void *, u32);
+void *memset(void *, s32, u32);
+}
+void Func235DE0(const char *fmt, ...);
+extern "C" const char D_002D5560[], D_002D5820[], D_002DA2B8[];
+struct ConstPtr { s32 w[0x4 / 4]; };
+struct TArrConstPtr { s32 m0; ConstPtr *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3ZPCvi_16_Zt10TAllocator1ZPCv[];
+void func_00297768(TArrConstPtr *a, s32 n, s32 keep);
+ConstPtr *func_002978F8(TArrConstPtr *a, s32 i);
+ConstPtr *func_00297958(TArrConstPtr *a, s32 n);
+void func_00297980(TArrConstPtr *a, ConstPtr *p);
+void func_002979B0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v, s32 n);
+void func_00297A18(TArrConstPtr *a, ConstPtr *p, s32 n);
+ConstPtr *func_00297A70(TArrConstPtr *a, ConstPtr *p, s32 n);
+void func_00297BD0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v);
+void func_00297BE8(TArrConstPtr *a, ConstPtr *p);
+void Func2976E8__FPvi(TArrConstPtr *a, s32 n);
+}
+struct EventCharaResName { s32 w[0x20 / 4]; };
+struct TArrEventCharaResName { s32 m0; EventCharaResName *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z18CEventCharaResNamei_16_Zt10TAllocator1Z18CEventCharaResName[];
+void func_00297FB8(TArrEventCharaResName *a, s32 n, s32 keep);
+EventCharaResName *func_00298158(TArrEventCharaResName *a, s32 i);
+EventCharaResName *func_00298168(TArrEventCharaResName *a, s32 n);
+void func_00298190(TArrEventCharaResName *a, EventCharaResName *p);
+void func_002981C0(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v, s32 n);
+void func_00298228(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+EventCharaResName *func_00298280(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+void func_002982B8(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v);
+void func_00298308(TArrEventCharaResName *a, EventCharaResName *p);
+void Func297F78__8CDkArrayi(TArrEventCharaResName *a, s32 n);
+}
+struct MapDBExprReg { s32 w[0x24 / 4]; };
+struct TArrMapDBExprReg { s32 m0; MapDBExprReg *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z13CMapDBExprRegi_16_Zt10TAllocator1Z13CMapDBExprReg[];
+void func_0029A5E0(TArrMapDBExprReg *a, s32 n, s32 keep);
+MapDBExprReg *func_0029A578(TArrMapDBExprReg *a, s32 i);
+MapDBExprReg *func_0029A948(TArrMapDBExprReg *a, s32 n);
+void func_0029A978(TArrMapDBExprReg *a, MapDBExprReg *p);
+void func_0029A9A8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v, s32 n);
+void func_0029AA10(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+MapDBExprReg *func_0029AA68(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+void func_0029AAA8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v);
+void func_0029AB00(TArrMapDBExprReg *a, MapDBExprReg *p);
+void Func29A558__10CUnk29A558i(TArrMapDBExprReg *a, s32 n);
+}
+
+extern "C" {
+s32 Func297708__FPv(void *a);
+void func_00297908(TArrConstPtr *a, s32 i, const ConstPtr &v);
+void func_00297AA8(TArrConstPtr *a, s32 i, s32 n);
+void func_00297BB8(TArrConstPtr *a, s32 i, const ConstPtr &v);
+extern const char D_002D5598[];
+}
 // @decl-end
 
 extern "C" void func_002975F0(VDel_2975F0 *p) { delete p; }
@@ -23,41 +87,102 @@ extern "C" TypeInfo *__tf7CSvmRes()
     return &D_2EB7E0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297668);
+extern "C" void func_00297668(TArrConstPtr *a)
+{
+    a->m_grow = 16;
+    a->vptr = _vt$t6TArray3ZPCvi_16_Zt10TAllocator1ZPCv;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_data = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297690);
+extern "C" void func_00297690(TArrConstPtr *a, s32 flag)
+{
+    Func2976E8__FPvi(a, 0);
+    if (flag & 1) return __builtin_delete(a);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", Func2976E8__FPvi);
+extern "C" void Func2976E8__FPvi(TArrConstPtr *a, s32 n) { func_00297768(a, n, 1); }
 
 extern "C" s32 Func297708__FPv(void *p) { return FLD(s32, p, 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", Func297710__FPvi);
+extern "C" ConstPtr *Func297710__FPvi(TArrConstPtr *a, s32 i) { return func_002978F8(a, i); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", Func297728__FPvPi);
+extern "C" void Func297728__FPvPi(TArrConstPtr *a, const ConstPtr &v) { func_00297908(a, Func297708__FPv(a), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297768);
+extern "C" void func_00297768(TArrConstPtr *a, s32 n, s32 keep)
+{
+    if (a->m_cap < n) {
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        ConstPtr *p = func_00297958(a, a->m_cap);
+        if (!p) {
+            Func235DE0(D_002D5560, a->m_cap * sizeof(ConstPtr));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(ConstPtr));
+            func_00297980(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (keep) {
+        if (a->m_count < n) {
+            ConstPtr v;
+            ConstPtr *q = a->m_data + a->m_count;
+            memset(&v, 0, sizeof(ConstPtr));
+            func_002979B0(a, q, v, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_00297A18(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_00297980(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_00297A70(a, a->m_data, a->m_cap);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_002978F8);
+extern "C" ConstPtr *func_002978F8(TArrConstPtr *a, s32 i) { return &a->m_data[i]; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297908);
+extern "C" void func_00297908(TArrConstPtr *a, s32 i, const ConstPtr &v)
+{
+    func_00297AA8(a, i, 1);
+    func_00297BB8(a, i, v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297958);
+extern "C" ConstPtr *func_00297958(TArrConstPtr *a, s32 n) { return (ConstPtr *)D_002B91A4(n * sizeof(ConstPtr)); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297980);
+extern "C" void func_00297980(TArrConstPtr *a, ConstPtr *p) { if (p) D_002B91B0(p); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_002979B0);
+extern "C" void func_002979B0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00297BD0(a, &p[i], v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297A18);
+extern "C" void func_00297A18(TArrConstPtr *a, ConstPtr *p, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00297BE8(a, &p[i]);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297A70);
+extern "C" ConstPtr *func_00297A70(TArrConstPtr *a, ConstPtr *p, s32 n)
+{
+    D_002B91AC(p, n * sizeof(ConstPtr));
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297AA8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297BB8);
+extern "C" void func_00297BB8(TArrConstPtr *a, s32 i, const ConstPtr &v) { a->m_data[i] = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297BD0);
+extern "C" void func_00297BD0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v) { if (p) *p = v; }
 
-extern "C" void func_00297BE8(void) {
+extern "C" void func_00297BE8(TArrConstPtr *a, ConstPtr *p) {
 }
 
 extern "C" TypeInfo *__tft6TArray3ZPCvi_16_Zt10TAllocator1ZPCv()
@@ -94,7 +219,7 @@ extern "C" void func_00297DA8(void *p, s32 v) { FLD(s32, p, 0x291C) = v; }
 
 extern "C" f32 func_00297DB0(void *p) { return FLD(f32, p, 0x2920); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297DB8);
+extern "C" void func_00297DB8(void *p, s32 v) { FLD(f32, p, 0x2920) = (f32)v; }
 
 extern "C" void func_00297DC8(void *p, s32 v) { FLD(s32, p, 0x2924) = v; }
 
@@ -108,7 +233,7 @@ extern "C" void func_00297DE8(void *p, s32 v) { FLD(s32, p, 0x470) = v; }
 
 extern "C" s32 func_00297DF0(void *p) { return FLD(s32, p, 0x470); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297DF8);
+extern "C" void func_00297DF8(void *p) { FLD(s32, p, 0x2914) = 1; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E08);
 
@@ -126,7 +251,7 @@ extern "C" s32 func_00297E78(void *p) { return FLD(s32, p, 0x2918); }
 
 extern "C" s32 func_00297E80(void *p) { return FLD(s32, p, 0x484); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E88);
+extern "C" void func_00297E88(void *p, s32 a, s32 b) { FLD(s32, p, 0x2928) = a; FLD(s32, p, 0x292C) = b; FLD(s32, p, 0x2930) = 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E98);
 
@@ -136,18 +261,65 @@ extern "C" TypeInfo *__tf9CEventRes()
     return &D_2EB7F8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297EF8);
+extern "C" void func_00297EF8(TArrEventCharaResName *a)
+{
+    a->m_grow = 16;
+    a->vptr = _vt$t6TArray3Z18CEventCharaResNamei_16_Zt10TAllocator1Z18CEventCharaResName;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_data = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297F20);
+extern "C" void func_00297F20(TArrEventCharaResName *a, s32 flag)
+{
+    Func297F78__8CDkArrayi(a, 0);
+    if (flag & 1) return __builtin_delete(a);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", Func297F78__8CDkArrayi);
+extern "C" void Func297F78__8CDkArrayi(TArrEventCharaResName *a, s32 n) { func_00297FB8(a, n, 1); }
 
 extern "C" s32 Func297F98__8CDkArray(void *p) { return FLD(s32, p, 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", Func297FA0__8CDkArrayi);
+extern "C" EventCharaResName *Func297FA0__8CDkArrayi(TArrEventCharaResName *a, s32 i) { return func_00298158(a, i); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297FB8);
+extern "C" void func_00297FB8(TArrEventCharaResName *a, s32 n, s32 keep)
+{
+    if (a->m_cap < n) {
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        EventCharaResName *p = func_00298168(a, a->m_cap);
+        if (!p) {
+            Func235DE0(D_002D5820, a->m_cap * sizeof(EventCharaResName));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(EventCharaResName));
+            func_00298190(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (keep) {
+        if (a->m_count < n) {
+            EventCharaResName v;
+            EventCharaResName *q = a->m_data + a->m_count;
+            memset(&v, 0, sizeof(EventCharaResName));
+            func_002981C0(a, q, v, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_00298228(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_00298190(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_00298280(a, a->m_data, a->m_cap);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00298158);
+extern "C" EventCharaResName *func_00298158(TArrEventCharaResName *a, s32 i) { return &a->m_data[i]; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00298168);
+extern "C" EventCharaResName *func_00298168(TArrEventCharaResName *a, s32 n) { return (EventCharaResName *)D_002B91A4(n * sizeof(EventCharaResName)); }

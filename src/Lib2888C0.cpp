@@ -1,5 +1,16 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern void *D_002BF5D0;
+extern "C" s32 func_0028ADE8(s32);
+extern "C" void func_00100248(s32) __attribute__((noreturn));
+extern "C" double func_0028C888(const char *, char **);
+extern "C" float func_0028C8B0(const char *, char **);
+extern "C" s32 func_0028CB10(const char *, char **, s32);
+extern "C" s32 func_0028AC78(void *, s32);
+extern "C" s32 func_0028AB88(void *);
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_002888C0);
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_002888E8);
@@ -60,23 +71,23 @@ INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00288F08);
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00288F40);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00288FF8);
+extern "C" void func_00288FF8(void) { for (;;) { func_0028ADE8(6); func_00100248(1); } }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00289010);
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00289048);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_002890E8);
+extern "C" double func_002890E8(const char *s) { return func_0028C888(s, 0); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", atoff);
+extern "C" float atoff(const char *s) { return func_0028C8B0(s, 0); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", atoi);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", atol);
+extern "C" s32 atol(const char *s) { return func_0028CB10(s, 0, 10); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", bsearch);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00289230);
+extern "C" void *func_00289230(void) { return D_002BF5D0; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00289240);
 
@@ -114,8 +125,8 @@ INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_0028AC78);
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_0028AD50);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_0028ADE8);
+extern "C" s32 func_0028ADE8(s32 sig) { return func_0028AC78(D_002BF5D0, sig); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_0028AE08);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_0028AE30);
+extern "C" s32 func_0028AE30(void) { return func_0028AB88(D_002BF5D0); }

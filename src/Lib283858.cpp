@@ -1,8 +1,15 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", __pure_virtual);
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern "C" s32 func_00283888(void);
+extern "C" s32 func_00288FF8(void);
+extern "C" void func_00283C98(void);
+extern void (*D_002BF230)(void);
+// @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283870);
+extern "C" void __pure_virtual(void) { return (void)func_00283888(); }
+
+extern "C" void func_00283870(void) { return (void)func_00288FF8(); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283888);
 
@@ -19,7 +26,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283980);
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002839A8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283BB0);
+extern "C" void func_00283BB0(void) { D_002BF230 = func_00283C98; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283BC8);
 
@@ -35,9 +42,9 @@ INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283E90);
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283EB8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00284188);
+extern "C" s32 func_00284188(void *p) { return *(s16 *)((u8 *)p + 6); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00284190);
+extern "C" s32 func_00284190(void *p) { return *(s16 *)((u8 *)p + 4); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00284198);
 

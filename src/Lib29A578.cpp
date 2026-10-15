@@ -93,31 +93,145 @@ extern TypeInfo D_424C30;
 extern const char D_002DF3E8[];
 }
 struct VDel_29ABE8 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual ~VDel_29ABE8(); };
+
+#include "linkonce.h"
+extern "C" {
+extern void *(*D_002B91A4)(u32 n);
+extern void *(*D_002B91AC)(void *p, u32 n);
+extern void (*D_002B91B0)(void *p);
+void *memcpy(void *, const void *, u32);
+void *memset(void *, s32, u32);
+}
+void Func235DE0(const char *fmt, ...);
+extern "C" const char D_002D5560[], D_002D5820[], D_002DA2B8[];
+struct ConstPtr { s32 w[0x4 / 4]; };
+struct TArrConstPtr { s32 m0; ConstPtr *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3ZPCvi_16_Zt10TAllocator1ZPCv[];
+void func_00297768(TArrConstPtr *a, s32 n, s32 keep);
+ConstPtr *func_002978F8(TArrConstPtr *a, s32 i);
+ConstPtr *func_00297958(TArrConstPtr *a, s32 n);
+void func_00297980(TArrConstPtr *a, ConstPtr *p);
+void func_002979B0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v, s32 n);
+void func_00297A18(TArrConstPtr *a, ConstPtr *p, s32 n);
+ConstPtr *func_00297A70(TArrConstPtr *a, ConstPtr *p, s32 n);
+void func_00297BD0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v);
+void func_00297BE8(TArrConstPtr *a, ConstPtr *p);
+void Func2976E8__FPvi(TArrConstPtr *a, s32 n);
+}
+struct EventCharaResName { s32 w[0x20 / 4]; };
+struct TArrEventCharaResName { s32 m0; EventCharaResName *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z18CEventCharaResNamei_16_Zt10TAllocator1Z18CEventCharaResName[];
+void func_00297FB8(TArrEventCharaResName *a, s32 n, s32 keep);
+EventCharaResName *func_00298158(TArrEventCharaResName *a, s32 i);
+EventCharaResName *func_00298168(TArrEventCharaResName *a, s32 n);
+void func_00298190(TArrEventCharaResName *a, EventCharaResName *p);
+void func_002981C0(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v, s32 n);
+void func_00298228(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+EventCharaResName *func_00298280(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+void func_002982B8(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v);
+void func_00298308(TArrEventCharaResName *a, EventCharaResName *p);
+void Func297F78__8CDkArrayi(TArrEventCharaResName *a, s32 n);
+}
+struct MapDBExprReg { s32 w[0x24 / 4]; };
+struct TArrMapDBExprReg { s32 m0; MapDBExprReg *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z13CMapDBExprRegi_16_Zt10TAllocator1Z13CMapDBExprReg[];
+void func_0029A5E0(TArrMapDBExprReg *a, s32 n, s32 keep);
+MapDBExprReg *func_0029A578(TArrMapDBExprReg *a, s32 i);
+MapDBExprReg *func_0029A948(TArrMapDBExprReg *a, s32 n);
+void func_0029A978(TArrMapDBExprReg *a, MapDBExprReg *p);
+void func_0029A9A8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v, s32 n);
+void func_0029AA10(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+MapDBExprReg *func_0029AA68(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+void func_0029AAA8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v);
+void func_0029AB00(TArrMapDBExprReg *a, MapDBExprReg *p);
+void Func29A558__10CUnk29A558i(TArrMapDBExprReg *a, s32 n);
+}
+
+extern "C" {
+s32 func_0029A4F8(void *a);
+void func_0029A590(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v);
+void func_0029A7A0(TArrMapDBExprReg *a, s32 i, s32 n);
+void func_0029A8E8(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v);
+extern const char D_002DA2F0[];
+}
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A578);
+extern "C" MapDBExprReg *func_0029A578(TArrMapDBExprReg *a, s32 i) { return &a->m_data[i]; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A590);
+extern "C" void func_0029A590(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v)
+{
+    func_0029A7A0(a, i, 1);
+    func_0029A8E8(a, i, v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A5E0);
+extern "C" void func_0029A5E0(TArrMapDBExprReg *a, s32 n, s32 keep)
+{
+    if (a->m_cap < n) {
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        MapDBExprReg *p = func_0029A948(a, a->m_cap);
+        if (!p) {
+            Func235DE0(D_002DA2B8, a->m_cap * sizeof(MapDBExprReg));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(MapDBExprReg));
+            func_0029A978(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (keep) {
+        if (a->m_count < n) {
+            MapDBExprReg v;
+            MapDBExprReg *q = a->m_data + a->m_count;
+            memset(&v, 0, sizeof(MapDBExprReg));
+            func_0029A9A8(a, q, v, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_0029AA10(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_0029A978(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_0029AA68(a, a->m_data, a->m_cap);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A7A0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A8E8);
+extern "C" void func_0029A8E8(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v) { a->m_data[i] = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A948);
+extern "C" MapDBExprReg *func_0029A948(TArrMapDBExprReg *a, s32 n) { return (MapDBExprReg *)D_002B91A4(n * sizeof(MapDBExprReg)); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A978);
+extern "C" void func_0029A978(TArrMapDBExprReg *a, MapDBExprReg *p) { if (p) D_002B91B0(p); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029A9A8);
+extern "C" void func_0029A9A8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_0029AAA8(a, &p[i], v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029AA10);
+extern "C" void func_0029AA10(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_0029AB00(a, &p[i]);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029AA68);
+extern "C" MapDBExprReg *func_0029AA68(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n)
+{
+    D_002B91AC(p, n * sizeof(MapDBExprReg));
+    return p;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029AAA8);
+extern "C" void func_0029AAA8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v) { if (p) *p = v; }
 
-extern "C" void func_0029AB00(void) {
+extern "C" void func_0029AB00(TArrMapDBExprReg *a, MapDBExprReg *p) {
 }
 
 extern "C" TypeInfo *__tft6TArray3Z13CMapDBExprRegi_16_Zt10TAllocator1Z13CMapDBExprReg()
@@ -219,7 +333,7 @@ extern "C" TypeInfo *__tf16CMenuTutorSelect()
     return &D_424A90;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029AED8);
+extern "C" s32 func_0029AED8(void *p) { return FLD(s32, p, 0x78) ? 3 : FLD(s32, p, 0x7C); }
 
 extern "C" TypeInfo *__tf18CMenuTutorSelected()
 {

@@ -1,14 +1,19 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern "C" double func_00280290(double, double);
+extern "C" double func_002806B0(double);
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280098);
 
-INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280170);
+extern "C" s32 func_00280170(void) { return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280178);
 
-INCLUDE_ASM("asm/nonmatchings/Dk280098", fmod);
+extern "C" double fmod(double x, double y) { return func_00280290(x, y); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280278);
+extern "C" double func_00280278(double x) { return func_002806B0(x); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280290);
 

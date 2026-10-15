@@ -1,12 +1,23 @@
 # Bokura no Kazoku decomp (private)
 
-<!-- progress:start -->
-**Progress** (functions in C++ (of all .text), 2026-10-14):
+<!-- status:begin -->
+![functions](https://img.shields.io/badge/functions-5411%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-35.0%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
 
-`██░░░░░░░░░░░░░░░░░░░░░░░░░░░░` **7.68%** of code bytes (130,664 / 1,700,400)  
-`█████░░░░░░░░░░░░░░░░░░░░░░░░░` **17.87%** of functions (1,291 / 7,223)  
-Game code alone (the 2,303 functions in the C++ units): 1,291 matched, 13.69% of its bytes.
-<!-- progress:end -->
+Progress, 2026-10-15 (functions in C; the rest is still INCLUDE_ASM):
+
+| | Progress | |
+|---|---|---|
+| **Functions** | `███████████████████░░░░░░` | 5,411 / 7,223 (74.9%) |
+| **Code bytes** (`.text`, 1.70 MB) | `█████████░░░░░░░░░░░░░░░░` | 594.8 KB / 1700.4 KB (35.0%) |
+| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `████████░░░░░░░░░░░░░░░░░` | 1,802 / 2,303 functions, 31.5% of bytes |
+| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `██████████░░░░░░░░░░░░░░░` | 1,767 / 2,264 functions, 40.7% of bytes |
+| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `██████████░░░░░░░░░░░░░░░` | 1,074 / 1,483 functions, 40.9% of bytes |
+| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `████████░░░░░░░░░░░░░░░░░` | 768 / 1,169 functions, 32.1% of bytes |
+| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 764 |
+
+Build: Sony EE-GCC 2.96 for the game; parts of dklib and the Sony SDK were built with older
+SDK compilers (ee-gcc 2.9-991111 and -01), set per unit ([docs/compiler.md](docs/compiler.md)).
+<!-- status:end -->
 
 Target: **Bokura no Kazoku - My Family Growing Up in the 21st Century (Japan)**,
 Redump dump. PS2 (Emotion Engine, MIPS R5900).
@@ -31,7 +42,7 @@ The boot executable inside it, `SCPS_150.88`: SHA-1 `621ffd58de52794eaa3d33885ba
 | Built | 2005-01-28 (file dates) |
 | SDK | 2.8 era (`MODULES/IOPRP280.IMG`), Sony libraries (libsd, libmc, libpad, libmtap, libmpeg, libgraph) |
 | Language | C++: GCC 2.9x name mangling (`t6TArray3Z14CSceneCharaSeti_16_Z...`), `.eh_frame` + `.gcc_except_table` |
-| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing -fno-exceptions`: confirmed on 8 functions (docs/compiler.md) |
+| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, `as -g` for the C++ units and dklib; the C-style units without `as -g`; parts of dklib and the Sony SDK with ee-gcc 2.9-991111 / 2.9-991111-01 (docs/compiler.md) |
 | VU code | `.vutext` / `.vudata` (VU microcode, `dvp-as`): stays assembly |
 | Game data | `DATA/*.XAP` archives (MAP 140 MB, CHR 86 MB, ENV 33 MB, MENU 18 MB, ...) |
 

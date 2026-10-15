@@ -29,11 +29,33 @@ extern const char D_002EAE00[];
 extern TypeInfo D_425490;
 extern const char D_002EAE18[];
 }
+
+#include "linkonce.h"
+extern "C" {
+extern char _vt$16__user_type_info[];
+void func_00286B20(void *, s32);
+extern char _vt$19__pointer_type_info[];
+extern char _vt$16__attr_type_info[];
+extern char _vt$19__builtin_type_info[];
+extern char _vt$16__func_type_info[];
+extern char _vt$16__ptmf_type_info[];
+extern char _vt$16__ptmd_type_info[];
+extern char _vt$17__array_type_info[];
+extern TypeInfo D_425470;
+TypeInfo *__tf9type_info();
+extern const char D_002EAE30[];
+extern TypeInfo D_2EB910;
+}
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029E9F0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EA58);
+extern "C" void func_0029EA58(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__user_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf14__si_type_info()
 {
@@ -46,7 +68,12 @@ extern "C" TypeInfo *__tf14__si_type_info()
 
 INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EB10);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EB28);
+extern "C" void func_0029EB28(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__user_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf17__class_type_info()
 {
@@ -82,7 +109,12 @@ INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029ECD8);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029ECE8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029ED20);
+extern "C" void func_0029ED20(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$19__pointer_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf19__pointer_type_info()
 {
@@ -93,7 +125,12 @@ extern "C" TypeInfo *__tf19__pointer_type_info()
     return &D_425480;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EDD8);
+extern "C" void func_0029EDD8(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__attr_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf16__attr_type_info()
 {
@@ -104,7 +141,12 @@ extern "C" TypeInfo *__tf16__attr_type_info()
     return &D_425450;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EE90);
+extern "C" void func_0029EE90(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$19__builtin_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf19__builtin_type_info()
 {
@@ -115,7 +157,12 @@ extern "C" TypeInfo *__tf19__builtin_type_info()
     return &D_4254A0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EF48);
+extern "C" void func_0029EF48(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__func_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf16__func_type_info()
 {
@@ -126,7 +173,12 @@ extern "C" TypeInfo *__tf16__func_type_info()
     return &D_425440;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029F000);
+extern "C" void func_0029F000(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__ptmf_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf16__ptmf_type_info()
 {
@@ -137,7 +189,12 @@ extern "C" TypeInfo *__tf16__ptmf_type_info()
     return &D_425460;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029F0B8);
+extern "C" void func_0029F0B8(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__ptmd_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf16__ptmd_type_info()
 {
@@ -148,6 +205,21 @@ extern "C" TypeInfo *__tf16__ptmd_type_info()
     return &D_425490;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029F170);
+extern "C" void func_0029F170(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$17__array_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", __tf17__array_type_info);
+extern "C" TypeInfo *__tf17__array_type_info()
+{
+    if (!D_425470.vptr) {
+        __tf9type_info();
+        func_00286BC0(&D_425470, D_002EAE30, &D_2EB910);
+    }
+    return &D_425470;
+}
+
+// end of .text: retail pads to 0x29F230
+asm(".section .text\n.space 8");

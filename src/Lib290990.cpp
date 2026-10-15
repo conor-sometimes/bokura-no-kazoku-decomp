@@ -1,5 +1,11 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern char D_002EB4B8[];
+extern "C" s32 func_00291590(void *, void *);
+extern "C" void func_00290990(void);
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290990);
 
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290AA8);
@@ -8,7 +14,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290B08);
 
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290B80);
 
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290C78);
+extern "C" s32 func_00290C78(void *a) { return func_00291590(a, (void *)func_00290990); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290C98);
 
@@ -24,7 +30,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00291590);
 
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00291628);
 
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_002916B8);
+extern "C" void *func_002916B8(void) { return D_002EB4B8; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib290990", func_002916C8);
 

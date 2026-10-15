@@ -272,11 +272,11 @@ extern "C" s32 func_0029BEA0(void *p) { return FLD(s32, p, 0x0); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BEA8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BEC0);
+extern "C" void func_0029BEC0(void *p, f32 x, f32 y) { FLD(f32, p, 0x30) = x; FLD(f32, p, 0x34) = y; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BED0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BEE8);
+extern "C" void func_0029BEE8(void *p, f32 x, f32 y) { FLD(f32, p, 0x50) = x; FLD(f32, p, 0x54) = y; }
 
 extern "C" void func_0029BEF8(void *p, f32 v) { FLD(f32, p, 0x58) = v; }
 
@@ -292,7 +292,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C050);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C0F0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C190);
+extern "C" s32 func_0029C190(void *p, void *q, s32 v) { return FLD(s32, q, 4) | v | FLD(s32, p, 0x60); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C1A8);
 

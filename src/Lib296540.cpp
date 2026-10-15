@@ -37,6 +37,60 @@ extern const char D_002D5150[];
 }
 struct VDel_297208 { u8 pad[0x13c]; virtual ~VDel_297208(); };
 struct VDel_297448 { u8 pad[0x13c]; virtual ~VDel_297448(); };
+
+#include "linkonce.h"
+extern "C" {
+extern void *(*D_002B91A4)(u32 n);
+extern void *(*D_002B91AC)(void *p, u32 n);
+extern void (*D_002B91B0)(void *p);
+void *memcpy(void *, const void *, u32);
+void *memset(void *, s32, u32);
+}
+void Func235DE0(const char *fmt, ...);
+extern "C" const char D_002D4E10[];
+struct SceneMapSet { s32 w[0x54 / 4]; };
+struct TArrSceneMapSet { s32 m0; SceneMapSet *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z12CSceneMapSeti_16_Zt10TAllocator1Z12CSceneMapSet[];
+void func_00296700(TArrSceneMapSet *a, s32 n, s32 keep);
+SceneMapSet *func_002968E0(TArrSceneMapSet *a, s32 i);
+SceneMapSet *func_00296AF0(TArrSceneMapSet *a, s32 n);
+void func_00296B28(TArrSceneMapSet *a, SceneMapSet *p);
+void func_00296B58(TArrSceneMapSet *a, SceneMapSet *p, const SceneMapSet &v, s32 n);
+void func_00296BC0(TArrSceneMapSet *a, SceneMapSet *p, s32 n);
+SceneMapSet *func_00296C18(TArrSceneMapSet *a, SceneMapSet *p, s32 n);
+void func_00296DC0(TArrSceneMapSet *a, SceneMapSet *p, const SceneMapSet &v);
+void func_00296E98(TArrSceneMapSet *a, SceneMapSet *p);
+void func_00296678(TArrSceneMapSet *a, s32 n);
+}
+struct SceneCharaSet { s32 w[0x28 / 4]; };
+struct TArrSceneCharaSet { s32 m0; SceneCharaSet *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z14CSceneCharaSeti_16_Zt10TAllocator1Z14CSceneCharaSet[];
+void func_00296900(TArrSceneCharaSet *a, s32 n, s32 keep);
+SceneCharaSet *func_00296AC0(TArrSceneCharaSet *a, s32 i);
+SceneCharaSet *func_00296AD8(TArrSceneCharaSet *a, s32 i);
+SceneCharaSet *func_00296C60(TArrSceneCharaSet *a, s32 n);
+void func_00296C90(TArrSceneCharaSet *a, SceneCharaSet *p);
+void func_00296CC0(TArrSceneCharaSet *a, SceneCharaSet *p, const SceneCharaSet &v, s32 n);
+void func_00296D28(TArrSceneCharaSet *a, SceneCharaSet *p, s32 n);
+SceneCharaSet *func_00296D80(TArrSceneCharaSet *a, SceneCharaSet *p, s32 n);
+void func_00296EA0(TArrSceneCharaSet *a, SceneCharaSet *p, const SceneCharaSet &v);
+void func_00296F00(TArrSceneCharaSet *a, SceneCharaSet *p);
+void func_002966B0(TArrSceneCharaSet *a, s32 n);
+}
+
+#include "linkonce.h"
+extern "C" {
+extern char _vt$12ICharaResMgr[];
+void _$_9CResCache(void *, s32);
+extern char _vt$10IMapResMgr[];
+extern char _vt$10IEnvResMgr[];
+}
+extern "C" void *__nw__8CHeapObjUi(u32 n);
+
+extern "C" s32 func_00296568(void *);
+extern "C" s32 Func296570__7CDkList(void *);
 // @decl-end
 
 extern "C" void func_00296540(void *p, f32 v) { FLD(f32, p, 0x54) = v; }
@@ -53,62 +107,176 @@ extern "C" s32 func_00296568(void *p) { return FLD(s32, p, 0xC); }
 
 extern "C" s32 Func296570__7CDkList(void *p) { return FLD(s32, p, 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296578);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002965A0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002965F8);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296620);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296678);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296698);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002966B0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002966D0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002966E8);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296700);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002968E0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296900);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296AC0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296AD8);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296AF0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296B28);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296B58);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296BC0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296C18);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296C60);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296C90);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296CC0);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296D28);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296D80);
-
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296DC0);
-
-extern "C" void func_00296E98(void) {
+extern "C" void func_00296578(TArrSceneMapSet *a)
+{
+    a->m_grow = 16;
+    a->vptr = _vt$t6TArray3Z12CSceneMapSeti_16_Zt10TAllocator1Z12CSceneMapSet;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_data = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296EA0);
+extern "C" void func_002965A0(TArrSceneMapSet *a, s32 flag)
+{
+    func_00296678(a, 0);
+    if (flag & 1) return __builtin_delete(a);
+}
 
-extern "C" void func_00296F00(void) {
+extern "C" void func_002965F8(TArrSceneCharaSet *a)
+{
+    a->m_grow = 16;
+    a->vptr = _vt$t6TArray3Z14CSceneCharaSeti_16_Zt10TAllocator1Z14CSceneCharaSet;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_data = 0;
+}
+
+extern "C" void func_00296620(TArrSceneCharaSet *a, s32 flag)
+{
+    func_002966B0(a, 0);
+    if (flag & 1) return __builtin_delete(a);
+}
+
+extern "C" void func_00296678(TArrSceneMapSet *a, s32 n) { func_00296700(a, n, 1); }
+
+extern "C" SceneMapSet *func_00296698(TArrSceneMapSet *a, s32 i) { return func_002968E0(a, i); }
+
+extern "C" void func_002966B0(TArrSceneCharaSet *a, s32 n) { func_00296900(a, n, 1); }
+
+extern "C" SceneCharaSet *func_002966D0(TArrSceneCharaSet *a, s32 i) { return func_00296AC0(a, i); }
+
+extern "C" SceneCharaSet *func_002966E8(TArrSceneCharaSet *a, s32 i) { return func_00296AD8(a, i); }
+
+extern "C" void func_00296700(TArrSceneMapSet *a, s32 n, s32 keep)
+{
+    if (a->m_cap < n) {
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        SceneMapSet *p = func_00296AF0(a, a->m_cap);
+        if (!p) {
+            Func235DE0(D_002D4E10, a->m_cap * sizeof(SceneMapSet));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(SceneMapSet));
+            func_00296B28(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (keep) {
+        if (a->m_count < n) {
+            SceneMapSet v;
+            SceneMapSet *q = a->m_data + a->m_count;
+            memset(&v, 0, sizeof(SceneMapSet));
+            func_00296B58(a, q, v, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_00296BC0(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_00296B28(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_00296C18(a, a->m_data, a->m_cap);
+        }
+    }
+}
+
+extern "C" SceneMapSet *func_002968E0(TArrSceneMapSet *a, s32 i) { return &a->m_data[i]; }
+
+extern "C" void func_00296900(TArrSceneCharaSet *a, s32 n, s32 keep)
+{
+    if (a->m_cap < n) {
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        SceneCharaSet *p = func_00296C60(a, a->m_cap);
+        if (!p) {
+            Func235DE0(D_002D4E10, a->m_cap * sizeof(SceneCharaSet));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(SceneCharaSet));
+            func_00296C90(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (keep) {
+        if (a->m_count < n) {
+            SceneCharaSet v;
+            SceneCharaSet *q = a->m_data + a->m_count;
+            memset(&v, 0, sizeof(SceneCharaSet));
+            func_00296CC0(a, q, v, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_00296D28(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_00296C90(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_00296D80(a, a->m_data, a->m_cap);
+        }
+    }
+}
+
+extern "C" SceneCharaSet *func_00296AC0(TArrSceneCharaSet *a, s32 i) { return &a->m_data[i]; }
+
+extern "C" SceneCharaSet *func_00296AD8(TArrSceneCharaSet *a, s32 i) { return &a->m_data[i]; }
+
+extern "C" SceneMapSet *func_00296AF0(TArrSceneMapSet *a, s32 n) { return (SceneMapSet *)D_002B91A4(n * sizeof(SceneMapSet)); }
+
+extern "C" void func_00296B28(TArrSceneMapSet *a, SceneMapSet *p) { if (p) D_002B91B0(p); }
+
+extern "C" void func_00296B58(TArrSceneMapSet *a, SceneMapSet *p, const SceneMapSet &v, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00296DC0(a, &p[i], v);
+}
+
+extern "C" void func_00296BC0(TArrSceneMapSet *a, SceneMapSet *p, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00296E98(a, &p[i]);
+}
+
+extern "C" SceneMapSet *func_00296C18(TArrSceneMapSet *a, SceneMapSet *p, s32 n)
+{
+    D_002B91AC(p, n * sizeof(SceneMapSet));
+    return p;
+}
+
+extern "C" SceneCharaSet *func_00296C60(TArrSceneCharaSet *a, s32 n) { return (SceneCharaSet *)D_002B91A4(n * sizeof(SceneCharaSet)); }
+
+extern "C" void func_00296C90(TArrSceneCharaSet *a, SceneCharaSet *p) { if (p) D_002B91B0(p); }
+
+extern "C" void func_00296CC0(TArrSceneCharaSet *a, SceneCharaSet *p, const SceneCharaSet &v, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00296EA0(a, &p[i], v);
+}
+
+extern "C" void func_00296D28(TArrSceneCharaSet *a, SceneCharaSet *p, s32 n)
+{
+    for (s32 i = 0; i < n; i++) func_00296F00(a, &p[i]);
+}
+
+extern "C" SceneCharaSet *func_00296D80(TArrSceneCharaSet *a, SceneCharaSet *p, s32 n)
+{
+    D_002B91AC(p, n * sizeof(SceneCharaSet));
+    return p;
+}
+
+extern "C" void func_00296DC0(TArrSceneMapSet *a, SceneMapSet *p, const SceneMapSet &v) { if (p) *p = v; }
+
+extern "C" void func_00296E98(TArrSceneMapSet *a, SceneMapSet *p) {
+}
+
+extern "C" void func_00296EA0(TArrSceneCharaSet *a, SceneCharaSet *p, const SceneCharaSet &v) { if (p) *p = v; }
+
+extern "C" void func_00296F00(TArrSceneCharaSet *a, SceneCharaSet *p) {
 }
 
 extern "C" TypeInfo *__tft6TArray3Z12CSceneMapSeti_16_Zt10TAllocator1Z12CSceneMapSet()
@@ -129,13 +297,18 @@ extern "C" TypeInfo *__tf9CSceneSet()
     return &D_2EB7D8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296FC8);
+extern "C" s32 func_00296FC8(void *p) { return func_00296568(p); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00296FE0);
+extern "C" s32 func_00296FE0(void *p) { return Func296570__7CDkList((u8 *)p + 0x18); }
 
 extern "C" void func_00296FF8(void *p, s32 v) { FLD(s32, p, 0x38) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00297000);
+extern "C" void func_00297000(void *p, s32 flag)
+{
+    FLD(void *, p, 0x13C) = _vt$12ICharaResMgr;
+    _$_9CResCache(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf12ICharaResMgr()
 {
@@ -157,7 +330,7 @@ extern "C" TypeInfo *__tf12CCharaResObj()
     return &D_4247C0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002971A0);
+extern "C" void *func_002971A0(u32 n) { return __nw__8CHeapObjUi(n); }
 
 extern "C" TypeInfo *__tf12CCharaResMgr()
 {
@@ -170,7 +343,12 @@ extern "C" TypeInfo *__tf12CCharaResMgr()
 
 extern "C" void func_00297208(VDel_297208 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00297240);
+extern "C" void func_00297240(void *p, s32 flag)
+{
+    FLD(void *, p, 0x13C) = _vt$10IMapResMgr;
+    _$_9CResCache(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf10IMapResMgr()
 {
@@ -192,7 +370,7 @@ extern "C" TypeInfo *__tf10CMapResObj()
     return &D_4247E0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002973E0);
+extern "C" void *func_002973E0(u32 n) { return __nw__8CHeapObjUi(n); }
 
 extern "C" TypeInfo *__tf10CMapResMgr()
 {
@@ -205,7 +383,12 @@ extern "C" TypeInfo *__tf10CMapResMgr()
 
 extern "C" void func_00297448(VDel_297448 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00297480);
+extern "C" void func_00297480(void *p, s32 flag)
+{
+    FLD(void *, p, 0x13C) = _vt$10IEnvResMgr;
+    _$_9CResCache(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf10IEnvResMgr()
 {
@@ -225,7 +408,7 @@ extern "C" TypeInfo *__tf10CEnvResObj()
     return &D_424830;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_00297588);
+extern "C" void *func_00297588(u32 n) { return __nw__8CHeapObjUi(n); }
 
 extern "C" TypeInfo *__tf10CEnvResMgr()
 {

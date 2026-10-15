@@ -38,6 +38,8 @@ struct VDel_29D8B8 { virtual void v0(); virtual void v1(); virtual void v2(); vi
 struct VDel_29D940 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual ~VDel_29D940(); };
 struct VDel_29D9D0 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual ~VDel_29D9D0(); };
 struct VDel_29DB18 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual void v9(); virtual void v10(); virtual void v11(); virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15(); virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19(); virtual void v20(); virtual void v21(); virtual void v22(); virtual void v23(); virtual void v24(); virtual void v25(); virtual void v26(); virtual void v27(); virtual void v28(); virtual void v29(); virtual void v30(); virtual void v31(); virtual void v32(); virtual void v33(); virtual void v34(); virtual void v35(); virtual void v36(); virtual void v37(); virtual void v38(); virtual void v39(); virtual void v40(); virtual void v41(); virtual void v42(); virtual void v43(); virtual void v44(); virtual ~VDel_29DB18(); };
+
+s32 Func25C220__Fv(void) asm("Func25C220__Fv");
 // @decl-end
 
 extern "C" TypeInfo *__tf7CMemTex()
@@ -162,7 +164,7 @@ extern "C" TypeInfo *__tf7CSndMgr()
 
 extern "C" void func_0029DB18(VDel_29DB18 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29D6D0", func_0029DB50);
+extern "C" s32 func_0029DB50(void) { return Func25C220__Fv(); }
 
 extern "C" void *func_0029DB68(void *p) { return (u8 *)p + 0x3C; }
 
@@ -170,7 +172,7 @@ extern "C" void *func_0029DB70(void *p) { return (u8 *)p + 0xA8; }
 
 extern "C" void *func_0029DB78(void *p) { return (u8 *)p + 0x114; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29D6D0", func_0029DB80);
+extern "C" void func_0029DB80(void *p, s32 a, s32 b) { FLD(s32, p, 0x24) = a; FLD(s32, p, 0x28) = b; }
 
 extern "C" void func_0029DB90(void *p, s32 v) { FLD(s32, p, 0x2C) = v; }
 

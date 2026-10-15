@@ -1,10 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028AE50);
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern void *D_002BF5D0;
+extern "C" s32 func_0028AD50(void *, s32);
+extern "C" s32 func_00273970(void);
+// @decl-end
+
+extern "C" s32 func_0028AE50(s32 a) { return func_0028AD50(D_002BF5D0, a); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028AE70);
 
-INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028AED0);
+extern "C" s32 func_0028AED0(void) { return func_00273970(); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028AEE8);
 

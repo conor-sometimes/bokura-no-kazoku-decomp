@@ -53,6 +53,11 @@ extern "C" s32 func_0022F560(FEnt *, s32, s32, u8 *, s32);
 extern "C" s32 func_00233278(s32, s32, char *, s32, u32, u8 *, s32, s32, void *, FEnt *);
 extern "C" void func_0022F658(FEnt *, s32, s32);
 extern "C" void func_0022F8A0(FEnt *, s32, s32);
+
+extern "C" void func_00230928(char *, const char *);
+extern "C" s32 func_00230280(s32, void *(*)(u32));
+extern void *(*D_002B91A4)(u32 n);
+extern void *(*D_002B91A8)(u32 n);
 // @decl-end
 
 extern "C" void func_0022DE48(s32 fd) {
@@ -371,9 +376,9 @@ INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002301B0);
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230280);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002303C0);
+extern "C" s32 func_002303C0(s32 a) { return func_00230280(a, D_002B91A4); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002303E0);
+extern "C" s32 func_002303E0(s32 a) { return func_00230280(a, D_002B91A8); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230400);
 
@@ -386,8 +391,8 @@ INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002304A0);
 extern "C" void func_00230528(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230530);
+extern "C" void func_00230530(char *a, const char *b) { return func_00230928(a, b); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230548);
+extern "C" s32 func_00230548(void) { return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230550);

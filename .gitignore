@@ -24,3 +24,6 @@ tools/gcc-*/
 tools/ee-*/
 __pycache__/
 tools/compilers/
+
+# Game text pulled out for translation (tools/strings.py): game data, never committed
+strings/

@@ -1,5 +1,9 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+extern void *D_002BF244;
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00285F80);
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00285FD8);
@@ -32,7 +36,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286DC0);
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286E20);
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286EB8);
+extern "C" s32 func_00286EB8(void *self, s32 boff, void *ti, void *obj, void *sub) { return sub == obj ? 6 : 1; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286ED0);
 
@@ -48,7 +52,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_002877B8);
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00287920);
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00287960);
+extern "C" void *func_00287960(void *h) { void *old = D_002BF244; D_002BF244 = h; return old; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00287978);
 

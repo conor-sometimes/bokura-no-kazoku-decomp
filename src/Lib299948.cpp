@@ -69,6 +69,70 @@ extern const char D_002DA1F0[];
 struct VDel_299FF0 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual ~VDel_299FF0(); };
 struct VDel_29A2A8 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual ~VDel_29A2A8(); };
 struct VDel_29A3B8 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual void v9(); virtual void v10(); virtual void v11(); virtual void v12(); virtual ~VDel_29A3B8(); };
+
+#include "linkonce.h"
+extern "C" {
+extern void *(*D_002B91A4)(u32 n);
+extern void *(*D_002B91AC)(void *p, u32 n);
+extern void (*D_002B91B0)(void *p);
+void *memcpy(void *, const void *, u32);
+void *memset(void *, s32, u32);
+}
+void Func235DE0(const char *fmt, ...);
+extern "C" const char D_002D5560[], D_002D5820[], D_002DA2B8[];
+struct ConstPtr { s32 w[0x4 / 4]; };
+struct TArrConstPtr { s32 m0; ConstPtr *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3ZPCvi_16_Zt10TAllocator1ZPCv[];
+void func_00297768(TArrConstPtr *a, s32 n, s32 keep);
+ConstPtr *func_002978F8(TArrConstPtr *a, s32 i);
+ConstPtr *func_00297958(TArrConstPtr *a, s32 n);
+void func_00297980(TArrConstPtr *a, ConstPtr *p);
+void func_002979B0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v, s32 n);
+void func_00297A18(TArrConstPtr *a, ConstPtr *p, s32 n);
+ConstPtr *func_00297A70(TArrConstPtr *a, ConstPtr *p, s32 n);
+void func_00297BD0(TArrConstPtr *a, ConstPtr *p, const ConstPtr &v);
+void func_00297BE8(TArrConstPtr *a, ConstPtr *p);
+void Func2976E8__FPvi(TArrConstPtr *a, s32 n);
+}
+struct EventCharaResName { s32 w[0x20 / 4]; };
+struct TArrEventCharaResName { s32 m0; EventCharaResName *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z18CEventCharaResNamei_16_Zt10TAllocator1Z18CEventCharaResName[];
+void func_00297FB8(TArrEventCharaResName *a, s32 n, s32 keep);
+EventCharaResName *func_00298158(TArrEventCharaResName *a, s32 i);
+EventCharaResName *func_00298168(TArrEventCharaResName *a, s32 n);
+void func_00298190(TArrEventCharaResName *a, EventCharaResName *p);
+void func_002981C0(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v, s32 n);
+void func_00298228(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+EventCharaResName *func_00298280(TArrEventCharaResName *a, EventCharaResName *p, s32 n);
+void func_002982B8(TArrEventCharaResName *a, EventCharaResName *p, const EventCharaResName &v);
+void func_00298308(TArrEventCharaResName *a, EventCharaResName *p);
+void Func297F78__8CDkArrayi(TArrEventCharaResName *a, s32 n);
+}
+struct MapDBExprReg { s32 w[0x24 / 4]; };
+struct TArrMapDBExprReg { s32 m0; MapDBExprReg *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *vptr; };
+extern "C" {
+extern char _vt$t6TArray3Z13CMapDBExprRegi_16_Zt10TAllocator1Z13CMapDBExprReg[];
+void func_0029A5E0(TArrMapDBExprReg *a, s32 n, s32 keep);
+MapDBExprReg *func_0029A578(TArrMapDBExprReg *a, s32 i);
+MapDBExprReg *func_0029A948(TArrMapDBExprReg *a, s32 n);
+void func_0029A978(TArrMapDBExprReg *a, MapDBExprReg *p);
+void func_0029A9A8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v, s32 n);
+void func_0029AA10(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+MapDBExprReg *func_0029AA68(TArrMapDBExprReg *a, MapDBExprReg *p, s32 n);
+void func_0029AAA8(TArrMapDBExprReg *a, MapDBExprReg *p, const MapDBExprReg &v);
+void func_0029AB00(TArrMapDBExprReg *a, MapDBExprReg *p);
+void Func29A558__10CUnk29A558i(TArrMapDBExprReg *a, s32 n);
+}
+
+extern "C" {
+s32 func_0029A4F8(void *a);
+void func_0029A590(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v);
+void func_0029A7A0(TArrMapDBExprReg *a, s32 i, s32 n);
+void func_0029A8E8(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v);
+extern const char D_002DA2F0[];
+}
 // @decl-end
 
 extern "C" s32 func_00299948(void *p) { return FLD(s32, p, 0x23C); }
@@ -215,7 +279,7 @@ extern "C" f32 func_00299F68(void *p) { return FLD(f32, p, 0x918); }
 
 extern "C" void func_00299F70(void *p, s32 v) { FLD(s32, p, 0x920) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299F78);
+extern "C" void func_00299F78(void *p) { FLD(s32, p, 0x8EC) = 0; FLD(s32, p, 0x8F0) = 0; FLD(s32, p, 0x8F8) = 0; }
 
 extern "C" s32 func_00299F88(void *p) { return FLD(s32, p, 0x8EC); }
 
@@ -271,7 +335,7 @@ extern "C" TypeInfo *__tf9CAlbumMgr()
     return &D_4249D0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A230);
+extern "C" s32 func_0029A230(void *p) { return ((s32 *)((u8 *)p + 0x204))[FLD(s32, p, 0x214)]; }
 
 extern "C" s32 func_0029A248(void *p) { return FLD(s32, p, 0x20C); }
 
@@ -321,14 +385,25 @@ extern "C" TypeInfo *func_0029A438()
     return &D_2EB848;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A478);
+extern "C" void func_0029A478(TArrMapDBExprReg *a)
+{
+    a->m_grow = 16;
+    a->vptr = _vt$t6TArray3Z13CMapDBExprRegi_16_Zt10TAllocator1Z13CMapDBExprReg;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_data = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A4A0);
+extern "C" void func_0029A4A0(TArrMapDBExprReg *a, s32 flag)
+{
+    Func29A558__10CUnk29A558i(a, 0);
+    if (flag & 1) return __builtin_delete(a);
+}
 
 extern "C" s32 func_0029A4F8(void *p) { return FLD(s32, p, 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A500);
+extern "C" MapDBExprReg *func_0029A500(TArrMapDBExprReg *a, s32 i) { return func_0029A578(a, i); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A518);
+extern "C" void func_0029A518(TArrMapDBExprReg *a, const MapDBExprReg &v) { func_0029A590(a, func_0029A4F8(a), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", Func29A558__10CUnk29A558i);
+extern "C" void Func29A558__10CUnk29A558i(TArrMapDBExprReg *a, s32 n) { func_0029A5E0(a, n, 1); }

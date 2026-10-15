@@ -46,6 +46,14 @@ extern TypeInfo D_425400;
 TypeInfo *__tf9type_info();
 extern const char D_002EACA0[];
 }
+
+#include "linkonce.h"
+extern "C" {
+extern char _vt$12CSndWorkReal[];
+void func_0025C2C0(void *, s32);
+extern char _vt$16__user_type_info[];
+void func_00286B20(void *, s32);
+}
 // @decl-end
 
 extern "C" TypeInfo *__tf8CSndWork()
@@ -65,7 +73,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DEF8);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF48);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF80);
+extern "C" void func_0029DF80(void *p, s32 a) { FLD(u8, p, 0x36) = a; FLD(u8, p, 0x34) = 1; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF90);
 
@@ -73,11 +81,11 @@ INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DFC0);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DFE8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E000);
+extern "C" void func_0029E000(void *p, f32 a) { FLD(f32, p, 0x4C) = a; FLD(u8, p, 0x34) = 1; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E010);
+extern "C" void func_0029E010(void *p, s32 a, s32 b) { FLD(s16, p, 0x3C) = a; FLD(s16, p, 0x3E) = b; FLD(u8, p, 0x34) = 1; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E028);
+extern "C" s32 func_0029E028(void) { return 0; }
 
 extern "C" TypeInfo *__tf8CSndUnit()
 {
@@ -88,12 +96,12 @@ extern "C" TypeInfo *__tf8CSndUnit()
     return &D_424F40;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E080);
+extern "C" s32 func_0029E080(void *p) { return FLD(s32, p, 0x54) & 4 ? 2 : 1; }
 
 extern "C" void func_0029E098(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E0A0);
+extern "C" s32 func_0029E0A0(void) { return 0; }
 
 extern "C" TypeInfo *func_0029E0A8()
 {
@@ -113,7 +121,12 @@ extern "C" TypeInfo *func_0029E0F8()
     return &D_424F60;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E148);
+extern "C" void func_0029E148(void *p, s32 flag)
+{
+    FLD(void *, p, 0xC) = _vt$12CSndWorkReal;
+    func_0025C2C0(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf12CSndWorkReal()
 {
@@ -124,17 +137,17 @@ extern "C" TypeInfo *__tf12CSndWorkReal()
     return &D_424F70;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E200);
+extern "C" void func_0029E200(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; *q = (*q & 0x8F) | v; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E218);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E238);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E260);
+extern "C" void func_0029E260(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; q[2] = v; q[0] |= 0x20; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E278);
+extern "C" void func_0029E278(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; q[3] = v; q[0] |= 0x40; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E290);
+extern "C" void *func_0029E290(void *p) { return p; }
 
 extern "C" void *func_0029E298(void *p) { return (u8 *)p + 0x70; }
 
@@ -248,7 +261,12 @@ INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E888);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E898);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E8D0);
+extern "C" void func_0029E8D0(void *p, s32 flag)
+{
+    FLD(void *, p, 0x4) = _vt$16__user_type_info;
+    func_00286B20(p, 0);
+    if (flag & 1) return __builtin_delete(p);
+}
 
 extern "C" TypeInfo *__tf16__user_type_info()
 {
@@ -261,12 +279,12 @@ extern "C" TypeInfo *__tf16__user_type_info()
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E988);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E9A0);
+extern "C" s32 func_0029E9A0(s32 a) { return a >= 4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E9B0);
+extern "C" s32 func_0029E9B0(s32 a) { return a >= 6; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E9C0);
+extern "C" s32 func_0029E9C0(s32 a) { return (a & 6) == 4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E9D0);
+extern "C" s32 func_0029E9D0(s32 a) { return (a & 5) == 4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E9E0);
+extern "C" s32 func_0029E9E0(s32 a) { return (a & 5) == 5; }
