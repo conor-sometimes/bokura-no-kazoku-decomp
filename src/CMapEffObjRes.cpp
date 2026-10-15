@@ -236,9 +236,13 @@ public:
 };
 
 struct CMapEffAquaObj {
-    u8 pad0[0x40];
+    CVec4 m_pos;              // 0x0
+    CVec4 m_rot;              // 0x10
+    u8 pad20[0x10];
+    CVec4 m_col;              // 0x30
     f32 m_unk40;              // 0x40
-    u8 pad44[0x10];
+    u8 pad44[0xC];
+    f32 m_scale;              // 0x50
     f32 m_unk54;              // 0x54
     u8 pad58[0x4];
     s32 m_unk5C;              // 0x5C
@@ -298,17 +302,29 @@ public:
     s32 m_unk42B0;            // 0x42B0
 };
 
+struct CMapEffCurtainPt {
+    CVec4 m0;                 // 0x0
+    u8 pad10[0x30];
+    CVec4 m40;                // 0x40
+    s32 m50;                  // 0x50
+    s32 m54;                  // 0x54
+    f32 m58;                  // 0x58
+    u8 pad5C[0x14];
+};
 class CMapEffCurtainWork {
 public:
     void Func11E548();
     void Func11D8C8();
     void Func11E1C0();
+    void Func11D6E0();
 
     CMapEffObjRes *m_res;     // 0x0
     CMapEffParam *m_param;    // 0x4
     u8 pad8[0x8];
     f32 m_unk10;              // 0x10
     s32 m_unk14;              // 0x14
+    u8 pad18[0x8];
+    CMapEffCurtainPt *m_pts;  // 0x20
 };
 
 struct CMapEffBreathNode {

@@ -39,13 +39,20 @@ extern s32 D_002B94F4;
 struct GsTex { u64 tbp : 9; u64 rest : 55; };
 struct TexCtx { u8 pad0[0x20]; GsTex m20; u64 m28; GsTex m30; u8 pad38[8]; u64 lo40 : 32; u64 m44 : 16; u64 rest44 : 16; u8 pad48[0xB8]; u64 m100; u64 m108; };
 extern "C" s32 func_0023BA10(s32, s32, s32);
-extern "C" s32 func_0023BCB8(s32, s32);
+extern "C" u64 func_0023BCB8(s32, s32);
 extern "C" void func_0023BFA0(u32);
 extern "C" u64 func_0023DD40(s32, s32, s32, s32);
 extern "C" void func_0023C0F8(u64, s32, u32 *);
 extern "C" void func_0023C048(s32, u32 *, u32 *);
 extern "C" void func_0023A0F8(u64, s32, s32, s32, s32, void *);
 extern "C" s32 func_0023C198(s32, s32, s32, s32);
+
+extern u64 *D_382E14;
+union TexH { u64 v; struct { u64 lo : 38; u64 w : 12; u64 h : 12; u64 rest : 2; } b; };
+extern s16 *D_382E18;
+extern "C" s32 func_0023B510(s32);
+extern "C" s32 func_0023AFB8(u64);
+extern "C" s32 func_0023BC28(s32, s32);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023A1D8);
@@ -174,7 +181,16 @@ INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", Func23B1D0__Fi);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023B510);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023B5F8);
+extern "C" s32 func_0023B5F8(s32 i) {
+    s32 r;
+    if (i < 0) return -1;
+    i = D_380E10[i];
+    if (i < 0) return -1;
+    func_001F1190();
+    r = func_0023B510(i);
+    func_001F11C8();
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023B658);
 
@@ -186,13 +202,22 @@ INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BA10);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BC28);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BCB8);
+extern "C" u64 func_0023BCB8(s32 i, s32 f) {
+    s32 k;
+    if (i < 0) return 0;
+    i = D_380E10[i];
+    if (i < 0) return 0;
+    if (f == 0) return D_382E10[i].m8;
+    k = func_0023BC28(((s16 *)&D_382E10[i])[0x17], f);
+    if (k == -1) return 0;
+    return D_382E14[k];
+}
 
 extern "C" s32 func_0023BD60(s32 a, s32 b) {
     return func_0023BA10(a, 0, b);
 }
 
-extern "C" s32 func_0023BD80(s32 a) {
+extern "C" u64 func_0023BD80(s32 a) {
     return func_0023BCB8(a, 0);
 }
 

@@ -7,8 +7,10 @@ scripts/text_units.py: no vtables there, so cuts go only where no .rodata litera
 across them, every ~2500 instructions. Those boundaries are plausible, not proven. dklib, the
 engine library after them (0x245648-0x283858: CHeapObj, CPushBuf, CTask, CProcess, CResCache,
 CMemTex, CSndWork, ...), is cut the same way into 29 units `src/Dk<addr>.cpp`
-(`scripts/text_units.py --range 0x245648 0x283858 Dk`). The rest of .text stays assembly for now
-(`asm/crt0.s`, and `asm/text_283858.s`: libgcc, the Sony SDK libraries and the linkonce code).
+(`scripts/text_units.py --range 0x245648 0x283858 Dk`). The rest of .text after it
+(0x283858-0x29F230: libgcc, the Sony SDK libraries and the linkonce code) is cut into 22 units
+`src/Lib<addr>.cpp` by size alone (`--size-only`: shared literals there span the whole range).
+Only `asm/crt0.s` stays assembly.
 
 ## Evidence (scripts/find_units.py)
 

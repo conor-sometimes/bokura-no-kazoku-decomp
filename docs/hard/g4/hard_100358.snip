@@ -1,0 +1,80 @@
+//@decl
+extern char D_002D1800[], D_002D1820[];
+int Func235DE0(const char *fmt, ...);
+extern "C" s32 func_00251BA8();
+extern "C" void func_0024FA38(void *p, s32 a, s32 b, s32 c, s32 d);
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8(s32 a, s32 b);
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual s32 V12();
+};
+extern CSndIf *D_002A5468;
+inline void SmPush(CStateMachine *s) {
+    if (!((u32)(s->m_depth + 1) < 16)) Func235DE0(D_002D1820, s->m_depth, D_002D1800, 0x44);
+    s->m_depth++;
+}
+inline void SmPop(CStateMachine *s) {
+    if (!((u32)(s->m_depth - 1) < 16)) Func235DE0(D_002D1820, s->m_depth, D_002D1800, 0x46);
+    s->m_depth--;
+}
+inline s32 &SmVar(CStateMachine *s) {
+    if (!(s->m_depth < 16)) Func235DE0(D_002D1820, s->m_depth, D_002D1800, 0x48);
+    return s->m_stack[s->m_depth];
+}
+inline s32 SmGet(CStateMachine *s) {
+    if (!(s->m_depth < 16)) Func235DE0(D_002D1820, s->m_depth, D_002D1800, 0x4C);
+    return s->m_stack[s->m_depth];
+}
+//@func 0x100358
+void CBootMain::Update() {
+    s32 done = 0;
+    s32 st;
+    s32 v;
+    CStateMachine *sm = &m_sm;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    st = sm->m_state;
+    switch (st) {
+    case -1:
+        D_002A5468->V8(0xE, -1);
+    case -0x3F:
+        st = D_002A5468->V12();
+        if (st != 5) {
+            sm->m_state = -0x3F;
+            done = 1;
+            goto loop;
+        }
+        SmPush(sm);
+        SmVar(sm) = func_00251BA8();
+    case -0x42:
+        v = func_00251BA8();
+        if (v == SmGet(sm)) {
+            sm->m_state = -0x42;
+            done = 1;
+            goto loop;
+        }
+        SmPop(sm);
+        func_0024FA38(this, 0, 0, 0, 0);
+        sm->m_state = -0x45;
+        done = 1;
+        goto loop;
+    case -0x45:
+        done = 1;
+        goto loop;
+    }
+}

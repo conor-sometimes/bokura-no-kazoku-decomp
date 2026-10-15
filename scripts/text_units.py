@@ -43,6 +43,9 @@ def main():
     if args[:1] == ['--range']:      # --range LO HI PREFIX: another region (dklib: 0x245648 0x283858 Dk)
         LO, HI, prefix = int(args[1], 16), int(args[2], 16), args[3]
         args = args[4:]
+    nolit = args[:1] == ['--size-only']   # libraries: one object per function or so; cut by size alone
+    if nolit:
+        args = args[1:]
     f, addrs = funcs(args)
     sufmin = [1 << 32] * (len(f) + 1)
     for i in range(len(f) - 1, -1, -1):
@@ -52,7 +55,7 @@ def main():
         n += 1
         ins += size
         mx = max([mx] + ro)
-        if i + 1 < len(f) and (ins >= 2500 or n >= 60) and sufmin[i + 1] > mx:
+        if i + 1 < len(f) and (ins >= 2500 or n >= 60) and (nolit or sufmin[i + 1] > mx):
             cuts.append(addrs[i + 1])
             n = ins = 0
     for a in cuts:

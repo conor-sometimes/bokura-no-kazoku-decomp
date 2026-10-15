@@ -2219,3 +2219,7 @@ Func25BD60__FP7CSndPrm = 0x0025bd60; // type:func
 Func25D130__8CSndWorkP7CSndPrm = 0x0025d130; // type:func
 Func25BDE8__Fv = 0x0025bde8; // type:func
 Draw1BD420__16CLayoutHourglass = 0x001bd420; // type:func
+Func117198__9CCharaObjii = 0x00117198; // type:func
+LoadArc__9CEventResPCc = 0x00131fc8; // type:func
+Func151658__9CGameMain = 0x00151658; // type:func
+__13CResCacheUnit = 0x0024fa88; // type:func

@@ -188,7 +188,7 @@ public:
     virtual s32 V6();
     virtual void V7();
     virtual void V8();
-    virtual void V9();
+    virtual s32 GetNamed(s32 base, s32 name);
     virtual void V10();
     virtual void V11();
     virtual void V12();
@@ -209,6 +209,7 @@ public:
     virtual void V27();
     virtual void V28();
     virtual int GetBit1454F0(u32 a, u32 b);
+    virtual s32 Get145558(s32 a, s32 name);
 
     u8 pad0[0x1C];
 };

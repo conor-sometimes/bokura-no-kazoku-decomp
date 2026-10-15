@@ -1,0 +1,45 @@
+//@decl
+struct CMapEffCurtainParam {
+    u8 pad0[0x38];
+    f32 m38;                  // 0x38
+    u8 pad3C[0x4];
+    s32 m40;                  // 0x40
+    u8 pad44[0xC];
+    s32 m50;                  // 0x50
+};
+//@func 0x11D6E0
+void CMapEffCurtainWork::Func11D6E0() {
+    s32 i;
+    s32 j;
+    f32 w = 30.0f / 13.0f;
+    f32 h = w;
+    for (j = 0; j < 14; j++) {
+        for (i = 0; i < 14; i++) {
+            f32 fi = i;
+            CMapEffCurtainParam *prm;
+            if (j == 0) {
+                m_pts[i].m0.x = m_pts[i].m40.x = w * fi;
+                m_pts[i].m0.y = m_pts[i].m40.y = 0.0f;
+                m_pts[i].m0.z = m_pts[i].m40.z = 0.0f;
+            }
+            if (j == 13) {
+                m_pts[13 * 14 + i].m0.y = m_pts[13 * 14 + i].m40.y = h * 13.0f;
+            }
+            if (i == 0 || i == 13) {
+                m_pts[j * 14 + i].m0.x = m_pts[j * 14 + i].m40.x = w * fi;
+            }
+            prm = (CMapEffCurtainParam *)m_param;
+            if (prm->m50) {
+                f32 x = m_unk10;
+                if ((0.0f < x && m_pts[j * 14 + i].m0.z < 0.0f) || (x < 0.0f && 0.0f < m_pts[j * 14 + i].m0.z)) {
+                    m_pts[j * 14 + i].m0.z = 0.0f;
+                    m_pts[j * 14 + i].m40.z = 0.0f;
+                }
+            }
+            m_pts[j * 14 + i].m50 = 0;
+            m_pts[j * 14 + i].m54 = 0;
+            prm = (CMapEffCurtainParam *)m_param;
+            m_pts[j * 14 + i].m58 = prm->m38 * TblCos(fi * (f32)prm->m40 / 28.0f);
+        }
+    }
+}

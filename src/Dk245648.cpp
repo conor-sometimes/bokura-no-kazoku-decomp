@@ -156,6 +156,12 @@ inline void NodeInsertBefore(CMemNode *at, CMemNode *n) {
     n->m_prev->m_next = n;
     n->m_next->m_prev = n;
 }
+
+extern "C" void *func_00245CA0(void *(*fn)(u32), s32 n);
+class CHeapObj {
+public:
+    static void *operator new(unsigned int n);
+};
 // @decl-end
 
 extern "C" void *__builtin_new(u32 n) {
@@ -174,7 +180,10 @@ extern "C" void __builtin_vec_delete(void *p) {
     if (p) (*D_002B91B0)(p);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk245648", __7CBgWork);
+CBgWork::CBgWork() {
+    m_unk0 = -1;
+    m_unk4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk245648", _$_7CBgWork);
 
@@ -278,7 +287,9 @@ void *Func245D00(int n) {
     return func_00245CA0(D_002B91A4, n);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk245648", __nw__8CHeapObjUi);
+void *CHeapObj::operator new(unsigned int n) {
+    return func_00245CA0(D_002B91A8, n);
+}
 
 extern "C" s32 func_00245D40(s32 v) {
     s32 old = D_002B9E18[func_001F1180()] != 0;

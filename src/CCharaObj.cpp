@@ -4,10 +4,12 @@
 // CSwingBoneObj.cpp: vptr at 0x30.
 class CSwingBoneObj {
 public:
+    CSwingBoneObj() throw();
     virtual ~CSwingBoneObj();
     void Release();
 
-    u8 pad0[0x2C];
+    u8 pad0[0x28];
+    f32 m_unk28;              // 0x28
     f32 m_unk2C;              // 0x2C
 };
 // CDiffMotionObj unit (another lane's): vptr at 0x24; 0x10FC98 releases it.
@@ -51,12 +53,17 @@ public:
     s32 Get44(s32 v);
     s32 GetCurFlags();
     s32 Get48(s32 v);
+    s32 Func1120A0();
+    s32 Draw1120F8();
+    s32 GetCurC();
 
     u8 pad0[0x1C];
     s32 m_unk1C;              // 0x1C
     u8 pad20[0x60];
     s32 m_unk80;              // 0x80
-    u8 pad84[0x34];
+    u8 pad84[0x1C];
+    f32 m_unkA0;              // 0xA0
+    u8 padA4[0x14];
     s32 m_unkB8;              // 0xB8
 };
 
@@ -135,7 +142,11 @@ public:
     s32 Func1170F0();
     void Func116AE0();
     void Func117468(s32 mode, s32 p);
+    void Func117198(s32 mode, s32 p);
+    void Func115470(s32 anim, CVec4 *pts, s32 n, s32 frames, s32 k, s32 m, f32 a, f32 b);
     void Func1146A8(f32 target, s32 n, s32 dir);
+    s32 Func113978(s32 a, s32 b);
+    void Func114958(CVec4 *v, s32 n);
     void Func1156A8(f32 target, s32 turn, s32 n, s32 k, f32 a, f32 b);
     s32 Func1135F0(CCharaRes *res);
 
@@ -205,12 +216,16 @@ public:
     s32 m_unk1A4;             // 0x1A4
     char m_unk1A8[0x10];      // 0x1A8
     char m_unk1B8[0x10];      // 0x1B8
-    u8 pad1C8[0xC0];
+    u8 pad1C8[0x8];
+    CVec4 m_path[9];          // 0x1D0
+    f32 m_pathT[9];           // 0x260
+    s32 m_pathN;              // 0x284
     s32 m_unk288;             // 0x288
     s32 m_unk28C;             // 0x28C
-    u8 pad290[0x4];
+    s32 m_unk290;             // 0x290
     s32 m_unk294;             // 0x294
-    u8 pad298[0x8];
+    s32 m_unk298;             // 0x298
+    u8 pad29C[0x4];
     CVec4 m_unk2A0;           // 0x2A0
     CVec4 m_unk2B0;           // 0x2B0
     s32 m_unk2C0;             // 0x2C0
@@ -365,6 +380,15 @@ extern "C" void func_00227AA8();
 extern CVec4 D_002A05B0;
 void Func1173C0(void *a, void *b, void *c, void *d, s32 h);
 extern u8 D_002A04C0[], D_002A0540[], D_002A05A0[];
+
+void Func225240(s32 v);
+extern "C" s32 func_00204380(s32 id, s32 a, CMat4 *m, void *p);
+extern "C" s32 func_0023AA40(s32 c);
+extern "C" s32 func_0010E138(CFaceObj *f, s32 v);
+struct CFaceObjHead {
+    u8 pad0[0x14];
+    s32 m14;
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00112FE0);
@@ -946,7 +970,48 @@ s32 CCharaObj::Func1170F0() {
     return 0.5f < func_00116B98(ri, &m, m_unk28, m_unk60);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00117198);
+void CCharaObj::Func117198(s32 mode, s32 p) {
+    s32 ri;
+    s32 a = 0;
+    s32 b;
+    s32 c;
+    CMat4 m;
+    if (!m_unk1A4 || (ri = GetResIndex()) < 0) {
+        Func225088();
+        Func2250C0();
+        return;
+    }
+    Func225088();
+    if (m_res->Func1120A0()) {
+        b = m_res->Draw1120F8();
+    } else {
+        b = 0;
+    }
+    VU_CALL(0x30);
+    VU_CALL(0x20);
+    func_00116D60(&m_unkA0, &m_unkC0, &m_unkD0, &m_unkE0, mode, p);
+    VuStoreMat(&m);
+    if (m_part24) {
+        if (m_unk6C) {
+            f32 t = func_00116B98(ri, &m, m_unk34, m_unk60);
+            if (0.5f < t) {
+                if (t < 1.0f - m_res->m_unkA0) m_unk64 = 1;
+            }
+            if (t < 0.5f) {
+                if (m_res->m_unkA0 < t) m_unk64 = 0;
+            }
+        }
+        ((CFaceObjHead *)m_part24)->m14 = m_unk64;
+        a = func_0010E138(m_part24, func_0023AA40(m_res->GetCurC()));
+    }
+    c = func_00204380(ri, 0, &m, m_unk28 ? (u8 *)m_unk28 + 0x10 : 0);
+    Func225088();
+    if (b) Func225240(b);
+    if (a) Func225240(a);
+    if (c) Func225240(c);
+    if (!m_res->GetCurFlags()) Func2251E8();
+    Func2250C0();
+}
 
 void Func1173C0(void *a, void *b, void *c, void *d, s32 h) {
     func_00227460(0x40);

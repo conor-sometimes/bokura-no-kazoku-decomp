@@ -41,12 +41,23 @@ public:
     virtual ~CEventRes();
     void Release();
     int Load(const char *name);
+    int LoadArc(const char *name);
 
     CSvmRes m_svm;                // 0x00
     CEventMesResSub13DD98 m_mes;  // 0x24
     u8 m_unk48;                   // 0x48
     u8 pad49[0x1F];
 };
+
+//@sym strcpy 0x28B2D4
+#include "libc.h"
+extern "C" unsigned int strlen(const char *s);
+extern "C" char *strncpy(char *d, const char *s, unsigned int n);
+inline void StrCat(char *d, const char *s) { strcpy(d + strlen(d), s); }
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+int Func235DE0(const char *fmt, ...);
 // @decl-end
 
 CEventRes::CEventRes() {
@@ -57,7 +68,30 @@ CEventRes::~CEventRes() {
     Release();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventRes", func_00131FC8);
+int CEventRes::LoadArc(const char *name) {
+    u8 arc[0x100];
+    char path[0x100];
+    int ok = 0;
+    int opened = 0;
+    Func2491A8(arc, 0, (s32)"FILE", (s32)"eventdir", (s32)"data/event.xap");
+    if (!Func249248(arc)) {
+        Func235DE0("*** not found %s\n", arc);
+    } else {
+        strcpy(path, name);
+        StrCat(path, ".scb");
+        opened = 1;
+        if (func_0012DFB0(this, path)) {
+            strcpy(path, name);
+            StrCat(path, ".mes");
+            func_0013DA10(&m_mes, path);
+            if (D_002A0CE0) D_002A0CE0->Add(&m_mes);
+            strncpy((char *)&m_unk48, name, 0x20);
+            ok = 1;
+        }
+    }
+    if (opened) Func249348();
+    return ok;
+}
 
 int CEventRes::Load(const char *name) {
     char dir[0x100];

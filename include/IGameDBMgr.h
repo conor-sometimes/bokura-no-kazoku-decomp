@@ -48,7 +48,7 @@ public:
     virtual s32 Func14D5F8(s32 *out, s32 name);                 // [22] 0x14D5F8
     virtual void Func14D7C8(f32 *out, s32 idx, s32 v);          // [23] 0x14D7C8
     virtual void Func14DB70(f32 *out, s32 name);                // [24] 0x14DB70
-    virtual s32 Func14DCE0();                                   // [25] 0x14DCE0
+    virtual s32 Func14DCE0(s32 id, s32 a, s32 b);               // [25] 0x14DCE0
     virtual s32 GetUnk24();                                     // [26] 0x14E440
     virtual CGameDBRec8 *GetUnk20(s32 i);                       // [27] 0x14E448
     virtual s32 GetUnk14(s32 i);                                // [28] 0x14E480

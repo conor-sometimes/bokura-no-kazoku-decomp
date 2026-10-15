@@ -1,0 +1,46 @@
+//@decl
+extern "C" void func_00270A30(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 VuFrac(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $2, %1\n\tqmtc2.ni $2, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez $2, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$2", "$8");
+    return r;
+}
+struct CMapEffFlyEnt {
+    CVec4 m_pos;              // 0x0
+    CVec4 m_vel;              // 0x10
+    u8 pad20[0x10];
+};
+struct CMapEffFlyParam {
+    u8 pad0[0x28];
+    s32 m_count;              // 0x28
+};
+class CMapEffFlyWork : public CMapEffWork {
+public:
+    virtual ~CMapEffFlyWork();
+    void Func120B38();
+
+    CMapEffFlyParam *m_param; // 0x4
+    s32 m_unk8;               // 0x8
+    CMapEffFlyEnt *m_ents;    // 0xC
+    s32 m_num;                // 0x10
+};
+//@func 0x120B38
+void CMapEffFlyWork::Func120B38() {
+    s32 n = m_param->m_count;
+    s32 i;
+    if (n >= 17) n = 16;
+    m_num = n;
+    for (i = 0; i < m_num; i++) {
+        CMapEffFlyEnt *e = &m_ents[i];
+        CVec4 v;
+        v.x = e->m_vel.x * 0.01f + 0.01f;
+        v.y = e->m_vel.y * 0.01f + 0.01f;
+        v.z = e->m_vel.z * 0.01f + 0.01f;
+        v.w = 0.0f;
+        func_00270A30(&e->m_pos, &e->m_pos, &v);
+        e->m_pos.x = VuFrac(e->m_pos.x);
+        e->m_pos.y = VuFrac(e->m_pos.y);
+        e->m_pos.z = VuFrac(e->m_pos.z);
+        e->m_pos.w = 0.0f;
+    }
+}

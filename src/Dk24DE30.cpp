@@ -54,11 +54,57 @@ struct CProcessData {
 };
 extern "C" int func_0024F998(CProcess *p, s32 wait);
 extern "C" void func_0024F9F0(CProcess *p);
+
+typedef s32 (CProcess::*ProcFn)(s32);
+extern "C" void func_002457A0(CBgWork *w, CProcess *obj, ProcFn f, s32 arg);
+extern const ProcFn D_002E68C8;
+extern const ProcFn D_002E68D0;
+class CTaskList24F5C0 {
+public:
+    void *Func24F5C0(void *task, int x);
+    CTaskTag *m_tag;
+};
+
+class CResCacheUnit : public CListTag {
+public:
+    CResCacheUnit();
+    virtual ~CResCacheUnit();
+    CBgWork m_bg;             // 0x10
+    void *m1C;                // 0x1C
+    void *m20;                // 0x20
+    s32 m24;                  // 0x24
+    s32 m28;                  // 0x28
+    void *m2C;                // 0x2C
+    char m30[0x20];           // 0x30
+    s32 m50;                  // 0x50
+    s32 m54;                  // 0x54
+    s32 m58;                  // 0x58
+};
+
+struct CV4 { f32 x, y, z, w; };
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024DE30);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", Func24E0F0__FPCcii);
+s32 Func24E0F0(const char *ppts, int n, int pp) {
+    CV4 *pts = (CV4 *)ppts;
+    CV4 *p = (CV4 *)pp;
+    s32 i, c;
+    if (n < 3) return 0;
+    c = 0;
+    for (i = 0; i < n; i++) {
+        CV4 *a = &pts[i];
+        CV4 *b = &pts[(i + 1) % n];
+        CV4 *pr = &pts[(i + n - 1) % n];
+        if ((a->z < p->z && p->z < b->z) || (b->z < p->z && p->z < a->z)) {
+            if (p->x < (b->x - a->x) * ((p->z - a->z) / (b->z - a->z)) + a->x) c++;
+        }
+        if (p->x < a->x && a->z == p->z) {
+            if ((pr->z < p->z && p->z <= b->z) || (b->z < p->z && p->z <= pr->z)) c++;
+        }
+    }
+    return c & 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E240);
 
@@ -158,7 +204,13 @@ INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F520);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F570);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", Func24F5C0__15CTaskList24F5C0Pvi);
+void *CTaskList24F5C0::Func24F5C0(void *task, int x) {
+    CTask *t = (CTask *)task;
+    if (!t) return 0;
+    func_0024EEE8(m_tag, (CTaskTag *)t->m_unk0);
+    t->Func1();
+    return t;
+}
 
 extern "C" void func_0024F610(CTask *t) {
     func_0024F738(t, 0, 1);
@@ -223,9 +275,15 @@ void CProcess::Func2() {
     func_0024F9F0(this);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F900);
+extern "C" void func_0024F900(CProcess *p, s32 arg) {
+    func_0024F998(p, 1);
+    func_002457A0(&p->m_bg, p, D_002E68C8, arg);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F950);
+extern "C" void func_0024F950(CProcess *p) {
+    func_0024F998(p, 1);
+    func_002457A0(&p->m_bg, p, D_002E68D0, 0);
+}
 
 extern "C" int func_0024F998(CProcess *p, s32 wait) {
     return func_00245818(&p->m_bg, wait);
@@ -263,4 +321,14 @@ s32 CProcess::Func7() {
 extern "C" void ReleaseTextures__8CProcess(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024FA88);
+CResCacheUnit::CResCacheUnit() {
+    m1C = 0;
+    m20 = 0;
+    m24 = 0;
+    m28 = 0;
+    m2C = 0;
+    m30[0] = 0;
+    m50 = 0;
+    m54 = 0;
+    m58 = 0;
+}

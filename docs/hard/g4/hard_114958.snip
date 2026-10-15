@@ -1,0 +1,29 @@
+//@decl
+extern CVec4 D_002D36B0;
+inline f32 WrapDelta(f32 d) {
+    f32 w;
+    if (-0.5f <= d && d < 0.5f) {
+        w = d;
+    } else if (0.0f < d) {
+        w = d + -1.0f;
+    } else {
+        w = d + 1.0f;
+    }
+    return w;
+}
+inline f32 AngDiff(f32 a, f32 b) { return WrapDelta(VuFrac(a) - VuFrac(b)); }
+//@func 0x114958
+void CCharaObj::Func114958(CVec4 *v, s32 n) {
+    Func114828(v, v);
+    if (n > 0) {
+        m_unk190.x = AngDiff(v->x, m_unk120.x) / n;
+        m_unk190.y = AngDiff(v->y, m_unk120.y) / n;
+        m_unk190.z = AngDiff(v->z, m_unk120.z) / n;
+        *(s32 *)&m_unk190.w = 0;
+        m_unk1A0 = n;
+    } else {
+        *(u128 *)&m_unk120 = *(u128 *)v;
+        m_unk1A0 = 0;
+        *(u128 *)&m_unk190 = *(u128 *)&D_002D36B0;
+    }
+}

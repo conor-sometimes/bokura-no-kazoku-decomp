@@ -124,6 +124,135 @@ public:
     u8 pad0[0xC];
     CResCacheUnit m_listC;    // 0xC (head, 0x10 bytes used)
 };
+
+extern "C" int strcmp(const char *a, const char *b);
+typedef CResCacheUnit CRU;
+struct RHead {
+    s32 isHead;
+    CRU *prev;
+    CRU *next;
+    void *vptr;
+};
+inline CRU *RFirst(RHead *h) {
+    CRU *r = 0;
+    if (!h->next->m_isHead) r = h->next;
+    return r;
+}
+inline CRU *RLast(RHead *h) {
+    CRU *r = 0;
+    if (!h->prev->m_isHead) r = h->prev;
+    return r;
+}
+inline CRU *RNext(CRU *n) {
+    CRU *r = 0;
+    if (!n->m_next->m_isHead) r = n->m_next;
+    return r;
+}
+inline CRU *RPrev(CRU *n) {
+    CRU *r = 0;
+    if (!n->m_prev->m_isHead) r = n->m_prev;
+    return r;
+}
+inline void RUnlink(CRU *n) {
+    n->m_prev->m_next = n->m_next;
+    n->m_next->m_prev = n->m_prev;
+    n->m_next = n;
+    n->m_prev = n;
+}
+inline void RPushFront(RHead *h, CRU *n) {
+    n->m_prev = (CRU *)h;
+    n->m_next = h->next;
+    h->next = n;
+    n->m_next->m_prev = n;
+}
+inline void RPushBack(RHead *h, CRU *n) {
+    n->m_next = (CRU *)h;
+    n->m_prev = h->prev;
+    n->m_prev->m_next = n;
+    n->m_next->m_prev = n;
+}
+class CResCache {
+public:
+    void *Find250B08(int key);
+    void Func250840(void *name);
+    void Func250978();
+    s32 Init250208(void (*create)(), int n, int size, int nodes);
+    void Func250368();
+
+    CRU *m_units;             // 0x0
+    s32 m_count;              // 0x4
+    u8 pad8[4];
+    RHead m_free;             // 0xC
+    RHead m_used;             // 0x1C
+    RHead m_spare;            // 0x2C
+};
+extern s32 D_002BA0AC;
+extern "C" void func_0024FC78(CResCacheUnit *u);
+extern "C" s32 func_0023E9E8(s32 a);
+extern "C" void func_001F1BD8(s32 a);
+extern "C" void func_001F1A80(s32 (*fn)(s32 *), s32 v, s32 a, s32 b);
+extern "C" void func_001F1230();
+extern "C" s32 func_00251A80(s32 *p);
+extern "C" void func_0023E088(u64 v);
+extern "C" void func_0023C510(void *p);
+
+typedef s32 (CResCacheUnit::*UnitFn)(s32);
+extern "C" void func_002457A0(CBgWork *w, CResCacheUnit *obj, UnitFn f, s32 arg);
+extern const UnitFn D_002E68F0;
+
+void *Func237570(int n);
+void Func237A88(void *p, int a);
+void *Func237C30(void *p);
+void Func238158(void *p, int a);
+void Func225088();
+int Func2250C0();
+void Func225240(int a);
+class CUnk237E90 {
+public:
+    void Func237E90(int v);
+};
+extern "C" void func_00251650();
+extern "C" void func_002514B8();
+
+extern const char D_002E68F8[];
+extern "C" void func_0024FBD8(CResCacheUnit *u, CResObj *(*create)(), s32 size, s32 nodes);
+extern const char D_002E6920[];
+extern const char D_002E6938[];
+extern "C" void *__builtin_vec_new(u32 n);
+extern "C" void __builtin_vec_delete(void *p);
+extern "C" void ResUnitCtor(CRU *u) asm("__13CResCacheUnit");
+typedef void *(*MallocFn2)(u32);
+extern "C" CMemHeap *func_002460C8();
+extern "C" MallocFn2 func_002463C8(MallocFn2 f);
+extern "C" MallocFn2 func_00246430(MallocFn2 f);
+extern "C" void func_0022DC90(const char *dir);
+extern "C" void *func_0024FD90(u32 n);
+extern "C" void *func_0024FE28(u32 n);
+class CResObjL {
+public:
+    virtual void V0();
+    virtual s32 Load(const char *name);
+    u8 pad[0xC];
+};
+class CRUnitV {
+public:
+    s32 a, b, c;
+    virtual ~CRUnitV();
+};
+
+extern "C" void func_00227E60(void *p);
+void Func2251E8();
+extern "C" u64 func_00251488();
+extern "C" u64 func_002514A8();
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+extern s32 D_393924;
+extern s32 D_393928;
+#define GS_FRAME(fbp, fbw, psm, msk) ((u64)(fbp) | ((u64)(fbw) << 16) | ((u64)(psm) << 24) | ((u64)(msk) << 32))
+#define GS_ZBUF(zbp, psm, zmsk) ((u64)(zbp) | ((u64)(psm) << 24) | ((u64)(zmsk) << 32))
+#define GS_SCISSOR(x0, x1, y0, y1) ((u64)(x0) | ((u64)(x1) << 16) | ((u64)(y0) << 32) | ((u64)(y1) << 48))
+#define GS_XYOFFSET(x, y) ((u64)(x) | ((u64)(y) << 32))
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FAF0);
@@ -147,7 +276,13 @@ extern "C" void func_0024FC78(CResCacheUnit *u) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FCB0);
+extern "C" s32 func_0024FCB0(CResCacheUnit *u, const char *name) {
+    func_0024FD28(u);
+    strcpy(u->m_name, name);
+    func_00245818(&u->m_bg, 1);
+    func_002457A0(&u->m_bg, u, D_002E68F0, 0);
+    return 1;
+}
 
 extern "C" void func_0024FD28(CResCacheUnit *u) {
     func_00245818(&u->m_bg, 1);
@@ -169,7 +304,32 @@ extern "C" void *func_0024FE28(u32 n) {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FE80);
+extern "C" s32 func_0024FE80(CRU *u) {
+    s32 ok = 0;
+    CMemHeap *oh;
+    MallocFn2 om, om2;
+    u->m54 = 0;
+    D_002BA0A0 = func_002460C8();
+    D_002BA0A8 = func_002460C8();
+    oh = func_00246088(u->m_heap);
+    om = func_002463C8(func_0024FD90);
+    om2 = func_00246430(func_0024FE28);
+    func_0022DC90(0);
+    if (!((CResObjL *)u->m_obj)->Load(u->m_name)) Func235DE0(D_002E68F8, u->m_name);
+    else ok = 1;
+    if (D_002BA0A4 > 0) {
+        Func235DE0(D_002E6920, u->m_name, D_002BA0A4);
+        u->m54 = 1;
+    }
+    func_00246430(om2);
+    func_002463C8(om);
+    func_00246088(oh);
+    D_002BA0A0 = 0;
+    D_002BA0A8 = 0;
+    D_002BA0A4 = 0;
+    if (ok) u->m50 = 1;
+    return ok;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", __9CResCache);
 
@@ -179,7 +339,11 @@ INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Init250208__9CResCachePFv_viii);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250368__9CResCache);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250488);
+extern "C" void func_00250488(CResCache *c) {
+    CRU *n;
+    func_00250910(c);
+    for (n = RFirst(&c->m_used); n; n = RNext(n)) func_0024FD28(n);
+}
 
 extern "C" s32 func_002504D8(CResCacheUnit *u, s32 wait) {
     while (u) {
@@ -189,7 +353,10 @@ extern "C" s32 func_002504D8(CResCacheUnit *u, s32 wait) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250540__16CResLoader250540i);
+s32 CResLoader250540::Func250540(int wait) {
+    if (func_002504D8(UnitOf(((CResCache *)this)->m_used.next), wait)) return 1;
+    return func_002504D8(UnitOf(((CResCache *)this)->m_free.next), wait) != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_002505A0);
 
@@ -203,7 +370,15 @@ extern "C" s32 func_00250828(void *c, const char *name) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250840__9CResCachePv);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250910);
+extern "C" void func_00250910(void *pc) {
+    CResCache *c = (CResCache *)pc;
+    CRU *n;
+    while ((n = RLast(&c->m_free)) != 0) {
+        n->m58 = 0;
+        RUnlink(n);
+        RPushFront(&c->m_used, n);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250978__9CResCache);
 
@@ -228,7 +403,11 @@ INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250DD8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250EC8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_002512C0);
+extern "C" void func_002512C0() {
+    func_0023E088(D_393910.m0);
+    func_0023C510(D_3936F0);
+    func_0023C510(D_393800);
+}
 
 extern "C" void func_00251300(s32 on) {
     if (on) *(volatile u64 *)0x12000000 = 0x8023;
@@ -255,17 +434,63 @@ extern "C" u64 func_00251488() { return func_0023C650(D_393800); }
 
 extern "C" u64 func_002514A8() { return D_393910.m0; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_002514B8);
+extern "C" void func_002514B8() {
+    u64 fr = func_00251488();
+    u64 zb = func_002514A8();
+    func_00227E60(D_393800);
+    Func2251E8();
+    func_00227A20();
+    func_00226DF8(0x3F, 0);
+    func_00226DF8(0x4C, GS_FRAME((fr & 0x3FFF) >> 5, (fr >> 14) & 0x3F, (fr >> 32) & 0x3F, 0));
+    func_00226DF8(0x4E, GS_ZBUF((zb & 0x3FFF) >> 5, (zb >> 32) & 0x3F, 0));
+    func_00226DF8(0x42, 0x44);
+    func_00226DF8(0x4A, 0);
+    func_00226DF8(0x49, 0);
+    func_00226DF8(0x3B, 0x80);
+    func_00226DF8(0x22, 0);
+    func_00226DF8(0x40, GS_SCISSOR(0, D_393924 - 1, 0, D_393928 - 1));
+    func_00226DF8(0x18, GS_XYOFFSET(0x8000 - (D_393924 / 2) * 16, 0x8000 - (D_393928 / 2) * 16));
+    func_00226DF8(0x47, 0x38002);
+    func_00227AA8();
+    Func2251E8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00251650);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_002519B8);
+extern "C" void *func_002519B8(u8 *base, s32 i) {
+    void *pkt = Func237570(0x30);
+    CUnk237E90 *q = (CUnk237E90 *)((u8 *)pkt + 0x10);
+    Func237A88(pkt, 3);
+    Func238158(Func237C30(base + i * 16), 1);
+    Func225088();
+    func_00251650();
+    q->Func237E90(Func2250C0());
+    Func225088();
+    func_002514B8();
+    Func225240((int)base);
+    q->Func237E90(Func2250C0());
+    return pkt;
+}
 
 extern "C" s32 func_00251A80(s32 *p) {
     return func_0023E9E8(-1) >= *p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00251AB8);
+extern "C" s32 func_00251AB8(s32 mode) {
+    if (mode < 0 || mode == 1) return func_0023E9E8(mode);
+    if (mode == 0) {
+        mode = D_393910.m34;
+        if (!mode) {
+            func_001F1BD8(0);
+            goto done;
+        }
+    }
+    func_001F1A80(func_00251A80, D_002BA0AC + mode, 0, 0);
+    func_001F1230();
+done:
+    D_002BA0AC = func_0023E9E8(-1);
+    return func_0023E9E8(1);
+}
 
 extern "C" void func_00251B58(s32 v) { D_393910.m34 = v; }
 

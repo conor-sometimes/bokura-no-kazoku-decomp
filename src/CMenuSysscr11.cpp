@@ -16,8 +16,11 @@ public:
     virtual s32 Update();
     virtual s32 Draw();
 
-    CMenuSub1A7658 *m_unk58; // 0x58
-    u8 pad5C[0x4];
+    union {
+        CMenuSub1A7658 *m_unk58;  // 0x58
+        class CMenuInputKanji *m_kanji;
+    };
+    class CStatusItem *m_win; // 0x5C
 };
 
 //@sym __builtin_new 0x245648

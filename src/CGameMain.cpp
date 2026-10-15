@@ -24,6 +24,15 @@ public:
 struct CGameMainRand {
     u32 m_seed;
     CGameMainRand() { m_seed = 1; }
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Next32() {
+        u32 r = Next() << 16;
+        r |= Next();
+        return r;
+    }
 };
 // The game event object: its vptr sits after 0xFEC4 bytes of fields.
 class CGameEventObj {
@@ -45,6 +54,7 @@ public:
     void CallFunc151120(s32 a, s32 b);
     int Func1513D0(s32 slot, s32 name, s32 all);
     void Func150FD8();
+    void Func151658();
     s32 Func151028(s32 i, s32 j, s32 k);
     void Func151120(s32 a, s32 b, s32 c, s32 d, s32 e);
     int Func153220();
@@ -220,6 +230,16 @@ void InitResMgrs151F60();
 void ReleaseResMgrs151FE8();
 extern "C" void func_0012C4F0(void *p, s32 v);
 extern "C" void func_00128BB0(void *p, s32 v);
+
+#include "IGameDBMgr.h"
+struct CGameDBRec5Cv {
+    u8 pad0[0x10];
+    s32 m10;                  // 0x10
+    u8 pad14[0x10];
+    s32 m24;                  // 0x24
+    u8 pad28[0x4];
+    s32 m2C;                  // 0x2C
+};
 // @decl-end
 
 CGameMain::CGameMain(s32 k) {
@@ -329,7 +349,65 @@ INCLUDE_ASM("asm/nonmatchings/CGameMain", Func151120__9CGameMainiiiii);
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_001513D0);
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00151658);
+void CGameMain::Func151658() {
+    s32 ids[0x100];
+    u32 mask = 0;
+    s32 k;
+    s32 r;
+    s32 v;
+    for (k = 1; k < 4; k++) {
+        s32 j;
+        for (j = 0; j < 3; j++) {
+            s32 n = D_002A2988->Func14BD00(k, j, ids, 0x100);
+            s32 i;
+            for (i = 0; i < n; i++) {
+                if (D_002A2988->Func14DCE0(ids[i], 0, m_unk4C4) >= 0) {
+                    mask |= 1 << k;
+                    goto next;
+                }
+            }
+        }
+        for (j = 0; j < 0x100; j++) {
+            CGameDBRec5Cv *e;
+            if (D_002A26E4->Func1091B0(j + 0x1062) == 3) continue;
+            if (!D_002A26E4->Func1091B0(j + 0x1062)) continue;
+            e = (CGameDBRec5Cv *)D_002A2988->Find1DC(j);
+            if (!e || !e->m10) continue;
+            if (D_002A26E4->Func1091B0(0x1C) < e->m2C) continue;
+            if ((e->m24 >> k) & 1) {
+                mask |= 1 << k;
+                break;
+            }
+        }
+    next:;
+    }
+    r = m_rand.Next32() % 101;
+    v = 0;
+    switch (mask) {
+    case 8:
+        v = r < 20 ? 2 : 4;
+        break;
+    case 0:
+    case 4:
+        v = 10;
+        break;
+    case 12:
+        v = 2;
+        break;
+    case 2:
+        v = r < 80 ? 4 : 8;
+        break;
+    case 10:
+        v = 4;
+        break;
+    case 6:
+        v = 8;
+        break;
+    }
+    D_002A26E4->Func108FF0(0x18, v);
+    Func235DE0(" $$ skip %c%c%c : %c%c%c (%d)\n", mask & 2 ? '@' : '.', mask & 4 ? '@' : '.', mask & 8 ? '@' : '.',
+               v & 2 ? 'x' : 'o', v & 4 ? 'x' : 'o', v & 8 ? 'x' : 'o', r);
+}
 
 int Func151970(int k) {
     ICurFlag *f = D_002A26E4;

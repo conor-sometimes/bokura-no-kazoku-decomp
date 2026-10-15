@@ -123,6 +123,7 @@ public:
     void SetEnable(int k, s32 v);
     void Apply(int k, int v);
     int Load(void *list);
+    s32 FindPortal(s32 n, s32 *outId, struct CMapEffVec *out);
 
     void *m_unk0;             // 0x0
     CMapEffWork **m_works;    // 0x4

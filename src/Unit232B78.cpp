@@ -415,7 +415,15 @@ extern "C" const char *func_00233F88(const char *s) {
     return s;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit232B78", func_00233FC8);
+extern "C" void func_00233FC8(char *d, const char *s, s32 n) {
+    s32 i = 0;
+    s32 c;
+    while (i < n && (c = *s++) != 0) {
+        i++;
+        *d++ = c;
+    }
+    *d = 0;
+}
 
 extern "C" void func_00234008(char *d, const char *s, s32 n) {
     char *p = d;

@@ -1,0 +1,41 @@
+//@decl
+extern const double D_002D4750;
+extern const double D_002D47D0;
+extern "C" void func_001ECE18(s32 a, s32 b, f32 t);
+extern "C" s32 func_0011B428(s32 a, f32 t, s32 b);
+//@func 0x11F2A8
+void CMapEffLeafWork::Func11F2A8() {
+    s32 i;
+    s32 n;
+    FreeAll();
+    f32 t = (m_param->m_unk114 + m_param->m_unk118) / m_unk20 / D_002D4750;
+    n = (s32)(t / m_unk2C);
+    if (n > 128) n = 128;
+    for (i = 0; i < n; i++) {
+        Func11F390((f32)i / (f32)n);
+    }
+}
+//@func 0x122808
+void CMapEffSnowWork::Func122808() {
+    s32 i;
+    s32 n;
+    FreeAll();
+    f32 t = (m_param->m_unk114 + m_param->m_unk118) / m_unk20 / D_002D47D0;
+    n = (s32)(t / m_unk30);
+    if (n > 128) n = 128;
+    for (i = 0; i < n; i++) {
+        Func1228F0((f32)i / (f32)n);
+    }
+}
+//@func 0x124460
+void CMapEffAquariumWork::Func124460(s32 i) {
+    if (m_unk421C >= 0 && m_unk4218) {
+        CMapEffAquaObj *o = &m_objs[i];
+        func_001ECE18(m_unk421C, m_unk4218, o->m_unk54);
+        f32 d = __builtin_fabsf(o->m_unk40) * 3000.0f;
+        if (o->m_unk5C != -1) d *= 3.0f;
+        o->m_unk54 += d;
+        f32 len = Func1EAC30(m_unk421C) - 1.0f;
+        while (len <= o->m_unk54) o->m_unk54 -= len;
+    }
+}

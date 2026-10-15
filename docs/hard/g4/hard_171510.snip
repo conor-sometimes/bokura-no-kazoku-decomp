@@ -1,0 +1,123 @@
+//@decl
+struct CVec4f {
+    f32 x, y, z, w;
+};
+extern "C" unsigned int strlen(const char *s);
+inline void StrCat(char *d, const char *s) { strcpy(d + strlen(d), s); }
+extern "C" void func_0028B520(char *s);
+extern "C" void *func_00171A58(void *tbl, s32 n, s32 id);
+extern "C" void *func_00171B30(void *tbl, s32 n, s32 id);
+extern "C" void *func_00171C08(void *tbl, s32 n, s32 id);
+class CResNameIf {
+public:
+    virtual void Vf0();
+    virtual void Vf1();
+    virtual void Vf2();
+    virtual void Vf3();
+    virtual s32 Vf4(s32 a, s32 b);
+};
+extern CResNameIf *D_002A28D8;
+struct CPhotoInfo {
+    char m_name[0x20];        // 0x0
+    s32 m20;                  // 0x20
+    s32 m24;                  // 0x24
+    f32 m28;                  // 0x28
+    f32 m2C, m30, m34, m38;   // 0x2C
+    f32 m3C, m40;             // 0x3C
+    s32 m44, m48, m4C;        // 0x44
+};
+struct CPhotoEnt1 {
+    u8 pad0[0x8];
+    const char *m_names[2];   // 0x8
+    s32 m10[2];               // 0x10
+    s32 m18[2];               // 0x18
+    f32 m20[2];               // 0x20
+    s32 m28[2][2];            // 0x28
+    s32 m38[2];               // 0x38
+};
+struct CPhotoEnt2 {
+    u8 pad0[0x10];
+    CVec4f m10[2];            // 0x10
+    f32 m30[2];               // 0x30
+};
+struct CPhotoEnt3 {
+    u8 pad0[0x8];
+    f32 m8;                   // 0x8
+    f32 mC;                   // 0xC
+};
+//@func 0x171510
+int CPhotoDBMgr::Func171510(char *buf, s32 day, s32 idx, s32 id) {
+    CPhotoInfo *out = (CPhotoInfo *)buf;
+    CPhotoRec *r;
+    CPhotoEnt1 *e;
+    CPhotoEnt2 *f;
+    CPhotoEnt3 *g;
+    memset(out, 0, 0x50);
+    r = ((CPhotoDBMgrSub1714C8 *)this)->Find(id);
+    if (!r) return 0;
+    out->m20 = -1;
+    strcpy(out->m_name, "");
+    out->m4C = -1;
+    out->m44 = 0;
+    out->m48 = 0;
+    e = (CPhotoEnt1 *)func_00171A58(r->m8, r->mC, day);
+    if (e) {
+        if (e->m_names[idx][0]) {
+            strcpy(out->m_name, r->m_name);
+            out->m_name[3] = 0;
+            func_0028B520(out->m_name);
+            StrCat(out->m_name, e->m_names[idx]);
+            out->m24 = e->m18[idx];
+            out->m28 = e->m20[idx];
+            out->m44 = e->m28[idx][0] != 0;
+            out->m48 = e->m28[idx][1];
+            out->m4C = e->m38[idx];
+        } else if (e->m10[idx] >= 0) {
+            out->m20 = e->m10[idx];
+        }
+    }
+    if (out->m24 == -100 || out->m24 == -200) {
+        s32 b = out->m24 != -100;
+        s32 k = D_002A26E4->GetNamed(0x34, id) - (D_002A26E4->V6() - day);
+        s32 v;
+        if (idx == 0) {
+            k--;
+            if (k < 0) k = 0;
+        }
+        v = D_002A26E4->Get145558(k, id);
+        if (D_002A28D8) {
+            out->m24 = D_002A28D8->Vf4(b, v);
+        } else {
+            out->m24 = -1;
+        }
+    }
+    f = (CPhotoEnt2 *)func_00171B30(r->m10, r->m14, day);
+    if (f) {
+        out->m2C = f->m10[idx].x;
+        out->m30 = f->m10[idx].y;
+        out->m34 = f->m10[idx].z;
+        out->m38 = f->m10[idx].w;
+        out->m3C = f->m30[idx];
+        out->m40 = f->m30[idx];
+    } else {
+        out->m2C = 0.0f;
+        out->m30 = 0.0f;
+        out->m34 = 0.0f;
+        out->m38 = 0.0f;
+        out->m3C = 1.0f;
+        out->m40 = 1.0f;
+    }
+    {
+        s32 d = day;
+        if (idx == 0) {
+            d = day - 1;
+            if (d < 0) d = 0;
+        }
+        g = (CPhotoEnt3 *)func_00171C08(r->m18, r->m1C, d);
+    }
+    if (g) {
+        out->m3C *= g->m8;
+        out->m40 *= g->mC;
+    }
+    return 1;
+}

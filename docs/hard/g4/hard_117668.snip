@@ -1,0 +1,29 @@
+//@decl
+void Func225088();
+int Func2250C0();
+extern "C" void func_00109778(CMat4 *m, s32 v, f32 y);
+extern "C" s32 func_00204380(s32 id, s32 a, CMat4 *m, void *p);
+//@func 0x117668
+void CCharaObj::Func117668(s32 v) {
+    s32 id = Func113F80();
+    CMat4 m;
+    CMat4 out;
+    CVec4 c;
+    if (id < 0 || !m_unk1A4 || !m_unk140) {
+        Func225088();
+        Func2250C0();
+        return;
+    }
+    func_00270A30(&c, &m_unkA0, &m_unkB0);
+    func_00109778(&m, v, c.y);
+    VU_CALL(0x30);
+    VU_CALL(0x20);
+    VU_MAT(&m, 0x60);
+    VU_VEC(&c, 0x80);
+    VU_ROT(m_unkC4, 0xA0);
+    VU_ROT(m_unkC0, 0xB0);
+    VU_ROT(m_unkC8, 0x90);
+    VU_VEC(&m_unkD0, 0x70);
+    VuStoreMat(&out);
+    func_00204380(id, 0, &out, m_unk30 ? (u8 *)m_unk30 + 0x10 : 0);
+}

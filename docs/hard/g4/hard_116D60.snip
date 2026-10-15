@@ -1,0 +1,46 @@
+//@decl
+extern "C" void func_0024E6D0(CVec4 *out, void *a, void *b, CVec4 *c);
+extern CVec4 D_002A04A0;
+extern CVec4 D_002A04B0;
+inline f32 WrapDelta(f32 d) {
+    f32 w;
+    if (-0.5f <= d && d < 0.5f) {
+        w = d;
+    } else if (0.0f < d) {
+        w = d + -1.0f;
+    } else {
+        w = d + 1.0f;
+    }
+    return w;
+}
+//@func 0x116D60
+extern "C" void func_00116D60(CVec4 *pos, f32 *rot, CVec4 *scale, CMat4 *mat, s32 mode, s32 p) {
+    VU_MAT(mat, 0x60);
+    if (mode == 2) {
+        CVec4 t;
+        CVec4 u;
+        f32 ang;
+        func_0024E6D0(&t, (void *)p, (u8 *)p + 0x10, pos);
+        func_00270A98(&u, &t, pos);
+        ang = func_0021ACA8(u.x, u.z);
+        func_00270A30(&u, &t, &u);
+        u.w = 1.0f;
+        VU_VEC(&u, 0x80);
+        f32 cur = rot[1];
+        VU_ROT(ang + WrapDelta(VuFrac(ang) - VuFrac(cur)), 0xA0);
+    } else {
+        VU_VEC(pos, 0x80);
+        VU_ROT(rot[1], 0xA0);
+    }
+    VU_ROT(rot[0], 0xB0);
+    VU_ROT(rot[2], 0x90);
+    switch (mode) {
+    case 1:
+        VU_VEC(&D_002A04A0, 0x70);
+        break;
+    case 2:
+        VU_VEC(&D_002A04B0, 0x70);
+        break;
+    }
+    VU_VEC(scale, 0x70);
+}

@@ -519,3 +519,90 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **The last function of a unit**: retail's .text ends 8-aligned; a C function that ends 4 bytes short
   of an 8-byte boundary gets the padding from the linker, so nothing extra is needed (check the yaml
   start of the next unit before adding `.space`). *(bokura)*
+
+## r6
+2026-10-15, lane r6 (Unit230578, Unit232B78: CD/host file wrappers, ISO9660 path table and directory walk, sector cache, worker-thread request queues).
+- **Callee return type decides a temp register**: 0x230638 matched only when `func_00230928` (a strcpy+strcat path builder) is declared `void` at the call site (ours used v1 for a `?:` temp while the call "returned" a value in v0). The builder itself is `void` with `return (void)strcpy(...)` for the `j strcpy`. *(bokura)*
+- **`strcat` is an inline `strcpy(d + strlen(d), s)`**: the source argument is evaluated before strlen (the suffix pointer load sits in strlen's delay slot). A tail `j strcpy` needs a plain `return strcpy(dst + strlen(dst), ext);` with `ext` loaded into a local first; returning the inline's result doesn't sibcall. *(bokura)*
+- **Switch case order shows in the layout**: `switch (cb()) { case 1: return b; case -3: return -2; case -2: f(); case -1: default: return -1; }` (fallthrough, default sharing -1's body) matched 0x230FE8; a result check that tests `< -2`, `< 0`, `== 1` was a nested `switch (n) { case -2: case -1: break; case 1: return size; } return -1;`. *(bokura)*
+- **Two copies of the same switch body cross-jump**: when one switch's leaf jumps into another switch's code, write both switches with identical full case bodies (not gotos to shared labels) and order the bodies as retail lays them out (0x2315B0). *(bokura)*
+- **`li $7,1` in a delay slot before any use = an initialised result** (`s32 r = 1;`); adding it fixed the instruction count of 0x231268. *(bokura)*
+- **Field-wise copy vs struct assignment**: an 8-byte `u8` clock copied with eight lbu/sb pairs was eight field assignments; the same struct copied into `*this` with ldl/ldr was a struct assignment (0x230B30 vs CUnk2320F8::Func2320F8). *(bokura)*
+- **Only the thread-shared field is volatile**: `Req::m0` (request state polled by the worker) as `volatile` kept a store out of a likely delay slot in 0x233AA8; making the whole struct volatile is wrong. *(bokura)*
+- **Retry macro** `while ((r = f(buf, pos, n)) != 1) if (r == -2) return r;` matched both ISO9660 walkers (0x2319F8, 0x231BC8) with the constants hoisted into s-registers; `do { ... } while (off < total)` with `idx++` inside matched the path-table scan, and `if (len == 0 || ...) next sector; else off += len;` (inverted) gave the retail block order. *(bokura)*
+- **`if (f(q) > 0) return x; return 0;`** matched where `if (f(q) <= 0) return 0; return x;` gave the opposite branch (0x2339B8). *(bokura)*
+- **A found block after the function's infinite exit loop** = `goto found;` to a label after `for (;;) yield();`, ending in `goto loop;` (worker thread 0x2334B0). *(bokura)*
+- **bk perm on tails and prologues**: 3-5 store lines after a loop (0x231850, 0x2320A0) and the 7 initialiser statements of 0x231268 (5040 orders, DIFF 35 -> 11) are cheap to brute-force once the control flow matches. *(bokura)*
+- **Assembler limit**: retail sometimes has the last instruction of a `sw $5, D($4)` macro expansion in a `jr` delay slot (0x233D28, 0x233D40); GNU as 2.10 never does that, so these can't match with the current toolchain. *(bokura)*
+- **splat merged D_00233808** (a 6-insn `j func_00230B30` wrapper used as a thread callback by 0x2331B8) into func_002334B0; it stays referenced as `extern "C" void D_00233808(s32);`. *(bokura)*
+## r5
+- **Volatile stores before a call or branch**: retail's assembler did not swap a volatile `sw` into the
+  following `jal`/`b` delay slot (GCC prints `#.set volatile` as a comment for our gas, retail's gas
+  honoured it). `asm volatile(".set noreorder\n.set reorder")` right after the store resets gas's
+  previous-insn memory and reproduces it (0x244928); it also blocks GCC's own scheduling, so it does not
+  always help (0x244860). *(bokura)*
+- **Five-nop busy wait in SIF RPC binds**: `j = 9999; do { j -= 25; nop x5 } while (j >= 0);` with one
+  `asm volatile("nop")` per nop matched the sceSifBindRpc retry loops (0x235718, 0x236010); an empty loop
+  is deleted. *(bokura)*
+- **`bk perm` can't see swapped globals with the same %hi**: perm (like bk test) masks relocations, so
+  stores to D_38F078/D_38F07C or D_38F070/D_38F074 in either order score the same; the full build
+  catches it (0x244178, 0x244198, 0x2449A8). *(bokura)*
+- **Global packet pointers updated through a local copy**: `p = D; *p = tag; p++; D = p; p[0] = x;
+  D = p + 1; ...` gave retail's single load and `p+8/+16/+24` constants (0x242408, 0x242098); `*D++ = x`
+  reloads the global after every store under -fno-strict-aliasing. *(bokura)*
+- **Store-to-load forwarding shows the source**: `g->mF = g->mD + s->m9` reuses the register just stored
+  to `g->mD`, while `g->mE = g->mC + s->m8` after an if/else reloads `g->mC` (0x23FEE8). *(bokura)*
+- **Return variables**: a `$2 = 0`/`-1` preset before the first branch with the value flowing to one
+  epilogue is `r = 0; if (...) r = ...; return r;`, but where retail reuses the parameter register for a
+  looked-up handle (`lh $4, tbl($4)`) the form is `if (i < 0) return 0; i = tbl[i]; if (i < 0) return 0;
+  return ...` (0x23AA40, 0x23AB88, 0x23ABC8). *(bokura)*
+- **Same-mask DImode ANDs**: two `(u64 >> k) & 0x3F` extractions in one function load 0x3F into a
+  register in ours (`li; and`), retail keeps two `andi`; not solved (0x23A1D8, 0x23B948). *(bokura)*
+- **Stack buffer address in a saved register**: retail keeps `daddu $17, $29, $0` for a local buffer
+  passed once after a call; ours rematerialises `move a0, sp` (0x239BD8, 0x23A0F8), unsolved. *(bokura)*
+- **Shared scratchpad**: lanes running from one parent session share the scratchpad; generic snippet
+  names (s_a1.snip, s_a2.snip, t.sh) collide between lanes. Keep per-lane files in a lane subdirectory
+  with lane-prefixed snippet names. *(bokura)*
+- **Literal order shows duplicated source calls**: a string used at two error sites that the compiler
+  cross-jumped into one call is still emitted where its first use sits in the source; when retail's
+  .rodata has it earlier than a `goto fail` version produces, write the print twice (0x112710). *(bokura)*
+- **`strcpy(d + strlen(d), s)` with `s` loaded before the strlen call** is an inline strcat helper
+  (arguments are evaluated before the inline body) (0x112710). *(bokura)*
+- **A dead high half kept in `(hi | lo) & 0xFFFF`** means the value was built in one variable assigned
+  twice (`r = Next() << 16; r |= Next();`): combine only trusts the known-zero bits of a pseudo set
+  once, so `return (Next() << 16) | Next();` folds the high draw away (CMapEffObjRes LCG, 0x123850). *(bokura)*
+- Array of structs reached through a pointer to a struct that contains the array (`t->st[i].a`, with `struct { u8 pad[0x5C]; Stat st[6]; }`) gives GCC's mixed address bases (`this+0xC` hoisted for some fields, `this` for others); a cast `(Stat *)((u8 *)this + 0x5C)` or a 2-D `s32 (*)[5]` does not (CChrBodyWin 0x1870B8/0x1871D0). *(bokura)*
+- A loop that starts from the original pointer (`for (p = Next(file, ...); cond; p = Next(p, ...))`) instead of copying `p = file;` first changes the register allocation (CChrBodyWin 0x1884F0). A call whose result looks used may really be discarded: check that the return register is read. *(bokura)*
+- Two-value range checks that GCC folds into one `sltu` (`a < 0 || a >= 2`) come out as signed `slti`+`bgez` when written as a `switch` with `case 0: case 1: break; default:` (0x189348). *(bokura)*
+- Load/save wrappers: `if ((buf = Load(path)) == 0 || !Parse(buf)) { if (buf) Free(buf); Error(); return 0; } Free(buf); return 1;` keeps the redundant `if (buf)` test after a failed parse; `buf = Load(path); if (!buf || !Parse(buf))` lets CSE drop it (CMapAttr 0x119BE0). Failure path first, success at the end. *(bokura)*
+- VU0 float-to-int (`mfc1; qmtc2.ni; vftoi15.x; qmfc2.ni`, 41 functions in the game) is inline asm with the mfc1 inside it: `asm volatile("mfc1 %0, %1\n\tqmtc2.ni %0, $vf2\n\tvftoi15.x $vf2, $vf2\n\tqmfc2.ni %0, $vf2" : "=r"(r) : "f"(f));`. With an "r"(f) input GCC CSEs the mfc1 between two uses. Sin/cos table: `D_002A6800[(FtoI15(a) >> 1) & 0x3FFF]`, cos adds 0x1000 before the mask (CMapEffObjRes 0x1235E8, 0x126068, 0x121C18, 0x121810). *(bokura)*
+- The volatile asm is a scheduling barrier: stores land on the same side of it as in the source, so the order of `d->x = ...sin...; d->y = ...;` matters. *(bokura)*
+- VU0 sqrt is inline asm on a fixed $8: `asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8");` (gas accepts `vsqrt`; CMapEffLeafWork 0x11F660). *(bokura)*
+- Loop-invariant float constants get f25, f24, ... in the order the source mentions them; a random offset written as `Range(-0.5f, 1.2f)` (lo first) instead of `t * 1.7f - 0.5f` puts -0.5 in the first register. *(bokura)*
+- LCG draws store the seed, so later loads that may alias it stay after the store: where a field load sits between two seed stores in retail tells you where that statement was in the source (CMapEffLeafWork 0x11F390: `p.y` between the two draws). *(bokura)*
+- VU0 micro-program calls (CCharaObj 0x117898) are one inline asm per step: `vcallms N`; load a vector `qmfc2.i $0,$vf0; lqc2 $vf4,0(p); vnop; vnop; vcallms N`; rotation from the sin table as ints `qmtc2.i cos,$vf4; qmtc2.ni sin,$vf5; vnop; vnop; vcallms N`; matrix load (4 lqc2) and store. The store asm moves the pointer into $2 itself (`move $2, %0` with a "$2" clobber), which is where retail's `daddu $2, $18, $0` comes from. *(bokura)*
+- VU0 frac (`vftoi0; vmulaw; vaddw; vitof0; bgez; vmadda; vmsubw`) is one asm with a local label and no explicit nop (gas fills the bgez slot): `asm volatile("mfc1 $2, %1\n\tqmtc2.ni $2, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez $2, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$2", "$8");`. `sqrt.s` (disassembled as `c1 0x4`) is a plain `asm("sqrt.s %0, %1")`. VU dot3 likewise (CCharaObj 0x114828). *(bokura)*
+- Passing `this` to a free `void f()` defined later in the same file: an `extern "C" void f__Fv(void *)` alias crashes cc1plus (Internal error #378) once the real definition follows; `((void (*)(CGameMain *))f)(this)` compiles to the same direct `jal` (CGameMain ctor 0x150A70). *(bokura)*
+- Constructors with members whose ctors are unnamed in other lanes: declare the member as raw bytes (or a class without a ctor) and call `func_XXXXXXXX(&member)` first thing in the body; the order matches the implicit member construction when those members are the last ones (CGameMain 0x150A70, CMapAttr 0x118210). *(bokura)*
+- Level 3 for a unit whose matched slot functions carry placeholder class names: keep the old bodies as `inline` methods of the placeholder class and define the real overrides as one-line calls to them; the inlined code is identical (CGameMain Func4/Draw). Member objects whose dtors live in other lanes' units become raw storage with explicit `func_XXXXXXXX(&m, 2)` calls at the end of the destructor body, before the implicit member and base destructors (0x150C30). *(bokura)*
+- Tooling: `bk port` stops with `AssertionError: no address for __ti8CProcess` for a key method (the compiled snippet carries typeinfo symbols); port by hand (replace the INCLUDE_ASM, add the `_$_` name to symbol_addrs.txt), then `dataconv apply`, mk, delete the RTTI-name INCLUDE_RODATA, mk, rocheck. *(bokura)*
+- Pointer-to-member arguments: a PMF literal (`&C::F`, and `0` for none) is an 8-byte .rodata constant GCC writes with the function (loaded with ldl/ldr because it is only 4-aligned); `extern const PMF D_X` reproduces the load but in the wrong argument order. Needs the unit at level 2+, the target methods named in the PMF's class (aliases.ld for ones matched under other class names), and the INCLUDE_RODATA lines of the literals before that function moved above it so the constants land after them (CPhotoDBMgr 0x170B18). *(bokura)*
+- A PMF parameter of a callback that returns int gives `slt $3` after the `jalr`; with a void callback GCC uses $2 (0x170CD8). *(bokura)*
+- A redundant two-step test that retail keeps (`beqz f -> A; beq f,1 -> B; A:`) comes from gotos: `if (f == 0) goto draw; if (f != 1) { draw: ... }`; a switch or `||` form gets folded to one compare (CCharaObj 0x117468). *(bokura)*
+- `x = 0; if (c) x = f();` and `if (c) x = f(); else x = 0;` allocate differently: the if/else form puts the 0 in the branch delay slot and gives x an earlier s-register (CCharaObj 0x117198). *(bokura)*
+- Angle deltas `WrapDelta(VuFrac(a) - VuFrac(b))` go through an inline helper taking both floats: retail loads both operands before the first asm, which only happens when they are arguments of an inline call (CCharaObj 0x114958). The wrap itself is `[-0.5,0.5) -> d, d > 0 -> d - 1, else d + 1`. *(bokura)*
+- 16-byte struct copies with `lq`/`sq` need a 128-bit type: `*(u128 *)&dst = *(u128 *)src` (CVec4 here is only 4-aligned). *(bokura)*
+- **GS packet code uses the sce macros**: `RGBAQ(c >> 24, c >> 16, c >> 8, c, 0)` with each argument
+  masked inside the macro (`((u64)(r) & 0xFF) | ...`) reproduced retail's register use where hand
+  shifts/masks did not; the A+D writes are `p = D; *p++ = tag; D = p; p[k] = v; D = p + k + 1;` with
+  constant indices (0x247C00, 0x247D38). *(bokura)*
+- **Repeated `div` traps mean repeated divisions in the source**: 0x247FA8 only came to 188 insns with
+  `i0 % w` / `i1 / w` written at every use (9 divides), not cached in locals. *(bokura)*
+- **Separate counters again**: reusing the inner-loop index for a later copy loop moved its register;
+  a fresh `k` let the final call take it straight in `$6` (0x24E9C0). *(bokura)*
+- **Struct copies of float vectors are field by field in retail** (`lwc1/swc1`), through a macro on
+  `out[k]` so every store has a constant offset from one base; an inline function taking `&out[k]`
+  let loop.c hoist `out + 16` and broke CSE of the sums. *(bokura)*
+- **A store run's emission order**: GCC 2.96 emitted the last of a run of independent field stores
+  right after the first; putting the store retail emits second at the end of the source run matched
+  0x24FA88 at once. *(bokura)*

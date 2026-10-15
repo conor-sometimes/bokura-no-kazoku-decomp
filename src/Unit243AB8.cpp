@@ -79,6 +79,38 @@ extern FreeFn D_002B91B0;
 struct SndReq { s32 m0; s32 m4; const u8 *m8; s32 mC; };
 extern "C" void func_0027BD20(void);
 extern "C" void func_0027BD78(void);
+
+extern s32 D_002B9DAC;
+extern s32 D_002B9D94;
+extern s32 D_002B9DA4;
+extern "C" void func_00244928(void);
+extern "C" void func_00244498(u32);
+extern "C" void func_00244178(void);
+extern "C" void func_00243FF8(s32);
+extern "C" void func_00244208(void);
+extern "C" s32 func_002448D8(void);
+extern void *D_002B9D9C;
+extern s32 D_002B9D80;
+extern s32 D_38F06C;
+extern "C" void func_002679A8(void *);
+extern "C" void func_00267818(void *);
+extern "C" void func_00244A80(s32);
+extern "C" void func_002449A8(void);
+extern "C" s32 func_0022FF58(s32);
+extern "C" s32 func_0022DD98(s32, s32, s32, s32);
+extern "C" void func_0022E450(s32, s32);
+extern "C" s32 func_00243F80(s32);
+extern "C" u8 *func_00245600(Ring *);
+extern "C" void func_00245618(Ring *, s32);
+extern "C" s32 func_00245510(Ring *);
+typedef s32 (*SndAvail)(s32);
+typedef void (*SndWrite)(s32, u8 *, u8 *, s32);
+typedef void (*SndSet1)(s32, s32);
+typedef void (*SndSet2)(s32, s32, s32);
+extern SndAvail D_002B9DE0[];
+extern SndWrite D_002B9DE8[];
+extern SndSet1 D_002B9DF0[];
+extern SndSet2 D_002B9DF8[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00243AB8);
@@ -251,11 +283,45 @@ extern "C" void func_00244928(void) {
     for (i = 0; i < 4; i++) func_00243F20(i);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_002449A8);
+extern "C" void func_002449A8(void) {
+    s32 i;
+    if (!D_002B9DAC) return;
+    func_00244928();
+    D_002B9D94 = 1;
+    D_002B9D98 = 0;
+    D_002B9DBC = 0;
+    func_002679A8(&D_38F000);
+    for (i = 0; i < 4; i++) func_00243DF0(i);
+    func_002454D8((Ring *)D_002B9DA8);
+    func_00244498(1);
+    D_002B9DA0 = 1;
+    D_002B9DA4 = 0;
+    D_38F06C = 0;
+    D_38F070 = 0;
+    D_38F074 = 0;
+    D_002B9D90 = 0;
+    D_002B9D8C = 0x80;
+    return func_00244178();
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00244A80);
 
-INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00244CA0);
+extern "C" void func_00244CA0(void) {
+    s32 i;
+    if (D_002B9DAC) {
+        D_002B9DAC = 0;
+        func_002679A8(&D_38F000);
+        func_00267818(&D_38F000);
+        func_002454B0((void *)D_002B9DA8);
+        D_002B9DA8 = 0;
+        for (i = 0; i < 4; i++) func_00243FF8(i);
+        func_00244208();
+        D_002B91B0(D_002B9D9C);
+        D_002B9D9C = 0;
+        D_002B91B0((void *)D_002B9D80);
+        D_002B9D80 = 0;
+    }
+}
 
 extern "C" void func_00244D68(void) {
     s32 i;

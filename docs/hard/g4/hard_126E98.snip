@@ -1,0 +1,63 @@
+//@decl
+struct CMapEffVec {
+    f32 x, y, z, w;
+};
+struct CMapEffEntryP {
+    s32 m_type;               // 0x0
+    s32 m_id;                 // 0x4
+    u8 pad8[0x118];
+    CMapEffVec m120;          // 0x120
+    CMapEffVec m130;          // 0x130
+    u8 pad140[0x10];
+    s32 m150;                 // 0x150
+};
+extern CMapEffVec D_002A0B00;
+//@func 0x126E98
+s32 CMapEffObj::FindPortal(s32 n, s32 *outId, CMapEffVec *out) {
+    s32 i;
+    s32 cnt;
+    s32 seen;
+    if (!m_unk0) return 0;
+    seen = 0;
+    cnt = 0;
+    i = 0;
+    goto test;
+loop:
+        CMapEffEntryP *e;
+        if ((*func_00295170(m_unk0, i))->m_type != 6) goto next;
+        e = (CMapEffEntryP *)*func_00295170(m_unk0, i);
+        if (e->m_id == 0) {
+            if (seen) goto next;
+            seen = 1;
+        }
+        if (cnt != n || !outId || !out) {
+            cnt++;
+            goto next;
+        }
+        *outId = e->m_id;
+        if (e->m150 >= 2) {
+            out[0].x = e->m120.x;
+            out[0].y = e->m120.y;
+            out[0].z = e->m120.z;
+            out[0].w = e->m120.w;
+            out[1].x = e->m130.x;
+            out[1].y = e->m130.y;
+            out[1].z = e->m130.z;
+            out[1].w = e->m130.w;
+        } else {
+            out[0].x = D_002A0B00.x;
+            out[0].y = D_002A0B00.y;
+            out[0].z = D_002A0B00.z;
+            out[0].w = D_002A0B00.w;
+            out[1].x = D_002A0B00.x;
+            out[1].y = D_002A0B00.y;
+            out[1].z = D_002A0B00.z;
+            out[1].w = D_002A0B00.w;
+        }
+        return cnt;
+next:
+    i++;
+test:
+    if (i < func_00295110(m_unk0)) goto loop;
+    return cnt;
+}

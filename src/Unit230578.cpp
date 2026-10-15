@@ -91,7 +91,7 @@ extern "C" void func_00232288(const char *, s32);
 inline char *strcat(char *d, const char *s) { return strcpy(d + strlen(d), s); }
 struct FsOps { void *f[9]; };
 extern "C" void func_00232080(s32);
-extern "C" s32 func_002317F0(void);
+extern "C" void func_002317F0(void);
 extern "C" char *func_002327F8(const char *);
 struct FsSub { char m0[0x880]; s32 m880; char m884[0x80]; };
 struct FsEnt { s32 m0; char m4[0x80]; FsSub sub[2]; };
@@ -238,7 +238,7 @@ extern "C" void func_00230A18(void) {
     while (func_00263870(1)) func_002309C8();
 }
 
-extern "C" s32 func_00230A48(FsOps *t) {
+extern "C" void func_00230A48(FsOps *t) {
     t->f[0] = (void *)func_00230E50;
     t->f[1] = (void *)func_00230F68;
     t->f[2] = (void *)func_00230E98;
@@ -249,7 +249,7 @@ extern "C" s32 func_00230A48(FsOps *t) {
     t->f[8] = (void *)func_00232070;
     t->f[7] = (void *)func_00232080;
     func_00232080(0);
-    return func_002317F0();
+    return (void)func_002317F0();
 }
 
 extern "C" void func_00230AD8(void) {
@@ -266,7 +266,59 @@ extern "C" void func_00230B10(s32 a) {
     func_002649B8(a, buf);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_00230B30);
+extern "C" void func_00230B30(s32 n) {
+    u32 st;
+    s32 t;
+    CdClock clk;
+    if (D_345180.m214) {
+        D_002B8CB0 += n;
+        if (D_002B8CB0 > 0x400) {
+            if (func_00230AE0() == 1) {
+                func_00231850();
+                D_002B8C6C |= 1;
+            } else {
+                D_002B8C6C &= ~1;
+            }
+            D_002B8CB0 = 0;
+        }
+    }
+    if (D_002B8C78 & 1) {
+        st = DisableIntr();
+        D_002B8C78 &= ~1;
+        RestoreIntr(st);
+        func_00230B10(0);
+        func_00230A18();
+    }
+    if (D_002B8C78 & 2) {
+        st = DisableIntr();
+        D_002B8C78 &= ~2;
+        RestoreIntr(st);
+        func_00230B10(1);
+        func_00230A18();
+    }
+    if (D_002B8C80) {
+        t = func_0023E9E8(-1);
+        if (D_002B8C84 != t || !D_002B8C98) {
+            if (--D_002B8C88 < 0) {
+                if (func_002648C0(&clk)) {
+                    st = DisableIntr();
+                    D_002B8C90.b[0] = clk.b[0];
+                    D_002B8C90.b[1] = clk.b[1];
+                    D_002B8C90.b[2] = clk.b[2];
+                    D_002B8C90.b[3] = clk.b[3];
+                    D_002B8C90.b[4] = clk.b[4];
+                    D_002B8C90.b[5] = clk.b[5];
+                    D_002B8C90.b[6] = clk.b[6];
+                    D_002B8C90.b[7] = clk.b[7];
+                    RestoreIntr(st);
+                    D_002B8C98 = 1;
+                    D_002B8C88 = D_002B8C8C;
+                }
+            }
+            D_002B8C84 = t;
+        }
+    }
+}
 
 extern "C" void func_00230E50(char *dst, const char *name) {
     strcpy(dst, D_002B8C60);
@@ -352,19 +404,104 @@ extern "C" s32 func_00231230(s32 x) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit230578", func_00231268);
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_002314F0);
+extern "C" s32 func_002314F0(u8 *buf, s64 off, s32 size) {
+    s32 r, sec;
+    if (D_002B8CB8 == off) {
+        sec = off / 0x800 - 32;
+        r = func_002315B0(D_3553C0, sec < 0 ? 0 : sec, 1);
+        if (r < 0) return r;
+    }
+    D_002B8CB8 = off;
+    return func_00231268(buf, off, size);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit230578", func_002315B0);
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_002317F0);
+extern "C" void func_002317F0(void) {
+    CEnt *e;
+    s32 i;
+    D_345180.free = 0;
+    for (i = 0, e = D_345180.e; i < 32; i++, e++) {
+        e->m8 = D_3453C0[0] + i * 0x800;
+        e->m4 = D_345180.free;
+        D_345180.free = e;
+    }
+    D_345180.m218 = 1;
+    D_345180.head.m0 = &D_345180.head;
+    D_345180.m214 = 0;
+    D_345180.head.m4 = &D_345180.head;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_00231850);
+extern "C" void func_00231850(void) {
+    CEnt *e, *n;
+    D_345180.m218 = 1;
+    D_345180.m214 = 0;
+    n = D_345180.head.m4;
+    while ((e = n) != &D_345180.head) {
+        n = e->m4;
+        e->m4 = D_345180.free;
+        D_345180.free = e;
+    }
+    D_345180.head.m0 = &D_345180.head;
+    D_345180.head.m4 = &D_345180.head;
+    D_002B8CB8 = -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit230578", func_002318B8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_002319F8);
+#define READ(b, p, n) while ((r = func_00231E48(b, p, n)) != 1) if (r == -2) return r
+extern "C" s32 func_002319F8(s64 pt, s32 size, const char *path, s32 *a1, s32 *a2) {
+    u16 rec[8];
+    char comp[256];
+    char name[256];
+    s32 r, off, idx, dirno;
+    READ(rec, pt, 8);
+    dirno = 1;
+    off = (rec[0] + 9) & ~1;
+    idx = 2;
+    while (off < size) {
+        if (func_00231DF8(path)) return func_00231BC8(((rec[2] << 16) | rec[1]) << 11, path, a1, a2);
+        path = func_00231D98(comp, (char *)path);
+        do {
+            READ(rec, pt + off, 8);
+            if (rec[3] == dirno) {
+                READ(name, pt + off + 8, rec[0]);
+                name[rec[0]] = 0;
+                if (strcmp(name, comp) == 0) break;
+            }
+            off += (rec[0] + 9) & ~1;
+            idx++;
+        } while (off < size);
+        dirno = idx;
+    }
+    return -3;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_00231BC8);
+struct DirRec { u16 m0; u16 m2; u16 m4; u16 m6; u16 m8; u16 mA; u16 mC; u8 pad[0xB]; u8 m19; u8 pad2[6]; u8 m20; u8 m21; };
+#define READ(b, p, n) while ((r = func_00231E48(b, p, n)) != 1) if (r == -2) return r
+extern "C" s32 func_00231BC8(s64 dir, const char *name, s32 *a1, s32 *a2) {
+    DirRec rec;
+    char buf[256];
+    s32 r, off, total;
+    READ(&rec, dir, 0x22);
+    total = (rec.mC << 16) | rec.mA;
+    off = (rec.m0 + 1) & ~1;
+    do {
+        READ(&rec, dir + off, 0x22);
+        if (rec.m0 != 0 && rec.m20 != 0 && !(rec.m19 & 2)) {
+            READ(buf, dir + off + 0x21, rec.m20);
+            buf[rec.m20] = 0;
+            if (strcmp(buf, name) == 0) {
+                *a1 = (rec.m4 << 16) | rec.m2;
+                *a2 = (rec.mC << 16) | rec.mA;
+                return 1;
+            }
+        }
+        if (rec.m0 == 0 || (u32)((off & 0x7FF) + 0x22) > 0x800) off = (off & ~0x7FF) + 0x800;
+        else off += rec.m0;
+    } while (off < total);
+    return -3;
+}
 
 extern "C" char *func_00231D98(char *dst, char *src) {
     while (*src && *src != '\\') *dst++ = *src++;
@@ -409,7 +546,20 @@ extern "C" s32 func_002320E8(void) {
     return D_002B8C80;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit230578", Func2320F8__10CUnk2320F8);
+class CUnk2320F8 {
+public:
+    int Func2320F8();
+};
+int CUnk2320F8::Func2320F8() {
+    u32 st;
+    if (!D_002B8C98 || !D_002B8C80) return 0;
+    if (this) {
+        st = DisableIntr();
+        *(CdClock *)this = D_002B8C90;
+        RestoreIntr(st);
+    }
+    return 1;
+}
 
 extern "C" s32 func_002321B0(s32 x) {
     s32 old = D_002B8CA8;

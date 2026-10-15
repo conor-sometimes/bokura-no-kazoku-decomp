@@ -1,0 +1,34 @@
+//@decl
+extern CVec4 D_002A05C0;
+inline void VuApply(CVec4 *out, const CVec4 *in) {
+    register const CVec4 *i asm("$7") = in;
+    register CVec4 *o asm("$5") = out;
+    if (!i) i = &D_002A05C0;
+    asm volatile("vcallms 0x0\n\tqmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%1)\n\tvmulax.xyzw ACC, $vf24, $vf4x\n\tvmadday.xyzw ACC, $vf25, $vf4y\n\tvmaddaz.xyzw ACC, $vf26, $vf4z\n\tvmaddw.xyzw $vf4, $vf27, $vf4w\n\tsqc2 $vf4, 0x0(%0)\n\tvcallms 0x40" : : "r"(o), "r"(i) : "memory");
+}
+//@func 0x117B48
+s32 CCharaObj::Func117B48(s32 out, s32 idx, s32 v) {
+    s32 ri;
+    u8 *e;
+    CMat4 m;
+    if (!m_unk28) goto fail;
+    ri = GetResIndex();
+    if (ri < 0) goto fail;
+    e = D_002A5D0C + ri * 52;
+    if (!e || idx < 0) return 0;
+    if ((*(s32 **)(e + 0x10))[0] - 1 < idx) {
+    fail:
+        return 0;
+    }
+    Func113418(&m, ri, (s32)m_unk28, idx);
+    VU_CALL(0x30);
+    VU_CALL(0x20);
+    VU_VEC(&m_unkA0, 0x80);
+    VU_ROT(m_unkC4, 0xA0);
+    VU_ROT(m_unkC0, 0xB0);
+    VU_ROT(m_unkC8, 0x90);
+    VU_VEC(&m_unkD0, 0x70);
+    VU_MAT(&m, 0x60);
+    VuApply((CVec4 *)out, (CVec4 *)v);
+    return 1;
+}

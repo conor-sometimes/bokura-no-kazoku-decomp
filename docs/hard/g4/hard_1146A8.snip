@@ -1,0 +1,42 @@
+//@decl
+//@func 0x1146A8
+void CCharaObj::Func1146A8(f32 target, s32 n, s32 dir) {
+    f32 t;
+    f32 c;
+    f32 d;
+    if (n > 0) {
+    t = VuFrac(target);
+    c = VuFrac(m_unkC4);
+    d = t - c;
+    f32 fn;
+    if (dir < 0) {
+        fn = n;
+        if (t < c) {
+            m_unk134 = d / fn;
+        } else {
+            m_unk134 = (1.0f - d) / fn;
+        }
+    } else if (dir > 0) {
+        fn = n;
+        if (t < c) {
+            m_unk134 = (d + 1.0f) / fn;
+        } else {
+            m_unk134 = d / fn;
+        }
+    } else if (-0.5f <= d && d < 0.5f) {
+        m_unk134 = d / n;
+    } else {
+        fn = n;
+        if (0.0f < d) {
+            m_unk134 = (d + -1.0f) / fn;
+        } else {
+            m_unk134 = (d + 1.0f) / fn;
+        }
+    }
+    m_unk138 = n;
+    } else {
+        m_unkC4 = target;
+        m_unk138 = 0;
+        m_unk134 = 0.0f;
+    }
+}

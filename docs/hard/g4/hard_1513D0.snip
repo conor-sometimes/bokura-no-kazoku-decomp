@@ -1,0 +1,38 @@
+//@decl
+#include "CUserFlagMgr.h"
+extern "C" void ResetAllFlags__Fv(void *p);
+extern "C" int func_00150EA8(CGameMain *p, s32 i);
+extern CFlagWork *D_002A5358;
+//@func 0x1513D0
+int CGameMain::Func1513D0(s32 slot, s32 name, s32 all) {
+    s32 sel;
+    s32 cnt;
+    s32 i;
+    if (name >= 0) {
+        sel = Func1456A8(name);
+    } else {
+        sel = -1;
+    }
+    ResetAllFlags__Fv(this);
+    cnt = 0;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        s32 changed;
+        if (!all && !func_00150EA8(this, i)) continue;
+        if (sel >= 0 && i != sel) continue;
+        CallFunc151120(0, i);
+        Func151120(slot, i, 0, 0, 0);
+        changed = (D_002A4638[0]->Func1091B0(i + 0x60) ^ D_002A4638[slot]->Func1091B0(i + 0x60)) != 0;
+        D_002A4638[slot]->Func108FF0(i + 0x3C, D_002A4638[0]->Func1091B0(i + 0x3C));
+        D_002A4638[slot]->Func108FF0(i + 0x60, D_002A4638[0]->Func1091B0(i + 0x60));
+        if (changed && Func151028(0, slot, i)) D_002A4638[slot]->Func108FF0(i, 0);
+        if (D_002A0D38->V32(i) || changed) Func151120(4, i, 0, 0, 0);
+        D_002A0D38->V31(i);
+        Func151120(5, i, 0, 0, 0);
+        D_002A5358->Func108FF0(cnt + 4, i);
+        cnt++;
+    }
+    D_002A5358->Func108FF0(cnt + 4, -1);
+    Func150FD8();
+    ((CGameMain2 *)this)->Func150D98();
+    return cnt > 0;
+}

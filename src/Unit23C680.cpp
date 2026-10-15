@@ -187,7 +187,11 @@ extern "C" void func_0023CDE0(GNode *n, f32 x, f32 y) {
     return func_0023C758(n);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023CE20);
+extern "C" void func_0023CE20(GNode *n, s32 a, s32 b, s32 c) {
+    n->m44 = a;
+    n->m48 = b;
+    n->m4C = c < 0 ? 0 : (c > 128 ? 128 : c);
+}
 
 extern "C" void func_0023CE58(GNode *n, s32 a, s32 b, s32 c, s32 d) {
     n->m30 = a;

@@ -1,0 +1,45 @@
+//@decl
+extern char D_002D3640[];
+extern "C" s32 func_00111260(CSwingBoneObj *s, s32 a, s32 b, s32 ri);
+void *GetSndWorkRealInstance();
+struct CCharaRand {
+    u32 m_seed;
+    CCharaRand() { m_seed = 1; }
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Next32() {
+        u32 r = Next() << 16;
+        r |= Next();
+        return r;
+    }
+    f32 Range(f32 lo, f32 hi) {
+        return (f32)(s32)(Next32() & 0xFFFF) / 65535.0f * (hi - lo) + lo;
+    }
+};
+//@func 0x113978
+s32 CCharaObj::Func113978(s32 a, s32 b) {
+    CCharaRand rnd;
+    s32 ri;
+    CSwingBoneObj *s;
+    f32 r;
+    ReleaseSwing();
+    if (b < 0) b = *(s32 *)((u8 *)m_res + 0x84);
+    ri = GetResIndex();
+    s = new CSwingBoneObj;
+    m_part1C = s;
+    if (!s || ri < 0) {
+        Func235DE0(D_002D3640);
+        return 0;
+    }
+    if (!func_00111260(s, a, b, ri)) return 0;
+    rnd.m_seed = (u32)m_res;
+    r = rnd.Range(0.0f, 1.0f);
+    rnd.m_seed = (u32)GetSndWorkRealInstance();
+    r += rnd.Range(-0.05f, 0.05f);
+    r = VuFrac(r);
+    func_00111490(m_part1C, r);
+    m_part1C->m_unk28 = rnd.Range(0.9f, 1.1f);
+    return 1;
+}

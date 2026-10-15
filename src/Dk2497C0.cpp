@@ -152,7 +152,7 @@ extern "C" void *func_0024A398(AllocFn f, s32 n);
 extern "C" void *func_0024A3D8(s32 n);
 extern "C" void *func_0024A3F8(s32 n);
 extern "C" void *func_0024A418(AllocFn f, const char *name);
-extern "C" void func_0024B650(const char *path, s32 a1, char *dir, char *name);
+extern "C" void func_0024B650(const char *path, char *dir, char *base, char *ext);
 typedef s32 (CExpr::*CExprFn)(const char *, void *);
 class CExpr {
 public:
@@ -183,6 +183,16 @@ struct CRand {
         return m_seed >> 12;
     }
 };
+
+extern const char D_002E6628[];
+extern const char D_002E6630[];
+extern const char D_002E6640[];
+extern const char D_002E6648[];
+extern const char D_002E6660[];
+extern "C" const char *func_0024A778(const char *src, f32 *out, f32 def, const char *delim, const char *skip);
+extern "C" s32 func_0024B818(char **pp, const char *fmt, ...);
+
+extern const char D_002E6638[];
 // @decl-end
 
 extern "C" CXapEntry *func_002497C0(CXapDir *d, const char *name) {
@@ -581,9 +591,34 @@ extern "C" f32 func_0024B3B8(const char *src, const char *name, f32 def) {
     return def;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024B400);
+extern "C" void func_0024B400(const char *src, const char *name, f32 *v) {
+    char buf[0x400];
+    const char *p;
+    func_0024B190(src, name, buf, D_002E6628, 0x400);
+    p = func_0024A778(buf, &v[0], 0.0f, D_002E6630, D_002E6620);
+    p = func_0024A778(p, &v[1], 0.0f, D_002E6630, D_002E6620);
+    func_0024A778(p, &v[2], 0.0f, D_002E6630, D_002E6620);
+    v[3] = 1.0f;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024B4B8);
+extern "C" void func_0024B4B8(const char *src, const char *name, f32 *v, s32 *count, s32 max) {
+    char buf[0x400];
+    char tok[0x800];
+    const char *p;
+    s32 n = 0;
+    func_0024B190(src, name, buf, D_002E6628, 0x400);
+    p = buf;
+    while ((p = Func24A570(p, tok, D_002E6638, D_002E6620), *p) || tok[0]) {
+        const char *s;
+        if (n >= max) break;
+        s = func_0024A778(tok + 1, &v[n * 4], 0.0f, D_002E6630, D_002E6620);
+        s = func_0024A778(s, &v[n * 4 + 1], 0.0f, D_002E6630, D_002E6620);
+        func_0024A778(s, &v[n * 4 + 2], 0.0f, D_002E6630, D_002E6620);
+        v[n * 4 + 3] = 1.0f;
+        n++;
+    }
+    *count = n;
+}
 
 extern "C" void strncpy(char *d, const char *s, s32 n) {
     while (*s && n > 1) {
@@ -595,7 +630,7 @@ extern "C" void strncpy(char *d, const char *s, s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024B650);
 
-extern "C" void func_0024B7B8(const char *path, s32 a1, char *out) {
+extern "C" void func_0024B7B8(const char *path, char *a1, char *out) {
     char dir[0x100];
     char name[0x100];
     func_0024B650(path, a1, dir, name);
@@ -619,7 +654,19 @@ extern "C" s32 func_0024B818(char **pp, const char *fmt, ...) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024B8B8);
+extern "C" s32 func_0024B8B8(char **pp, const char *name, f32 *v, s32 n) {
+    s32 len = func_0024B818(pp, D_002E6640, name);
+    if (n > 0) {
+        f32 *q = v;
+        s32 i = n;
+        do {
+            i--;
+            len += func_0024B818(pp, D_002E6648, q[0], q[1], q[2]);
+            q += 4;
+        } while (i);
+    }
+    return len + func_0024B818(pp, D_002E6660);
+}
 
 s32 Func24B998(const char **tbl, const char *s) {
     s32 i;

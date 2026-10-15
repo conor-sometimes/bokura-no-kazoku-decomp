@@ -1,0 +1,35 @@
+//@decl
+//@func 0x1156A8
+void CCharaObj::Func1156A8(f32 target, s32 turn, s32 n, s32 k, f32 a, f32 b) {
+    if (n == 0) {
+        m_unkC4 = target;
+        m_unk2D4 = 0;
+        Func1159A0(0, 0, 0.0f);
+        m_unk80 = 1.0f;
+        m_unk294 = -1;
+        return;
+    }
+    f32 cur = m_unkC4;
+    m_unk2D4 = n;
+    m_unk2D8 = k;
+    m_unk2C8 = cur;
+    m_unk2CC = target;
+    m_unk2D0 = 0;
+    if (turn) {
+        f32 d = VuFrac(target) - VuFrac(cur);
+        f32 w;
+        if (-0.5f <= d && d < 0.5f) {
+            w = d;
+        } else if (0.0f < d) {
+            w = d + -1.0f;
+        } else {
+            w = d + 1.0f;
+        }
+        s32 idx = w < 0.0f ? 3 : 4;
+        m_unk2DC = m_unk354[idx];
+        Func1159A0(0, idx, a);
+        m_unk80 = b;
+    } else {
+        m_unk2DC = -1;
+    }
+}

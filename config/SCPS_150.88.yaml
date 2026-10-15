@@ -237,7 +237,28 @@ segments:
       - [0x17EBB8, cpp, Dk27DBB8]
       - [0x181098, cpp, Dk280098]
       - [0x1838C0, cpp, Dk2828C0]
-      - [0x184858, asm, text_283858]   # libgcc, Sony SDK, linkonce code
+      - [0x184858, cpp, Lib283858]   # libgcc, Sony SDK, linkonce code: cut by size alone (text_units.py --size-only)
+      - [0x186F80, cpp, Lib285F80]
+      - [0x1898C0, cpp, Lib2888C0]
+      - [0x18BE50, cpp, Lib28AE50]
+      - [0x18E8B0, cpp, Lib28D8B0]
+      - [0x191990, cpp, Lib290990]
+      - [0x1940A0, cpp, Lib2930A0]
+      - [0x194CB0, cpp, Lib293CB0]
+      - [0x1950D0, cpp, Lib2940D0]
+      - [0x195A60, cpp, Lib294A60]
+      - [0x1969A8, cpp, Lib2959A8]
+      - [0x197540, cpp, Lib296540]
+      - [0x1985F0, cpp, Lib2975F0]
+      - [0x199190, cpp, Lib298190]
+      - [0x199A78, cpp, Lib298A78]
+      - [0x19A948, cpp, Lib299948]
+      - [0x19B578, cpp, Lib29A578]
+      - [0x19C7F0, cpp, Lib29B7F0]
+      - [0x19DBF0, cpp, Lib29CBF0]
+      - [0x19E6D0, cpp, Lib29D6D0]
+      - [0x19EE68, cpp, Lib29DE68]
+      - [0x19F9F0, cpp, Lib29E9F0]
       - [0x1A0230, data, ctors]          # .ctors .dtors .reginfo, pad, .data up to the vtables
       # Vtables (.gnu.linkonce.d._vt$*), one piece per unit in link order: scripts/data_units.py, docs/units.md
       - {start: 0x1C0A40, type: .data, name: CBootMain, linker_section: .gnu.linkonce.d.*}

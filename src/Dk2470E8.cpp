@@ -153,6 +153,9 @@ struct CDirGlobal {
 extern CDirGlobal D_38F2D8;
 extern "C" CDirStack *func_00249510();
 extern "C" CDirEntry *func_00249550();
+
+#define PKT(v) { *p = (v); p++; D_38F1B0.m_pkt = p; }
+#define RGBAQ(r, g, b, a, q) (((u64)(r) & 0xFF) | (((u64)(g) & 0xFF) << 8) | (((u64)(b) & 0xFF) << 16) | (((u64)(a) & 0xFF) << 24) | ((u64)(q) << 32))
 // @decl-end
 
 extern "C" s32 func_002470E8(void *p) {
@@ -331,9 +334,87 @@ void Dump247B00(CMemHeap *h) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247B60);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247C00);
+extern "C" void func_00247C00(s32 x0, s32 y0, s32 x1, s32 y1, u32 c) {
+    s32 v[4];
+    u64 *p;
+    u64 col;
+    v[0] = (x0 << 4) + 0x8000;
+    v[1] = (y0 << 4) + 0x8000;
+    v[2] = (x1 << 4) + 0x8000;
+    v[3] = (y1 << 4) + 0x8000;
+    col = RGBAQ(c >> 24, c >> 16, c >> 8, c, 0);
+    p = D_38F1B0.m_pkt;
+    *p++ = 0x1000000000000004;
+    D_38F1B0.m_pkt = p;
+    p[0] = 0xE;
+    D_38F1B0.m_pkt = p + 1;
+    p[1] = 0x46;
+    D_38F1B0.m_pkt = p + 2;
+    p[2] = 0;
+    D_38F1B0.m_pkt = p + 3;
+    p[3] = col;
+    D_38F1B0.m_pkt = p + 4;
+    p[4] = 1;
+    D_38F1B0.m_pkt = p + 5;
+    p[5] = (u64)v[0] | ((u64)v[1] << 16);
+    D_38F1B0.m_pkt = p + 6;
+    p[6] = 5;
+    D_38F1B0.m_pkt = p + 7;
+    p[7] = (u64)v[2] | ((u64)v[3] << 16);
+    D_38F1B0.m_pkt = p + 8;
+    p[8] = 5;
+    D_38F1B0.m_pkt = p + 9;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247D38);
+extern "C" void func_00247D38(s32 x0, s32 y0, s32 x1, s32 y1, u32 c0, u32 c1, u32 c2, u32 c3) {
+    s32 v[4];
+    u64 *p;
+    v[0] = (x0 << 4) + 0x8000;
+    v[1] = (y0 << 4) + 0x8000;
+    v[2] = (x1 << 4) + 0x8000;
+    v[3] = (y1 << 4) + 0x8000;
+    p = D_38F1B0.m_pkt;
+    *p++ = 0x1000000000000009;
+    D_38F1B0.m_pkt = p;
+    p[0] = 0xE;
+    D_38F1B0.m_pkt = p + 1;
+    p[1] = 0x4D;
+    D_38F1B0.m_pkt = p + 2;
+    p[2] = 0;
+    D_38F1B0.m_pkt = p + 3;
+    p[3] = RGBAQ(c0 >> 24, c0 >> 16, c0 >> 8, c0, 0);
+    D_38F1B0.m_pkt = p + 4;
+    p[4] = 1;
+    D_38F1B0.m_pkt = p + 5;
+    p[5] = (u64)v[0] | ((u64)v[1] << 16);
+    D_38F1B0.m_pkt = p + 6;
+    p[6] = 5;
+    D_38F1B0.m_pkt = p + 7;
+    p[7] = RGBAQ(c1 >> 24, c1 >> 16, c1 >> 8, c1, 0);
+    D_38F1B0.m_pkt = p + 8;
+    p[8] = 1;
+    D_38F1B0.m_pkt = p + 9;
+    p[9] = (u64)v[2] | ((u64)v[1] << 16);
+    D_38F1B0.m_pkt = p + 10;
+    p[10] = 5;
+    D_38F1B0.m_pkt = p + 11;
+    p[11] = RGBAQ(c2 >> 24, c2 >> 16, c2 >> 8, c2, 0);
+    D_38F1B0.m_pkt = p + 12;
+    p[12] = 1;
+    D_38F1B0.m_pkt = p + 13;
+    p[13] = (u64)v[2] | ((u64)v[3] << 16);
+    D_38F1B0.m_pkt = p + 14;
+    p[14] = 5;
+    D_38F1B0.m_pkt = p + 15;
+    p[15] = RGBAQ(c3 >> 24, c3 >> 16, c3 >> 8, c3, 0);
+    D_38F1B0.m_pkt = p + 16;
+    p[16] = 1;
+    D_38F1B0.m_pkt = p + 17;
+    p[17] = (u64)v[0] | ((u64)v[3] << 16);
+    D_38F1B0.m_pkt = p + 18;
+    p[18] = 5;
+    D_38F1B0.m_pkt = p + 19;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247FA8);
 

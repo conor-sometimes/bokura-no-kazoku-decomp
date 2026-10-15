@@ -1,0 +1,53 @@
+//@decl
+extern "C" void func_00270B00(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 VuSqrt(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8");
+    return r;
+}
+//@func 0x115470
+void CCharaObj::Func115470(s32 anim, CVec4 *pts, s32 n, s32 frames, s32 k, s32 m, f32 a, f32 b) {
+    f32 len[12];
+    CVec4 d;
+    CVec4 d2;
+    f32 total;
+    f32 acc;
+    s32 i;
+    if (frames == 0) {
+        Func270C50(&m_unkA0, &pts[1]);
+        m_unk28C = 0;
+        Func1159A0(0, 0, 0.0f);
+        m_unk298 = 0;
+        m_unk80 = 1.0f;
+        m_unk294 = -1;
+        return;
+    }
+    m_pathN = n;
+    for (i = 0; i < m_pathN; i++) {
+        Func270C50(&m_path[i], &pts[i]);
+    }
+    total = 0.0f;
+    for (i = 1; i < m_pathN; i++) {
+        func_00270A98(&d, &m_path[i - 1], &m_path[i]);
+        func_00270B00(&d2, &d, &d);
+        len[i] = VuSqrt(d2.x + d2.y + d2.z);
+        total += len[i];
+    }
+    acc = 0.0f;
+    m_pathT[0] = 0.0f;
+    for (i = 1; i < m_pathN; i++) {
+        acc += len[i];
+        m_pathT[i] = acc / total;
+    }
+    m_unk28C = frames;
+    m_unk298 = m;
+    m_unk290 = k;
+    m_unk288 = 0;
+    if (anim >= 0) {
+        m_unk294 = m_unk354[anim];
+        Func1159A0(0, anim, a);
+        m_unk80 = b;
+    } else {
+        m_unk294 = -1;
+    }
+}

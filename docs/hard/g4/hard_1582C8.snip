@@ -1,0 +1,79 @@
+//@decl
+class CSeasonDrawCtx {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual u64 GetTex();
+    virtual u64 GetClut();
+};
+extern CSeasonDrawCtx *D_002BA128;
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+void Func2251E8();
+void UploadSeasonImage(u64 tex, s32 a, s32 b, s32 w, s32 y, s32 h, u8 *base);
+struct CSeasonSprPkt {
+    s32 u0, v0, u1, v1;
+    s32 x0, y0, x1, y1;
+};
+#define GS_SET_TEX0(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+#define GS_SET_CLAMP(wms, wmt, minu, maxu, minv, maxv) \
+    ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
+     ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+#define GS_SET_RGBAQ(r, g, b, a, q) \
+    ((u64)(r) | ((u64)(g) << 8) | ((u64)(b) << 16) | ((u64)(a) << 24) | ((u64)(q) << 32))
+//@func 0x1582C8
+void DrawSeasonImage(u8 *img, f32 scale, f32 alpha) {
+    CSeasonSprPkt pkt;
+    u64 tex;
+    u64 clut;
+    s32 rows;
+    s32 y;
+    if (!img || alpha <= 0.0f) return;
+    tex = D_002BA128->GetTex();
+    clut = D_002BA128->GetClut();
+    rows = (s32)((tex >> 50) & 0xFFF) >> 2;
+    tex &= ~((u64)0x3F << 32);
+    func_00227A20();
+    func_00226DF8(0x42, 0x44);
+    func_00226DF8(0x14, 0x60);
+    func_00226DF8(0x3B, 0x80);
+    func_00226DF8(0x47, 0x39001);
+    func_00227AA8();
+    Func2251E8();
+    s32 ofs = 8;
+    s32 w = 0x280;
+    y = 0;
+    do {
+        s32 h = 0x1C0 - y;
+        s32 ny;
+        if (rows < h) h = rows;
+        UploadSeasonImage(tex, 0, 0, 0x280, y, h, img);
+        ny = y + h;
+        pkt.u0 = 8;
+        pkt.v0 = 8;
+        pkt.u1 = (w << 4) + pkt.u0;
+        pkt.v1 = (h << 4) + pkt.v0;
+        pkt.x0 = (s32)(scale * -320.0f * 16.0f) + 0x8000;
+        pkt.y0 = (s32)((f32)(y - 0xE0) * scale * 16.0f) + 0x8000;
+        pkt.x1 = (s32)(scale * 320.0f * 16.0f) + 0x8000;
+        pkt.y1 = (s32)((f32)(ny - 0xE0) * scale * 16.0f) + 0x8000;
+        func_00227A20();
+        func_00226DF8(6, GS_SET_TEX0(tex & 0x3FFF, (tex >> 14) & 0x3F, (tex >> 32) & 0x3F, 10, 10, 1, 0, clut & 0x3FFF, (clut >> 32) & 0x3F, 0, 0, 1));
+        func_00226DF8(8, GS_SET_CLAMP(2, 2, 0, 0x27F, 0, h - 1));
+        func_00226DF8(0, 0x156);
+        func_00226DF8(1, GS_SET_RGBAQ(0x80, 0x80, 0x80, (s32)(alpha * 128.0f), 0));
+        func_00226DF8(3, (u64)pkt.u0 | ((u64)pkt.v0 << 16));
+        func_00226DF8(5, (u64)pkt.x0 | ((u64)pkt.y0 << 16));
+        func_00226DF8(3, (u64)pkt.u1 | ((u64)pkt.v1 << 16));
+        func_00226DF8(5, (u64)pkt.x1 | ((u64)pkt.y1 << 16));
+        func_00227AA8();
+        Func2251E8();
+        y = ny;
+    } while (y < 0x1C0);
+}

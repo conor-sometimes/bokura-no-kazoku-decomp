@@ -1,0 +1,27 @@
+//@decl
+extern "C" void func_00115E48(CCharaObj *p);
+extern "C" void func_001141F0(CCharaObj *p, s32 v);
+extern "C" void func_00114EA0(CCharaObj *p);
+extern "C" void func_00116D60(CVec4 *a, f32 *b, CVec4 *c, CMat4 *d, s32 e, s32 f);
+extern "C" f32 func_00116B98(s32 ri, CMat4 *m, void *p, s32 v);
+inline f32 VuFrac(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $2, %1\n\tqmtc2.ni $2, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez $2, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$2", "$8");
+    return r;
+}
+inline void VecAddTo(CVec4 *d, CVec4 *a) { func_00270A30(d, d, a); }
+//@func 0x116AE0
+void CCharaObj::Func116AE0() {
+    func_00115E48(this);
+    func_001141F0(this, 1);
+    if (m_unk138 > 0) {
+        m_unkC4 += m_unk134;
+        m_unkC4 = VuFrac(m_unkC4);
+        m_unk138--;
+    }
+    if (m_unk1A0 > 0) {
+        VecAddTo(&m_unk120, &m_unk190);
+        m_unk1A0--;
+    }
+    func_00114EA0(this);
+}

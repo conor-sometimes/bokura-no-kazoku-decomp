@@ -3375,7 +3375,7 @@ long ones is in the lane's scratch snippets (ask the head for them if a later la
 - **CMapEffObjRes 0x11F2A8 / 0x122808** (with `-Wa,-g` now): only the double constant differs: retail loads
   59.94 with `lui $at; ld $5, %lo(D_002D4750)($at)`, the `li.d` macro, i.e. a C literal `59.94` whose
   8 bytes gas put in the unit's .rodata. Needs the unit's .rodata from the object (merged unit
-  CMapEffObjRes/CMapEffObj, not converted). C in build/bk/snips/s_me1h.snip.
+  CMapEffObjRes/CMapEffObj, not converted). C in docs/hard/g4/hard_11F2A8_122808.snip.
 - **CChrBodyWin 0x189018** (`Init189018`, menu setup with `new`): DIFF 1, `beqzl` vs `beqz` in the
   switch compare tree; the default case needs a non-sibcall print (`if (Func235DE0(...)) return;`).
 - **CChrBodyWin 0x187D68**: DIFF 7, argument register setup order for the 9-argument func_00253048.
@@ -3441,6 +3441,8 @@ below are kept in the lane's notes; each line says what still differs.
 - **CSvmRes CValue setters** (update with `as -g`): the unfilled delay slots now match; what is left is the tail call: ours sibcalls sprintf/strcpy at the end of the switch (whatever the case order, `break` or `return`), retail keeps `jal` + epilogue.
 - **CSndWorkReal 0x128E78** (SetChara): perm of the fade-reset stores (with m_unkA8) best DIFF 4; field at 0x18 of the chara, not m_name.
 - **CUserFlagMgr 0x141F68 / 0x1425D8 / 0x141768 / 0x1409A8 / 0x13F948**: switch dispatchers now possible (jump tables work after the .rodata piece fix), not written yet; 0x142318's best C is in the source (DIFF 1).
+- Solved later in this round: CMapAttr 0x1182B8 (field init), CGameMain 0x150C30 (dtor, unit to level 3),
+  CPhotoDBMgr 0x1705C0 (key method, unit to level 3) and 0x170B18 (PMF literals), CMapEffObjRes 0x1228F0.
 - Solved this round from older entries: CCharaRes 0x112030, 0x1120A0, 0x112B60 (lane 2 round 2).
   CMotionRes 0x110DC8 (lane 2 round 2).
 ## r3
@@ -3616,6 +3618,33 @@ Near misses (C in the lane's scratch snippets; the shapes below are what is left
 - 0x251BF0 (CDebOut constructor, 14 field stores): DIFF 4, retail stores the float 0x38 right after
   0x28; hill-climbing perm (1245 orders) and chained-float variants stop at DIFF 4 with
   `m4, m28, m10, m14, m18, m8, mC, m20, m24, m2C, m30, m34, m38, m1C`.
+- Round 2 (no cap), 2026-10-15:
+  - 0x24FFE0 (CResCache ctor, written with explicit list-head stores and asm-label name): DIFF 4,
+    store order of the three TList heads; hill-climbing perm stuck at 4.
+  - 0x250208 (CResCache::Init250208): needs a real `new CResCacheUnit[n]` (cookie + count-down ctor
+    loop); the unit declares CResCacheUnit as a POD view, so the manual loop comes out different.
+  - 0x250368 (CResCache::Func250368): DIFF 19, retail keeps `bnez $5` after each unlink (`do { n =
+    First(); if (n) Unlink(n); } while (n)`) where ours threads to `b`; unlink loads `next` first.
+  - 0x250840, 0x250978, 0x250A48, 0x250B08, 0x250B80, 0x250D28, 0x250DD8 (res cache list walks): retail's
+    TList::First is a branchy `bnez isHead ; daddu r,0 ; b ; daddu r,n` and the unlink helpers come in two
+    load orders; our inline helpers give movz/movn and merged loops. 0x250D28 is DIFF 7.
+  - 0x251398 (DISPFB writes): `D_39391C` must be its own symbol; OR order and the 0x12000090 address
+    register still differ.
+  - 0x2520C8 and 0x248298 (GS packet + VIF tail): retail keeps the constant 4 in `$17` for the four
+    `D_002B94E4 += 4` writes; not reproduced with `p + 1`, byte casts or a temp.
+  - 0x247FA8 (gradient bar, 188 insns): DIFF 9, only the stack slots of the two spilled quotients and
+    `ca` (retail 0xC/0x10/0x14). Needs `i0 % w` etc. written inline at every use (retail redoes each div).
+  - 0x24E9C0 (ear-clipping triangulation): DIFF 10, inner-loop `q` and the cached `j < n` flag get each
+    other's saved register.
+  - 0x24D6A0 (expression precedence level): structure right, register allocation and the spilled
+    `&D_002BA008[level]` slot differ; D_002B9E60's address is not hoisted into a saved register in ours.
+  - 0x24EF88 (task tree dispatch, 154 insns): first version 7 insns long, PMF and recursion shape close.
+  - 0x24BA08 (int to SJIS digits): DIFF 10, registers of the second loop.
+  - 0x24B650 (path split): register allocation (retail slash/dir/path/base/dot/ext = $16..$21).
+  - 0x24ADE0, 0x24AF10, 0x24D2F8 (section tokenizer, digits check): loop shapes.
+  - Not attempted: switch functions with jump tables (0x249958 decompressor, 0x24D460 primary
+    parser) can't be compiled while the unit's .rodata is asm; 0x24DC40, 0x24A840, 0x248760, 0x250EC8,
+    0x251650, 0x251DC0 (large); VU0 geometry 0x24DE30, 0x24E240, 0x24E560, 0x24E6D0, 0x24E830.
 Not attempted (large / VU0 / linkonce): 0x24DE30-0x24E9C0 (geometry, VU0 macro), 0x247C00, 0x247D38,
 0x247FA8, 0x248298, 0x248760 (GS packets), 0x249958 (xap decompressor), 0x24A840, 0x24B400, 0x24B4B8,
 0x24B650, 0x24B8B8, 0x24BA08, 0x24D460, 0x24D6A0, 0x24DC40 (expression parser), 0x24ED20 / 0x24EDE8
@@ -61602,3 +61631,162 @@ d- **CEventObj 0x135690** (Start: sets the five script slots' callbacks from the
 - **CEventObj 0x135690** (Start: sets the five script slots' callbacks from the PMF constants D_002D5670.. as `extern const`): DIFF 82, only the temp registers of the PMF copies through the stack (`ldl/sdl` via sp); tried an inline setter with a by-value PMF, a local temp, direct assignment. **CEventObj 0x1327F8** (~CEventObj): key method; CEventObj's vtable is still asm.
 - **Attempted only briefly / not attempted (size or shape)**: CEventObj command handlers 0x13A100, 0x13A2C8, 0x13A508, 0x13A790, 0x13AA80, 0x13AC58, 0x138610, 0x138908, 0x13C120, 0x13D518, 0x13D6D8, 0x134D28, 0x133B90, 0x13C2D0, 0x137DC8, 0x138BB8, 0x135C40, 0x139440, 0x13CA58, 0x13B068, 0x1362C0 (pointer-to-member state machines with the queue writers and the menu-loop shape above); CGameSeasonPost::Update 0x1590B8, CGameResort::Update 0x167F30, CEndingMain::Update 0x107A18, CDemoMain::Update 0x1065C8 (CStateMachine push/pop loops, same shape); CGameSchedule 0x15A158 (3234 insns), 0x15EB68 (else-if chain layout), CMiniGame5Res 0x1DF730 (3330) and 0x1E2B38; CEFontWork 0x10BFD0 (VU0 + switch); CFlagWork 0x1098A8, 0x109C30, 0x10A000, 0x10A3E8 (GS packet builders, 64-bit bitfields); CMapDBExpr 0x173050 (key method of CMapDBMgr in a `# also` unit), 0x173160 (stack spills); CMapSndObj 0x128528 (random pitch/volume floats); CEventMesRes 0x13E178 (switch; its jump table sits between INCLUDE_RODATA pieces); CMenuMgr 0x1B4820 (spills), 0x1B50B0, 0x1B5788, 0x1B66E8, 0x1B7EF8; CLayoutObj draw routines 0x1BA7E8, 0x1BADB0, 0x1BB438, 0x1BBDE8, 0x1BCAF8 (they share the rect block below).
 - **CLayoutObj 0x1BC360** (text entry draw): all but one instruction; the shared rect block is an inline `LayoutCalcRect(CLayoutRect *r, CLayoutEntryX *e, const CLayoutRect *t, f32 dx, f32 dy, f32 sx, f32 sy, u32 flags)` (r = t + d; `if (t->w == 0) r->w = (f32)e->m88; if (t->h == 0) r->h = (f32)e->m8C;` then the image size through a local `img = e->mC`, scale by e->m30/m34, the sx/sy != 1.0f centring (not folded), the 0xF0/0xF00 alignment switches, r->w += r->x, r->h += r->y), locals declared st, t, r, buf. Remaining: ours keeps 0x8000000 in s5 for both `flags & 0x8000000` and `flags | 0x8000000`, retail rematerialises it (`lui`) each time.
+
+## r6
+Lane r6 (Unit230578, Unit232B78: CD/host file layer, ISO9660 lookup, sector cache, worker-thread request queues). 104 of the 115 listed functions matched; the 11 left:
+- 0x231268 (Unit230578, 162 insns, cached sector read into an unaligned buffer): DIFF 11. Best: `s32 done = 0, r = 1; mis = buf & 0x3F; skip = off & 0x7FF; abuf = (buf + 0x3F) & ~0x3F; soff = off & ~0x7FF; left = size - (-mis & 0x3F); D_002B8C6C |= 2;` (that statement order, from bk perm), `if (mis > 0 || skip > 0) { if ((buf & 3) || (skip & 3)) for (j = skip; ...) bytes; else for (j = skip; ...) words; skip = 0; } else done = n;`, then a second part with `j = skip` and the same byte/word split. Left: the byte loop's entry test uses `j` (ours) vs `skip` (retail `slt $2,$20,$16`), and in the second part `buf + done` / `j` take a2/a1 where retail has $5/$6.
+- 0x2315B0 (Unit230578, 144 insns, CD read with init and error switch): DIFF 14. Both `sceCdGetError` switches need full bodies `case 0x11: case 0x12: case 0x31: reset; default: err; case 0: ...` so the two copies cross-jump, the loop exits `goto reset`, and the second switch carries `reset:`/`err:` labels inside its bodies. Only `if (D_002B8C9C) Func235DE0(D_002E4950);` differs: ours fills the branch from the target (`beqzl` + `addiu`), retail from the fallthrough (`beqz` + `lui`). Tried `!= 0`, braces, goto skip, a volatile read.
+- 0x2318B8 (Unit230578, 80 insns, path table lookup): DIFF ~50. Retail hoists the constants 1 and -2 of the two `while ((r = func_00231E48(&v, 0x808C, 4)) != 1) if (r == -2) return r;` loops into s-registers and recomputes `&v` (sp+0x100) in each loop; ours hoists the address and keeps the constants inside. Tried while/for/do forms, an array, a struct for the two words. The same macro matched in 0x2319F8 and 0x231BC8.
+- 0x231E48 (Unit230578, 138 insns, sector cache read with LRU list): not close (DIFF 100+). Retail: search loop with an out-of-line found block, retry loop as a `switch` on func_002314F0's result (cases -1, 1, -2), unlink/relink into the list head, then the byte copy; `(s64)sec << 11` goes through a copy ($17). A goto-structured version spills to the stack.
+- 0x232840 (Unit230578, 42 insns, FS slot table init): DIFF 11, register numbering only: the `lbu` of D_002E49F8[0] lands in v1 and the inner counter in a1, retail has $4 and $3. Tried a local `char c` in several places, `__builtin_memcpy(.., 1)`, `strcpy(.., "")`, down-counting and pointer-bounded inner loops, array indexing.
+- 0x232C60 (Unit232B78, 76 insns, chdir path walk): DIFF 2 instructions (73 vs 75). Everything else matches; retail leaves the `if (*path)` guard's delay slot empty and puts `daddu $5,$18` plus an alignment nop before the loop label, ours moves the `a1` copy into the guard's slot. Tried while vs do-while, `while (--n > 0)` vs for, `cwd[0] = comp[0]`, explicit strcpy for strcat.
+- 0x2333C0 (Unit232B78, 60 insns, start a worker thread): DIFF 3: retail computes `prio + 1` into $5 (the dead incoming a1) before `li $3,-1`; ours uses v0 after. bk perm over the four header stores, a local `p`, `1 + prio`, `w->m0 = prio; w->m0++` all fail.
+- 0x2334B0 (Unit232B78, 220 insns incl. the merged D_00233808 wrapper, worker thread loop): registers and blocks match with `loop: while (w->mC == 0) { fn = w->m4; ...; for (i, q) { while ((r = get(q)) && r->m0 == 1) pop(q); if (r) { ...; goto found; } } RestoreIntr; yield(); } w->mC = -1; for (;;) yield(); found: ...; goto loop;`. Left: our loop top gets an alignment nop and the bottom `beqz mC` is filled from the fallthrough (`li -1`); retail fills it from the target (`beql` + `lw m4`) with no nop. bk test can't check the function with D_00233808 (two symbols in one section), so the count is 213 + 6.
+- 0x233CC0 (Unit232B78, 26 insns, port -> clamp -> table read): DIFF 17-20. Retail copies the `a == -1 ? f() : a` result $2 -> $4, then clamps into a third register $3; ours merges two of them (same family as r4's pad-id clamps in Unit22BFD0). Tried inline PortOf/Clamp3 combos, explicit x/y/j locals.
+- 0x233D28, 0x233D40 (Unit232B78, 6 insns each, `D_002B8CD8[a] = v;` / `return D_002B8CD8[a];`): the C is trivial but retail has the last instruction of the `sw $5,D($4)` / `lw $2,D($4)` macro expansion in the `jr` delay slot; our GNU as 2.10 never moves a macro instruction into the slot (`-Wa,-O0..-O3` tried), so it emits `jr; nop`. Needs a different assembler or an asm body.
+## r5
+Lane r5 (goal 6b): Unit234318..Unit245450 (IOP/ini setup, file and debug console wrappers, DMA packet
+builder and chains, GS display, texture and VRAM managers, font, sound stream). Not tried: the
+switch-table functions (their jump tables would land in the asm .rodata) and the large (>100 insn)
+functions listed in r5.tsv.
+- 0x234F40 Unit234318 (70 insns, ini section finder): the `[name]` compare loop; retail loads `*p` with lbu+sign-extend and keeps `i` compare rotated (`beql` to `i++`); best `for (i = 0; i < n; i++) if (*p++ != sec[i]) break;` is one insn short (DIFF 1039).
+- 0x235058 Unit234318 (49, ini key copy up to '='): retail loop is not rotated and lays out [increment][test][body]; `while (*src && !IsEol(*src))` (inline IsEol blocks the test copy) gets the jump-to-test shape but puts the body first (DIFF 1041); for(;;)/goto variants worse.
+- 0x2354A8 Unit234318 (64): DIFF 1, retail `bnel i,idx` with `i++` in the likely slot, ours `bne`.
+- 0x235B28 Unit234318 (49): DIFF 1, first test `s[1] == ':'` is `bne` with `lui` in the slot in retail, `bnel` in ours (4 structurings tried).
+- 0x236E48 Unit236130 (35, debug console putc): DIFF 3, retail keeps `(u8)c` in $5, ours in $4; with `u32 color = D_379AA0 & 0xFFFFFF;` temp everything else matches.
+- 0x237398 Unit236130 (17, packet word copy): ours 19 insns, extra moves around the count-down copy loop.
+- 0x2375D8 Unit236130 (42, DMA cnt tag close): ours 39-41 insns; `n += (p - body + 15) / 16` and the qwc/id bitfield stores right, schedule differs (perm 7 lines no match).
+- 0x237680 Unit236130 (39, DMA next tag): DIFF 1, `addu $3, n, t` operand order (ours t, n) in `D_37BDB0 = t + n`.
+- 0x237860 Unit236130 (38, DMA ref tag): DIFF 8, n/addr callee-saved registers swapped ($17/$16).
+- 0x2379D0 Unit236130 (45, DMA call tag): size mismatch, same tag-store schedule issue as 0x2375D8.
+- 0x2365C8 Unit236130 (136, exception handler dump): DIFF 7, retail fills the `beqz` slot after the first register-table test with `daddu $19,$3`, ours hoists `lui %hi(D_002E5170)` there; the rest matches.
+- 0x238BA0 Unit237A88 (36, copy n qword pairs into the packet as 32-bit halves): DIFF 8 with `for (i = 0; i < n; i++)` over a copy of p; the hi/lo halves' registers and store order differ between the two halves of each iteration.
+- 0x239568 Unit237A88 (13, IPU/VIF FIFO write): DIFF 2 with `u32 b = 0x1000D000; if (ch != 8) b = 0x1000D400; *(u32 *)(b + 0x80) = v;` (the two `lui` swapped); a pointer ?: folds +0x80 into both constants.
+- 0x239BD8, 0x23A0F8 Unit237A88 (49 / 56, build a packet in a stack buffer and kick DMA): retail keeps the stack buffer address (`daddu $17, $29, $0`; 0x23A0F8 also sp+0x400 for the PktSave) in a callee-saved register from the prologue; ours rematerialises `move a0, sp` at the call, so one saved register (8 bytes of frame) short. A `DmaTag *pk = (DmaTag *)buf;` local is folded away.
+- 0x23A3E8 Unit23A1D8 (50, list-node pool init): ours 46 insns; the 2-iteration middle loop and the final append loop are laid out/strength-reduced differently.
+- 0x23AA80 Unit23A1D8 (50, swap a texture handle under lock): ours 48 insns.
+- 0x23AC10 Unit23A1D8 (22, copy with tolower, max n): best `for (i = 0; i < n; i++) { c = *s++; if (!c) break; *d++ = TOLOWER(c); }` DIFF 20; retail enters a `bnez c` test with `s++` in its slot.
+- 0x23AF48 Unit23A1D8 (27, take a free texture slot): DIFF 20-24; retail recomputes each `D_37CDE0[...]` address from `lui 0x38` (no shared base) and returns `r + 8` through a branch, ours shares the base and uses movn.
+- 0x23C048 Unit23A1D8 (43, CLUT swizzle copy): DIFF 1, retail computes the `(i & 0x10) >> 1` term with `dsrl $4, $7, 1; andi 8`, ours `sra` (tried u32/u64 casts, /2, >>4&1<<3).
+- 0x23BFC8 Unit23A1D8 (32): DIFF 1 with `if (p == 0) return 0; if (x) func_0023C0F8(p, n, x); return p;` (beql/beqz order).
+- 0x23C1E0, 0x23C298 Unit23A1D8 (45 / 42, 16/24-bit to 32-bit colour loops): DIFF 18 / 11, callee-saved register assignment differs (retail gives r,g,b $16-$18 and count/dst/src $19-$21).
+- 0x23C0F8 Unit23A1D8 (40): ours 37 insns; the 512-word clear loop and the `(n + 31) / 32 * 2` argument schedule differently.
+- 0x23C698 Unit23C680 (11, GS reg 15-bit field from f ? 0xF0 : 0x90 >> 4): retail sra then andi 0x7FFF into a u64 field; ours folds or uses dsrl (bitfield, manual mask, /16 tried).
+- 0x23E328 Unit23C680 (68, VRAM range setup): ours 66; clamps written as ifs, schedule/branch shape differ.
+- 0x23E438, 0x23E510, 0x23E620, 0x23E690 Unit23C680 (54/52/27/35, VRAM free-list insert/alloc/find): best versions DIFF 29 / size off; retail re-reads `l[p].next` through the pointer after each store and keeps the loop exit tests in a different order.
+- 0x23E720 Unit23C680 (17): DIFF 1, `addu $2, idx*4, l` operand order (ours l first; &l[i], l + i, i[l] tried).
+- 0x23E788 Unit23C680 (22): ours copies both l and i into new registers (retail only l); 23 vs 22 insns.
+- 0x23E7E8 Unit23C680 (32, vsync handler with sync/ei): ours 29-30; retail computes &D_002B9CD0 into $16 before the call and stores the compare constant 1 in the else path.
+- 0x244860 Unit243AB8 (30, wait loop with a volatile busy flag): retail's assembler did not move the volatile `sw` into the `b`/`jal` delay slots (retail gas honoured `.set volatile`; ours prints it as a comment). With an `asm volatile(".set noreorder\n.set reorder")` barrier after the store, GCC then fills the `b` slot with the hoisted `lui` instead (DIFF 1019).
+- 0x245398 Unit243AB8 (10): retail leaves the `beqz` slot empty (nop) with the `la` of D_38F088 before it; ours fills it with the final `addu`.
+- 0x245230 Unit243AB8 (24, ring offset): DIFF 8, register numbering of the `(D_38F07C + 3) % 4` and the two mults.
+- 0x243CF0 Unit243AB8 (27, printf to the sound debug console via vsprintf): DIFF 1, retail passes the register-save area (sp+0x1038) straight to vsprintf; __builtin_stdarg_start stores ap to the frame (+16 bytes), __builtin_next_arg(fmt) gives sp+0x1070.
+- 0x23F458 Unit23E868 (20, alloc + memset): ours 21, n/p callee-saved registers swapped and an extra move.
+- 0x23FCB8 Unit23E868 (40): DIFF 6, retail loads `c->m14` with `lh` before `andi 1` (ours `lhu`), and precomputes p+16 before the first `sw`.
+- 0x23F770 Unit23E868 (54, font table reset): DIFF 12, only the order/registers of the ten trailing global stores differ (perm hill-climb found nothing from 174 orders).
+- 0x240D68, 0x240DF0 Unit23E868 (34 / 33): retail calls func_0023AA40 / func_0023BD80 with `jal` (no sibcall) behind a `$2 = 0` preset and sibcalls func_0023F1B0; our early-return and single-exit versions are 3-4 insns longer.
+- 0x23F8E0 Unit23E868 (94, font list flush + packet close): DIFF 1 with the loop as `for (e = head->m4; e != head && (e->mC & 1); e = e->m4)`; the `mC & 2` test is `bnez` with the `and ~1` in its slot in retail, `bnezl` in ours (3 variants).
+- 0x244040 Unit243AB8 (77, feed a sound channel from its ring): DIFF 6, the callee-table load for D_002B9DE8[t] is scheduled after p + m2C in ours (ternary, if and &p[] forms tried).
+- 0x244DE0 Unit243AB8 (51, open a sound stream): DIFF 2, the three trailing zero stores (D_002B9D98/D94/DBC) get registers in a different order whatever the statement order and the callee return type.
+- 0x23B948 Unit23A1D8 (49): ours 50; the two `(t >> 38) & 0xFFF` / `(t >> 50) & 0xFFF` extractions share a `li 0xFFF` register in ours, retail uses two `andi` (bitfield union tried).
+- 0x23BC28 Unit23A1D8 (35, follow a texture chain n-1 steps under lock): retail copies n into $16 then decrements it separately and keeps k in $17; ours folds `n - 1` and swaps the two saved registers.
+- 0x240ED8 Unit23E868 (62, glyph binary search): ours 61; retail leaves the first `beqz e` slot empty and tests `code < g[mid]` with a likely branch to `hi = mid` (nested-if, goto and if/else-swapped versions tried).
+- 0x23D1B0 Unit23C680 (74, VRAM table init): ours 72; retail walks the append loop through pointers to `t[0x1003].m2` and `&t->m4` (p*6 + t+4) and orders the eight head/tail stores differently.
+- 0x23A1D8 Unit23A1D8 (51, upload a texture rectangle): ours 52; the two `& 0x3F` field extractions from the u64 handle share a `li 63` register in ours, retail uses two `andi` (shift/mask and bitfield-union forms tried; same issue as 0x23B948).
+- CGameSeasonPrev 0x1582C8 DrawSeasonImage (225 insns): structure matches (best C: docs/hard/g4/hard_1582C8.snip, u64 tex from vslot 5, clut slot 6, `s32 ofs = 8; s32 w = 0x280;` before the loop so `(w<<4)+ofs` stays unfolded, loop-invariant TEX0 hoisted). Remaining: register allocation. Target keeps the raw tex ($17) and masked tex ($22) in separate pseudos but still computes TBP from the masked one; one variable gives the wrong s-reg order, two variables let combine fold `(tex0 & ~M) & 0x3FFF` into `tex0 & 0x3FFF`. DIFF ~1090.
+- CChrBodyWin.cpp 0x187A68 Func187A68 (ChrTypeImg name, 191 insns): structure and branches match (best C: docs/hard/g4/hard_187A68.snip; returns int, `f = GetFlag187680(...)` reuses the parameter in the type-6 branch). Remaining: `this` and `f` swap s1/s2. DIFF 1130.
+- CGameMain 0x151120 Func151120(slot, name, delta, useSaved, e) (172 insns): logic and layout right (best C: docs/hard/g4/hard_151120.snip; needs IGameDBMgr slot 24 as `Func14DB70(f32 *out, s32 id)` and CGameMainFlagDef fields m4/m18/m1C/m20). Retail reloads `rec->m0` in the else branch; ours reuses the loop-test value (gcse), which shifts the s-registers. A `base = rec->m0` local gets to DIFF 91 but costs an s-reg.
+- CGameMain 0x1513D0 Func1513D0(slot, name, all) (161 insns): DIFF 1, in unit context too: retail `bnez` at the loop top (`if (!all && !func_00150EA8(this, i)) continue;`, delay slot `lw sel`), ours `bnezl`. Tried nested ifs, positive conditions, goto, while. Best C: docs/hard/g4/hard_1513D0.snip (uses CGameMain::Func150FD8, now named).
+- CGameMain 0x151A78 (single-event picker, 214 insns): best C docs/hard/g4/hard_151A78.snip (goto loop for the "all married" scan, CGameRand at this+0x144). Remaining: retail keeps `blez n` before the "first single event" loop (ours drops it), the two event prints share one Func235DE0 call, and the s-registers differ. DIFF ~1135.
+- CCharaObj 0x117B48 Func117B48 (VU0 matrix apply, 149 insns): DIFF 12, docs/hard/g4/hard_117B48.snip (VU_* macros as in 0x117898, VuApply with `register ... asm("$7")`/`asm("$5")` operands). Left: the resource entry pointer gets a0 (ours `beqz`) instead of v0 (`beql`), and the default `&D_002A05C0` goes through a3 instead of v0.
+- CCharaObj 0x117668 Func117668(s32) (VU0 model matrix, 140 insns): DIFF 5, docs/hard/g4/hard_117668.snip. Retail recomputes `&out` (`addiu $6, $29, 0x40`) for the call after the VU store; ours reuses $2 from the store's register variable. A tied output or a "$2" clobber makes it worse (a pseudo copy).
+- **Blocked key methods / vtable-data units (g4's units)**: dtors of the CMapEffObjRes work classes
+  0x11D670 (CMapEffCurtainWork), 0x11F038 (Leaf), 0x120AC8 (Fly), 0x121788 (Rain), 0x1225F0 (Snow) and
+  `_$_10CMapEffObj`: merged unit CMapEffObjRes/CMapEffObj, can't go to level 3. IEnvResMgr 0x12DC48
+  (CEnvResMgr dtor, merged unit). CMapAttr 0x118248 (dtor; the unit would also emit the TArray template
+  vtables). CMiniGame1Res `_$_10CMiniGame1` and 0x1BD700 (CMiniGame1Res slot 1 = key method, its dtor is
+  the inline 0x29C5E0): the vt piece holds both classes' vtables. CTexCacheMgr 0x10CEE8 (ctor with the
+  inline TList member; CList/CTexCacheMgr merged unit). CChrBodyWin 0x187038 (CChrBodyWin ctor: the file's
+  `CChrBodyWin` class is really two classes; the real one derives from CStatusBase (vptr 0x58, 7 pure
+  virtuals) whose ctor is func_0019A830; needs that split first). (CGameMain 0x150C30 is
+  solved: unit converted to level 3.)
+- CCharaObj 0x116AE0 Func116AE0 (per-frame update with the VU0 frac asm, 45 insns): DIFF 4, docs/hard/g4/hard_116AE0.snip.
+  VuFrac asm (vftoi0/vitof0 with an internal `bgez`, no explicit nop: gas fills the slot) matches; left: `m_unk138 - 1`
+  lands in v1 (retail $2) and the two pointer args of func_00270A30 are computed in the other order.
+- CCharaObj 0x1146A8 Func1146A8(f32 target, s32 n, s32 dir) (rotation step setup, 95 insns): logic known
+  (docs/hard/g4/hard_1146A8.snip, `if (n > 0) {...} else {...}` gives the blezl entry); left: block layout and
+  branch senses of the dir<0 / dir>0 / dir==0 cases (retail shares one `X / (f32)n` tail between the (1-d),
+  (d+1), (d-1) cases and converts n before each compare) and the first VuFrac result lands in f2 (ours f12).
+- CCharaObj 0x1156A8 Func1156A8(f32 target, s32 turn, s32 n, s32 k, f32 a, f32 b) (turn start, 97 insns): logic known
+  (docs/hard/g4/hard_1156A8.snip, same delta wrap as 0x1146A8: `[-0.5,0.5) -> d, >0 -> d-1, else d+1`); left: FP
+  registers (retail loads m_unkC4 into f0 and copies it to f1 for the second VuFrac, outputs land in f2/f1) and the
+  order of the `-1` / `1.0f` constants in the n == 0 path.
+- CMapEffObjRes 0x120B38 (CMapEffFlyWork::Func120B38, move + wrap of 16 flies, 95 insns): DIFF 20,
+  docs/hard/g4/hard_120B38.snip (needs a CMapEffFlyWork class; none exists in the file yet). Retail's frame is
+  0x60 (0x30 of locals, so two unused CVec4-sized slots, probably from inline helpers) against our 0x40, and the
+  VuFrac outputs alternate f0/f1 differently. Inline helpers with a local CVec4 give 0x50 and more instructions.
+- CPhotoDBMgr 0x171510 Func171510 (photo info lookup, 202 insns): docs/hard/g4/hard_171510.snip matches up to the
+  vector copy (StrCat inline, m20/m4C store order). Left: retail addresses `f->m10[idx]` as `(f + idx*16) + 0x10`
+  and copies the pointer through four registers (nested inline helpers?), the else-branch store order, and the
+  argument order of the last func_00171C08 call. DIFF ~1060.
+- CCharaObj 0x116D60 (VU0 model matrix build: mat, trans, rotY/X/Z, scale, 227 insns): DIFF 16,
+  docs/hard/g4/hard_116D60.snip (switch on mode for the extra scale, `cur = rot[1]` read before the VuFracs).
+  Left: FP registers in the delta wrap (`rot[1]` and the second VuFrac result in f0 instead of f1) and one
+  alignment nop before the second wrap block.
+- CCharaObj 0x115470 Func115470 (path move setup: copy points, segment lengths with VuSqrt, normalised
+  cumulative times, 141 insns): docs/hard/g4/hard_115470.snip (fields m_path[9] 0x1D0, m_pathT[9] 0x260, m_pathN
+  0x284 added). Left: retail shares the `m_unk294 = -1` store between the frames == 0 path and the anim < 0 path
+  (cross-jump), and the loop counters/pointers get different s-registers. DIFF ~1109.
+- CMapEffObj 0x126E98 (FindPortal: n-th type-6 entry of the effect list, copies two vectors, 102 insns):
+  docs/hard/g4/hard_126E98.snip (goto loop gets the block layout). Left: retail hoists `&D_002A0B00` into an
+  s-register (loop.c ran) but not the constant 6; the goto loop hoists nothing, the for loop hoists both. DIFF ~1070.
+- CList unit: 0x10D028 (CTexCacheMgr init: `new CCacheInfo[n]` whose inline ctor stores `_vt$10CCacheInfo` and links
+  list nodes) and 0x10D4F0 (TList iteration with the inline CListTag code) would emit linkonce vtables/template code
+  from this merged level-1 unit; 0x10D360 needs a jump table (level 1). Not tried further.
+- CMapEffObjRes 0x11D6E0 (CMapEffCurtainWork::Func11D6E0, 14x14 curtain grid reset, 121 insns):
+  docs/hard/g4/hard_11D6E0.snip (CMapEffCurtainPt layout added; `w = 30.0f/13.0f; h = w;` reproduces the two
+  constant registers). Left: loop.c's induction variables (retail keeps separate givs for row 0, row 13 and the
+  current point) and the int->float conversion of i duplicated into both arms of the `j == 0` test. DIFF ~1106.
+- CMenuSysscr11 0x1AB748 Update (state.h menu loop, 152 insns): DIFF 26 with the goto-loop recipe,
+  docs/hard/g4/hard_1AB748.snip (class now has the m_kanji/m_win union like CMenuNosave). Left, as in g1's
+  CMenuNosave: `done` lives in a1 instead of a0, the init-failure and wait-B "then" paths do not share retail's
+  `li -0xBF` tail, and the wait-B then-block sits after the test. Same family: CMenuSysscr22 0x1AB338,
+  CMenuSysscr06 0x1AC8E8, CMenuAsksavequit 0x192DD8, CMenuNews 0x173B08, CMenuPTJobMoney 0x18E848,
+  CMenuTutorSelect 0x17E060, CMenuChildStatus 0x18A548 (not attempted after this one).
+- CBootMain 0x100358 Update (state.h wait loop with the stack push/pop asserts, 139 insns): docs/hard/g4/hard_100358.snip
+  models the inline helpers (lines 0x44 push, 0x46 pop, 0x48 set top, 0x4C get top). DIFF ~1112: `done` should be
+  in v1, the two "wait" yields share retail's `sw $2, 4(sm); li 1; b loop` tail (ours keeps -0x3F in an s-register).
+- CMapEffObjRes 0x126C48 (CMapEffSwingWork::Func126C48, swing model draw, 116 insns): DIFF 2,
+  docs/hard/g4/hard_126C48.snip (VU macros; the matrix store as `move $2, %0` asm with a "$2" clobber; the
+  register-variable form gives DIFF 10 here). Left: `c * 4` for the D_002A0970 index lands in a0 (retail v0).
+- CMapEffObjRes 0x124888 (CMapEffAquariumWork fish draw, 134 insns): DIFF 2, docs/hard/g4/hard_124888.snip (fields
+  m_pos/m_rot/m_col/m_scale added to CMapEffAquaObj). Left, as in 0x126C48: a pointer that retail computes in v0
+  goes to a0. Both forms of the matrix-store asm (a `$2` register variable, or `move $2, %0` with a "$2" clobber)
+  keep GCC off v0 elsewhere in the function; retail's macro does not. Finding that form would likely fix
+  0x126C48, 0x124888 and 0x117668 together.
+- CCharaObj 0x113978 Func113978(a, b) (swing bone setup with three LCG ranges, 146 insns): DIFF 11,
+  docs/hard/g4/hard_113978.snip (CCharaRand with seed-1 ctor; seeds from `m_res` and GetSndWorkRealInstance()).
+  Left: FP registers of the first Range (retail adds the 0.0 lo into f20 from f0/f1) and the last LCG's
+  temporaries (retail keeps the multiplier in s0 and uses a1/a2).
+- CCharaObj 0x113C38 (diff-motion setup, 150 insns): same template as 0x113978 (ReleaseDiff, `new CDiffMotionObj`,
+  func_0010FB30, the same three LCG ranges, GetFrame); expected to stop at the same FP-register difference. Not written.
+- CCharaObj 0x114958 Func114958(CVec4 *v, s32 n) (rotation step per axis, 186 insns): DIFF 47,
+  docs/hard/g4/hard_114958.snip (`AngDiff(a, b)` inline so both operands load before the first VuFrac asm,
+  u128 copies for the lq/sq struct moves). Left: FP registers (retail's first VuFrac result in f2 and the delta in
+  f1; ours f0/f3), the same family as 0x1146A8 / 0x1156A8 / 0x116D60. A VuFrac form that reproduces retail's
+  FP choices would probably fix all four.
+- **Not attempted yet (large; notes for the next pass).** VU0 macro-mode draws (use the FtoI15 / VuFrac /
+  VuSqrt / VU_* inline asms now in CMapEffObjRes.cpp and CCharaObj.cpp): CMapEffObjRes 0x121E28 (rain draw, 152),
+  0x11FE88 / 0x120298 (leaf draws, 260/330), 0x11E5E8 (482), 0x120CB8 (574), 0x122DD8 (snow, 472), 0x124AA0
+  (aquarium, 588), 0x126170 (296), 0x124160 (aquarium update with CirclePos, 160), 0x11D8C8 (curtain update with
+  9 VuSqrt, 574), 0x11F9C0 (leaf update, 280); CCharaObj 0x113418 (VU matrix loop over bones, 118), 0x1141F0
+  (288), 0x115E48 (776, 22 VuFracs and Ease115C28). GS packet code: CMapEffObjRes 0x122088 (238), 0x11E1C0
+  (curtain mesh, 226). Constructors of the work classes, which first need the classes declared as
+  CMapEffWork subclasses (their vptr is at 0; CMapEffLeafWork is still declared without it): 0x11ED80 (leaf,
+  174), 0x1207C0 (fly, 194), 0x11D2D8 (curtain, 230). CMapEffObjRes 0x125410 (grid, 330). CCharaObj 0x113128
+  (init: vector constants copied with lq/sq plus an LCG, 144) and 0x114EA0 (face blink, 246). CPhotoDBMgr
+  0x170E18 (Parse170E18, 238: eight pointer induction variables spilled to the stack). Menus and screens:
+  CMenuPTJobMoney Draw 0x18EE78 (370), CMenuTutorSelect Draw 0x17F6C8 (408) and Update 0x17E060 (1434), CLogoMain
+  Update 0x100770 (434), CMenuAsksavequit 0x193358 (644), CChrBodyWin.cpp 0x1895F8 (766, CMenuChildStatus event
+  switch), CGameSeasonPrev 0x156E80 (398), 0x156120 (462), Draw 0x1587A8 (494), Update 0x153710 (2698), CGameMain
+  Update 0x152090 (1146), CMiniGame1 Draw 0x1C3960 (488) and Update 0x1BDBE8 (5982).
