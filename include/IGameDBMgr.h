@@ -32,7 +32,7 @@ public:
     virtual s32 FindType2();                                    // [6] 0x14BB90
     virtual s32 FindType8();                                    // [7] 0x14BBD8
     virtual s32 Collect14BC20(s32 *out, s32 max);               // [8] 0x14BC20
-    virtual s32 Func14BD00();                                   // [9] 0x14BD00
+    virtual s32 Func14BD00(s32 a, s32 b, s32 *out, s32 max);                                 // [9] 0x14BD00
     virtual s32 Func14C048(s32 *ids, s32 *flags, s32 name);                                 // [10] 0x14C048
     virtual s32 Func14C2B0(s32 *ids, s32 *flags, s32 name);     // [11] 0x14C2B0
     virtual s32 Func14C490();                                   // [12] 0x14C490
@@ -41,7 +41,7 @@ public:
     virtual s32 Func14C998(s32 name);                                   // [15] 0x14C998
     virtual s32 Func14C9F8(s32 v);                              // [16] 0x14C9F8
     virtual const char *Func14CA38(s32 name);                                   // [17] 0x14CA38
-    virtual s32 Func14CC00();                                   // [18] 0x14CC00
+    virtual s32 Func14CC00(s32 *out, s32 name);                                 // [18] 0x14CC00
     virtual s32 Func14CF78(s32 name);                                   // [19] 0x14CF78
     virtual const char *Func14D378(s32 name);                                   // [20] 0x14D378
     virtual s32 Func14D430(s32 *out, s32 name);                 // [21] 0x14D430
@@ -100,7 +100,7 @@ public:
     virtual s32 Func14FBB0(s32 name);                                   // [74] 0x14FBB0
     virtual s32 Func14FCC8(s32 i, s32 arg);                                   // [75] 0x14FCC8
     virtual s32 Func14FE60(s32 arg);                                   // [76] 0x14FE60
-    virtual s32 Func14FF30();                                   // [77] 0x14FF30
+    virtual void Func14FF30();                                 // [77] 0x14FF30
     virtual s32 Get150550(s32 a, s32 b, s32 c);                 // [78] 0x150550
     virtual s32 Get150590(s32 a, s32 b, s32 c, s32 d);          // [79] 0x150590
     virtual s32 Get1505E0(s32 a, s32 b, s32 c, s32 d);          // [80] 0x1505E0

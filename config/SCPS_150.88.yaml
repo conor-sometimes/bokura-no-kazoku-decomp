@@ -219,6 +219,7 @@ segments:
       - [0x15D438, cpp, Dk25C438]
       - [0x15F340, cpp, Dk25E340]
       - [0x161A60, cpp, Dk260A60]
+      - [0x163D28, cpp, Dk262D28]
       - [0x1641E0, cpp, Dk2631E0]
       - [0x166918, cpp, Dk265918]
       - [0x169138, cpp, Dk268138]
@@ -282,7 +283,7 @@ segments:
       - [0x1C1900, data, vt_CSysFlag]   # also ISysFlag
       - [0x1C1C88, data, vt_CResNameMgr]
       - [0x1C1CC8, data, vt_CGameDBMgr]
-      - [0x1C1F80, data, vt_CGameMain]
+      - {start: 0x1C1F80, type: .data, name: CGameMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C1FD8, type: .data, name: CGameSeasonPrev, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2030, type: .data, name: CGameSeasonPost, linker_section: .gnu.linkonce.d.*}
       - [0x1C2088, data, vt_CGameSchedule]
@@ -291,7 +292,7 @@ segments:
       - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr
       - [0x1C2398, data, vt_CNameDBMgr]
       - [0x1C23D8, data, vt_CPhotoEventObj]   # also IAlbumMgr
-      - [0x1C2510, data, vt_CPhotoDBMgr]
+      - {start: 0x1C2510, type: .data, name: CPhotoDBMgr, linker_section: .gnu.linkonce.d.*}
       - [0x1C2570, data, vt_CResortDBMgr]
       - [0x1C25F0, data, vt_CMapDBExpr]
       - {start: 0x1C2690, type: .data, name: CMenuNews, linker_section: .gnu.linkonce.d.*}
@@ -410,7 +411,7 @@ segments:
       - [0x1DAAD0, rodata, ro_CInterfRes]   # also IInterfMgr
       - [0x1DAC30, rodata, ro_CNameDBMgr]
       - [0x1DAD10, rodata, ro_CPhotoEventObj]   # also IAlbumMgr
-      - [0x1DAEC8, rodata, ro_CPhotoDBMgr]
+      - [0x1DAEC8, .rodata, CPhotoDBMgr]
       - [0x1DB058, .rodata, CResortDBMgr]
       - [0x1DB200, rodata, ro_CMapDBExpr]
       - [0x1DB390, .rodata, CMenuNews]
@@ -466,7 +467,7 @@ segments:
       - [0x1E0DA0, .rodata, CMenuProcess]
       - [0x1E0DB0, rodata, ro_CMenuMgr]
       - [0x1E0F50, .rodata, CLayoutRes]
-      - [0x1E1BE8, .rodata, CLayoutObj]
+      - [0x1E1BF0, .rodata, CLayoutObj]
       - [0x1E1D50, rodata, ro_CMiniGame1Res]
       - [0x1E1F00, .rodata, CMiniGame2Res]
       - [0x1E2190, .rodata, CMiniGame3Res]

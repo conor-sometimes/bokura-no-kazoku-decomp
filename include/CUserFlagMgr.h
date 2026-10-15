@@ -42,7 +42,7 @@ public:
     virtual s32 V30();
     virtual s32 V31(s32 a);
     virtual s32 V32(s32 a);
-    virtual s32 V33();
+    virtual s32 V33(s32 a);
     virtual s32 V34();
 };
 

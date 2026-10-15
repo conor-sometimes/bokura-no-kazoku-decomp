@@ -66,6 +66,8 @@ public:
     void Printf(const char *fmt, ...);
     CLayoutEntry *FindEntry(const char *name);
     CLayoutEntry *GetEntry(int i);
+    void Text1BC6A8(class CLayoutObjSub1BC320 *st, const char *s, s32 flags, f32 x, f32 y);
+    const char *Text1BC900(class CLayoutObjSub1BC320 *st, const char *s, s32 flags, f32 x, f32 y);
     // The 0x1BD188 object (CLayoutHourglass) starts with a CLayoutObj; some of its methods are
     // still declared here.
     CLayoutHourglass *Hg() { return (CLayoutHourglass *)this; }
@@ -103,6 +105,7 @@ public:
     CLayoutHourglass();
     int Load(CLayoutRes *res, const char *name);
     void Update();
+    int Draw1BD420();
 
     CLayoutObj m_obj;         // 0x000
     CSndWork m_snd;           // 0x170
@@ -148,8 +151,8 @@ public:
 class CLayoutObjSub1BC320 {
 public:
     void Init();
-    s32 m0; f32 m4, m8; s32 mC, m10; u8 pad14[0xC]; f32 m20, m24, m28, m2C, m30, m34; s32 m38, m3C;
-};
+    s32 m0; f32 m4, m8; s32 mC; f32 m10; u8 pad14[0xC]; f32 m20, m24, m28, m2C, m30, m34; s32 m38, m3C;
+} __attribute__((aligned(8)));
 int LayoutFlagX(int v);
 int LayoutFlagY(int v);
 const char *ParseUInt(const char *s, int *out);
@@ -181,6 +184,42 @@ const char *Func24AF10(void *p, const char *key);
 extern "C" const char *func_0024AD10(const char *p, char *buf, s32 k, s32 n);
 extern "C" long atol(const char *s);
 extern char D_002E0D50[];
+
+//@sym Text1BC900__10CLayoutObjP19CLayoutObjSub1BC320PCciff 0x1BC900
+
+struct CLayoutGlyph {
+    s16 m0;
+    u8 pad2[0x1FE];
+};
+extern "C" const char *func_001BC870(const char *s, CLayoutGlyph *g);
+extern "C" void func_001BCAF8(CLayoutObj *o, CLayoutObjSub1BC320 *st, CLayoutGlyph *g, s32 flags, f32 x, f32 y);
+extern "C" int func_001BCFB0(CLayoutObj *o, CLayoutObjSub1BC320 *st, const char **pp, f32 *w);
+// Float view of the s32 fields of CLayoutObjSub1BC320.
+#define LF(v) (*(f32 *)&(v))
+
+extern char D_002E0D60[];
+// Reset() is defined earlier in this file; called through this alias (config/aliases.ld) the
+// delay slots of Draw1BD420 come out like retail's (GCC fills differently around calls to
+// functions it has already compiled).
+extern "C" void func_001BA0A0(CLayoutObjSub1BA0A0 *p);
+
+struct CLayoutGroup {
+    s32 m0;                   // 0x0
+    CLayoutEntry *m_items;    // 0x4
+    s32 m_num;                // 0x8
+};
+struct CLayoutEntryHdr {
+    const char *m_name;       // 0x0
+    u32 m_flags;              // 0x4
+    u8 pad8[0x8];
+    CLayoutGroup *m_group;    // 0x10
+};
+extern "C" void func_001BA7E8(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+extern "C" void func_001BADB0(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+extern "C" void func_001BB438(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+extern "C" void func_001BBDE8(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+extern "C" void func_001BC360(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+extern "C" void func_001BBD08(CLayoutObj *o, CLayoutEntry *e, int a);
 // @decl-end
 
 CLayoutObj::CLayoutObj() {
@@ -293,8 +332,41 @@ void CLayoutObj::Draw1BA1D0(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w, 
     Func1BA210(e, a, x, y, z + m_unk30 + m_unk50, w + m_unk34 + m_unk54);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CLayoutObj", D_002E0BE8);
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1BA210__10CLayoutObjP12CLayoutEntryiffff);
+void CLayoutObj::Func1BA210(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w) {
+    if (!e) return;
+    if (y == 0.0f) return;
+    if (((CLayoutObjSub1BA0A0 *)this)->m_unk5C == 0.0f) return;
+    switch (((CLayoutEntryHdr *)e)->m_flags & 0xF) {
+    case 2:
+        func_001BA7E8(this, e, a, x, y, z, w);
+        break;
+    case 1:
+        func_001BADB0(this, e, a, x, y, z, w);
+        break;
+    case 3:
+        func_001BB438(this, e, a, x, y, z, w);
+        break;
+    case 4:
+        func_001BBD08(this, e, a);
+        break;
+    case 5:
+        func_001BBDE8(this, e, a, x, y, z, w);
+        break;
+    case 6:
+        func_001BC360(this, e, a, x, y, z, w);
+        break;
+    case 7: {
+        CLayoutGroup *g = ((CLayoutEntryHdr *)e)->m_group;
+        if (!g) break;
+        for (s32 i = 0; i < g->m_num; i++) {
+            CLayoutEntry *it = &g->m_items[i];
+            func_001BA0A0((CLayoutObjSub1BA0A0 *)this);
+            Draw1BA1D0(it, a, x, y, z, w, 1.0f, 1.0f);
+        }
+        break;
+    }
+    }
+}
 
 void CLayoutObj::Func1BA440(int a, f32 x, f32 y, f32 z, f32 w) {
     s32 n = ((CLayoutObjSub1B9E60 *)this)->GetPartUnk8();
@@ -349,9 +421,29 @@ void CLayoutDraw::Upload(CLayoutImageRef *r) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BBD78);
+int LayoutFlagX(int v) {
+    switch (v & 0xF0) {
+    case 0x00:
+    default:
+        return 0;
+    case 0x10:
+        return 1;
+    case 0x20:
+        return 2;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BBDB0);
+int LayoutFlagY(int v) {
+    switch (v & 0xF00) {
+    case 0x000:
+    default:
+        return 0;
+    case 0x100:
+        return 1;
+    case 0x200:
+        return 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BBDE8);
 
@@ -373,11 +465,71 @@ void CLayoutObjSub1BC320::Init() {
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BC360);
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BC6A8);
+void CLayoutObj::Text1BC6A8(CLayoutObjSub1BC320 *st, const char *s, s32 flags, f32 x, f32 y) {
+    f32 h = 0.0f;
+    while (*s) {
+        CLayoutObjSub1BC320 tmp;
+        tmp.Init();
+        tmp = *st;
+        tmp.m38 = 0;
+        tmp.m3C = 0;
+        const char *next = Text1BC900(&tmp, s, flags | 0x8000000, 0.0f, 0.0f);
+        if (!(flags & 0x8000000)) {
+            f32 dx;
+            switch (flags & 0xF0) {
+            case 0x00:
+            default:
+                dx = 0.0f;
+                break;
+            case 0x10:
+                dx = LF(st->m38) * 0.5f - LF(tmp.m38) * 0.5f;
+                break;
+            case 0x20:
+                dx = LF(st->m38) - LF(tmp.m38);
+                break;
+            }
+            Text1BC900(st, s, flags, x + dx, y + h);
+        }
+        s = next;
+        LF(st->m38) = LF(tmp.m38) < LF(st->m38) ? LF(st->m38) : LF(tmp.m38);
+        h += LF(tmp.m3C);
+        if (*s) h += st->m10;
+    }
+    LF(st->m3C) = h;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BC870);
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BC900);
+const char *CLayoutObj::Text1BC900(CLayoutObjSub1BC320 *st, const char *s, s32 flags, f32 x, f32 y) {
+    const char *p;
+    f32 w;
+    w = 0.0f;
+    p = s;
+    while (*p) {
+        CLayoutObjSub1BC320 tmp;
+        CLayoutGlyph g;
+        tmp.Init();
+        p = func_001BC870(p, &g);
+        if (g.m0) {
+            tmp = *st;
+            tmp.m38 = 0;
+            tmp.m3C = 0;
+            func_001BCAF8(this, &tmp, &g, flags | 0x8000000, 0.0f, 0.0f);
+            if (!(flags & 0x8000000)) func_001BCAF8(this, st, &g, flags, x + w, y);
+            LF(st->m3C) = LF(tmp.m3C) < LF(st->m3C) ? LF(st->m3C) : LF(tmp.m3C);
+            w += LF(tmp.m38);
+        }
+        if (*p == '@') {
+            if (func_001BCFB0(this, st, &p, &w)) break;
+        } else if (*p == '\n') {
+            p++;
+            break;
+        }
+        if (g.m0) LF(st->m38) += LF(st->mC);
+    }
+    LF(st->m38) = w;
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BCAF8);
 
@@ -464,4 +616,27 @@ void CLayoutHourglass::Update() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BD420);
+int CLayoutHourglass::Draw1BD420() {
+    CLayoutObjSub1BA0A0 *st = (CLayoutObjSub1BA0A0 *)this;
+    m_obj.Func1B9FF0();
+    m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 0), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    if (m_unk1E0) {
+        m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 3), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+        st->m_unk60 = 0x4000000;
+        m_obj.Draw1BA1D0(func_001B9E78(&m_obj, m_unk1F0 + 4), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    }
+    if (m_unk1E4 != 0x16) m_obj.Draw1BA1D0(func_001B9E78(&m_obj, m_unk1E4 + 8), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    if (m_unk1E8) m_obj.Draw1BA1D0(func_001B9E78(&m_obj, m_unk1E8 + 0x1D), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    st->m_unk60 = 0;
+    m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 1), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 2), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    if (m_unk1F4 >= 0 && m_unk1FC) {
+        m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 0x36), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+        st->m_unk60 = 0x4000000;
+        m_obj.Printf(D_002E0D60, m_unk1F4);
+        m_obj.Draw1BA1D0(func_001B9E78(&m_obj, 0x34), 0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+    }
+    func_001BA0A0(st);
+    return m_obj.Func1BA0C0();
+}
+

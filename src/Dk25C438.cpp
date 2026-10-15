@@ -56,7 +56,7 @@ INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025D008);
 
 INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025D0D8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025D130);
+INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25D130__8CSndWorkP7CSndPrm);
 
 extern "C" void func_0025D198(void) {
 }

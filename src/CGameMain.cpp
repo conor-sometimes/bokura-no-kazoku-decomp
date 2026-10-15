@@ -2,8 +2,46 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 int Func145738(s32 a, s32 b);
-class CGameMain {
+#include "CProcess.h"
+class CSndWorkReal;
+class CSceneSet {
 public:
+    void InitB(s32 n);
+    void InitA(s32 n);
+    void SetSnd(CSndWorkReal *snd);
+    u8 pad0[0x40];
+};
+class CEventRes {
+public:
+    CEventRes();
+    ~CEventRes();
+    u8 pad0[0x6C];
+    s32 m6C;                  // 0x6C
+    s32 m70;                  // 0x70
+    s32 m74;                  // 0x74
+    s32 m78;                  // 0x78
+};
+struct CGameMainRand {
+    u32 m_seed;
+    CGameMainRand() { m_seed = 1; }
+};
+// The game event object: its vptr sits after 0xFEC4 bytes of fields.
+class CGameEventObj {
+public:
+    u8 pad0[0x10];
+    s32 m10;                  // 0x10
+    u8 pad14[0xFEB0];
+    virtual ~CGameEventObj();
+};
+// CGameMain (vtable _vt$9CGameMain; the matched Update/Draw are still written as CGameMain2 methods).
+class CGameMain : public CProcess {
+public:
+    CGameMain(s32 k);
+    virtual ~CGameMain();
+    virtual void Update();
+    virtual void Func4();
+    virtual void Draw();
+    virtual void Func6();
     void CallFunc151120(s32 a, s32 b);
     int Func1513D0(s32 slot, s32 name, s32 all);
     void Func150FD8();
@@ -11,7 +49,21 @@ public:
     void Func151120(s32 a, s32 b, s32 c, s32 d, s32 e);
     int Func153220();
 
-
+    u8 pad18[0x14];
+    CStateMachine m_sm2C;     // 0x2C
+    CStateMachine m_sm74;     // 0x74
+    CBgWork m_bgBC;           // 0xBC
+    CEventRes m_event;        // 0xC8
+    CGameMainRand m_rand;     // 0x144
+    u8 pad148[0x8];
+    u8 m_snd[0xE0];           // 0x150 (CSndWorkReal, constructed by func_00128870)
+    CSceneSet m_scene;        // 0x230 (constructed by func_0012C4A8)
+    u8 *m_unk270;             // 0x270
+    CGameEventObj *m_eventObj; // 0x274
+    s32 m_unk278;             // 0x278
+    u8 pad27C[0x248];
+    s32 m_unk4C4;             // 0x4C4
+    s32 m_unk4C8;             // 0x4C8
 };
 
 class CResCache {
@@ -129,11 +181,85 @@ extern "C" void func_0012B180(CGameMainSub129D90 *p, u8 *buf);
 
 int IsFlagKind(int v);
 extern s8 D_002A31D8[6][9];
+
+class CTaskMgrIf : public CTask {
+public:
+    virtual void Vf7();
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void SetUnk18(s32 v);
+    virtual void Set68(void *v);
+    virtual void Set70(void *v);
+};
+extern CTaskMgrIf *D_0029F394;
+extern CTaskMgrIf *D_0029F398;
+class CAlbumMgrIf : public CTask {
+public:
+    virtual void Vf7();
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void Vf11();
+    virtual void Vf12();
+    virtual void Vf13();
+    virtual void Vf14();
+    virtual void Vf15(CEventRes *res);
+};
+extern CAlbumMgrIf *D_002A3680;
+struct CGameEventObjHead {
+    u8 pad0[0x10];
+    s32 m10;
+};
+CGameEventObj *NewGameEventObj(s32 a);
+int Func251B88();
+int Func235DE0(const char *fmt, ...);
+extern "C" void func_00128870(void *p);
+extern "C" void func_0012C4A8(void *p);
+void InitResMgrs151F60();
+void ReleaseResMgrs151FE8();
+extern "C" void func_0012C4F0(void *p, s32 v);
+extern "C" void func_00128BB0(void *p, s32 v);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150A70);
+CGameMain::CGameMain(s32 k) {
+    func_00128870(m_snd);
+    func_0012C4A8(&m_scene);
+    Func235DE0("gamemain : init\n");
+    m_rand.m_seed = Func251B88();
+    m_unk278 = k;
+    m_event.m6C = 0;
+    m_event.m74 = 0;
+    m_event.m78 = 0;
+    m_unk4C8 = 0;
+    m_scene.InitB(0x80);
+    m_scene.InitA(1);
+    m_scene.SetSnd((CSndWorkReal *)m_snd);
+    m_unk270 = 0;
+    ((void (*)(CGameMain *))InitResMgrs151F60)(this);
+    D_0029F394->Set68(m_snd);
+    D_0029F398->Set70(m_snd);
+    CGameEventObj *e = NewGameEventObj((s32)this);
+    m_eventObj = e;
+    e->m10 = Func251B88() + 0xD431;
+    if (D_002A3680) D_002A3680->Vf15(&m_event);
+    m_unk4C4 = Func251B88() + 0x181CD;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150C30);
+CGameMain::~CGameMain() {
+    func_00245818(&m_bgBC, 1);
+    if (D_002A3680) D_002A3680->Vf15(0);
+    if (m_eventObj) {
+        delete m_eventObj;
+        m_eventObj = 0;
+    }
+    D_0029F398->Set70(0);
+    D_0029F394->Set68(0);
+    ((void (*)(CGameMain *))ReleaseResMgrs151FE8)(this);
+    Func235DE0("gamemain : term\n");
+    func_0012C4F0(&m_scene, 2);
+    func_00128BB0(m_snd, 2);
+}
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8960);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8968);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8970);
@@ -268,22 +394,25 @@ void CallResCacheFunc250978() {
     D_002A0BE8->Func250978();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00152090);
+INCLUDE_ASM("asm/nonmatchings/CGameMain", Update__9CGameMain);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8C90);
-INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8C98);
 
-void CGameMain2::Update1531D8() {
+inline void CGameMain2::Update1531D8() {
     if (m13C == 0 && m4C8 == 0) {
         m274->Func135A28();
         m150.Func129D90();
     }
 }
 
+void CGameMain::Func4() {
+    ((CGameMain2 *)this)->Update1531D8();
+}
+
 int CGameMain::Func153220() {
     return 0;
 }
 
-void CGameMain2::Draw153228() {
+inline void CGameMain2::Draw153228() {
     m270 = (u8 *)Func237570(0x260);
     Func237A88(m270, 0x26);
     Func238158(Func237C30(m270 + 0x250), 1);
@@ -292,7 +421,11 @@ void CGameMain2::Draw153228() {
     D_002A5BC0->m60.Func237E90(Func2250C0());
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_001532A8);
+void CGameMain::Draw() {
+    ((CGameMain2 *)this)->Draw153228();
+}
+
+INCLUDE_ASM("asm/nonmatchings/CGameMain", Func6__9CGameMain);
 
 void CreateGameMainRes(CResMgr24F *mgr, int a) {
     CGameMainRes153410 *p = (CGameMainRes153410 *)Func24F2E8(0x200);

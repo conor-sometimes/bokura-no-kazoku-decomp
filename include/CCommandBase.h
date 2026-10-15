@@ -12,7 +12,6 @@ public:
     s32 NumRows();                    // 0x1984E0
     virtual s32 Update() = 0;
     virtual s32 Draw() = 0;
-    s32 NumRows();
 
     u8 pad0[0x48];
     void *m_win;              // 0x48: record window

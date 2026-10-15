@@ -76,7 +76,7 @@ public:
     virtual s32 Vf14F550(s32 a, s32 b, s32 c);
     virtual s32 Vf14F638(int name, s32 a, s32 b, s32 c, s32 d, s32 e);
     virtual void Vf14F760();
-    virtual void Vf14F830();
+    virtual s32 Vf14F830(s32 a, s32 b, s32 c);
     virtual s32 Vf14F918(s32 a, s32 b);
     virtual void Vf299908();
     virtual void Vf299910();

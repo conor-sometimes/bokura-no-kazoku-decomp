@@ -171,6 +171,9 @@ public:
     s32 GetSe13AF08(const char *name);
     void Update135A28();
     int Cmd13AA80(CSvmWork *w, int id, int reset);
+    int Cmd1385E8(CSvmWork *w, int id, int reset);
+    void PlayMovie135BE0(CEventObjUnk *p);
+    int Cmd13C0F8(CSvmWork *w, int id, int reset);
 
     s32 m0;                   // 0x0
     s32 m4;                   // 0x4
@@ -583,7 +586,11 @@ void CEventObj::Update135A28() {
     if (m_FB48 && w0->m47C && !m_FC04) m_FC00++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135BE0);
+void CEventObj::PlayMovie135BE0(CEventObjUnk *p) {
+    m_FBFC = p;
+    m_FBFC->m_1B0.Func237E90(m_F9D0.Func13EDC8());
+    m_FBFC = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135C40);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5748);
@@ -616,7 +623,15 @@ extern "C" void func_00137DC0() {
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00137DC8);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001385E8);
+int CEventObj::Cmd1385E8(CSvmWork *w, int id, int reset) {
+    CStateMachine *sm = &m_sm[3];
+    if (reset) {
+        sm->m_state = id;
+        sm->m_flags = 0;
+        sm->m_depth = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00138610);
 
@@ -696,7 +711,15 @@ int CheckItemTag(CEventItem *p, const char *s) {
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013B068);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013C0F8);
+int CEventObj::Cmd13C0F8(CSvmWork *w, int id, int reset) {
+    CStateMachine *sm = &m_sm[4];
+    if (reset) {
+        sm->m_state = id;
+        sm->m_flags = 0;
+        sm->m_depth = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013C120);
 

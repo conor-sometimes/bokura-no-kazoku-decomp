@@ -23,6 +23,22 @@ EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
 # only without it, so they were built differently (docs/compiler.md).
 ASG      := -Wa,-g
 build/src/CAppMain.cpp.o build/src/Unit%.cpp.o: ASG :=
+# Two groups of dklib units were built with the SDK compiler ee-gcc 2.9-991111, not the game's 2.96
+# (docs/compiler.md):
+# - SDK_OBJS (lane d3): dklib's units from 0x262D28 (IPU, MPEG stream, ...), C++ through 2.9 and its
+#   own as (frameless sibcalls, its varargs frame, strict aliasing at -O2);
+# - SDKC_OBJS (lane d4): the Sony SDK libraries (libmpeg, libipu, libgraph, libdma, libvu0,
+#   libkernel, ...), C through 2.9's cc1 -O2 -G0, assembled by the game compiler's GNU as 2.10 (-B:
+#   2.9's own as fills fewer delay slots and adds COP2 hazard nops). Their .cpp files compile as C.
+SDKCC    := tools/compilers/ee-gcc2.9-991111/bin/ee-gcc
+SDKAS    := tools/compilers/ee-gcc2.96/ee/bin/
+SDK_OBJS := $(patsubst %,build/src/%.cpp.o,Dk262D28 Dk2631E0 Dk265918 Dk268138 Dk26A870)
+$(SDK_OBJS): EECC := $(SDKCC)
+$(SDK_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+SDKC_UNITS := Dk26CFB0 Dk26FC10 Dk271AF8 Dk272E50 Dk273210 Dk2735D0 Dk2752B8
+SDKC_OBJS := $(SDKC_UNITS:%=build/src/%.cpp.o)
+$(SDKC_OBJS): EECC := $(SDKCC)
+$(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
 CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
@@ -66,6 +82,9 @@ build/src/%.cpp.o: src/%.cpp $(wildcard include/*.h) $$(wildcard asm/nonmatching
 
 $(EECC):
 	scripts/fetch_compilers.sh
+$(SDK_OBJS) $(SDKC_OBJS): $(SDKCC) $(EECC)
+$(SDKCC):
+	scripts/fetch_compilers.sh ee-gcc2.9-991111
 
 # Raw blobs (VU microcode): .incbin through the same assembler so the ELF flags agree.
 build/assets/%.bin.o: assets/%.bin

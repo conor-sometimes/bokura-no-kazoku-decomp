@@ -247,11 +247,11 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   extern "C" prototype (func_0020E470, func_0020E808). *(bokura)*
 ## g2
 
-- **GNU as swaps a macro's last instruction into a call's delay slot; retail's assembler didn't**: when
-  GCC leaves a `jal` in `.set reorder` mode right after a macro (`la $4,0xCEB0($16)`,
-  `sw $2,0xFC60($16)`: offsets >= 0x8000), our as 2.10 moves the last instruction of the expansion
-  into the slot, retail keeps the pair before the call and a `nop` in the slot. Blocks big-object
-  code (CEventObj, CDemoMain ctor, the pointer-to-member handlers). `-Wa,-O0/1` doesn't help. *(bokura)*
+- **Retail's assembler did not reorder delay slots: build with `-Wa,-g`** (Makefile and bk.py). GNU
+  as 2.10 otherwise moves the last instruction of a macro (`la $4,0xCEB0($16)`, `sw $2,0xFC60($16)`,
+  any offset >= 0x8000) or of an inline asm into the following `jal`/branch delay slot; retail keeps
+  it before the call with a `nop` in the slot. The whole tree still matches with it, and it fixed a
+  dozen old HARD entries (docs/compiler.md). *(bokura)*
 - **Branch-likely vs branch is decided by the code after the branch**: several `bnezl`/`blezl` vs
   `bnez`/`blez` DIFF-1s went away once the code *after* the loop or test had retail's shape (an early
   `return 0` instead of an if-block around the tail, CGameSchedule 0x15E2F8). Fix the rest first. *(bokura)*
@@ -444,3 +444,78 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Float args copied from block locals**: retail's `(a, a, b, b, a, a)` argument copies from callee-saved f20/f21 come from `f32 a = 1.0f, b = 0.0f;` locals passed repeatedly (CMiniGame3 Draw); inside loops our build still rematerializes the constants. *(bokura)*
 - **Stale mangled names of other lanes' functions**: when main has corrected a callee's signature (CLayoutObj::Draw1BA1D0), declare main's signature and, if your tree still has the old name, add an address alias line; don't rename the other lane's symbol. *(bokura)*
 - **GS packet builders** (fade/tutorial/sound draws) are still open: the content decodes cleanly (see CSndWorkReal 0x12A6B0's note) but `*D_2EBF8C++ = v` stores the packet pointer after every word, where retail skips some of those stores. *(bokura)*
+## d1 (goal 6b: dklib memheap, CBgMgr, CPushBuf, XAP archives, tokenizer, CExpr values, CTask tree)
+- **bk test assembled dklib snippets without `-Wa,-g`** while the Makefile assembles the Dk units with
+  it (bk.py only checked `addr < 0x1E91B8`); a local fix (`or addr >= 0x245648`) made bk test agree
+  with mk.sh. *(bokura)*
+- **An inline function stops GCC from reassociating pointer arithmetic**: `(u8 *)b + 16 + size` came
+  out as `b + size + 16`; `inline u8 *BlkData(CMemBlk *b) { return (u8 *)(b + 1); }` then `+ size`
+  kept retail's `addiu 16 ; addu size` (memheap split 0x2466E8). *(bokura)*
+- **A branch target 4 bytes later than ours means a store retail does only on one path**: 0x2466E8's
+  `nb->m_node = nn` belonged to the else branch only (the other branch's `b` skipped it). *(bokura)*
+- **`if (m == 0) A; else if (m != 1) A; else B;`** (identical A blocks, cross-jumped) gives retail's
+  "test 0, test 1, fall into A" layout that neither `switch` nor `if/else if` produced. *(bokura)*
+- **Key method trick for a class whose retail slot 0 is an inline function**: declare slot 0 as a
+  non-inline virtual in the TU and never define it (CBgMgr, CDebOut); then the other slots, the
+  constructor and the destructor can be defined with the vtable still in asm. A vptr at 0 with fields
+  needs a field-less base declaring the virtuals (IBgMgr, IDebOut); no extra vptr store appeared. *(bokura)*
+- **PMF members**: `(obj->*f)(arg)` reproduces GCC 2.96's index/delta/pfn call sequence; a PMF passed
+  by value travels in one 64-bit register (`sd $6`/`ld $6` spills). GCC 2.96 mangles the implicit
+  `this` into the PMF's parameter list (`PM5CExprFP5CExprPCcPv_i` is `int (CExpr::*)(const char *,
+  void *)`). *(bokura)*
+- **Local declaration order sets the stack layout**: `const char *p = s; CValue v;` put `p` at sp+0
+  and the 0x104-byte value at sp+0x10 like retail (and kept `&v` in a saved register). *(bokura)*
+- **`__builtin_alloca(size)` with `size` in a local** reproduced the `$30` frame-pointer ini lookup
+  (0x24B190); a copy of the source pointer param (`const char *p = src;`) fixed its register order. *(bokura)*
+- **Raw constant addresses that lie inside a known object** (`lui 0x39 ; sw 0x35E8`): reference them
+  as a field of a struct declared over the named symbol (`D_38F2D8.m_unk4310`, a `CGsGlobal` over
+  `D_393910`); the relocation `sym + off` links to the same bytes. *(bokura)*
+- **for-loop with the advance in the increment** (`for (n = first; n != end; n = n->next) {...; if (n
+  == last) break; }`) matched retail's rotated memheap walks where `while`/`goto` versions did not. *(bokura)*
+- **Mis-named callees keep their names via asm labels**: `extern "C" s32 FileSize(const char *)
+  asm("Func248EB0__8CPushBuf");` calls a free function another lane named as a CPushBuf method without
+  renaming it; same for defining `Func247B00__13CMiniGame6Obj` (a heap dump). *(bokura)*
+- **`char` vs `u8`**: a `lbu` in retail where ours has `lb` means the buffer or the copied byte is
+  unsigned (CEventMesRes Load: `u8 line[]` fixed the alnum tests, the rest of Load still differs). *(bokura)*
+- **`case 0: default:` makes a compare tree**: a two-value switch whose zero case shares the default
+  (`switch (v & 0xF0) { case 0: default: return 0; case 0x10: return 1; case 0x20: return 2; }`)
+  compiles to retail's `beq 0x10 / slti 0x11 / beq 0x20` tree; without `case 0` GCC if-converts
+  (CLayoutObj LayoutFlagX/Y). Same for the default arm of a bigger switch (0x1BC6A8). *(bokura)*
+- **A loop whose exit test is in the middle**: `while (*s) { ...; s = next; ...; if (*s) h += gap; }`
+  gives retail's "test at the bottom, add, jump back" (GCC threads the duplicated test); `for (;;)`
+  with `break` is laid out differently (CLayoutObj 0x1BC6A8). A flag test as part of the loop
+  condition (`for (i = 0; i < 16 && f(id = ...); i++)`) keeps retail's jump-to-test loop with no
+  strength reduction (CGameResort 0x167A48). *(bokura)*
+- **Strength-reduced output pointers**: `CFaceTex *o = &out[k]` computed at the top of the inner loop
+  body (unconditionally) becomes retail's preheader `o = out + k*16` with `o++` next to `k++`; the same
+  expression inside the `if` that uses it is not reduced (CFaceRes 0x10ED30). *(bokura)*
+- **`m = m + 1` vs `m++` on a field**: `m_num++` gave an address temp (`addiu a0,s2,0x18`), retail
+  loads, adds and stores (`m_num = m_num + n`) (CEventObj queue writers). *(bokura)*
+- **Constants the compiler did not CSE**: a store value 1 kept in a callee-saved register next to a
+  compare with 1 in v1 means the source assigned through a variable (`s32 open = 1; ... if (!(x &
+  bit)) open = 0;`), not two literal 1s (CGameSchedule 0x15DAB0). *(bokura)*
+- **Dead-code literals and RTTI names after the last function**: when the last function before a unit's
+  RTTI names is matched, the names (`8CListTag`, `5CList`) that splat had put into its .s must become an
+  INCLUDE_RODATA (add the label to config/rodata_syms.txt); `dataconv.py UNIT fix` does not catch it
+  (CGameSchedule D_002D9508). *(bokura)*
+- **VU0 macro-mode inline asm**: `vftoi15`/`vftoi0` helpers are inline asm with the `mfc1`/`mtc1`
+  inside the asm text and hard-coded `$2`/`$8` (clobbers), `ACC` written without `$` for our as;
+  the sine table is indexed as `*(f32 *)(tbl + ((i << 1) & 0xFFFC))` with `tbl` a local (CSwingBoneObj,
+  CMenuMgr 0x1B6570, CMenuSysscr01 0x1AE3F8). *(bokura)*
+- **Pointers to member in .rodata of an unconverted unit**: pass the asm label as an extern
+  `const PMF` (`extern const CExprAccessFn D_002DA200;`) instead of `&Class::Method`, or the compiler
+  emits a second copy (CMapDBExpr ctor). *(bokura)*
+- **Struct copies with `ld`/`sd`**: a 0x40-byte struct copied with aligned `ld`/`sd` needs
+  `__attribute__((aligned(8)))`; with 4-byte alignment GCC uses `ldl/ldr` (CLayoutObjSub1BC320). *(bokura)*
+- **A callee already compiled in the same .cpp changes delay-slot filling**: CLayoutHourglass 0x1BD420
+  matched in a bk snippet but not in the unit: with `CLayoutObjSub1BA0A0::Reset()` defined earlier in
+  CLayoutObj.cpp, GCC filled a `beqz` delay slot that retail left empty. Calling it through an
+  `extern "C" func_001BA0A0` alias (config/aliases.ld) restored retail's code. When bk says MATCH and
+  mk.sh doesn't, bisect the earlier definitions in the unit. *(bokura)*
+- **A converted unit's first compiled jump table moves its .rodata start**: jump tables are 16-aligned,
+  so CLayoutObj's .rodata piece (0x2E0BE8, 8 bytes of padding first) had to start at 0x2E0BF0 with the
+  padding INCLUDE_RODATA dropped (same as the CUserFlagMgr lesson); and the case blocks must be written
+  in retail's code order, not case order (0x1BA210: case 2's block comes first). *(bokura)*
+- **The last function of a unit**: retail's .text ends 8-aligned; a C function that ends 4 bytes short
+  of an 8-byte boundary gets the padding from the linker, so nothing extra is needed (check the yaml
+  start of the next unit before adding `.space`). *(bokura)*

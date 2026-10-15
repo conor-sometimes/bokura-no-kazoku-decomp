@@ -131,6 +131,12 @@ public:
     void Func114D18(s32 v);
     s32 Func115B48();
     s32 Func113F80();
+    void Func117668(s32 v);
+    s32 Func1170F0();
+    void Func116AE0();
+    void Func117468(s32 mode, s32 p);
+    void Func1146A8(f32 target, s32 n, s32 dir);
+    void Func1156A8(f32 target, s32 turn, s32 n, s32 k, f32 a, f32 b);
     s32 Func1135F0(CCharaRes *res);
 
     u8 pad0[0x10];
@@ -165,14 +171,22 @@ public:
     s32 m_unk8C;              // 0x8C
     s32 m_unk90;              // 0x90
     s32 m_unk94;              // 0x94
-    u8 pad98[0x18];
+    u8 pad98[0x8];
+    CVec4 m_unkA0;            // 0xA0
     CVec4 m_unkB0;            // 0xB0
-    u8 padC0[0x20];
+    f32 m_unkC0;              // 0xC0
+    f32 m_unkC4;              // 0xC4
+    f32 m_unkC8;              // 0xC8
+    u8 padCC[0x4];
+    CVec4 m_unkD0;            // 0xD0
     CMat4 m_unkE0;            // 0xE0
     CVec4 m_unk120;           // 0x120
-    u8 pad130[0xC];
+    f32 m_unk130;             // 0x130
+    f32 m_unk134;             // 0x134
+    s32 m_unk138;             // 0x138
     f32 m_unk13C;             // 0x13C
-    u8 pad140[0x10];
+    s32 m_unk140;             // 0x140
+    u8 pad144[0xC];
     s32 m_unk150;             // 0x150
     u8 pad154[0x4];
     s32 m_unk158;             // 0x158
@@ -185,21 +199,28 @@ public:
     u8 pad178[0x4];
     s32 m_unk17C[2];          // 0x17C
     s32 m_unk184;             // 0x184
-    u8 pad188[0x20];
+    u8 pad188[0x8];
+    CVec4 m_unk190;           // 0x190
+    s32 m_unk1A0;             // 0x1A0
+    s32 m_unk1A4;             // 0x1A4
     char m_unk1A8[0x10];      // 0x1A8
     char m_unk1B8[0x10];      // 0x1B8
     u8 pad1C8[0xC0];
     s32 m_unk288;             // 0x288
     s32 m_unk28C;             // 0x28C
-    u8 pad290[0x10];
+    u8 pad290[0x4];
+    s32 m_unk294;             // 0x294
+    u8 pad298[0x8];
     CVec4 m_unk2A0;           // 0x2A0
     CVec4 m_unk2B0;           // 0x2B0
     s32 m_unk2C0;             // 0x2C0
     s32 m_unk2C4;             // 0x2C4
-    u8 pad2C8[0x8];
+    f32 m_unk2C8;             // 0x2C8
+    f32 m_unk2CC;             // 0x2CC
     s32 m_unk2D0;             // 0x2D0
     s32 m_unk2D4;             // 0x2D4
-    u8 pad2D8[0x8];
+    s32 m_unk2D8;             // 0x2D8
+    s32 m_unk2DC;             // 0x2DC
     CVec4 m_unk2E0;           // 0x2E0
     CVec4 m_unk2F0;           // 0x2F0
     s32 m_unk300;             // 0x300
@@ -279,6 +300,71 @@ void Func10ADD0();
 void ClearFunc1EB828And1EB838();
 int Func235DE0(const char *fmt, ...);
 extern const char D_002D3680[];
+
+extern f32 D_002A6800[];
+inline s32 FtoI15(f32 f) {
+    s32 r;
+    asm volatile("mfc1 %0, %1\n\tqmtc2.ni %0, $vf2\n\tvftoi15.x $vf2, $vf2\n\tqmfc2.ni %0, $vf2" : "=r"(r) : "f"(f));
+    return r;
+}
+inline f32 TblSin(f32 a) { return D_002A6800[(FtoI15(a) >> 1) & 0x3FFF]; }
+inline f32 TblCos(f32 a) { return D_002A6800[(((FtoI15(a) >> 1) & 0x3FFF) + 0x1000) & 0x3FFF]; }
+
+#define VU_CALL(ms) asm volatile("vcallms %0" : : "i"(ms))
+#define VU_VEC(p, ms) asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tvnop\n\tvnop\n\tvcallms %1" : : "r"(p), "i"(ms))
+#define VU_MAT(p, ms) asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tlqc2 $vf5, 0x10(%0)\n\tlqc2 $vf6, 0x20(%0)\n\tlqc2 $vf7, 0x30(%0)\n\tvnop\n\tvnop\n\tvcallms %1" : : "r"(p), "i"(ms))
+inline void VuStoreMat(void *p) {
+    register void *r asm("$2") = p;
+    asm volatile("vcallms 0x0\n\tqmfc2.i $0, $vf0\n\tsqc2 $vf24, 0x0(%0)\n\tsqc2 $vf25, 0x10(%0)\n\tsqc2 $vf26, 0x20(%0)\n\tsqc2 $vf27, 0x30(%0)\n\tvcallms 0x40" : : "r"(r) : "memory");
+}
+#define VU_ROT(a, ms) do { \
+    s32 i_ = (FtoI15(a) >> 1) & 0x3FFF; \
+    s32 s_ = ((s32 *)D_002A6800)[i_]; \
+    s32 c_ = ((s32 *)D_002A6800)[(i_ + 0x1000) & 0x3FFF]; \
+    asm volatile("qmtc2.i %0, $vf4\n\tqmtc2.ni %1, $vf5\n\tvnop\n\tvnop\n\tvcallms %2" : : "r"(c_), "r"(s_), "i"(ms)); \
+} while (0)
+
+extern "C" void func_00115E48(CCharaObj *p);
+extern "C" void func_001141F0(CCharaObj *p, s32 v);
+extern "C" void func_00114EA0(CCharaObj *p);
+extern "C" void func_00116D60(CVec4 *a, f32 *b, CVec4 *c, CMat4 *d, s32 e, s32 f);
+extern "C" f32 func_00116B98(s32 ri, CMat4 *m, void *p, s32 v);
+inline f32 VuFrac(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $2, %1\n\tqmtc2.ni $2, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez $2, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$2", "$8");
+    return r;
+}
+
+inline f32 VuDot3(CVec4 *a, CVec4 *b) {
+    f32 r;
+    asm volatile("lqc2 $vf2, 0x0(%1)\n\tlqc2 $vf3, 0x0(%2)\n\tvmul.xyz $vf3, $vf2, $vf3\n\tvaddy.x $vf3, $vf3, $vf3y\n\tvaddz.x $vf3, $vf3, $vf3z\n\tqmfc2.ni $8, $vf3\n\tmtc1 $8, %0" : "=f"(r) : "r"(a), "r"(b) : "$8");
+    return r;
+}
+inline f32 FSqrt(f32 x) {
+    f32 r;
+    asm("sqrt.s %0, %1" : "=f"(r) : "f"(x));
+    return r;
+}
+
+extern "C" CMat4 *func_00202368();
+extern "C" f32 func_0021ACA8(f32 x, f32 z);
+inline void VuApplySelf(CVec4 *p) {
+    asm volatile("vcallms 0x0\n\tqmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tvmulax.xyzw ACC, $vf24, $vf4x\n\tvmadday.xyzw ACC, $vf25, $vf4y\n\tvmaddaz.xyzw ACC, $vf26, $vf4z\n\tvmaddw.xyzw $vf4, $vf27, $vf4w\n\tsqc2 $vf4, 0x0(%0)" : : "r"(p) : "memory");
+}
+
+void Func225088();
+int Func2250C0();
+void Func2251E8();
+extern "C" void func_002250E8(s32 a);
+extern "C" void func_00225258(CMat4 *m);
+extern "C" void func_00226478(s32 a, s32 b, void *c);
+extern "C" void func_002264D8(s32 a, s32 b, void *c);
+extern "C" void func_00226568(s32 a, s32 b, void *c);
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern CVec4 D_002A05B0;
+void Func1173C0(void *a, void *b, void *c, void *d, s32 h);
+extern u8 D_002A04C0[], D_002A0540[], D_002A05A0[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00112FE0);
@@ -530,7 +616,22 @@ f32 CCharaObj::Func114670() {
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_001146A8);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func114828__9CCharaObjP5CVec4T1);
+void CCharaObj::Func114828(CVec4 *out, CVec4 *in) {
+    f32 d;
+    f32 lim;
+    out->x = VuFrac(in->x + 0.5f) - 0.5f;
+    out->y = VuFrac(in->y + 0.5f) - 0.5f;
+    out->z = VuFrac(in->z + 0.5f) - 0.5f;
+    out->w = 0.0f;
+    d = VuDot3(out, out);
+    lim = m_unk130 * m_unk130;
+    if (lim < d) {
+        f32 s = FSqrt(lim / d);
+        out->x *= s;
+        out->y *= s;
+        out->z *= s;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00114958);
 
@@ -745,7 +846,20 @@ s32 CCharaObj::Func115A98() {
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00115B48);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00115C28);
+f32 Ease115C28(s32 type, s32 cur, s32 total) {
+    f32 t = (f32)cur / (f32)total;
+    switch (type) {
+    case 0:
+        return t;
+    case 1:
+        return t * t;
+    case 2:
+        return 1.0f - (1.0f - t) * (1.0f - t);
+    case 3:
+        return (1.0f - TblCos(t * 0.5f)) * 0.5f;
+    }
+    return 0.0f;
+}
 
 void Func115D00(CVec4 *out, CVec4 *tmp, CVec4 *pts, f32 *times, s32 n, f32 t) {
     s32 i;
@@ -788,11 +902,49 @@ void CCharaObj::Func116A98(s32 *src, s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func116AE0__9CCharaObj);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00116B98);
+extern "C" f32 func_00116B98(s32 ri, CMat4 *base, void *res, s32 idx) {
+    CMat4 m;
+    CVec4 a;
+    CVec4 b;
+    CVec4 c;
+    CVec4 d;
+    f32 a1;
+    if (ri < 0 || idx < 0 || !res) return 0.0f;
+    Func113418(&m, ri, (s32)res, idx);
+    a.x = 0.0f;
+    a.y = 0.0f;
+    a.z = 0.0f;
+    a.w = 1.0f;
+    Func270C50(&b, &a);
+    c.x = 1.0f;
+    c.w = 1.0f;
+    c.y = 0.0f;
+    c.z = 0.0f;
+    VU_CALL(0x30);
+    VU_MAT(func_00202368(), 0x50);
+    VU_MAT(base, 0x60);
+    VU_MAT(&m, 0x60);
+    VuApplySelf(&c);
+    VuApplySelf(&b);
+    VU_CALL(0x40);
+    func_00270A98(&c, &c, &b);
+    func_00270A98(&d, &a, &b);
+    a1 = func_0021ACA8(c.x, c.z);
+    return VuFrac(func_0021ACA8(d.x, d.z) - a1 + 1.0f);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00116D60);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_001170F0);
+s32 CCharaObj::Func1170F0() {
+    s32 ri = GetResIndex();
+    CMat4 m;
+    if (ri < 0) return 0;
+    VU_CALL(0x30);
+    VU_CALL(0x20);
+    func_00116D60(&m_unkA0, &m_unkC0, &m_unkD0, &m_unkE0, 0, 0);
+    VuStoreMat(&m);
+    return 0.5f < func_00116B98(ri, &m, m_unk28, m_unk60);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00117198);
 
@@ -804,11 +956,67 @@ void Func1173C0(void *a, void *b, void *c, void *d, s32 h) {
     func_002279D0(d, h, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00117468);
+void CCharaObj::Func117468(s32 mode, s32 p) {
+    CMat4 m;
+    VU_CALL(0x30);
+    VU_MAT(func_00202368(), 0x50);
+    func_00116D60(&m_unkA0, &m_unkC0, &m_unkD0, &m_unkE0, mode, p);
+    VU_VEC(&D_002A05B0, 0x70);
+    VuStoreMat(&m);
+    if (m_res) {
+        s32 f = m_res->GetCurFlags();
+        if (f == 0) goto draw;
+        if (f != 1) {
+        draw:
+            Func225088();
+            func_002250E8(0);
+            func_00225258(&m);
+            func_00226478(0, 8, D_002A04C0);
+            func_002264D8(0, 6, D_002A0540);
+            func_00226568(0, 1, D_002A05A0);
+            func_00227A20();
+            Func1173C0((void *)4, (void *)5, (void *)6, (void *)7, 0);
+            Func1173C0((void *)0, (void *)1, (void *)2, (void *)3, 1);
+            Func1173C0((void *)5, (void *)4, (void *)0, (void *)1, 2);
+            Func1173C0((void *)7, (void *)6, (void *)2, (void *)3, 3);
+            Func1173C0((void *)6, (void *)5, (void *)1, (void *)2, 4);
+            Func1173C0((void *)4, (void *)7, (void *)3, (void *)0, 5);
+            func_00227AA8();
+            Func2251E8();
+            Func2250C0();
+            return;
+        }
+    }
+    Func225088();
+    Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00117668);
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func117898__9CCharaObjii);
+s32 CCharaObj::Func117898(s32 a, s32 idx) {
+    s32 ri;
+    u8 *e;
+    if (!m_unk28) goto fail;
+    ri = GetResIndex();
+    if (ri < 0) goto fail;
+    e = D_002A5D0C + ri * 52;
+    if (!e || idx < 0) return 0;
+    if ((*(s32 **)(e + 0x10))[0] - 1 < idx) {
+    fail:
+        return 0;
+    }
+    Func113418((void *)a, ri, (s32)m_unk28, idx);
+    VU_CALL(0x30);
+    VU_CALL(0x20);
+    VU_VEC(&m_unkA0, 0x80);
+    VU_ROT(m_unkC4, 0xA0);
+    VU_ROT(m_unkC0, 0xB0);
+    VU_ROT(m_unkC8, 0x90);
+    VU_VEC(&m_unkD0, 0x70);
+    VU_MAT(a, 0x60);
+    VuStoreMat((void *)a);
+    return 1;
+}
 
 s32 CCharaObj::Func117AC8(s32 a, s32 b) {
     s32 i = GetResIndex();

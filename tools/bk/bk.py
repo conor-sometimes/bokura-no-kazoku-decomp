@@ -6,6 +6,12 @@ R=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 W=R+'/build/bk'
 os.makedirs(W,exist_ok=True)
 CC=R+'/tools/compilers/ee-gcc2.96/bin/ee-gcc'
+# dklib units built with the SDK compiler ee-gcc 2.9-991111 (Makefile SDK_OBJS)
+SDKCC=R+'/tools/compilers/'+os.environ.get('BK_SDK','ee-gcc2.9-991111')+'/bin/ee-gcc'
+SDK_RANGES=[(0x262D28,0x26CFB0)]
+# Sony SDK libraries (Makefile SDKC_OBJS): C through 2.9's cc1, assembled by the 2.96 GNU as (-B)
+SDKC_RANGES=[(0x26CFB0,0x2779D8)]
+SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
 OD='mips-ps2-decompals-objdump'
 ctx=json.load(open(W+'/ctx.json'))
 rom=open(R+'/disc/SCPS_150.88','rb').read()
@@ -48,7 +54,14 @@ def compile_(decl,funcs,out,tag='t'):
     decl=unit_decl(funcs)+'\n'+decl
     src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
     cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
-    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-fno-exceptions','-I'+R+'/include','-Wa,-I'+R+'/include']+(['-Wa,-g'] if any(a<0x1E91B8 for a,b in funcs) else [])+['-c','-o',out,cpp],capture_output=True,text=True)
+    cc,base=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions']
+    if funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs):  # Makefile SDK_OBJS
+        cc,base=SDKCC,['-O2','-G0','-fno-exceptions']
+    sdkc=funcs and all(any(lo<=a<hi for lo,hi in SDKC_RANGES) for a,b in funcs)
+    if sdkc:  # Makefile SDKC_OBJS
+        cc,base=SDKCC,['-x','c','-O2','-G0','-B'+SDKAS]
+    asg=['-Wa,-g'] if not sdkc and any(a<0x1E91B8 or a>=0x245648 for a,b in funcs) else []  # Makefile ASG
+    r=subprocess.run([cc]+base+['-I'+R+'/include','-Wa,-I'+R+'/include']+asg+['-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)
 R_MIPS={4:'R_MIPS_26',5:'R_MIPS_HI16',6:'R_MIPS_LO16'}

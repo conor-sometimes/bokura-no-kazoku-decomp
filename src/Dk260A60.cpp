@@ -1,14 +1,19 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+struct Bits { u8 pad[0x6800]; u8 *m6800; u8 pad6804[0x68C8 - 0x6804]; s32 m68C8; };
+extern "C" s32 func_002613E8(s32, Bits *);
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00260A60);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261068);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_002612F0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_002613E8);
+extern "C" s32 func_002613E8(s32 n, Bits *b) { s32 mask = (1 << n) - 1; s32 pos = b->m68C8; u8 *p = b->m6800 + (pos >> 3); n += pos & 7; return (((p[0] << 8) | p[1]) >> (16 - n)) & mask; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261430);
+extern "C" s32 func_00261430(s32 n, Bits *b) { s32 v = func_002613E8(n, b); b->m68C8 += n; return v; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261470);
 
@@ -38,20 +43,8 @@ INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262AF0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262B18);
 
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262BE0);
+extern "C" s32 func_00262BE0(s32 a) { return a & 0xF; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262BE8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262CA0);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262D28);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262D90);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262E30);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262FD0);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00263088);
-
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00263140);

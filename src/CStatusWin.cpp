@@ -335,10 +335,11 @@ void Func225240(int v);
 // The status window base (CStatusBase.cpp): fields up to 0x58, then its vptr (7 pure slots).
 class CStatusBase {
 public:
+    CStatusBase();
     f32 GetItemUnk34();
     virtual void V0() = 0;
     virtual void V1() = 0;
-    virtual void V2() = 0;
+    virtual void V2(f32 t) = 0;
     virtual void V3() = 0;
     virtual void V4() = 0;
     virtual void V5() = 0;
@@ -353,13 +354,31 @@ public:
 };
 class CMenuLoadMemorialSub179568 {
 public:
+    int SetUnk4(u32 i, s32 v);
+    int SetUnk34(u32 i, s32 v);
     void SetUnk64(u32 i, f32 v);
     void SetUnk60(f32 v);
+    int Create();
+    int Reset();
+    void SetUnk44(u32 v);
+    void SetUnk50(f32 x, f32 y);
+    u8 pad0[0xC0];
 };
 class CMenuLoadMemorialSub178778 {
 public:
+    void SetUnk4(s32 v);
+    void SetUnk8(u32 i, u32 v);
     void SetUnk64(u32 i, f32 v);
     void SetUnk60(f32 v);
+    int Create();
+    int Reset();
+    void SetUnk44(u32 v);
+    void SetUnk50(f32 x, f32 y);
+    void SetUnkAC(s32 v);
+    u8 pad0[0xB0];
+};
+struct CStatusWinSlot {
+    s32 m0, m4, m8, mC, m10, m14, m18;
 };
 // The class of _vt$10CStatusWin (vptr 0x58, constructor 0x19CD98). Named CStatusWinV here because
 // "CStatusWin" in this file is the vtable-less window class of the methods from 0x19F200 on.
@@ -368,9 +387,10 @@ public:
 class CStatusWinV : public CStatusBase {
 public:
     virtual ~CStatusWinV();
+    CStatusWinV(s32 kind);
     virtual void V0();
     virtual void V1();
-    virtual void V2();
+    virtual void V2(f32 t);
     virtual void V3();
     virtual void V4();
     virtual void V5();
@@ -378,7 +398,17 @@ public:
 
     CMenuLoadMemorialSub179568 *m_unk5C; // 0x5C
     CMenuLoadMemorialSub178778 *m_unk60; // 0x60
-    u8 pad64[0x200 - 0x64];
+    CStatusWinSlot m_slots64[5]; // 0x64
+    CStatusWinSlot m_slotsF0[8]; // 0xF0
+    s32 m_unk1D0;             // 0x1D0
+    s32 m_unk1D4;             // 0x1D4
+    s32 m_unk1D8;             // 0x1D8
+    s32 m_unk1DC;             // 0x1DC
+    s32 m_unk1E0;             // 0x1E0
+    s32 m_unk1E4;             // 0x1E4
+    s32 m_unk1E8;             // 0x1E8
+    s32 m_unk1EC[4];          // 0x1EC
+    u8 pad1FC[0x4];
     f32 m_unk200;             // 0x200
     f32 m_unk204;             // 0x204
 };
@@ -410,6 +440,43 @@ struct CStatusWinNameRec {
     s32 m0;
     const char *m4;
 };
+
+class CStatusBaseSub19B8C8 {
+public:
+    void SetUnk18(u32 v);
+    void SetUnk14(s32 v);
+    void SetUnk8(u32 v);
+};
+
+int LerpInt(int a, int b, f32 t);
+extern "C" int func_0019CCF8(s32 *cur, s32 *p, s32 a, s32 b, f32 t);
+extern "C" void func_001787E8(void *p, s32 i, s32 a, s32 b);
+extern "C" void func_00179438(void *p, s32 i, s32 a);
+extern "C" void func_0019C278(void *p, s32 v);
+extern "C" s32 func_00251BA8();
+class CStatusBaseSub19C400 {
+public:
+    void Init(s32 v);
+};
+class CSePlayer {
+public:
+    virtual ~CSePlayer();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual void F7();
+    virtual void F8();
+    virtual void F9();
+    virtual void F10();
+    virtual void F11();
+    virtual void F12();
+    virtual void F13();
+    virtual void Play(s32 id);
+};
+extern CSePlayer *D_002A5468;
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -455,11 +522,120 @@ INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDD70);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDD90);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDDB0);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDDD0);
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019CD98);
+CStatusWinV::CStatusWinV(s32 kind) {
+    s32 i;
+    f32 x, y;
+    m_item = (CStatusItem *)((CStatusWinSub1A0A10 *)D_002A5408)->Find("status");
+    m_item->Func1A3378();
+    CMenuLoadMemorialSub179568 *p5C = new CMenuLoadMemorialSub179568;
+    p5C->Create();
+    m_unk5C = p5C;
+    p5C->Reset();
+    m_unk5C->SetUnk44(2);
+    CMenuLoadMemorialSub178778 *p60 = new CMenuLoadMemorialSub178778;
+    p60->Create();
+    m_unk60 = p60;
+    p60->Reset();
+    m_unk60->SetUnk44(2);
+    switch (kind) {
+    case 0:
+        m_unk200 = 0.0f;
+        m_unk204 = 0.0f;
+        ((CStatusBaseSub19B8C8 *)D_002A53D4)->SetUnk8(0);
+        m_item->GetPos(&x, &y, 9);
+        m_unk60->SetUnk50(x, y);
+        m_item->GetPos(&x, &y, 10);
+        m_unk5C->SetUnk50(x, y);
+        break;
+    case 1:
+        ((CStatusItem *)((CStatusWinSub1A0A10 *)D_002A5408)->Find("status2"))->GetPos(&m_unk200, &m_unk204, 0);
+        ((CStatusWinSub1A40B8 *)m_item)->SetUnk80(m_unk200, m_unk204);
+        ((CStatusBaseSub19B8C8 *)D_002A53D4)->SetUnk8(1);
+        m_item->GetPos(&x, &y, 9);
+        m_unk60->SetUnk50(x + m_unk200, y + m_unk204);
+        m_item->GetPos(&x, &y, 10);
+        m_unk5C->SetUnk50(x + m_unk200, y + m_unk204);
+        ((CMenuLoadMemorialSub178778 *)m_unk5C)->SetUnkAC(1);
+        break;
+    default:
+        Func235DE0("*** mode is out of range.(%d)\n", kind);
+        break;
+    }
+    for (s32 j = 0; j < 5; j++) {
+        m_slots64[j].m0 = 0;
+        m_slots64[j].m4 = 0;
+        m_slots64[j].m8 = 0;
+        m_slots64[j].mC = 0;
+        m_slots64[j].m14 = 0;
+        m_slots64[j].m10 = 0;
+        m_slots64[j].m18 = 0;
+    }
+    for (s32 k = 0; k < 8; k++) {
+        m_slotsF0[k].m0 = 0;
+        m_slotsF0[k].m4 = 0;
+        m_slotsF0[k].m8 = 0;
+        m_slotsF0[k].mC = 0;
+        m_slotsF0[k].m14 = 0;
+        m_slotsF0[k].m10 = 0;
+        m_slotsF0[k].m18 = 0;
+    }
+    m_unk1D0 = 0;
+    m_unk1D4 = 0;
+    m_unk1D8 = 0;
+    m_unk1DC = 0;
+    m_unk1E4 = 0;
+    m_unk1E0 = 0;
+    m_unk1E8 = 0;
+    s32 m1 = -1;
+    for (s32 n = 3; n >= 0; n--) m_unk1EC[n] = m1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D0A8);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D138);
+void CStatusWinV::V2(f32 t) {
+    for (s32 i = 0; i < 5; i++) {
+        m_slots64[i].m4 = m_slots64[i].m0;
+        int r = func_0019CCF8(&m_slots64[i].m0, &m_slots64[i].m10, m_slots64[i].m8, m_slots64[i].m14, t);
+        if (m_slots64[i].m14) {
+            m_unk60->SetUnk64(i, (func_00251BA8() & 1) ? 1.0f : 2.0f - t);
+        } else {
+            m_unk60->SetUnk64(i, 1.0f);
+        }
+        m_unk60->SetUnk8(i, m_slots64[i].m0);
+        if (m_slots64[i].m14 < 0) func_001787E8(m_unk60, i, 2, 0);
+        else if (m_slots64[i].m14 > 0) func_001787E8(m_unk60, i, 1, 0);
+        else func_001787E8(m_unk60, i, 0, 0);
+        if (r) D_002A5468->Play(m_slots64[i].m0 + 0x4E);
+    }
+    for (s32 i = 0; i < 8; i++) {
+        m_slotsF0[i].m4 = m_slotsF0[i].m0;
+        m_slotsF0[i].m0 = LerpInt(m_slotsF0[i].m8, m_slotsF0[i].mC, t);
+        m_unk5C->SetUnk4(i, m_slotsF0[i].m0);
+        if (m_slotsF0[i].mC != m_slotsF0[i].m8 || m_slotsF0[i].m14) {
+            m_unk5C->SetUnk64(i, (func_00251BA8() & 1) ? 1.0f : 2.0f - t);
+        } else {
+            m_unk5C->SetUnk64(i, 1.0f);
+        }
+    }
+    for (s32 i = 0; i < 8; i += 2) {
+        s32 da = m_slotsF0[i].mC - m_slotsF0[i].m8;
+        s32 db = m_slotsF0[i + 1].mC - m_slotsF0[i + 1].m8;
+        if (da < 0 || db < 0 || m_slotsF0[i].m14 < 0 || m_slotsF0[i + 1].m14 < 0) func_00179438(m_unk5C, i / 2, 2);
+        else if (da > 0 || db > 0 || m_slotsF0[i].m14 > 0 || m_slotsF0[i + 1].m14 > 0) func_00179438(m_unk5C, i / 2, 1);
+        else func_00179438(m_unk5C, i / 2, 0);
+    }
+    s32 from = m_unk1D8;
+    s32 to = m_unk1DC;
+    m_unk1D4 = m_unk1D0;
+    m_unk1D0 = LerpInt(from, to, t);
+    if (to != from && t == 0.0f) {
+        func_0019C278(D_002A53D4, to);
+        D_002A5468->Play(0x59);
+    } else if (m_unk1E4 && t == 0.0f) {
+        ((CStatusBaseSub19C400 *)D_002A53D4)->Init(to);
+        D_002A5468->Play(0x59);
+    }
+}
 
 void CStatusWinV::V0() {
     V1();
@@ -472,9 +648,23 @@ INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDE60);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDE80);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDEA0);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DBA0);
+void CStatusWinV::V3() {
+    for (s32 i = 0; i < 5; i++) {
+        if (m_slots64[i].mC != m_slots64[i].m8) D_002A5468->Play(m_slots64[i].m8 + 0x4E);
+        else if (m_slots64[i].m14) D_002A5468->Play(m_slots64[i].mC + 0x4E);
+    }
+    s32 sum = 0;
+    for (s32 j = 0; j < 8; j += 2) {
+        sum += (m_slotsF0[j].mC - m_slotsF0[j].m8) + (m_slotsF0[j + 1].mC - m_slotsF0[j + 1].m8) + m_slotsF0[j].m14 + m_slotsF0[j + 1].m14;
+    }
+    if (sum < 0) D_002A5468->Play(0x5A);
+    else if (sum > 0) D_002A5468->Play(0x59);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DD48);
+void CStatusWinV::V4() {
+    for (s32 i = 0; i < 5; i++) func_001787E8(m_unk60, i, 0, 0);
+    for (s32 j = 0; j < 4; j++) func_00179438(m_unk5C, j, 0);
+}
 
 void CStatusWinV::V5() {
     s32 i;

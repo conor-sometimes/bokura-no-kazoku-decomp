@@ -6,7 +6,7 @@
 class IPhotoDBMgr {
 public:
     virtual void Release() = 0;
-    virtual int Func1705C0() = 0;
+    virtual int Func1705C0(const char *arc) = 0;
     virtual void Init() = 0;
     virtual int Func29A2E0() = 0;
     virtual int Func29A2E8() = 0;
@@ -21,7 +21,7 @@ class CPhotoDBMgr : public IPhotoDBMgr {
 public:
     CPhotoDBMgr();
     virtual void Release() { delete this; }
-    virtual int Func1705C0();
+    virtual int Func1705C0(const char *arc);
     virtual void Init();
     virtual int Func29A2E0();
     virtual int Func29A2E8();
@@ -51,7 +51,12 @@ public:
 struct CPhotoRec {
     const char *m_name;       // 0x0
     s32 m_id;                 // 0x4
-    u8 pad8[0x18];
+    void *m8;                 // 0x8
+    s32 mC;                   // 0xC
+    void *m10;                // 0x10
+    s32 m14;                  // 0x14
+    void *m18;                // 0x18
+    s32 m1C;                  // 0x1C
 };
 template <class T> inline T *FindById(T *tbl, s32 n, s32 id) {
     for (s32 i = 0; i < n; i++, tbl++) {
@@ -65,6 +70,11 @@ class CPhotoDBMgrSub1714C8 {
 public:
     CPhotoRec *Find(s32 id);
     int Parse170758(const char *text);
+    int Func170B18(void *src);
+    int Parse170E18(CPhotoRec *rec, s32 i, char *buf);
+    int Parse1711A0(CPhotoRec *rec, s32 i, char *buf);
+    int Parse171378(CPhotoRec *rec, s32 i, char *buf);
+    int ParseList(void *src, const char *fmt, CPhotoRec *rec, int (CPhotoDBMgrSub1714C8::*fn)(CPhotoRec *, s32, char *));
     u8 pad0[0x4];
     u8 m_buf[0xC];            // 0x4
     u8 pad10[0x8];
@@ -231,7 +241,57 @@ template <class T> inline T *FindLatest(T *tbl, s32 n, s32 day) {
     }
     return 0;
 }
+
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+const char *Func24AF10(void *src, const char *key);
+const char *Func24AFE8(const char *p, char *buf, int k, int size);
+class CFlagWork {
+public:
+    int Func1091B0(s32 id);
+};
+extern char D_002D9EF8[], D_002D9F00[], D_002D9F08[], D_002D9F20[], D_002D9F38[], D_002D9F48[], D_002D9F50[];
+extern const char *D_002A36C8[];
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+char *Func24A4C0(const char *name);
+extern void (*D_002B91B0)(void *p);
+extern "C" void func_00248C30(CPushBuf *p);
+extern "C" void func_00248C70(CPushBuf *p);
+struct CPushBufHead {
+    u8 pad0[0x4];
+    s32 m4;
+};
+
+extern const char *D_002A36D8;
+extern const char *D_002A36DC;
+extern const char *D_002A36E0;
 // @decl-end
+
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9EC8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9ED8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9EE8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9EF8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F00);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F08);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F20);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F38);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F48);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F50);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F60);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F68);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F80);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F88);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F90);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9F98);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FA0);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FB8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FC0);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FC8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FD0);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FE8);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FF0);
+INCLUDE_RODATA("asm/nonmatchings/CPhotoDBMgr", D_002D9FF8);
 
 CPhotoDBMgr::CPhotoDBMgr() {
     D_002A36C0 = this;
@@ -249,7 +309,36 @@ void CPhotoDBMgr::Clear() {
     m_unk20 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_001705C0);
+int CPhotoDBMgr::Func1705C0(const char *arc) {
+    u8 buf[0x100];
+    int ok = 0;
+    CPushBuf *pb;
+    const char *name;
+    char *text;
+    Init();
+    Func2491A8(buf, arc, (s32)D_002D9EF8, (s32)D_002D9F00, (s32)D_002D9F08);
+    if (!Func249248(buf)) return 0;
+    pb = &m_buf;
+    Func235DE0(D_002D9F20);
+    func_00248C30(pb);
+    if (((CFlagWork *)D_002A26E4)->Func1091B0(0x16) == 2 && !(((CFlagWork *)D_002A26E4)->Func1091B0(8) < 3)) {
+        name = D_002D9F38;
+    } else {
+        name = D_002A36C8[((CFlagWork *)D_002A26E4)->Func1091B0(0x16)];
+    }
+    Func235DE0(D_002D9F48, name);
+    text = Func24A4C0(name);
+    if (text) {
+        if (((CPhotoDBMgrSub1714C8 *)this)->Parse170758(text) && ((CPhotoDBMgrSub1709A0 *)this)->Parse(text)) {
+            ok = ((CPhotoDBMgrSub1714C8 *)this)->Func170B18(text) != 0;
+        }
+        if (text) D_002B91B0(text);
+    }
+    func_00248C70(pb);
+    Func249348();
+    Func235DE0(D_002D9F50, ((CPushBufHead *)pb)->m4);
+    return ok;
+}
 
 int CPhotoDBMgrSub1714C8::Parse170758(const char *text) {
     char line[256];
@@ -303,11 +392,43 @@ int CPhotoDBMgrSub1709A0::Parse(const char *text) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00170B18);
+int CPhotoDBMgrSub1714C8::Func170B18(void *src) {
+    s32 i;
+    for (i = 0; i < m_count; i++) {
+        CPhotoRec *r = &m_table[i];
+        r->mC = ParseList(src, D_002A36D8, r, 0);
+        r->m8 = ((CPushBuf *)m_buf)->Func248CC8(r->mC << 6, 1, 1);
+        ParseList(src, D_002A36D8, r, &CPhotoDBMgrSub1714C8::Parse170E18);
+        r->m14 = ParseList(src, D_002A36DC, r, 0);
+        r->m10 = ((CPushBuf *)m_buf)->Func248CC8(r->m14 << 6, 1, 1);
+        ParseList(src, D_002A36DC, r, &CPhotoDBMgrSub1714C8::Parse1711A0);
+        r->m1C = ParseList(src, D_002A36E0, r, 0);
+        r->m18 = ((CPushBuf *)m_buf)->Func248CC8(r->m1C << 4, 1, 1);
+        ParseList(src, D_002A36E0, r, &CPhotoDBMgrSub1714C8::Parse171378);
+    }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00170CD8);
+int CPhotoDBMgrSub1714C8::ParseList(void *src, const char *fmt, CPhotoRec *rec, int (CPhotoDBMgrSub1714C8::*fn)(CPhotoRec *, s32, char *)) {
+    char key[0x100];
+    char buf[0x400];
+    const char *p;
+    s32 n;
+    s32 i;
+    sprintf(key, fmt, rec->m_name);
+    p = Func24AF10(src, key);
+    if (!*p) return 0;
+    n = func_0024B040(p, 1);
+    if (fn) {
+        for (i = 0; i < n; i++) {
+            p = Func24AFE8(p, buf, 1, 0x100);
+            (this->*fn)(rec, i, buf);
+        }
+    }
+    return n;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00170E18);
+INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", Parse170E18__20CPhotoDBMgrSub1714C8P9CPhotoReciPc);
 
 int CPhotoDBMgrSub1711A0::Parse(CPhotoCamTbl *tbl, s32 i, void *src) {
     CPhotoCamRec *r = &tbl->m_recs[i];
@@ -354,7 +475,7 @@ CPhotoRec *CPhotoDBMgrSub1714C8::Find(s32 id) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171510);
+INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", Func171510__11CPhotoDBMgrPciii);
 
 int CPhotoDBMgr::Func171838(s32 day) {
     s32 best;

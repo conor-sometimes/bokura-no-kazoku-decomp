@@ -1,18 +1,94 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+s32 Func235DE0(const char *fmt, ...);
+// AT3 (ATRAC3) stream players: 8 slots of 0xD9B0 bytes at D_393A00.
+struct CAt3Node;
+struct CAt3 {
+    CAt3Node *m_next;         // 0x0
+    s32 m_id;                 // 0x4
+    s32 m_active;             // 0x8
+    u8 padC[8];
+    s32 m_pitch;              // 0x14
+    u8 pad18[8];
+    s32 m_syncCount;          // 0x20
+    s32 m_sndId;              // 0x24
+    s32 m_handle;             // 0x28
+    u8 pad2C[0xD994 - 0x2C];
+    s32 m_paused;             // 0xD994
+    s32 m_ready;              // 0xD998
+    s32 m_level;              // 0xD99C
+    s32 m_volL;               // 0xD9A0
+    s32 m_volR;               // 0xD9A4
+    u8 padD9A8[8];
+};
+extern CAt3 D_393A00[8];
+extern const char D_002E7490[];
+extern const char D_002E75A8[];
+extern const char D_002E75B0[];
+extern const char D_002E75E0[];
+extern const char D_002E75F0[];
+extern const char D_002E75F8[];
+inline CAt3 *GetAt3(u32 i, const char *fn) {
+    if (i < 8) {
+        CAt3 *a = &D_393A00[i];
+        if (a->m_active) return a;
+    }
+    if (fn) Func235DE0(D_002E7490, fn, i);
+    return 0;
+}
+extern "C" s32 func_0020B0B8(s32 h);
+extern "C" s32 func_0020B828(u32 i, s32 v);
+extern "C" s32 func_0020FD00(u32 i, const char *name, void *ops);
+extern const char D_002E7470[];
+extern u8 D_002BA1E8[];
+extern s32 D_002BA208;
+struct CAt3Node { CAt3Node *m_next; s32 m_id; s32 m8; s32 mC; };
+extern CAt3Node *D_002BA1E0;
+extern CAt3Node *D_002BA1E4;
+extern CAt3Node D_393968[8];
+extern CAt3Node *D_002BA20C;
+void Func258200();
+void Func2583B8();
+void Func259978();
+s32 Func259A78(u32 i, s32 x);
+void Func259B08(u32 i, s32 x);
+void Func259D20(u32 i, s32 l, s32 r);
+void Func2586C8(CAt3Node *n);
+void Func259858(s32 id, s32 b);
+extern s32 D_002BA230[];
+struct CAt3Tbl { u8 pad0[0xC]; s32 m_mode; u8 pad10[0x6930 - 0x10]; s16 m_tbl[1][4][256]; };
+
+extern "C" void func_0022DE48(s32 id);
+extern "C" void func_0022DDE8(s32 id);
+extern "C" void func_0020AF80(s32 h);
+extern CAt3Node *D_002BA210;
+void Func258458(CAt3Tbl *o, s32 a, u32 b, s32 c, s32 v, s32 flag);
+s32 Func2583D0(CAt3Tbl *o, s32 a, u32 b, s32 c, s32 flag);
+extern "C" s32 func_0022E2C8(s32 a, s32 b);
+extern "C" s32 func_0022E450(s32 a, s32 b);
+extern "C" s32 func_0020B8C8(s32 h, s32 l, s32 r);
+extern const char D_002E7580[];
+extern const char D_002E7588[];
+extern const char D_002E7598[];
+extern const char D_002E75C0[];
+extern const char D_002E75D0[];
+extern const char D_002E7578[];
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002571C0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002574B8);
+INCLUDE_ASM("asm/nonmatchings/Dk2571C0", Func2574B8__9CFontWorkffPfT3PPCcPvi);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257710);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257840);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257B70);
+INCLUDE_ASM("asm/nonmatchings/Dk2571C0", Func257B70__9CFontWorkffPfT3PPCcPvi);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257DC8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257E28);
+void Func257E28() { return Func2583B8(); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257E40);
 
@@ -20,62 +96,170 @@ INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257F40);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00258110);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002581A0);
+s32 Func2581A0(s32 x) { return x; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002581A8);
+void Func2581A8(u32 i, s32 x) { return Func259B08(i, x); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002581C0);
+s32 Func2581C0(u32 i, s32 x) { return Func259A78(i, x); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002581D8);
+s32 Func2581D8() { return func_0020FD00(2, D_002E7470, D_002BA1E8); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00258200);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002583B8);
+void Func2583B8() { return Func259978(); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002583D0);
+s32 Func2583D0(CAt3Tbl *o, s32 a, u32 b, s32 c, s32 flag) {
+    s32 sh = D_002BA230[o->m_mode];
+    s32 s1 = sh - 1;
+    if (flag && (b & ~0x3FF)) a = (a + 1) % 6;
+    b &= 0x3FF;
+    b = ((b & 0x300) << s1) | (b & 0xFF);
+    return o->m_tbl[a * sh][c][b];
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00258458);
+void Func258458(CAt3Tbl *o, s32 a, u32 b, s32 c, s32 v, s32 flag) {
+    s32 sh = D_002BA230[o->m_mode];
+    s32 s1 = sh - 1;
+    if (flag && (b & ~0x3FF)) a = (a + 1) % 6;
+    b &= 0x3FF;
+    b = ((b & 0x300) << s1) | (b & 0xFF);
+    o->m_tbl[a * sh][c][b] = v;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002584E0);
+void Func2584E0(CAt3Tbl *o, s32 a, s32 b, s32 n, s32 flag) {
+    s32 sh = D_002BA230[o->m_mode];
+    for (s32 i = 0; i < n; i++) {
+        for (s32 j = 0; j < sh; j++) Func258458(o, a, b + i, j, 0, flag);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002585B8);
+void Func2585B8(CAt3Tbl *o, s32 da, s32 db, s32 sa, s32 sb, s32 n, s32 flag) {
+    s32 sh = D_002BA230[o->m_mode];
+    for (s32 i = 0; i < n; i++) {
+        for (s32 j = 0; j < sh; j++) Func258458(o, da, db + i, j, Func2583D0(o, sa, sb + i, j, flag), flag);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002586C8);
+INCLUDE_ASM("asm/nonmatchings/Dk2571C0", Func2586C8__FP8CAt3Node);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259300);
+void Func259300() {
+    for (CAt3Node *n = D_002BA20C; n; n = n->m_next) Func2586C8(n);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259340);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259600);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259858);
+void Func259858(s32 i, s32 b) {
+    CAt3 *a = GetAt3(i, D_002E7578);
+    if (!a) return;
+    if (a->m_sndId >= 0) {
+        if (b) func_0022DE48(a->m_sndId);
+        else func_0022DDE8(a->m_sndId);
+        a->m_sndId = -1;
+    }
+    if (a->m_handle >= 0) {
+        func_0020AF80(a->m_handle);
+        a->m_handle = -1;
+    }
+    CAt3Node **pp = &D_002BA20C;
+    CAt3Node *n;
+    while ((n = *pp) != 0) {
+        if (n == (CAt3Node *)a) {
+            *pp = n->m_next;
+            n->m_next = D_002BA210;
+            D_002BA210 = n;
+            break;
+        }
+        pp = &n->m_next;
+    }
+    a->m_active = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259978);
+void Func259978() {
+    CAt3Node *n;
+    while ((n = D_002BA20C) != 0) Func259858(n->m_id, 0);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002599C0);
+void Func2599C0(u32 i) {
+    CAt3 *a = GetAt3(i, D_002E7580);
+    if (a && !a->m_paused && a->m_sndId >= 0) {
+        func_0020B828(a->m_handle, 1);
+        func_0022E450(a->m_sndId, 1);
+        a->m_paused = 1;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259A78);
+s32 Func259A78(u32 i, s32 x) {
+    CAt3 *a = GetAt3(i, D_002E7588);
+    if (!a) return 0;
+    if (a->m_sndId < 0) return 0;
+    return func_0022E2C8(a->m_sndId, x == 0);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259B08);
+void Func259B08(u32 i, s32 x) {
+    CAt3 *a = GetAt3(i, D_002E7598);
+    if (a && a->m_sndId >= 0) return (void)func_0022E450(a->m_sndId, x);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259BA0);
+void Func259BA0(u32 i, s32 v) {
+    CAt3 *a = GetAt3(i, D_002E75A8);
+    if (a) return (void)func_0020B828(a->m_handle, v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259C28);
+s32 Func259C28(u32 i) {
+    if (i >= 8) return 0;
+    CAt3 *a = &D_393A00[i];
+    if (!a->m_active) return 0;
+    return func_0020B0B8(a->m_handle);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259C78);
+s32 Func259C78(u32 i) {
+    if (i >= 8) return 0;
+    CAt3 *a = &D_393A00[i];
+    if (!a->m_active) return 0;
+    return a->m_handle;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259CB0);
+s32 Func259CB0(u32 i) {
+    CAt3 *a = GetAt3(i, D_002E75B0);
+    if (a) return a->m_level;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259D20);
+void Func259D20(u32 i, s32 l, s32 r) {
+    CAt3 *a = GetAt3(i, D_002E75C0);
+    if (a) {
+        a->m_volL = l;
+        a->m_volR = r;
+        return (void)func_0020B8C8(a->m_handle, l, r);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259DD8);
+void Func259DD8(u32 i, s32 v) { return Func259D20(i, v, v); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259DF0);
+void Func259DF0(u32 i, s32 *l, s32 *r) {
+    CAt3 *a = GetAt3(i, D_002E75D0);
+    if (a) {
+        *l = a->m_volL;
+        *r = a->m_volR;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259E90);
+void Func259E90(u32 i, f32 v) {
+    CAt3 *a = GetAt3(i, D_002E75E0);
+    if (a) a->m_pitch = (s32)(v * 4096.0f);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259F18);
+s32 Func259F18(u32 i) {
+    CAt3 *a = GetAt3(i, D_002E75F0);
+    if (a) return a->m_ready;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259F88);
+void Func259F88(s32 v) { D_002BA208 = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259F98);
+void Func259F98(u32 i, s32 v) {
+    CAt3 *a = GetAt3(i, D_002E75F8);
+    if (a) a->m_syncCount = v;
+}

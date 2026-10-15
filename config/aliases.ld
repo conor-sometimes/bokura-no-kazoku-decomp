@@ -267,3 +267,53 @@ func_0019FA50 = 0x0019FA50; /* old name still called from another unit (merge in
 func_0019FC30 = 0x0019FC30; /* old name still called from another unit (merge interim 6) */
 func_001A3E28 = 0x001A3E28; /* old name still called from another unit (merge interim 6) */
 func_001A3EA8 = 0x001A3EA8; /* old name still called from another unit (merge interim 6) */
+func_001974F8 = 0x001974F8; /* old name still called from another unit (merge g1 final) */
+func_001976A0 = 0x001976A0; /* old name still called from another unit (merge g1 final) */
+func_00197950 = 0x00197950; /* old name still called from another unit (merge g1 final) */
+func_00197AE0 = 0x00197AE0; /* old name still called from another unit (merge g1 final) */
+func_00197FA8 = 0x00197FA8; /* old name still called from another unit (merge g1 final) */
+MemorialMenuFunc17B4A0__Fv = 0x0017B4A0; /* = Func17B4A0__26CMenuLoadMemorialSub17B3A0; CCommandSelect calls it extern "C" with this name (merge g1 final) */
+Func24AB90__FPCcT0 = 0x0024AB90; /* C++ name CUserFlagMgr uses; Dk2497C0 defines it as func_0024AB90 */
+Func24ABE0__FPcPCc = 0x0024ABE0; /* C++ name CUserFlagMgr uses; Dk2497C0 defines it as func_0024ABE0 */
+func_00135BE0 = 0x00135BE0; /* PlayMovie135BE0__9CEventObjP12CEventObjUnk (g2), called from CDemoMain */
+func_00150A70 = 0x00150A70; /* __9CGameMaini (CGameDBMgr calls the old name) */
+Func171448__11CPhotoDBMgrPcii = 0x00171448; /* CPhotoDBMgr vtable slot 6 = GetName__20CPhotoDBMgrSub171448Pcii */
+Parse1711A0__20CPhotoDBMgrSub1714C8P9CPhotoReciPc = 0x001711A0; /* PMF target in 0x170B18 (matched as CPhotoDBMgrSub1711A0::Parse) */
+Parse171378__20CPhotoDBMgrSub1714C8P9CPhotoReciPc = 0x00171378; /* PMF target in 0x170B18 (matched as CPhotoDBMgrSub171378::Parse) */
+_vt$11CStatusWinV = 0x002C1AE8; /* = _vt$10CStatusWin (CStatusWin.cpp calls the class CStatusWinV) */
+Init__20CStatusBaseSub19C400i = 0x0019C400; /* = Init__20CStatusBaseSub19C400 (CStatusWin passes the new value) */
+/* .bss words lane r5 references by name (no asm symbol) */
+D_37CA8C = 0x0037CA8C;
+D_37CA74 = 0x0037CA74;
+D_37CA78 = 0x0037CA78;
+D_386E24 = 0x00386E24;
+D_388F28 = 0x00388F28;
+D_388F2C = 0x00388F2C;
+D_38F004 = 0x0038F004;
+func_00252E18 = 0x00252E18; /* old name still called from another unit (lane d2) */
+func_00253048 = 0x00253048; /* old name still called from another unit (lane d2) */
+func_002539A0 = 0x002539A0; /* old name still called from another unit (lane d2) */
+func_00253A38 = 0x00253A38; /* old name still called from another unit (lane d2) */
+func_002554E0 = 0x002554E0; /* old name still called from another unit (lane d2) */
+func_00255A30 = 0x00255A30; /* old name still called from another unit (lane d2) */
+func_00255E18 = 0x00255E18; /* old name still called from another unit (lane d2) */
+func_00256260 = 0x00256260; /* old name still called from another unit (lane d2) */
+func_00256648 = 0x00256648; /* old name still called from another unit (lane d2) */
+func_00256668 = 0x00256668; /* old name still called from another unit (lane d2) */
+func_002564B8 = 0x002564B8; /* old name still called from another unit (lane d2) */
+func_002565B0 = 0x002565B0; /* old name still called from another unit (lane d2) */
+func_00256930 = 0x00256930; /* old name still called from another unit (lane d2) */
+func_00256988 = 0x00256988; /* old name still called from another unit (lane d2) */
+/* d3: .bss words of the SDK libraries that spimdisasm left unnamed (lui 0x42 + negative %lo) */
+D_41A800 = 0x0041A800; /* libcdvd: callback function */
+D_41A804 = 0x0041A804; /* its $gp */
+D_41A808 = 0x0041A808;
+D_41A80C = 0x0041A80C;
+D_41A810 = 0x0041A810;
+D_41AAE8 = 0x0041AAE8;
+D_41AAEC = 0x0041AAEC;
+D_41AAF0 = 0x0041AAF0;
+func_001170F0 = 0x001170F0; /* old name still called from another unit (merge interim 7) */
+func_0012C4A8 = 0x0012C4A8; /* old name still called from another unit (merge interim 7) */
+func_001BA0A0 = 0x001BA0A0; /* Reset__19CLayoutObjSub1BA0A0 (g2), called from CLayoutHourglass::Draw1BD420 */
+func_001BBD08 = 0x001BBD08; /* Upload__11CLayoutDrawP15CLayoutImageRef (g2), called with (this, entry, a) from CLayoutObj::Func1BA210 */

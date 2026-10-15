@@ -57,6 +57,11 @@ struct CResortEntry {
     s32 m_unk4;               // 0x4
     s32 m_unk8;               // 0x8
 };
+struct CResortList {
+    s32 m0;                   // 0x0
+    s32 *m_slots;             // 0x4
+    s32 m_num;                // 0x8
+};
 // Resort database (CResortDBMgr unit), only the virtual calls.
 class CResortDBMgr {
 public:
@@ -68,8 +73,8 @@ public:
     virtual void Vf29A3F0();
     virtual void Vf29A430();
     virtual s32 Vf172A60(s32 a, s32 b, s32 c);
-    virtual void Vf172B28();
-    virtual void Vf172B68();
+    virtual s32 Vf172B28(s32 i);
+    virtual struct CResortList *GetList(s32 id);
     virtual CResortEntry *GetEntryA(s32 id);
 };
 extern CResortDBMgr *D_002A36E8;
@@ -90,7 +95,7 @@ class CGameSchedule {
 public:
     s32 Init15D3E0();
     void Func15DD38(s32 k);
-    void Func159CF0(s32 a, s32 b, s32 c, s32 d);
+    s32 Func159CF0(s32 a, s32 b, s32 c, s32 d);
     s32 Func15E638();
     s32 Func15E6E8();
     s32 Func15E2A8();
@@ -107,12 +112,13 @@ public:
     void Load159F80();
     s32 Func15F1B0(s32 a, s32 b, s32 c);
     void Func15DEA0();
+    s32 Collect15D820();
     s32 Func15D468();
     s32 Func15F780(s32 b, s32 c, s32 d);
     s32 Func15D620();
     s32 Func15E048(s32 k);
     s32 Func15E908();
-    void Func15F2C8(s32 who, s32 mode, s32 len);
+    s32 Func15F2C8(s32 who, s32 mode, s32 len);
     s32 Func15F9E0(s32 a, s32 b, s32 c, s32 d);
 
     u8 pad0[0x2C];
@@ -159,7 +165,8 @@ struct CGameDBRecSched {
 inline CGameScheduleUnit *ScheduleUnit2(CListTag *n) { if (n->m_isHead) return 0; return (CGameScheduleUnit *)n; }
 int IsFlagKind(int v);
 struct CGameDBRecDC {
-    u8 pad0[0x10];
+    s32 m0;                   // 0x0
+    u8 pad4[0xC];
     s32 m10;                  // 0x10
     u8 pad14[0x10];
     s32 m24;                  // 0x24
@@ -237,6 +244,18 @@ inline s32 RandRange(CRand *rnd, s32 lo, s32 hi) {
     if (lo == hi) return lo;
     return ((rnd->Next() << 16) | rnd->Next()) % (u32)(hi - lo + 1) + lo;
 }
+
+int CompareScheduleIds(const s32 *a, const s32 *b);
+int CheckScheduleId(int v);
+struct CSchedSortEnt {
+    s32 m_key;                // 0x0
+    s32 m_id;                 // 0x4
+    s32 m8;                   // 0x8
+    s32 m_open;               // 0xC
+    s32 m10;                  // 0x10
+    s32 m_state5;             // 0x14
+};
+void SortSchedules15DAB0();
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159850);
@@ -352,9 +371,85 @@ int CheckScheduleId(int v) {
     return v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015D820);
+s32 CGameSchedule::Collect15D820() {
+    CSchedSortEnt ents[256];
+    s32 i, st, s, cnt = 0;
+    s32 a, b;
+    for (i = 0; i < 256; i++) {
+        if (!D_002A2988->Find1DC(i)) continue;
+        s = i + 0x1062;
+        st = D_002A26E4->Func1091B0(s);
+        if (st == 1 || st == 5 || st == 3 || st == 2) {
+            ents[cnt].m_id = i;
+            ents[cnt].m_key = CheckScheduleId(D_002A26E4->Func1091B0(i + 0x1162));
+            ents[cnt].m10 = D_002A26E4->Func1091B0(i + 0x1362);
+            if (st == 2) {
+                D_002A26E4->Func108FF0(s, 5);
+                ents[cnt].m8 = 1;
+            } else {
+                ents[cnt].m8 = 0;
+            }
+            cnt++;
+        }
+    }
+    func_0028A140(ents, cnt, sizeof(CSchedSortEnt), (int (*)(const void *, const void *))CompareScheduleIds);
+    D_002A5358->Func108700();
+    D_002A5358->Func108FF0(0x1FF, 0);
+    a = 0;
+    b = 0;
+    for (i = 0; i < cnt; i++) {
+        if (ents[i].m8) {
+            D_002A5358->Func108FF0(b + 0x211, ents[i].m_id);
+            D_002A5358->Func108FF0(b + 0x201, a + b);
+            D_002A5358->Func108FF0(b + 0x221, ents[i].m_key);
+            D_002A5358->Func108FF0(b + 0x231, ents[i].m10);
+            b++;
+        } else {
+            D_002A5358->Func108FF0(a + 0x1AF, ents[i].m_id);
+            D_002A5358->Func108FF0(a + 0x1BF, ents[i].m_key);
+            D_002A5358->Func108FF0(a + 0x1CF, 1);
+            D_002A5358->Func108FF0(a + 0x1DF, ents[i].m10);
+            a++;
+        }
+    }
+    D_002A5358->Func108FF0(0x1AE, a);
+    D_002A5358->Func108FF0(0x200, b);
+    return b > 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015DAB0);
+void SortSchedules15DAB0() {
+    CSchedSortEnt ents[256];
+    s32 bit;
+    s32 i, n, cnt = 0;
+    bit = 1 << (D_002A26E4->Func1091B0(0x17) % 4);
+    for (i = 0; i < 256; i++) {
+        n = D_002A26E4->Func1091B0(i + 0x1162);
+        if (n <= 0) continue;
+        CGameDBRecDC *rec = (CGameDBRecDC *)D_002A2988->Find1DC(i);
+        if (!rec) continue;
+        if (D_002A26E4->Func1091B0(i + 0x1062) != 1 && D_002A26E4->Func1091B0(i + 0x1062) != 5) continue;
+        s32 open = 1;
+        if (D_002A26E4->Func1091B0(i + 0x1062) == 5) ents[cnt].m_state5 = 1;
+        else ents[cnt].m_state5 = 0;
+        if (!(rec->m24 & bit)) open = 0;
+        if (D_002A26E4->Func1091B0(0x1C) < rec->m2C) open = 0;
+        ents[cnt].m_key = CheckScheduleId(n);
+        ents[cnt].m_id = rec->m0;
+        ents[cnt].m_open = open;
+        ents[cnt].m10 = D_002A26E4->Func1091B0(i + 0x1362);
+        cnt++;
+    }
+    func_0028A140(ents, cnt, sizeof(CSchedSortEnt), (int (*)(const void *, const void *))CompareScheduleIds);
+    D_002A5358->Func108700();
+    for (i = 0; i < cnt; i++) {
+        D_002A5358->Func108FF0(i + 0x1AF, ents[i].m_id);
+        D_002A5358->Func108FF0(i + 0x1BF, ents[i].m_key);
+        D_002A5358->Func108FF0(i + 0x1CF, ents[i].m_open);
+        D_002A5358->Func108FF0(i + 0x1DF, ents[i].m10);
+        D_002A5358->Func108FF0(i + 0x1EF, ents[i].m_state5);
+    }
+    D_002A5358->Func108FF0(0x1AE, cnt);
+}
 
 void CGameSchedule::Func15DD38(s32 k) {
     if (k < D_002A5358->Func1091B0(0x1AE)) {
@@ -414,7 +509,12 @@ s32 CGameSchedule::Func15E048(s32 k) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015E2A8);
+s32 CGameSchedule::Func15E2A8() {
+    s32 r = Func15E2F8() != 0;
+    r |= Func15E450() != 0;
+    r |= Func15E5A8() != 0;
+    return r;
+}
 
 s32 CGameSchedule::Func15E2F8() {
     if (D_002A26E4->Func1091B0(0x1142)) return 0;
@@ -568,7 +668,63 @@ s32 CGameSchedule::Func15F958(s32 a, s32 b, s32 c) {
     return Func15F9E0(r, 0x18, c, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", Func15F9E0__13CGameScheduleiiii);
+s32 CGameSchedule::Func15F9E0(s32 r, s32 who, s32 len, s32 check) {
+    s32 i;
+    if (who != 0x18) {
+        CResortEntry *rec = D_002A36E8->GetEntryA(r);
+        if (!rec) return 0;
+        if (rec->m_unk8 > 0 && D_002A26E4->GetNamed(rec->m_unk4, who) >= 7) {
+            Func235DE0("addact : solo + 8~10 (type:%d, chr:%d, len:%d)\n", r, who, len);
+            return 0;
+        }
+    }
+    if (who == 0x18) {
+        CResortEntry *rec = D_002A36E8->GetEntryA(r);
+        if (!rec) return 0;
+        for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+            if (rec->m_unk8 < 0) {
+                if (D_002A26E4->GetNamed(rec->m_unk4, i) >= 3) break;
+            }
+            if (rec->m_unk8 > 0) {
+                if (D_002A26E4->GetNamed(rec->m_unk4, i) < 7) break;
+            }
+        }
+        if (i == D_002A26E4->Func1091B0(0x27)) {
+            Func235DE0("addact : all under 3 or over 8 (val:%d)\n", rec->m_unk8);
+            return 0;
+        }
+    }
+    if (check) {
+        for (i = 0; i < 256; i++) {
+            if (D_002A2988->Find1DC(i) && D_002A26E4->Func1091B0(i + 0x1062) && D_002A36E8->Vf172B28(i) == r &&
+                D_002A26E4->Func1091B0(i + 0x1362) == who) {
+                Func235DE0("addact : same (type:%d, chr:%d, len:%d)\n", r, who, len);
+                return 0;
+            }
+        }
+    }
+    CResortList *l = D_002A36E8->GetList(r);
+    if (!l) return 0;
+    s32 base = r + 0x1562;
+    s32 k = D_002A26E4->Func1091B0(base) % l->m_num;
+    for (i = 0; i < l->m_num; i++) {
+        s32 slot = l->m_slots[k];
+        s32 nk = (k + 1) % l->m_num;
+        k = nk;
+        D_002A26E4->Func108FF0(base, k);
+        if (!D_002A26E4->Func1091B0(slot + 0x1062)) {
+            D_002A26E4->Func108FF0(slot + 0x1062, 4);
+            D_002A26E4->Func108FF0(slot + 0x1162, len * 4);
+            D_002A26E4->Func108FF0(slot + 0x1262, 1);
+            D_002A26E4->Func108FF0(slot + 0x1362, who);
+            Func235DE0("addact : add %d(idx:%d) (type:%d, chr:%d, len:%d)\n", slot, nk, r, who, len);
+            return 1;
+        }
+    }
+    Func235DE0("addact : already added (type:%d, chr:%d, len:%d)\n", r, who, len);
+    return 0;
+}
+INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9508);
 INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9528);
 INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9540);
 INCLUDE_RODATA("asm/nonmatchings/CGameSchedule", D_002D9560);

@@ -1,121 +1,125 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273210);
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#define SYSCALL(name, n) void name(void) { asm volatile("addiu $3,$0," #n "\n\tsyscall"); }
+// @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273220);
+SYSCALL(func_00273210, 0x47)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273230);
+SYSCALL(func_00273220, -0x48)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273240);
+SYSCALL(func_00273230, 0x49)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273250);
+SYSCALL(func_00273240, 0x4A)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273260);
+SYSCALL(func_00273250, 0x4B)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273270);
+SYSCALL(func_00273260, 0x4C)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273280);
+SYSCALL(func_00273270, 0x4D)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273290);
+SYSCALL(func_00273280, 0x4E)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732A0);
+SYSCALL(func_00273290, 0x4F)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732B0);
+SYSCALL(func_002732A0, 0x50)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732C0);
+SYSCALL(func_002732B0, 0x51)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732D0);
+SYSCALL(func_002732C0, 0x52)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732E0);
+SYSCALL(func_002732D0, -0x53)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002732F0);
+SYSCALL(func_002732E0, 0x54)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273300);
+SYSCALL(func_002732F0, -0x55)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273310);
+SYSCALL(func_00273300, 0x56)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273320);
+SYSCALL(func_00273310, 0x57)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273330);
+SYSCALL(func_00273320, -0x58)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273340);
+SYSCALL(func_00273330, 0x59)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273350);
+SYSCALL(func_00273340, -0x5A)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273360);
+SYSCALL(func_00273350, 0x5B)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273370);
+SYSCALL(func_00273360, 0x5C)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273380);
+SYSCALL(func_00273370, -0x5C)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273390);
+SYSCALL(func_00273380, 0x5D)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733A0);
+SYSCALL(func_00273390, -0x5D)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733B0);
+SYSCALL(func_002733A0, 0x5E)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733C0);
+SYSCALL(func_002733B0, -0x5E)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733D0);
+SYSCALL(func_002733C0, 0x5F)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733E0);
+SYSCALL(func_002733D0, -0x5F)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002733F0);
+SYSCALL(func_002733E0, 0x60)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273400);
+SYSCALL(func_002733F0, 0x61)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273410);
+SYSCALL(func_00273400, 0x62)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273420);
+SYSCALL(func_00273410, 0x63)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273430);
+SYSCALL(func_00273420, 0x64)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273440);
+SYSCALL(func_00273430, 0x66)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273450);
+SYSCALL(func_00273440, -0x67)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273460);
+SYSCALL(func_00273450, -0x68)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273470);
+SYSCALL(func_00273460, -0x6A)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273480);
+SYSCALL(func_00273470, 0x6B)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273490);
+SYSCALL(func_00273480, 0x6C)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734A0);
+SYSCALL(func_00273490, 0x6D)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734B0);
+SYSCALL(func_002734A0, 0x6E)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734C0);
+SYSCALL(func_002734B0, 0x6F)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734D0);
+SYSCALL(func_002734C0, 0x70)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734E0);
+SYSCALL(func_002734D0, -0x70)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002734F0);
+SYSCALL(func_002734E0, 0x71)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273500);
+SYSCALL(func_002734F0, -0x71)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273510);
+SYSCALL(func_00273500, 0x72)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273520);
+SYSCALL(func_00273510, 0x73)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273530);
+SYSCALL(func_00273520, 0x74)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273540);
+SYSCALL(func_00273530, 0x75)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273550);
+SYSCALL(func_00273540, 0x76)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273560);
+SYSCALL(func_00273550, -0x76)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273570);
+SYSCALL(func_00273560, 0x77)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273580);
+SYSCALL(func_00273570, -0x77)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_00273590);
+SYSCALL(func_00273580, 0x78)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002735A0);
+SYSCALL(func_00273590, -0x78)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002735B0);
+SYSCALL(func_002735A0, 0x79)
 
-INCLUDE_ASM("asm/nonmatchings/Dk273210", func_002735C0);
+SYSCALL(func_002735B0, 0x7A)
+
+SYSCALL(func_002735C0, 0x7B)

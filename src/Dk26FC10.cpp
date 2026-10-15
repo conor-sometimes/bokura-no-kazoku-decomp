@@ -1,16 +1,24 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#define HWREG(a) (*(volatile u32 *)(a))
+typedef struct BitStr { u64 m0; u32 m8; u8 *mC; u32 m10; u32 pad14; u64 m18; u8 *m20; u8 *m24; u32 m28; } BitStr;
+extern u8 D_002BD9C0[];
+extern u32 D_002BDA10[];
+int func_00289230();
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FC10);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FCD8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FD48);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FDD0);
+u32 func_0026FDD0(u32 a) { if ((a >> 28) == 7) { a &= 0x0FFFFFFF; a |= 0x80000000; } return a; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FDF8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FE30);
+u32 func_0026FE30(u32 n) { if (n < 10) return D_002BDA10[n]; return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FE58);
 
@@ -18,7 +26,7 @@ INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FF38);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270110);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270148);
+u32 func_00270148(u32 a) { u32 old = HWREG(0x1000E060); HWREG(0x1000E060) = a; return old; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270160);
 
@@ -38,7 +46,7 @@ INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270438);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270470);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270508);
+u32 func_00270508(volatile u32 *p, u32 v) { u32 old = *p; *p = v; return (old >> 8) & 1; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00270520);
 
@@ -110,7 +118,7 @@ INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00271740);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_00271808);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_002718B0);
+void func_002718B0(f32 *d, f32 *s) { d[0] = s[0]; d[1] = s[1]; d[2] = s[2]; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_002718D0);
 

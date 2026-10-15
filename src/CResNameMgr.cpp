@@ -91,6 +91,29 @@ struct CResSchoolRec {
 };
 
 int Func1456A8(int v);
+
+extern const char *D_002A2970;
+extern const char *D_002A2940[];
+extern const char *D_002A2958[];
+extern "C" s32 func_0024A7D8(const char *s, const char *a, const char *b);
+struct CResNameSub0C {
+    s32 m0;
+    s32 m4;
+    s32 m8;
+};
+struct CResNameSub0Cb {
+    s32 m0;
+    s32 *m4;
+    s32 m8;
+};
+struct CResNameGrp {
+    s32 m0;
+    s32 m4;
+    CResNameSub0C *m8;
+    s32 mC;
+    CResNameSub0Cb *m10;
+    s32 m14;
+};
 // @decl-end
 
 CResNameMgr::CResNameMgr() {
@@ -167,7 +190,60 @@ INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7C68);
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7C78);
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7C80);
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func145E18__11CResNameMgr);
+int CResNameMgr::Func145E18() {
+    char line[256];
+    char a[256];
+    char b[256];
+    void *data;
+    s32 i, k;
+    int ok = 0;
+    data = Func24A4C0(D_002A2970);
+    if (data) {
+        m_unk14 = 10;
+        m_unk10 = (s32)m_buf.Func248CC8(m_unk14 * sizeof(CResNameGrp), 1, 1);
+        for (i = 0; i < m_unk14; i++) {
+            CResNameGrp *g = &((CResNameGrp *)m_unk10)[i];
+            const char *p = Func24AF10(data, D_002A28E0[i]);
+            if (*p) {
+                s32 j;
+                g->m0 = D_002A2910[i];
+                strcpy(func_00248DA8(&m_buf), D_002A28E0[i]);
+                func_0028B520(func_00248DA8(&m_buf));
+                g->m4 = func_00248DC0(&m_buf);
+                p = Func24AFE8(p, line, 1, 0x100);
+                g->mC = func_0024A7D8(line, D_002D7C78, D_002D7C80);
+                g->m8 = (CResNameSub0C *)m_buf.Func248CC8(g->mC * sizeof(CResNameSub0C), 1, 1);
+                const char *q = line;
+                for (j = 0; j < g->mC; j++) {
+                    CResNameSub0C *e = &g->m8[j];
+                    q = Func24A570(q, a, D_002D7C78, D_002D7C80);
+                    const char *r = Func24A570(a, b, ":", D_002D7C80);
+                    e->m0 = FindString145CA8(D_002A2940, b);
+                    r = Func24A570(r, b, ":", D_002D7C80);
+                    e->m4 = FindString145CA8(D_002A2958, b);
+                    func_0024A710(r, &e->m8, 0, ":", D_002D7C80);
+                }
+                g->m14 = func_0024B040(p, 1);
+                g->m10 = (CResNameSub0Cb *)m_buf.Func248CC8(g->m14 * sizeof(CResNameSub0Cb), 1, 1);
+                for (j = 0; j < g->m14; j++) {
+                    CResNameSub0Cb *f = &g->m10[j];
+                    p = Func24AFE8(p, line, 1, 0x100);
+                    q = func_0024A710(line, &f->m0, 0, D_002D7C78, D_002D7C80);
+                    f->m8 = func_0024A7D8(line, D_002D7C78, D_002D7C80) - 1;
+                    f->m4 = (s32 *)m_buf.Func248CC8(f->m8 * 4, 1, 1);
+                    for (k = 0; k < g->mC; k++) {
+                        q = Func24A570(q, func_00248DA8(&m_buf), D_002D7C78, D_002D7C80);
+                        f->m4[k] = func_00248DC0(&m_buf);
+                    }
+                }
+            }
+        }
+        ok = 1;
+    }
+    if (data) D_002B91B0(data);
+    Func235DE0(" age/mtype (%d)\n", ok);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7CA8);
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7CB8);
 

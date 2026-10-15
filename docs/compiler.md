@@ -28,6 +28,29 @@ and pinned by SHA-256 (`0590d2ca...fd0a`). It is a Linux i386 build: run it insi
 bokura-env, which has the 32-bit loader and libraries. The driver runs `cc1plus` and its
 own GNU as 2.10-ee, as the original build did.
 
+## dklib's SDK-built units (0x262D28-0x26CFB0): the Sony libraries
+
+Lane d3 (2026-10-15): from 0x262D28 the "dklib" range holds Sony SDK libraries (libcdvd, libmc,
+libmtap, libmpeg/libipu: their error strings sit in ro_tail at 0x2E9048-0x2E9900). They were built with
+**ee-gcc 2.9-991111** (the SDK compiler, `scripts/fetch_compilers.sh ee-gcc2.9-991111`), `-O2 -G0`
+(`-fno-exceptions` for the .cpp front end), strict aliasing on (its -O2 default), as `-g`. The Makefile
+builds Dk262D28, Dk2631E0, Dk265918, Dk268138 and Dk26A870 with it (`SDK_OBJS`), and tools/bk/bk.py
+follows by address (`SDK_RANGES`; `BK_SDK=<compiler>` overrides it for experiments). Evidence:
+- a void function ending in a call is a **frameless** `j callee` (2.96 always keeps the frame:
+  `sd ra; ld ra; j`), while `return f();` keeps `jal` + `jr`;
+- callee-saved registers go to 16-byte slots (`sd $16,0; sd $31,0x10`); 2.96 packs them 8 bytes apart.
+  scripts can classify a whole range by that stride: 2.96 up to 0x262CA0, 991111 from 0x262D28 to
+  0x27FBC8, 2.96 again from 0x27FC30;
+- an empty `f(const char *, ...)` spills a1-t3 at sp+0x48 in a 0x80 frame and no FPRs (2.96: 0x60 frame
+  with FPR spills);
+- a pointer loaded once and used for two stores of different types only matches with strict aliasing.
+Dk260A60 (the MPEG audio decoder before it) is 2.96 code; it was split at 0x262D28 (new unit
+Dk262D28, libcdvd's start) because one object can only have one compiler. INCLUDE_ASM'd functions
+assemble the same with 991111's GNU as. The other lanes' units up to 0x27FC30 (Dk26CFB0 ... Dk27DBB8)
+show the same 991111 signature; they will need the same switch.
+Alignment: library objects start at 16-byte boundaries (0x268D00 after padding nops); a matched
+function before one needs `asm(".space 8")`, since `.p2align 4` raises the whole object's alignment.
+
 ## Evidence
 
 Each function was written as C++, compiled with each candidate, and compared with the
