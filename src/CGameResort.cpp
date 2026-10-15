@@ -48,11 +48,14 @@ public:
     int Func167268();
     void Func166B68();
     void Func166F80(s32 flag);
+    s32 Func167A48(s32 who);
     u8 pad0[0x78];
     struct CGameResortScene *m_unk78; // 0x78
     u8 pad7C[0x5C0 - 0x7C];
     s32 m_unk5C0;             // 0x5C0
-    u8 pad5C4[0x5D4 - 0x5C4];
+    u8 pad5C4[0x4];
+    s32 m_unk5C8;             // 0x5C8
+    u8 pad5CC[0x5D4 - 0x5CC];
     s32 m_unk5D4;             // 0x5D4
     s32 m_unk5D8;             // 0x5D8
     CGameResortItem m_items[1]; // 0x5DC
@@ -88,6 +91,33 @@ public:
     s32 m74;                  // 0x74
 };
 #include "libc.h"
+
+struct CResortRec {
+    s32 m0;                   // 0x0
+    s32 m4;                   // 0x4
+    s32 m8;                   // 0x8
+    s32 mC;                   // 0xC
+};
+// Resort database (CResortDBMgr unit), only the virtual calls.
+class CResortDBMgr {
+public:
+    virtual void Vf29A3B8();
+    virtual void Vf171DE8();
+    virtual void Init();
+    virtual void Vf172920();
+    virtual void Vf172968();
+    virtual void Vf29A3F0();
+    virtual void Vf29A430();
+    virtual s32 Vf172A60(s32 a, s32 b, s32 c);
+    virtual void Vf172B28();
+    virtual void Vf172B68();
+    virtual void *GetEntryA(s32 id);
+    virtual CResortRec *GetEntryB(s32 id);
+};
+extern CResortDBMgr *D_002A36E8;
+s32 Func1456A8(int who);
+int IsFlagKind(int v);
+int Func235DE0(const char *fmt, ...);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", __11CGameResortiiii);
@@ -167,7 +197,30 @@ INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D99A0);
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_001675A0);
 INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D99F8);
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167A48);
+s32 CGameResortObj::Func167A48(s32 who) {
+    s32 idx = Func1456A8(who);
+    if (idx < 0) return 0;
+    if (!IsFlagKind(D_002A26E4->GetNamed(0x58, who))) return 0;
+    s32 v = D_002A26E4->GetNamed(0x5E, who);
+    CResortRec *rec = D_002A36E8->GetEntryB(m_unk5C8);
+    if (!rec) return 0;
+    s32 fa = rec->m4;
+    s32 fb = rec->m8;
+    s32 limBase = rec->mC;
+    s32 i, id;
+    for (i = 0; i < 16 && D_002A26E4->Func1091B0(id = idx * 16 + i + 0x1F6); i++) {
+        if (D_002A26E4->Func1091B0(id) == v) {
+            s32 t = D_002A26E4->GetNamed(fa, who);
+            t += D_002A26E4->GetNamed(fb, who);
+            s32 lim = D_002A26E4->Func1091B0(limBase + idx * 16 + i);
+            if (t < lim) {
+                Func235DE0("omake no abi %d:%d<%d\n", idx, t, lim);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00167C40);
 

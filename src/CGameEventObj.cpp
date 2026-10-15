@@ -30,6 +30,7 @@ public:
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CGameEventObj.
 class CGameEventObj : public CEventObj {
 public:
+    void Func1640E0(s32 k);
     virtual ~CGameEventObj();
     void Func165380(s32 k);
     void Func164878(s32 k);
@@ -208,7 +209,39 @@ s32 CheckFlags163B98(s32 a, s32 b) {
 INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00163DD0);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D9820);
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_001640E0);
+// GNU as 2.10 assembles a lui here as lw unless the function starts on a fresh .p2align (docs/lessons.md).
+asm(".p2align 3");
+void CGameEventObj::Func1640E0(s32 k) {
+    s32 v;
+    if (m_ids[k] == 0x401) {
+        D_002A26E4->Func108FF0(0x15, 0);
+        D_002A26E4->Func108FF0(m_unkFF20 + 0x58, 9);
+        D_002A26E4->Func108FF0(m_unkFF20 + 0x5E, 0);
+    } else {
+    D_002A26E4->Func108FF0(0x15, m_ids[k]);
+    switch (D_002A26E4->Func1091B0(m_unkFF20 + 0x46)) {
+    case 2:
+        v = 3;
+        break;
+    case 3:
+        v = 4;
+        break;
+    case 4:
+        v = 5;
+        break;
+    case 5:
+    case 7:
+    case 8:
+        v = 6;
+        break;
+    default:
+        Func235DE0(D_002D9820, D_002A26E4->Func1091B0(m_unkFF20 + 0x46));
+        return;
+    }
+    D_002A26E4->Func108FF0(m_unkFF20 + 0x58, v);
+    D_002A26E4->Func108FF0(m_unkFF20 + 0x5E, m_ids[k]);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00164290);
 

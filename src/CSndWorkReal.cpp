@@ -215,7 +215,7 @@ public:
     CSndNode m_list;          // 0x8
     u8 pad14[0x4];
     CSndObj18 *m_unk18;       // 0x18
-    u8 pad1C[0x4];
+    void *m_unk1C;            // 0x1C
     CSndObj18 *m_unk20;       // 0x20
     s32 m_unk24;              // 0x24
     s32 m_unk28;              // 0x28
@@ -271,6 +271,70 @@ extern "C" void func_002250E8(s32 v);
 extern "C" void func_00227A20();
 extern "C" void func_00226DF8(s32 a, u64 b);
 extern "C" void func_00227AA8();
+
+extern "C" void func_00270A98(CVec4 *d, const CVec4 *a, const CVec4 *b);
+extern "C" void func_00270B00(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 VuSqrt(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8");
+    return r;
+}
+
+extern f32 D_002A6800[];
+inline s32 Ftoi15(f32 x) {
+    s32 i;
+    asm volatile(
+        "mfc1 %0, %1\n"
+        "qmtc2.ni %0, $vf2\n"
+        "vftoi15.x $vf2, $vf2\n"
+        "qmfc2.ni %0, $vf2\n"
+        : "=r"(i) : "f"(x));
+    return i;
+}
+extern "C" void func_00201C20(f32 x, f32 y, f32 z);
+extern "C" void func_00201C88(f32 x, f32 y, f32 z);
+extern "C" void func_00201EB0(f32 a);
+extern "C" void func_00201ED8(f32 x, f32 y);
+extern "C" void func_00201FF8(f32 a, f32 b, f32 c, f32 d);
+extern "C" void func_00201F18(f32 x, f32 y);
+extern "C" void func_00201E70(f32 a, f32 b);
+extern "C" CVec4 *func_00202368(void);
+CVec4 *Func2022A0();
+struct CSndCam {
+    f32 m_eye[3];             // 0x0
+    u8 padC[4];
+    f32 m_at[3];              // 0x10
+    u8 pad1C[4];
+    f32 m20, m24;             // 0x20
+    u8 pad28[8];
+    f32 m_fov;                // 0x30
+    f32 m34;                  // 0x34
+    f32 m38, m3C;             // 0x38
+};
+
+// VU0 micro subroutine with cos in vf4 and sin in vf5 (the angle in turns).
+#define VU_ROT(mic, ang) do { \
+        s32 i_ = (Ftoi15(ang) >> 1) & 0x3FFF; \
+        s32 s_ = ((s32 *)D_002A6800)[i_]; \
+        s32 c_ = ((s32 *)D_002A6800)[(i_ + 0x1000) & 0x3FFF]; \
+        asm volatile("qmtc2.i %0, $vf4\n\tqmtc2.ni %1, $vf5\n\tvnop\n\tvnop\n\tvcallms " #mic : : "r"(c_), "r"(s_)); \
+    } while (0)
+struct CSndView {
+    u8 pad0[0x10];
+    f32 m_pos[3];             // 0x10
+    u8 pad1C[4];
+    f32 m_rot[3];             // 0x20
+};
+struct CSndOwnerB {
+    u8 pad0[8];
+    void *m8;                 // 0x8
+};
+struct CSndMat { f32 m[4][4]; } __attribute__((aligned(16)));
+#define VU_GET_MAT(m) \
+    asm volatile("la $2, %0\n\tvcallms 0x0\n\tqmfc2.i $0, $vf0\n\tsqc2 $vf24, 0x0($2)\n\tsqc2 $vf25, 0x10($2)\n\tsqc2 $vf26, 0x20($2)\n\tsqc2 $vf27, 0x30($2)\n\tvcallms 0x40" : "=m"(m) : : "$2")
+struct CSndVec { f32 x, y, z, w; } __attribute__((aligned(16)));
+extern "C" void func_0025DBB8(void *p, CSndMat *m);
+extern "C" void func_00128528(void *a, void *b, void *c, s32 d);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00128870);
@@ -559,7 +623,35 @@ void CSndWorkReal::UpdateCharas() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func129EB0__12CSndWorkReal);
+void CSndWorkReal::Func129EB0() {
+    CSndView *v = (CSndView *)m_unk0;
+    if (v) {
+        CSndVec t;
+        CSndVec r;
+        CSndMat m;
+        t.x = -v->m_pos[0];
+        t.y = -v->m_pos[1];
+        t.z = -v->m_pos[2];
+        t.w = 1.0f;
+        r.x = -v->m_rot[0];
+        r.y = -v->m_rot[1];
+        r.z = -v->m_rot[2];
+        asm volatile("vcallms 0x30\n\tvcallms 0x20" : : : "memory");
+        VU_ROT(0x90, r.z);
+        VU_ROT(0xB0, r.x);
+        VU_ROT(0xA0, r.y);
+        asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, %0\n\tvnop\n\tvnop\n\tvcallms 0x80" : : "m"(t));
+        VU_GET_MAT(m);
+        func_0025DBB8(m_unk1C, &m);
+    }
+    if (m_unk4 && !(m_unk2C & 2)) {
+        void *o = ((CSndOwnerB *)m_unk4)->m8;
+        CCharaObj *p;
+        for (p = LiveChara((CCharaObj *)m_list.m_next); p; p = LiveChara(p->m_next)) {
+            if (*(s32 *)((u8 *)p + 0x188)) func_00128528(o, m_unk1C, (u8 *)p + 0xA0, *(s32 *)((u8 *)p + 0x178));
+        }
+    }
+}
 
 #if 0 // DIFF 1 (g1): retail bnez, ours bnezl at the final m_unk90 >= m_unk94 test; CSndObj18::SetVol(f) inline sets m34, m3E, m3C
 void CSndWorkReal::Func12A0F0() {
@@ -595,7 +687,22 @@ s32 Func12A2F0() {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A340);
+f32 SndAtten12A340(const CVec4 *a, const CVec4 *b, f32 nearD, f32 range) {
+    CVec4 d, sq;
+    f32 dist, r;
+    if (nearD == 0.0f && range == 0.0f) return 1.0f;
+    func_00270A98(&d, b, a);
+    func_00270B00(&sq, &d, &d);
+    dist = VuSqrt(sq.x + sq.y + sq.z);
+    if (dist < nearD) {
+        r = 1.0f;
+    } else if (dist < nearD + range) {
+        r = 1.0f - (dist - nearD) / range;
+    } else {
+        r = 0.0f;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A420);
 
@@ -614,6 +721,69 @@ s32 FindCharaFor(CCharaObj *p, CSndTarget *o) {
     return 0;
 }
 
+#if 0 // 305 vs 282 insns (g1): content decoded (GIF A+D packet: FRAME with mask, ZBUF, TEST, PRIM/RGBAQ/XYZ2 sprite, FRAME/ZBUF restore, end tag, then the VIF DIRECT header); retail skips some of the per-word stores of the packet pointer D_2EBF8C and reloads it at other points, so the packet macro shape is still unknown
+void FadeFill12A6B0(s32 alpha) {
+    s32 xy[4];
+    u64 fr, zb;
+    s32 n;
+    xy[0] = 0x6C00;
+    xy[1] = 0x7200;
+    xy[2] = 0x9400;
+    xy[3] = 0x8E00;
+    func_002375C0();
+    func_00237408(0x10);
+    D_2EBF88 = D_2EBF8C = (u64 *)D_002B94E4;
+    fr = func_0023C650(func_0023A2F0(func_0023A0E8()));
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(((fr & 0x3FFF) >> 5) | (((fr >> 14) & 0x3F) << 16) | (((fr >> 32) & 0x3F) << 24) | ((u64)0xFFFFFF << 32));
+    PK(0x4C);
+    zb = func_0023C658(func_0023A2F0(func_0023A0E8()));
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(((zb & 0x3FFF) >> 5) | (((zb >> 32) & 0x3F) << 24));
+    PK(0x4E);
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(0x38002);
+    PK(0x47);
+    PK(0x1000000000000004ULL);
+    PK(0xE);
+    PK(0x46);
+    PK(0);
+    PK((u64)alpha << 24);
+    PK(1);
+    PK(xy[0] | (u64)xy[1] << 16);
+    PK(5);
+    PK(xy[2] | (u64)xy[3] << 16);
+    PK(5);
+    fr = func_0023C650(func_0023A2F0(func_0023A0E8()));
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(((fr & 0x3FFF) >> 5) | (((fr >> 14) & 0x3F) << 16) | (((fr >> 32) & 0x3F) << 24));
+    PK(0x4C);
+    zb = func_0023C658(func_0023A2F0(func_0023A0E8()));
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(((zb & 0x3FFF) >> 5) | (((zb >> 32) & 0x3F) << 24));
+    PK(0x4E);
+    PK(0x1000000000000001ULL);
+    PK(0xE);
+    PK(0x58002);
+    PK(0x47);
+    PK(0x8000);
+    PK(0);
+    func_00237460();
+    D_002B94E4 = (u32 *)D_2EBF8C;
+    *D_002B94E4++ = 0;
+    *D_002B94E4++ = 0;
+    *D_002B94E4++ = 0x11000000;
+    n = func_00237450();
+    *D_002B94E4++ = ((n + 15) / 16 - 1) | 0x50000000;
+    func_002374B0();
+    func_002377D8();
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A6B0);
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012AB18);
@@ -628,7 +798,26 @@ void ScaleSndVec(CVec4 *v, s32 id, CSndTarget *t, f32 x) {
     Func271960(v, v, x * -0.5f + 1.0f);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012AFA8);
+void SetSndCam12AFA8(CSndCam *c) {
+    f32 a = c->m_fov / 720.0f;
+    f32 x, y;
+    u8 *tbl;
+    func_00201C20(c->m_eye[0], c->m_eye[1], c->m_eye[2]);
+    func_00201C88(c->m_at[0], c->m_at[1], c->m_at[2]);
+    tbl = (u8 *)D_002A6800;
+    func_00201EB0(*(f32 *)(tbl + ((((Ftoi15(a) >> 1) & 0x3FFF) + 0x1000) & 0x3FFF) * 4) * 320.0f
+                  / *(f32 *)(tbl + ((Ftoi15(a) << 1) & 0xFFFC)));
+    func_00201ED8(c->m20 + 2048.0f + c->m38, c->m24 + 2048.0f + c->m3C);
+    func_00201FF8(1.0f, 65536.0f, 101.0f, 16777115.0f);
+    x = c->m20 + c->m38;
+    x = (x >= 0.0f ? x + 320.0f : 320.0f - x) + 128.0f;
+    y = c->m24 + c->m3C;
+    y = (y >= 0.0f ? y + 224.0f : 224.0f - y) + 128.0f;
+    func_00201F18(x, y);
+    func_00201E70(c->m34, c->m34 * 0.47f + c->m34 * 0.47f);
+    func_00202368();
+    Func2022A0();
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4D50);
 INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4D60);

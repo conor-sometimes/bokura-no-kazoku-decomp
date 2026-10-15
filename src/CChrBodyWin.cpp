@@ -4,6 +4,7 @@
 class CStatusBase {
 public:
     f32 GetItemUnk34();
+    void Select19A858(u32 v);
 };
 #include "CFlagWork.h"
 #include "CProcess.h"
@@ -12,6 +13,7 @@ extern CFlagWork *D_002A464C;
 class CStatusBaseSub19AE68 {
 public:
     void Set(s32 v);
+    void Func19ADD0(int v);
 };
 
 struct CChrBodyEntry {
@@ -23,6 +25,11 @@ struct CChrBodyEntry {
 };
 class CChrBodyWin {
 public:
+    void Vf187088();
+    void Vf1870B8();
+    void Vf1871D0();
+    void Vf1872E0();
+    int GetJob187758(s32 id, s32 k);
     void SetUnk384(f32 v);
     ~CChrBodyWin();
     void Init1883D0();
@@ -43,7 +50,7 @@ public:
     void Init189018(s32 mode);
     void Func188098(f32 x, f32 y, f32 s, f32 t);
     int Func187D68(s32 i, s32 f, s32 k);
-    void Func187A68(char *buf, s32 i, s32 f, s32 k);
+    int Func187A68(char *buf, s32 i, s32 f, s32 k);
     void Open(s32 i);
     int CallFunc1091B0(s32 id);
     void CallFunc188BA8();
@@ -129,6 +136,33 @@ class CChrBodySub245818 {
 public:
     void Func245818(int v);
 };
+class CStatusBaseSub19AD40 {
+public:
+    ~CStatusBaseSub19AD40();
+};
+class CStatusBaseDel {
+public:
+    u8 pad[0x58];
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual ~CStatusBaseDel();
+};
+class CChrBodyData {
+public:
+    ~CChrBodyData();
+    u8 pad0[0x60];
+    void *m60;                // 0x60
+    CStatusBaseDel *m64;      // 0x64
+    void *m68;                // 0x68
+    CStatusBaseSub19AD40 *m6C; // 0x6C
+    void *m70;                // 0x70
+};
+extern "C" int func_00245818(void *p, s32 v);
 class CChrBodyWinSub18A410 {
 public:
     void Init18A480();
@@ -136,7 +170,7 @@ public:
     u8 pad0[0x58];
     CChrBodySub245818 m58;    // 0x58
     u8 pad59[0xB];
-    CChrBodySub189270 *m64;   // 0x64
+    CChrBodyData *m64;        // 0x64
     void *m68;                // 0x68
 };
 CChrBodyWin *NewChrBodyWin();
@@ -187,14 +221,127 @@ extern "C" void func_001866D0(s32 *xy, f32 x, f32 y, f32 w, f32 h);
 inline void PutRGBA(CChrSprPkt *p) { func_00226DF8(1, (u64)p->r | ((u64)p->g << 8) | ((u64)p->b << 16) | ((u64)p->a << 24)); }
 inline void PutXYZ(s32 x, s32 y) { func_00226DF8(5, (u64)x | ((u64)y << 16)); }
 inline void PutUV(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
+// Slot functions of _vt$11CChrBodyWin (vptr at 0x58, CStatusBase's 7 virtuals).
+class CChrBodyWinVt {
+public:
+    u8 pad[0x58];
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual int V6();
+};
+struct CChrBodyStat {
+    s32 a, b, c, d, e;
+};
+struct CChrBodyStatTbl {
+    u8 pad[0x5C];
+    CChrBodyStat st[6];
+};
+void *Func237570(int size);
+void Func237A88(void *p, int n);
+void *Func237C30(void *p);
+void Func238158(void *p, int v);
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+};
+class CUnk237E90 {
+public:
+    void Func237E90(int v);
+};
+class CMenuMgrSub1B5BF8 {
+public:
+    void Reset();
+    void SetUnk0(f32 x, f32 y);
+    void SetUnk10(f32 x, f32 y, f32 z);
+    void SetUnk1C(f32 v);
+    void SetUnk30(s32 v);
+};
+extern CMenuMgrSub1B5BF8 *D_002A5534;
+extern "C" int func_001B5E18(CMenuMgrSub1B5BF8 *p);
+extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, f32 x, f32 y, const char *s);
+void Func225240(s32 v);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+struct CChrBodyWinItem {
+    u8 pad[0x34];
+    f32 m34;
+};
+
+class CStatusWin {
+public:
+    void SetUnk64(u32 a, int b);
+    void SetUnk50(u32 a);
+    void Func19F400();
+};
+extern char D_002DB428[];
+extern "C" void func_00185648(s32 no);
+extern "C" void func_00185868(s32 no, s32 a, s32 b);
+struct CChildStatusObj {
+    u8 pad0[0x50];
+    s32 m50;
+    s32 m54;
+    s32 m58;
+    s32 m5C;
+    CStatusWin *m60;
+    CStatusBase *m64;
+    CStatusBase *m68;
+    CStatusBaseSub19AE68 *m6C;
+    CStatusBase *m70;
+    void SetChild1893A0(s32 no);
+    int Draw18A1F0();
+};
+
+extern "C" int func_0019FA50(CStatusWin *p);
+extern "C" int func_0019B1F8(CStatusBaseSub19AE68 *p);
+extern "C" int func_0019FC30(CStatusWin *p);
+
+#include "IGameDBMgr.h"
+s32 Func145738(s32 a, s32 b);
+extern char D_002DB038[], D_002DB068[];
+struct CJobRec {
+    s32 m0;
+    u8 pad4[0x8];
+    s32 mC;
+};
+
+void *Func24A4C0(const char *name);
+const char *Func24ADE0(const char *p, char *buf, int n);
+const char *Func24A570(const char *src, char *buf, const char *a, const char *b);
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 a, s32 n);
+extern "C" s32 func_00289118(const char *s);
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
+extern char D_002DB0C0[], D_002DB2A0[], D_002DB2B8[], D_002DB2C0[], D_002DB2C8[], D_002DB2D0[], D_002DB2D8[];
+extern char D_002DB2E0[], D_002DB2E8[];
+struct CChrTypeImgData {
+    s32 msg[7][14];           // 0x0
+    u8 pad188[0x1D8];
+    s32 m360;                 // 0x360
+    s32 m364;                 // 0x364
+    s32 m368;                 // 0x368
+    u8 pad36C[0x4];
+    s32 m370;                 // 0x370
+    int Load1884F0(const char *name);
+};
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DAFD0);
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187038);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187088);
+void CChrBodyWin::Vf187088() {
+    ((CChrBodyWinVt *)this)->V1();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001870B8);
+void CChrBodyWin::Vf1870B8() {
+    CChrBodyStatTbl *t = (CChrBodyStatTbl *)this;
+    t->st[m_unk50].a = D_002A5358->Func1091B0(m_unk50 + 0xB8);
+    t->st[m_unk50].b = D_002A5358->Func1091B0(m_unk50 + 0xBE);
+    t->st[m_unk50].c = D_002A5358->Func1091B0(m_unk50 + 0xC4);
+    t->st[m_unk50].d = D_002A5358->Func1091B0(m_unk50 + 0xCA);
+    t->st[m_unk50].e = D_002A5358->Func1091B0(m_unk50 + 0xD0);
+}
 
 // Empty; real name and class unknown (a virtual no-op or a stub).
 extern "C" void func_001871C0() {
@@ -204,13 +351,52 @@ extern "C" void func_001871C0() {
 extern "C" void func_001871C8() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001871D0);
+void CChrBodyWin::Vf1871D0() {
+    CChrBodyStatTbl *t = (CChrBodyStatTbl *)this;
+    t->st[m_unk50].a = D_002A5358->Func1091B0(m_unk50 + 0x190);
+    t->st[m_unk50].b = D_002A5358->Func1091B0(m_unk50 + 0x196);
+    t->st[m_unk50].c = D_002A5358->Func1091B0(m_unk50 + 0x19C);
+    t->st[m_unk50].d = D_002A5358->Func1091B0(m_unk50 + 0x1A2);
+    t->st[m_unk50].e = D_002A5358->Func1091B0(m_unk50 + 0x1A8);
+}
 
 // Empty; real name and class unknown (a virtual no-op or a stub).
 extern "C" void func_001872D8() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001872E0);
+void CChrBodyWin::Vf1872E0() {
+    CChrBodyStatTbl *t = (CChrBodyStatTbl *)this;
+    f32 xy[2];
+    char buf[0x100];
+    u8 *p = (u8 *)Func237570(0x60);
+    Func237A88(p, 6);
+    Func238158(Func237C30(p + 0x50), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_unk48)->Func1A4298());
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5E18(D_002A5534));
+    D_002A5534->Reset();
+    D_002A5534->SetUnk30(1);
+    D_002A5534->SetUnk10(0.78f, 0.78f, 0.78f);
+    D_002A5534->SetUnk1C(((CChrBodyWinItem *)m_unk48)->m34);
+    D_002A5534->SetUnk0(0.9f, 0.9f);
+    sprintf(buf, "%3dc", t->st[m_unk50].a);
+    ((CMenuRecordWin *)m_unk48)->Func1A39A8(&xy[0], (s32 *)&xy[1], 2);
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, xy[0], xy[1], buf));
+    sprintf(buf, "%2dk", t->st[m_unk50].b);
+    ((CMenuRecordWin *)m_unk48)->Func1A39A8(&xy[0], (s32 *)&xy[1], 3);
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, xy[0], xy[1], buf));
+    sprintf(buf, "B%d", t->st[m_unk50].c);
+    ((CMenuRecordWin *)m_unk48)->Func1A39A8(&xy[0], (s32 *)&xy[1], 4);
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, xy[0], xy[1], buf));
+    sprintf(buf, "W%d", t->st[m_unk50].d);
+    ((CMenuRecordWin *)m_unk48)->Func1A39A8(&xy[0], (s32 *)&xy[1], 5);
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, xy[0], xy[1], buf));
+    sprintf(buf, "H%d", t->st[m_unk50].e);
+    ((CMenuRecordWin *)m_unk48)->Func1A39A8(&xy[0], (s32 *)&xy[1], 6);
+    ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, xy[0], xy[1], buf));
+    Func225088();
+    Func225240((s32)p);
+    Func2250C0();
+}
 INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DB018);
 
 CChrBodyWin *NewChrBodyWin() {
@@ -242,7 +428,39 @@ int CChrBodyWin::GetFlag187680(s32 id, s32 k) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187758);
+int CChrBodyWin::GetJob187758(s32 id, s32 k) {
+    s32 job;
+    CJobRec *info;
+    CJobRec *e;
+    s32 bit;
+    s32 cnt;
+    s32 i;
+    if (m_unk380) {
+        if (k == 1) {
+            job = D_002A464C->Func1091B0(id + 0x18);
+        } else {
+            job = D_002A4638[0]->Func1091B0(id + 0x18);
+        }
+    } else {
+        job = D_002A5358->Func1091B0(id + 0x40);
+    }
+    info = (CJobRec *)D_002A2988->Find200(job);
+    if (!info) {
+        Func235DE0(D_002DB038, id, job);
+        return -1;
+    }
+    bit = Func145738(id, 1) - 0x10;
+    cnt = 0;
+    for (i = 1; i <= D_002A2988->GetUnk208(); i++) {
+        e = (CJobRec *)D_002A2988->Find200(i);
+        if (e && ((e->mC >> bit) & 1)) {
+            cnt++;
+            if (e->m0 == info->m0) return cnt;
+        }
+    }
+    Func235DE0(D_002DB068, id, cnt);
+    return -1;
+}
 
 int CChrBodyWin::GetLevel1878F8(s32 id, s32 k) {
     int a;
@@ -375,7 +593,42 @@ void CChrBodyWin::Clear1884B0() {
     Func188BA8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001884F0);
+int CChrTypeImgData::Load1884F0(const char *name) {
+    char line[0x100];
+    char tok[0x100];
+    void *file;
+    const char *p;
+    const char *q;
+    s32 i;
+    s32 j;
+    file = Func24A4C0(name);
+    if (!file) {
+        Func235DE0(D_002DB2A0, name);
+        return 0;
+    }
+    for (p = Func24ADE0((const char *)file, line, 0x100); strcmp(line, D_002DB0C0); p = Func24ADE0(p, line, 0x100)) {
+        if (!strcmp(line, D_002DB2B8)) {
+            func_0024AD10(p, line, 1, 0x100);
+            q = func_0024A710(line, &m360, 8, D_002DB2C0, D_002DB2C8);
+            q = func_0024A710(q, &m364, 8, D_002DB2C0, D_002DB2C8);
+            q = func_0024A710(q, &m368, 8, D_002DB2D0, D_002DB2C8);
+            func_0024A710(q, &m370, 0x10, D_002DB2D8, D_002DB2C8);
+        } else if (!strcmp(line, D_002DB2E0)) {
+            for (i = 0; i < 7; i++) {
+                p = func_0024AD10(p, tok, 1, 0x100);
+                q = tok;
+                for (j = 0; j < 14; j++) {
+                    q = Func24A570(q, line, D_002DB2D0, D_002DB2C8);
+                    msg[i][j] = func_00289118(line);
+                }
+            }
+        } else {
+            Func235DE0(D_002DB2E8, line);
+        }
+    }
+    if (file) D_002B91B0(file);
+    return 1;
+}
 
 void CChrBodyWin::CallFunc188BA8() {
     Func188BA8();
@@ -558,11 +811,69 @@ int CChrBodyWin::Func188F30(f32 x, f32 y) {
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189018);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", _$_12CChrBodyData);
+CChrBodyData::~CChrBodyData() {
+    if (m60) {
+        delete m60;
+        m60 = 0;
+    }
+    if (m64) {
+        delete m64;
+        m64 = 0;
+    }
+    if (m6C) {
+        delete m6C;
+        m60 = 0;
+    }
+    if (m68) {
+        delete m68;
+        m68 = 0;
+    }
+    if (m70) {
+        delete m70;
+        m70 = 0;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189348);
+void CChrBodyWin::Set189348(s32 a, s32 b) {
+    switch (a) {
+    case 0:
+    case 1:
+        break;
+    default:
+        Func235DE0(D_002DB400, a);
+        a = 0;
+        break;
+    }
+    m_unk58b = b;
+    m_unk54 = a;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001893A0);
+void CChildStatusObj::SetChild1893A0(s32 no) {
+    if (no < 0 || D_002A26E4->Func1091B0(0x27) - 1 < no) {
+        Func235DE0(D_002DB428, no);
+        no = 0;
+    }
+    m5C = no;
+    switch (m54) {
+    case 0:
+        func_00185648(no);
+        m60->SetUnk64(5, m58);
+        break;
+    case 1:
+        func_00185868(no, 0, 1);
+        m60->SetUnk64(0, m58);
+        break;
+    }
+    m60->SetUnk50(no);
+    m64->Select19A858(no);
+    m68->Select19A858(no);
+    m70->Select19A858(no);
+    m6C->Func19ADD0(no);
+    m60->Func19F400();
+    ((CChrBodyWinVt *)m64)->V1();
+    ((CChrBodyWinVt *)m68)->V1();
+    ((CChrBodyWinVt *)m70)->V1();
+}
 
 void CChrBodyWin::SetUnk6C(s32 v) {
     if (m_unk6C) {
@@ -611,7 +922,33 @@ f32 CChrBodyWin::GetStatusUnk34() {
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001895F8);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_0018A1F0);
+int CChildStatusObj::Draw18A1F0() {
+    u8 *p;
+    if (!m60 || !m64 || !m6C || !m68 || !m70) {
+        Func225088();
+        return Func2250C0();
+    }
+    p = (u8 *)Func237570(0x30);
+    Func237A88(p, 3);
+    Func238158(Func237C30(p + 0x20), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(((CChrBodyWinVt *)m64)->V6());
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(func_0019FA50(m60));
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(func_0019B1F8(m6C));
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(func_0019FC30(m60));
+    switch (m50) {
+    case 0:
+    case 3:
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CChrBodyWinVt *)m68)->V6());
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CChrBodyWinVt *)m70)->V6());
+        break;
+    case 2:
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CChrBodyWinVt *)m70)->V6());
+        break;
+    }
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
 
 CChrBodyWinSub18A410 *NewChrBodyWinSub18A410() {
     CChrBodyWinSub18A410 *p = (CChrBodyWinSub18A410 *)operator new(0x94);
@@ -619,4 +956,15 @@ CChrBodyWinSub18A410 *NewChrBodyWinSub18A410() {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_0018A410);
+void CChrBodyWinSub18A410::Close() {
+    func_00245818(&m58, 1);
+    D_002A4308->Func188BA8();
+    if (m64) {
+        delete m64;
+        m64 = 0;
+    }
+    if (m68) {
+        delete m68;
+        m68 = 0;
+    }
+}

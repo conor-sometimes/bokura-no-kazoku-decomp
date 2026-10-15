@@ -25,6 +25,20 @@ public:
 
     CMenuSub1A7658 *m_unk58;  // 0x58
 };
+
+extern f32 D_002A6800[];
+// VU0 float to 1.15 fixed point (sine-table index), as in CSwingBoneObj.
+inline s32 Ftoi15(f32 x) {
+    s32 i;
+    asm volatile(
+        "mfc1 %0, %1\n"
+        "qmtc2.ni %0, $vf2\n"
+        "vftoi15.x $vf2, $vf2\n"
+        "qmfc2.ni %0, $vf2\n"
+        : "=r"(i) : "f"(x));
+    return i;
+}
+// Pulsing brightness for CMenuSysscr00::Update (sits after this unit's text).
 // @decl-end
 
 CMenuSysscr01::CMenuSysscr01() {
@@ -55,4 +69,14 @@ CMenuSysscr00 *CMenuSysscr00::Create() {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr01", func_001AE3F8);
+f32 Pulse1AE3F8(f32 *t) {
+    u8 *tbl = (u8 *)D_002A6800;
+    f32 s = *(f32 *)(tbl + ((Ftoi15(*t) << 1) & 0xFFFC)) * 0.75f;
+    if (s < 0.0f) s = -s;
+    s += 0.25f;
+    f32 x = *t + 0.006f;
+    *t = x;
+    if (x >= 1.0f) *t = 0.0f;
+    if (s > 1.0f) s = 1.0f;
+    return s;
+}

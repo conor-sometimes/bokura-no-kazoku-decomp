@@ -110,6 +110,7 @@ struct CFaceTex {
     s32 m_psm;                // 0x4
     s16 m_w;                  // 0x8
     s16 m_h;                  // 0xA
+    s32 m_vis;                // 0xC (func_0010ED30: overlaps the view rectangle)
 };
 struct CFaceCache {
     void *m_data;             // 0x0
@@ -121,6 +122,11 @@ void Blit32(u32 *dst, u32 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
 void Blit8(u8 *dst, u8 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
 void Blit16(u16 *dst, u16 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
 s32 FaceTexSize(s32 psm, s32 w, s32 h);
+extern const char *D_002A03AC;
+s32 FindFaceIds(CFaceSet **out, const char *p, CFaceSet *parts, s32 nparts);
+
+int LoadFaceTex(CFaceTex *tex, CFacePart *part, char *name, CFaceCache *cache);
+CFacePart *FindFacePart(CFaceSet *sets, s32 nsets, s32 last, CFacePart *key);
 // @decl-end
 
 CFaceRes::CFaceRes() {
@@ -259,7 +265,40 @@ CFacePart *FindFacePart(CFaceSet *sets, s32 nsets, s32 last, CFacePart *key) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010ED30);
+extern "C" s32 func_0010ED30(CFaceItem *out, CFaceSet *sets, s32 n, s32 x0, s32 y0, s32 w0, s32 h0) {
+    char name[0x100];
+    CFaceCache cache;
+    s32 k = 0;
+    s32 i, j;
+    name[0] = 0;
+    cache.m_data = 0;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < sets[i].m_num; j++) {
+            CFaceTex *o = (CFaceTex *)&out[k];
+            CFacePart *part = &sets[i].m_parts[j];
+            s32 r = -1;
+            CFacePart *f = FindFacePart(sets, i + 1, j, part);
+            if (f) {
+                r = f->m24;
+            } else {
+                if (out) {
+                    LoadFaceTex(o, part, name, &cache);
+                    if (((part->m28 >= x0 && part->m28 < x0 + w0) || (part->m28 <= x0 && x0 < part->m28 + o->m_w)) &&
+                        ((part->m2A >= y0 && part->m2A < y0 + h0) || (part->m2A <= y0 && y0 < part->m2A + o->m_h))) {
+                        o->m_vis = 1;
+                    } else {
+                        o->m_vis = 0;
+                    }
+                    r = k;
+                }
+                k++;
+            }
+            part->m24 = r;
+        }
+    }
+    if (cache.m_data) D_002B91B0(cache.m_data);
+    return k;
+}
 
 s32 FindFaceIds(CFaceSet **out, const char *p, CFaceSet *parts, s32 nparts) {
     s32 id;

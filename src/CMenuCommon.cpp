@@ -5,6 +5,10 @@
 
 class CStatusItem {
 public:
+    const char *GetUnkE4(s32 i);
+    void GetPos(f32 *x, f32 *y, s32 i);
+    void SetText(s32 i, const char *s);
+    void Func1A3378();
     void Func1A3628();
     void Start();
 
@@ -16,6 +20,7 @@ public:
 };
 class CMenuCommonSub18C110 {
 public:
+    int Init18BB10();
     void Update18CE28();
     void Start18C0B0();
     void Func18C050();
@@ -28,6 +33,9 @@ public:
     CStatusItem *m_item2; // 0xC
     u8 pad10[0x4];
     s32 m_unk14;              // 0x14
+    u8 pad18[0x28];
+    f32 m_unk40;              // 0x40
+    f32 m_unk44;              // 0x44
 };
 class CMenuCommonSub18E0E0 {
 public:
@@ -253,6 +261,32 @@ extern char D_002DB600[], D_002DB608[], D_002DB610[], D_002DB618[];
 extern "C" const char *func_0024AD10(const char *p, char *buf, s32 a, s32 n);
 extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
 extern "C" const char *func_0024A6B0(const char *p, char *out, const char *a, const char *s1, const char *s2);
+
+#include "IGameDBMgr.h"
+extern "C" void func_00185AA0(void *p, s32 k, s32 a, s32 b, s32 c, s32 d, s32 e);
+void Func185E80(char *buf, s32 a);
+void Func185F18(char *buf, s32 a, s32 b);
+extern "C" char *func_0024BA08(char *buf, s32 v);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern char D_002DB640[];
+extern char D_002DB668[];
+extern char D_002DB730[][32];
+class CMenuLoadMemorialSub179568 {
+public:
+    int Create();
+    void SetUnk44(u32 v);
+    u8 pad[0xC0];
+};
+class CMenuLoadMemorialSub178778 {
+public:
+    int Create();
+    void SetUnk44(u32 v);
+    u8 pad[0xB0];
+};
+class CStatusWinSub1A40B8 {
+public:
+    void SetUnk80(f32 x, f32 y);
+};
 // @decl-end
 
 CMenuCommon::CMenuCommon() {
@@ -354,7 +388,52 @@ CMenuChildStatusSub18B9E0::~CMenuChildStatusSub18B9E0() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018BB10);
+int CMenuCommonSub18C110::Init18BB10() {
+    char buf[0x400];
+    char num[0x100];
+    char name[0x100];
+    char s1[0x100];
+    char s2[0x100];
+    s32 k = D_002A5358->Func1091B0(0x260);
+    if ((u32)k >= 7) {
+        Func235DE0(D_002DB640, k);
+        return 0;
+    }
+    m_item = (CStatusItem *)func_001A0CF0(D_002A5408, D_002DB730[k]);
+    if (!m_item) return 0;
+    m_item->Func1A3378();
+    s32 id = D_002A5358->Func1091B0(0x261);
+    func_00185AA0(name, id, -1, -1, -1, -1, -1);
+    sprintf(buf, m_item->GetUnkE4(10), name);
+    m_item->SetText(10, buf);
+    char *cn = D_002A2988->GetCharaName(id);
+    sprintf(buf, m_item->GetUnkE4(11), cn);
+    m_item->SetText(11, buf);
+    Func185E80(s1, id);
+    Func185F18(s2, id, 1);
+    sprintf(buf, m_item->GetUnkE4(12), s2, s1);
+    m_item->SetText(12, buf);
+    const char *fmt = m_item->GetUnkE4(13);
+    sprintf(buf, fmt, func_0024BA08(num, D_002A26E4->Func1091B0(id + 0x34)));
+    m_item->SetText(13, buf);
+    CMenuLoadMemorialSub179568 *p4 = new CMenuLoadMemorialSub179568;
+    p4->Create();
+    m_unk4 = p4;
+    p4->SetUnk44(1);
+    CMenuLoadMemorialSub178778 *p8 = new CMenuLoadMemorialSub178778;
+    p8->Create();
+    m_unk8 = p8;
+    p8->SetUnk44(1);
+    if (k == 1 || k == 5) {
+        m_item2 = (CStatusItem *)func_001A0CF0(D_002A5408, D_002DB668);
+        if (!m_item2) return 0;
+        m_item2->Func1A3378();
+        m_item2->GetPos(&m_unk40, &m_unk44, 11);
+        m_unk44 *= (f32)(D_002A5358->Func1091B0(0x262) - 2);
+        ((CStatusWinSub1A40B8 *)m_item2)->SetUnk80(m_unk40, m_unk44);
+    }
+    return 1;
+}
 
 int CMenuCommonRes::Load18BDF0() {
     char path[256];

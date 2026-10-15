@@ -64,6 +64,24 @@ extern "C" s32 func_002379D0(s32);
 extern "C" void func_00225070(void);
 extern "C" void func_00224FF0(u32);
 extern "C" void func_00225B08(s32, s32, s32, u8 *, u32);
+
+extern u8 D_002CE230[];
+extern u8 D_002CE358[];
+extern u8 D_002CDE10[];
+extern u8 D_002CE648[];
+extern u8 D_002CEAA0[];
+extern u8 D_002CEA20[];
+extern "C" void func_00226668(s32, s32, s32, u32);
+extern "C" void func_00226730(void);
+inline u32 *PutQ(u64 hi, u64 lo) {
+    u32 *q = PKT;
+    PKT = q + 4;
+    q[0] = lo;
+    q[1] = lo >> 32;
+    q[2] = hi;
+    q[3] = hi >> 32;
+    return q;
+}
 // @decl-end
 
 extern "C" s32 func_00224D58(u32 i) {
@@ -344,40 +362,108 @@ extern "C" void func_00226188(f32 a, f32 b, f32 c, f32 d) {
     D_33DE90 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226250);
+extern "C" void func_00226250(u32 a, u32 b, f32 x, f32 y, f32 w, f32 h) {
+    w *= 0.5f;
+    h *= 0.5f;
+    PUT(0x64038000);
+    PUT(b);
+    PUT(a);
+    PUTF(x + w);
+    PUTF(y + h);
+    PUTF(w);
+    PUTF(h);
+    PUT(MSCAL(D_002CE230));
+    D_33DE90 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226338);
+extern "C" void func_00226338(u32 a, u32 b) {
+    PUT(0x64018000);
+    PUT(b);
+    PUT(a);
+    PUT(MSCAL(D_002CE358));
+    D_33DE90 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_002263C8);
+extern "C" void func_002263C8(f32 a, f32 b, f32 c) {
+    PUT(0x64028000);
+    PUTF(a);
+    PUTF(b);
+    PUTF(c);
+    PUT(0);
+    PUT(MSCAL(D_002CDE10));
+    D_33DE90 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226478);
+extern "C" void func_00226478(s32 addr, s32 n, u8 *src) {
+    func_00225B08(addr, n, D_33DE94, src, MSADDR(D_002CE648));
+    D_33DE94 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_002264D8);
+extern "C" void func_002264D8(s32 addr, s32 n, u8 *src) {
+    return func_00225B08(addr, n, 0, src, MSADDR(D_002CEAA0));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226520);
+extern "C" void func_00226520(s32 addr, s32 n, u8 *src) {
+    return func_00225B08(addr, n, 0, src, MSADDR(D_002CEA20));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226568);
+extern "C" void *func_00226568(s32 a, s32 n, void *src) {
+    func_00237350(0xC);
+    PUT((a + 0x149) | (n << 16) | 0x6C000000);
+    return func_00237860(n, src);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_002265E0);
+extern "C" void *func_002265E0(s32 a, s32 n, void *src) {
+    s32 m = (n + 1) / 2 * 2;
+    func_00237350(0xC);
+    PUT((a + 0x1AA) | (m << 16) | 0x74000000);
+    return func_00237860(m >> 1, src);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226668);
 
 INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226730);
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226810);
+extern "C" void func_00226810(f32 a, f32 b, f32 c, f32 d) {
+    f32 *p = (f32 *)PKT;
+    PKT = (u32 *)(p + 4);
+    p[0] = a;
+    p[1] = b;
+    p[2] = c;
+    p[3] = d;
+    if (D_33DE9C) return func_00226730();
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226860);
+extern "C" void func_00226860(u64 a, u64 b) {
+    PutQ(a, b);
+    if (D_33DE9C) return func_00226730();
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_002268C8);
+extern "C" void func_002268C8(s32 addr, s32 n) {
+    func_00226668(addr, n, D_33DE94, MSADDR(D_002CE648));
+    D_33DE94 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226920);
+extern "C" void func_00226920(s32 addr, s32 n) {
+    return func_00226668(addr, n, 0, MSADDR(D_002CDE48));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226960);
+extern "C" void func_00226960(s32 addr, s32 n, s32 flag) {
+    return func_00226668(addr, n, 0, flag ? MSADDR(D_002CDE48) : MSADDR(D_002CDEE8));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_002269B8);
+extern "C" void func_002269B8(s32 addr, s32 n, s32 flag) {
+    return func_00226668(addr, n, 0, flag ? MSADDR(D_002CE888) : MSADDR(D_002CE948));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226A10);
+extern "C" void func_00226A10(s32 addr, s32 n, s32 flag) {
+    return func_00226668(addr, n, 0, flag ? MSADDR(D_002CEC90) : MSADDR(D_002CED40));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226A68);
+extern "C" void func_00226A68(s32 addr, s32 n) {
+    return func_00226668(addr, n, 0, MSADDR(D_002CEAA0));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit224D58", func_00226AA8);
+extern "C" void func_00226AA8(s32 addr, s32 n) {
+    return func_00226668(addr, n, 0, MSADDR(D_002CEA20));
+}

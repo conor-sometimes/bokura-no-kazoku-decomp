@@ -97,6 +97,7 @@ void Func270C50(CVec4 *dst, const CVec4 *src);
 // the methods from 0x19F200 on, with the same first fields, no virtuals and 0x58 a plain field.
 class CStatusWin {
 public:
+    void Func19E8B0(const char *a, const char *b);
     void Draw19FC30();
     void Draw19FA50();
     CStatusWin(s32 kind, s32 a, s32 b);
@@ -398,6 +399,17 @@ extern void (*D_002B91B0)(void *p);
 extern "C" int func_00179198(void *p);
 extern "C" int func_0017A370(void *p);
 extern "C" int func_0019C730(void *p, f32 x, f32 y, f32 a);
+
+extern "C" int strcmp(const char *a, const char *b);
+extern const char D_002DDF30[];
+
+void Func1862F8(char *dst, s32 k);
+void Func186358(char *dst, s32 a, s32 b);
+extern const char D_002DDF58[];
+struct CStatusWinNameRec {
+    s32 m0;
+    const char *m4;
+};
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -598,9 +610,137 @@ void CStatusWin::Func19E780(f32 v) {
     m_item->SetUnkF0(9, m_unk6C);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019E8B0);
+void CStatusWin::Func19E8B0(const char *a, const char *b) {
+    char buf[256];
+    if (!a || !b) {
+        Func235DE0(D_002DDF30);
+        return;
+    }
+    if (m_unk60 == 0) {
+        if (strcmp(a, D_002DDF10) && strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(10), a, b);
+            m_item->SetText(10, buf);
+            m_item->SetUnkF0(10, 1);
+            m_item->SetUnkF0(11, 0);
+        } else if (!strcmp(a, D_002DDF10) && strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(11), b);
+            m_item->SetText(11, buf);
+            m_item->SetUnkF0(10, 0);
+            m_item->SetUnkF0(11, 1);
+        } else if (strcmp(a, D_002DDF10) && !strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(11), a);
+            m_item->SetText(11, buf);
+            m_item->SetUnkF0(10, 0);
+            m_item->SetUnkF0(11, 1);
+        } else {
+            m_item->SetUnkF0(10, 0);
+            m_item->SetUnkF0(11, 0);
+        }
+    } else if (m_unk60 == 1) {
+        if (strcmp(a, D_002DDF10) && strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(8), a);
+            m_item->SetText(8, buf);
+            m_item->SetUnkF0(8, 1);
+            sprintf(buf, (const char *)m_item->GetUnkE4(9), b);
+            m_item->SetText(9, buf);
+            m_item->SetUnkF0(9, 1);
+        } else if (!strcmp(a, D_002DDF10) && strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(8), b);
+            m_item->SetText(8, buf);
+            m_item->SetUnkF0(8, 1);
+            sprintf(buf, (const char *)m_item->GetUnkE4(9), D_002DDF10);
+            m_item->SetText(9, buf);
+            m_item->SetUnkF0(9, 0);
+        } else if (strcmp(a, D_002DDF10) && !strcmp(b, D_002DDF10)) {
+            sprintf(buf, (const char *)m_item->GetUnkE4(8), a);
+            m_item->SetText(8, buf);
+            m_item->SetUnkF0(8, 1);
+            sprintf(buf, (const char *)m_item->GetUnkE4(9), D_002DDF10);
+            m_item->SetText(9, buf);
+            m_item->SetUnkF0(9, 0);
+        } else {
+            sprintf(buf, (const char *)m_item->GetUnkE4(8), D_002DDF10);
+            m_item->SetText(8, buf);
+            m_item->SetUnkF0(8, 0);
+            sprintf(buf, (const char *)m_item->GetUnkE4(9), D_002DDF10);
+            m_item->SetText(9, buf);
+            m_item->SetUnkF0(9, 0);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19ECB0__10CStatusWinff);
+void CStatusWin::Func19ECB0(f32 x, f32 y) {
+    char tmp[0x200];
+    char a[0x100];
+    char b[0x100];
+    s32 ix = (s32)(x * 128.0f);
+    s32 iy = (s32)(y * 128.0f);
+    s32 cx = ix < 0 ? 0 : (ix < 0x100 ? ix : 0xFF);
+    s32 cy = iy < 0 ? 0 : (iy < 0x100 ? iy : 0xFF);
+    s32 st = D_002A5358->Func1091B0(m_unk50 + 0x34);
+    D_002A5358->Func1091B0(m_unk50 + 0x40);
+    CStatusWinNameRec *r1 = (CStatusWinNameRec *)D_002A2988->Find20C(D_002A26E4->Func1091B0(m_unk50 + 0xE2));
+    CStatusWinNameRec *r2 = (CStatusWinNameRec *)D_002A2988->Find220(D_002A26E4->Func1091B0(m_unk50 + 0xDC));
+    a[0] = D_002DDF10[0];
+    b[0] = D_002DDF10[0];
+    if (m_unk60 == 0) {
+        if (st == 1) {
+            m_item->SetUnkF0(10, 0);
+            m_item->SetUnkF0(11, 0);
+        }
+        if (r1) sprintf(a, D_002DDF58, cx, r1->m4);
+        if (r2) sprintf(b, D_002DDF58, cy, r2->m4);
+        if (D_002A5358->Func1091B0(m_unk50 + 0xA0)) {
+            Func1862F8(tmp, m_unk50);
+            sprintf(a, D_002DDF58, cx, tmp);
+        }
+        if (D_002A5358->Func1091B0(m_unk50 + 0xA6)) {
+            s32 t = D_002A26E4->Func1091B0(m_unk50 + 0x28);
+            u32 u = D_002A26E4->Vf2991B0();
+            if (t != 0x16 && u == 0) {
+                sprintf(b, D_002DDF10);
+            } else if (t == 0x11 && u < 2) {
+                sprintf(b, D_002DDF10);
+            } else {
+                Func186358(tmp, 1, D_002A26E4->Func1091B0(m_unk50 + 0x3A));
+                sprintf(b, D_002DDF58, cy, tmp);
+            }
+        }
+        if (D_002A5358->Func1091B0(m_unk50 + 0xAC)) {
+            Func186358(tmp, 0, D_002A26E4->Func1091B0(m_unk50 + 0x3A));
+            sprintf(b, D_002DDF58, cy, tmp);
+        }
+        Func19E8B0(a, b);
+    } else if (m_unk60 == 1) {
+        if (st == 1) {
+            m_item->SetUnkF0(8, 0);
+            m_item->SetUnkF0(9, 0);
+        }
+        if (r1) strcpy(a, r1->m4);
+        if (r2) strcpy(b, r2->m4);
+        if (D_002A5358->Func1091B0(m_unk50 + 0xA0)) {
+            Func1862F8(tmp, m_unk50);
+            sprintf(a, D_002DDF58, cx, tmp);
+        }
+        if (D_002A5358->Func1091B0(m_unk50 + 0xA6)) {
+            s32 t = D_002A26E4->Func1091B0(m_unk50 + 0x28);
+            u32 u = D_002A26E4->Vf2991B0();
+            if (t != 0x16 && u == 0) {
+                sprintf(b, D_002DDF10);
+            } else if (t == 0x11 && u < 2) {
+                sprintf(b, D_002DDF10);
+            } else {
+                Func186358(tmp, 1, D_002A26E4->Func1091B0(m_unk50 + 0x3A));
+                sprintf(b, D_002DDF58, cy, tmp);
+            }
+        }
+        if (D_002A5358->Func1091B0(m_unk50 + 0xAC)) {
+            Func186358(tmp, 0, D_002A26E4->Func1091B0(m_unk50 + 0x3A));
+            sprintf(b, D_002DDF58, cy, tmp);
+        }
+        Func19E8B0(a, b);
+    }
+}
 
 CStatusWin::CStatusWin(s32 kind, s32 a, s32 b) {
     switch (kind) {

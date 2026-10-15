@@ -202,6 +202,59 @@ INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Update__18CMenuTutorSelected)
 INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAAC0);
 INCLUDE_RODATA("asm/nonmatchings/CMenuTutorSelected", D_002DAAE0);
 
+#if 0 // DIFF 35 as written, 17 with bk perm on the 22 sprite-field stores (g1): everything before the sprite block matches; the field stores and the x/y arithmetic interleave differently
+s32 CMenuTutorSelected::Draw() {
+    CTsView *t = (CTsView *)this;
+    u8 *p = Func237570(0x50);
+    Func237A88(p, 5);
+    Func238158(Func237C30(p + 0x40), 1);
+    if (m_unk64) {
+        f32 a;
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(func_0018A1F0(m_unk64));
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x17)));
+        D_002A5530->Reset1B4D28();
+        D_002A5530->SetUnk4C(((CChrBodyWinB *)m_unk64)->GetStatusUnk34());
+        D_002A5530->SetUnk54(1);
+        D_002A5530->SetUnk30(t->mA0, t->mA0, 0.0f, 0.0f);
+        D_002A5530->SetUnk20(t->m70, t->m74, 0.0f);
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B50B0(D_002A5530, 0x17));
+        a = ((CChrBodyWinB *)m_unk64)->GetStatusUnk34() < t->mA8 ? ((CChrBodyWinB *)m_unk64)->GetStatusUnk34() : t->mA8;
+        D_002A5530->SetUnk4C(a);
+        D_002A5530->SetUnk54(2);
+        D_002A5530->SetUnk58(2);
+        D_002A5530->SetUnk30(t->mA4, t->mA4, t->m88, t->m8C);
+        D_002A5530->SetUnk20(t->m80, t->m84, 0.0f);
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B50B0(D_002A5530, 0x25));
+        {
+            CTextBuf b;
+            CTsSprite &s = *(CTsSprite *)&b;
+            f32 x, y;
+            func_0010BF88(&b);
+            x = (t->m90 - t->m98) * t->mA4 + t->m98 - 320.0f;
+            y = (t->m94 - t->m9C) * t->mA4 + t->m9C - 224.0f;
+            s.m0 = 0;
+            s.m4 = 0;
+            s.m10 = s.m18 = x;
+            s.m14 = s.m1C = y;
+            s.m20 = s.m24 = t->mA4;
+            s.m28 = s.m2C = 0.0f;
+            s.m30 = s.m34 = s.m38 = 1.0f;
+            s.m3C = a;
+            s.m40 = s.m44 = s.m48 = s.m4C = 0.0f;
+            s.m50 = 1;
+            s.m54 = 1;
+            s.m58 = 0;
+            s.m70 = 1;
+            func_00256648(&b);
+            func_00256930(&b, func_00256260(&b, t->mAC));
+            ((CUnk237E90 *)(p + 0x20))->Func237E90(func_00256668(&b));
+        }
+    }
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CMenuTutorSelected", Draw__18CMenuTutorSelected);
 
 char *ToWide(char *dst, const char *src) {

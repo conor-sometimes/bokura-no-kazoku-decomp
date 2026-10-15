@@ -64,6 +64,7 @@ public:
     void SetFade(s32 on, s32 dur);
     void DrawText(s32 a, f32 x, f32 y);
     void Func169950();
+    void Func16A998(s32 a, f32 x, f32 y);
     void Func16B1C8();
     void Func16BB20();
     void Func16AA28();
@@ -201,6 +202,11 @@ public:
     virtual void V20();
     virtual s32 IsVoicePlaying();
 };
+
+extern "C" int func_0025CAC0(CSndWork *p, s32 h);
+
+extern "C" u64 func_0023AA40();
+extern "C" void func_0016A650(void *p, f32 x, f32 y, s32 a, f32 w, f32 h);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169128);
@@ -362,7 +368,11 @@ s32 CInterfMgr::PlayVoice169788(s32 id) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_001698A0);
+int CInterfMgr::Func1698A0() {
+    if (!m_unk910) return 1;
+    if (!m_snd.Func25C990(m_unk910)) return 1;
+    return func_0025CAC0(&m_snd, m_unk910);
+}
 
 s32 CInterfMgr::IsVoicePlaying() {
     s32 r = 0;
@@ -376,11 +386,24 @@ INCLUDE_ASM("asm/nonmatchings/IInterfMgr", Func169950__10CInterfMgr);
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_0016A650);
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_0016A998);
+void CInterfMgr::Func16A998(s32 a, f32 x, f32 y) {
+    u64 t = func_0023AA40();
+    func_0016A650(this, x, y, a, (s32)((t >> 38) & 0xFFF), (s32)((t >> 50) & 0xFFF));
+}
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", Func16AA28__10CInterfMgr);
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_0016B178);
+void CInterfMgr::SetFade(s32 on, s32 dur) {
+    m_unk914 = on;
+    if (dur <= 0) {
+        f32 v = 1.0f;
+        if (!on) v = 0.0f;
+        m_unk918 = v;
+        m_unk91C = 0;
+    } else {
+        m_unk91C = 1.0f / dur;
+    }
+}
 
 void CInterfMgr::Func16B1C8() {
     f32 v;

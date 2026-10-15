@@ -5,6 +5,8 @@ int Func145738(s32 a, s32 b);
 class CGameMain {
 public:
     void CallFunc151120(s32 a, s32 b);
+    int Func1513D0(s32 slot, s32 name, s32 all);
+    void Func150FD8();
     s32 Func151028(s32 i, s32 j, s32 k);
     void Func151120(s32 a, s32 b, s32 c, s32 d, s32 e);
     int Func153220();
@@ -107,9 +109,12 @@ void CreateGameMainRes(CResMgr24F *mgr, int a);
 
 struct CGameMainFlagDef {
     s32 m0;
-    u8 pad4[0x4];
+    s32 m4;
     s32 m8;
-    u8 padC[0x18];
+    u8 padC[0xC];
+    s32 m18;
+    s32 m1C;
+    s32 m20;
     s32 m24;
 };
 extern CGameMainFlagDef D_002A2DB0[];
@@ -121,6 +126,9 @@ struct CUnk2A5BC0b {
 };
 extern "C" void func_00135BE0(CEventObj135A28 *p, u8 *buf);
 extern "C" void func_0012B180(CGameMainSub129D90 *p, u8 *buf);
+
+int IsFlagKind(int v);
+extern s8 D_002A31D8[6][9];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150A70);
@@ -164,8 +172,8 @@ void CGameMain2::Func150D98() {
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150EA8);
 
-// Empty; real name and class unknown (a virtual no-op or a stub).
-extern "C" void func_00150FD8() {
+// Empty; called with `this` from Func1513D0 (and CGameResort).
+void CGameMain::Func150FD8() {
 }
 
 void ResetAllFlags() {
@@ -224,7 +232,24 @@ INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8B18);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8B20);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8B40);
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00151DD0);
+void Func151DD0() {
+    s32 n = D_002A26E4->Func1091B0(0x27);
+    s32 i;
+    s8 *p;
+    D_002A26E4->Func108FF0(0x3B41, 0);
+    for (i = 0; i < n; i++) {
+        if (IsFlagKind(D_002A26E4->GetNamed(0x46, i))) {
+            if (D_002A26E4->GetNamed(0x52, i) == 6 || D_002A26E4->GetNamed(0x52, i) == 9) {
+                D_002A26E4->Func108FF0(0x3B41, 1);
+                break;
+            }
+        }
+    }
+    p = D_002A31D8[D_002A26E4->Func1091B0(0x14) % 6];
+    for (i = 0; i < 9; i++) {
+        D_002A26E4->Func108FF0(0x3C34 + i, *p++);
+    }
+}
 
 void InitResMgrs151F60() {
     D_002A0BE8->Init(-1, -1);

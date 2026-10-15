@@ -1,7 +1,15 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-struct CSwingBone { s32 id; u8 pad[0x14]; void *m_data; };
+struct CSwingBone {
+    s32 id;                   // 0x0
+    s32 m_4;                  // 0x4
+    s32 m_8;                  // 0x8
+    s32 m_C;                  // 0xC
+    f32 m_10;                 // 0x10
+    s32 m_numAxes;            // 0x14
+    void *m_data;             // 0x18
+};
 int Func111960(CSwingBone *p, void *data);
 void *Func245D00(int size);
 class CSwingBoneRes2 {

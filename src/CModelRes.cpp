@@ -24,7 +24,7 @@ public:
 
 struct CModelRec {
     s32 m_id;                 // 0x0
-    u8 pad4[0x4];
+    s32 m_flags;              // 0x4
     s32 m_unk8;               // 0x8
     u8 padC[0x4];
     void *m_unk10;            // 0x10

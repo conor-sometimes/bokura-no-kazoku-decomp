@@ -71,9 +71,23 @@ INCLUDE_ASM("asm/nonmatchings/CList", func_0010D360);
 
 INCLUDE_ASM("asm/nonmatchings/CList", func_0010D4F0);
 
-INCLUDE_ASM("asm/nonmatchings/CList", func_0010D6C0);
+void BlitFlip32(u32 *dst, u32 *src, int stride, int x, int y, int w, int h) {
+    u32 *s = src + (y * stride + x) + w - 1;
+    int i;
+    for (; h > 0; h--) {
+        for (i = w; i > 0; i--) *dst++ = *s--;
+        s += stride + w;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CList", func_0010D728);
+void BlitFlip16(u16 *dst, u16 *src, int stride, int x, int y, int w, int h) {
+    u16 *s = src + (y * stride + x) + w - 1;
+    int i;
+    for (; h > 0; h--) {
+        for (i = w; i > 0; i--) *dst++ = *s--;
+        s += stride + w;
+    }
+}
 
 void BlitFlip8(u8 *dst, u8 *src, int stride, int x, int y, int w, int h) {
     u8 *s = src + w + (y * stride + x) - 1;

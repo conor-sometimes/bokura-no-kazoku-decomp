@@ -223,6 +223,10 @@ public:
     virtual int DrawPhoto(s32 id, u32 color, f32 x, f32 y, f32 w, f32 h);
 };
 extern CPhotoDraw *D_002A3680;
+
+extern "C" int func_001B5E18(void *p);
+extern f32 D_002A5380[];
+extern char D_002DD808[];
 // @decl-end
 
 CMenuRecord::CMenuRecord() {
@@ -703,7 +707,15 @@ int CMenuRecordSub196FC8::IsUnk4D4InWindow() {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00196FF8);
+void CMenuRecordList::SetOffset(s32 on) {
+    if (!m_win) return;
+    if (on == 1) {
+        m_win->Func1A39A8(&m_ofsX, (s32 *)&m_ofsY, 0x43);
+        ((CStatusWinSub1A40B8 *)m_win)->SetUnk80(m_ofsX, m_ofsY);
+    } else {
+        m_ofsX = m_ofsY = 0.0f;
+    }
+}
 
 void CMenuRecordList::TickItems() {
     s32 i;
@@ -866,7 +878,64 @@ void CMenuRecordList::Draw197950() {
     Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00197AE0);
+int CMenuRecordList::Draw197AE0() {
+    s32 a, b;
+    f32 px, py;
+    f32 bx, by;
+    f32 sx, sy;
+    char buf[256];
+    u8 *pp = Func237570(0x30);
+    Func237A88(pp, 3);
+    CUnk237E90 *q = (CUnk237E90 *)(pp + 0x10);
+    Func238158(Func237C30(pp + 0x20), 1);
+    GetRange2(&a, &b);
+    D_002A5530->Reset1B4D28();
+    q->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x18)));
+    D_002A5530->SetUnk4C(((CMenuRecordWinF2 *)m_win)->m_unk34);
+    m_win->Func1A39A8(&sx, (s32 *)&sy, 0x54);
+    D_002A5530->SetUnk30(sx / 100.0f, sy / 100.0f, 0.0f, 0.0f);
+    m_win->Func1A39A8(&bx, (s32 *)&by, 0x53);
+    {
+        s32 i;
+        for (i = a; i < a + b; i++) {
+            if (m_items[i].m_unk3C <= 0) continue;
+            if (m_items[i].m_unk40) {
+                D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
+            } else {
+                D_002A5530->SetUnk40(0.5f, 0.5f, 0.5f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
+            }
+            m_win->Func1A39A8(&px, (s32 *)&py, PageRow(i) + 0x45);
+            D_002A5530->SetUnk20(px + bx + m_ofsX, py + by + m_ofsY, 0.0f);
+            q->Func237E90(func_001B50B0(D_002A5530, 0x18));
+        }
+    }
+    D_002A5534->Reset();
+    D_002A5534->SetUnk30(1);
+    D_002A5534->SetUnk1C(((CMenuRecordWinF2 *)m_win)->m_unk34);
+    q->Func237E90(func_001B5E18(D_002A5534));
+    m_win->Func1A39A8(&sx, (s32 *)&sy, 0x56);
+    D_002A5534->SetUnk0(sx / 100.0f, sy / 100.0f);
+    m_win->Func1A39A8(&bx, (s32 *)&by, 0x55);
+    {
+        s32 j;
+        for (j = a; j < a + b; j++) {
+            if (m_items[j].m_unk3C <= 0) continue;
+            if (m_items[j].m_unk40) {
+                D_002A5534->SetUnk10(0.78f, 0.78f, 0.78f);
+            } else if (D_002A26E4->Func1091B0(0x1C) < m_items[j].m_unk3C) {
+                D_002A5534->SetUnk10(D_002A5380[0] * 0.5f, D_002A5380[1] * 0.5f, D_002A5380[2] * 0.5f);
+            } else {
+                D_002A5534->SetUnk10(0.39f, 0.39f, 0.39f);
+            }
+            m_win->Func1A39A8(&px, (s32 *)&py, PageRow(j) + 0x45);
+            sprintf(buf, D_002DD808, m_items[j].m_unk3C);
+            q->Func237E90(func_001B5FE0(D_002A5534, buf, px + bx + m_ofsX, py + by + m_ofsY));
+        }
+    }
+    Func225088();
+    Func225240((s32)pp);
+    Func2250C0();
+}
 
 int CMenuRecordList::Func197FA8() {
     char buf[256];

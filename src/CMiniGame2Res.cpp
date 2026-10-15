@@ -45,13 +45,23 @@ struct CRand {
     }
     u32 Rand(u32 n) { return ((Next() << 16) | Next()) % n; }
 };
-struct CMiniGame2Color { s32 r, g, b, a; };
-struct CMiniGame2Pos { f32 x, y; u8 pad[8]; };
+struct CMiniGame2Color {
+    s32 r, g, b, a;
+    void Set(s32 r_, s32 g_, s32 b_) { r = r_; g = g_; b = b_; }
+};
+class CMenuMgrSub1B6418;
+extern CMenuMgrSub1B6418 *D_002A5538;
+struct CMiniGame2Pos {
+    f32 x, y;
+    u8 pad[8];
+    void Move();
+};
 class CMenuMgrSub1B6418 {
 public:
+    void Move1B6488(f32 x, f32 y);
     void SetUnkDC(u32 v);
 };
-extern CMenuMgrSub1B6418 *D_002A5538;
+inline void CMiniGame2Pos::Move() { D_002A5538->Move1B6488(x, y); }
 // Member classes (layout objects, sound handles; library / CLayoutObj code): their destructors
 // are called explicitly.
 extern "C" void func_001B9D70(void *p, s32 flags);
@@ -81,6 +91,8 @@ public:
     virtual void Update();
     virtual void Draw();
     int Pick();
+    void SetCursor();
+    void MoveCursor(CMiniGame2Pos *p) { D_002A5538->Move1B6488(p->x, p->y); }
     int LoadCursor();
     int LoadColor();
     int LoadLevel();
@@ -113,7 +125,9 @@ public:
     s32 mD78;                 // 0xD78
     s32 m_q[10];              // 0xD7C
     s32 mDA4;                 // 0xDA4
-    s32 mDA8[10];             // 0xDA8
+    s32 mDA8[3];              // 0xDA8
+    s32 mDB4[3];              // 0xDB4
+    s32 mDC0[4];              // 0xDC0
     CMiniGame2Color m_color[4]; // 0xDD0
     CMiniGame2Pos m_pos[3];   // 0xE10
     s32 mE40;                 // 0xE40
@@ -173,6 +187,37 @@ int CMiniGame2Res::Load() {
     return D_002A59FC != 0;
 }
 
+#if 0 // DIFF 25 (g1): retail increments i right after the line read (no copy for j) and ends the loop with beqzl
+extern "C" int func_001C4260(CMiniGame2Res *r, const char *name) {
+    int ok = 0;
+    void *f = Func24A4C0(name);
+    if (f) {
+        const char *s = Func24AF10(f, "DATA");
+        if (*s) {
+            s32 i, j;
+            r->m5C = func_0024AD80(s, 1);
+            r->m58 = Func245D00(r->m5C * sizeof(CMg2Q));
+            Func235DE0("QuestionData %d\n", r->m5C);
+            for (i = 0; i < r->m5C; ) {
+                if (!*s) break;
+                char buf[0x100];
+                const char *p;
+                s = Func24AFE8(s, buf, 1, 0x100);
+                j = i++;
+                p = func_0024A710(buf, &((CMg2Q *)r->m58)[j].a, 0, D_002E0FC0, D_002E0FC8);
+                p = func_0024A710(p, &((CMg2Q *)r->m58)[j].b, 0, D_002E0FC0, D_002E0FC8);
+                p = func_0024A710(p, &((CMg2Q *)r->m58)[j].c, 0, D_002E0FC0, D_002E0FC8);
+                p = func_0024A710(p, &((CMg2Q *)r->m58)[j].d, 0, D_002E0FC0, D_002E0FC8);
+                p = func_0024A710(p, &((CMg2Q *)r->m58)[j].e, 0, D_002E0FC0, D_002E0FC8);
+                func_0024A710(p, &((CMg2Q *)r->m58)[j].f, 0, D_002E0FC0, D_002E0FC8);
+            }
+            ok = 1;
+        }
+        D_002B91B0(f);
+    }
+    return ok;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4260);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame2Res", D_002E0FC0);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame2Res", D_002E0FC8);
@@ -193,6 +238,41 @@ void CreateMiniGame2Res(CResMgr24F *mgr, int a, int b) {
     mgr->Func24F5C0(p, 0);
 }
 
+#if 0 // DIFF 23-29 (g1): same shape as the matched CMiniGame3 ctor; retail walks the colour loop with one pointer based at .b (-8/-4/0) and different loop-counter registers; store order of the 0xD44-0xD78 block hill-climbed to DIFF 23
+CMiniGame2::CMiniGame2(int a, int b) {
+    s32 i;
+    if (!D_002A59FC) Func235DE0("*** not found MINI-GAME resource\n");
+    m7C = ((CMiniGame2Res *)D_002A59FC)->m58;
+    m80 = ((CMiniGame2Res *)D_002A59FC)->m5C;
+    m_rand.m_seed = Func251B88();
+    m2C = a;
+    m30 = b;
+    mD44 = 0;
+    for (i = 2; i >= 0; i--) mD48[i] = 1;
+    mD54 = 0;
+    mD60 = 0;
+    mD64 = 0;
+    mD68 = 0;
+    mD6C = 0;
+    mD70 = 0;
+    mD78 = 0;
+    mD74 = -1;
+    mD58 = -1;
+    mD5C = -1;
+    for (i = 0; i < 10; i++) {
+        m_q[i] = 0;
+        mDA8[i] = 0;
+    }
+    mDA4 = 0;
+    for (i = 0; i < 4; i++) {
+        CMiniGame2Color *c = &m_color[i];
+        c->r = 0x73;
+        c->g = 0x73;
+        c->b = 0x73;
+    }
+    mE40 = 1;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", __10CMiniGame2ii);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4710);
@@ -216,6 +296,18 @@ int CMiniGame2::Pick() {
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C48E8);
 
+#if 0 // 25 vs 27 insns (g1): the position base (this + idx*16, disp 0xE10/0xE14) is right with the shifted-this cast; retail keeps 1 in a register for a movn flag (ours sltu) and copies the base register once before the second load
+void CMiniGame2::SetCursor() {
+    s32 i;
+    s32 on = 1;
+    for (i = 0; i < 3; i++) {
+        s32 v = 0;
+        if (i != mD60) v = on;
+        mDB4[i] = v;
+    }
+    D_002A5538->Move1B6488(((CMiniGame2 *)((u8 *)this + mD60 * 16))->m_pos[0].x, ((CMiniGame2 *)((u8 *)this + mD60 * 16))->m_pos[0].y);
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4A58);
 
 int CMiniGame2::LoadCursor() {

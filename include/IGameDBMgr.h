@@ -33,7 +33,7 @@ public:
     virtual s32 FindType8();                                    // [7] 0x14BBD8
     virtual s32 Collect14BC20(s32 *out, s32 max);               // [8] 0x14BC20
     virtual s32 Func14BD00();                                   // [9] 0x14BD00
-    virtual s32 Func14C048();                                   // [10] 0x14C048
+    virtual s32 Func14C048(s32 *ids, s32 *flags, s32 name);                                 // [10] 0x14C048
     virtual s32 Func14C2B0(s32 *ids, s32 *flags, s32 name);     // [11] 0x14C2B0
     virtual s32 Func14C490();                                   // [12] 0x14C490
     virtual s32 Func14C648(s32 *out, s32 name);                                   // [13] 0x14C648
@@ -81,8 +81,8 @@ public:
     virtual int TestBits14F478(s32 id);                         // [55] 0x14F478
     virtual s32 Func14F550(s32 a, s32 kind, s32 b);                                   // [56] 0x14F550
     virtual s32 Func14F638(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);                                   // [57] 0x14F638
-    virtual s32 Func14F760();                                   // [58] 0x14F760
-    virtual s32 Func14F830();                                   // [59] 0x14F830
+    virtual s32 Func14F760(s32 name, s32 kind);                                 // [58] 0x14F760
+    virtual s32 Func14F830(s32 name, s32 kind, s32 bit);                                 // [59] 0x14F830
     virtual s32 Func14F918(s32 a, s32 b);                                   // [60] 0x14F918
     virtual s32 GetUnk1E4();                                    // [61] 0x299908
     virtual s32 GetUnk1D8();                                    // [62] 0x299910

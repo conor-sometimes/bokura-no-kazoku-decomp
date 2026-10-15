@@ -32,6 +32,7 @@ public:
     void Func248E00();
     int Func248EB0();
     char *Func248D38(const char *s);
+    u8 *Func248CC8(s32 n, s32 a, s32 b);
 
     u8 m_data[0xC];
 };
@@ -74,6 +75,7 @@ public:
     CUserFlagWriter(char *p) { m_ptr = p; }
     int Write(const void *src, int n);
     int Func1401B8(int v);
+    void Put(s32 b) { if (m_ptr) { *m_ptr = b; m_ptr++; } }
     char *m_ptr;
 };
 // Interface of CUserFlagMgr (its slots 0-33); slot 0 deletes through the destructor (slot 34).
@@ -81,7 +83,7 @@ class IUserFlagMgr {
 public:
     virtual void Release();
     virtual void Vf298B20();
-    virtual void Vf13F948();
+    virtual int Vf13F948(const char *name);
     virtual void Reset140040();
     virtual void Vf298B48();
     virtual void Vf298B68();
@@ -127,6 +129,19 @@ public:
         m_size = 0;
     }
 
+    void Clear() { m_size = 0; }
+    void Reserve(s32 n) {
+        if (m_ptr) {
+            m_free(m_ptr);
+            m_ptr = 0;
+            m_cap = 0;
+            m_size = 0;
+        }
+        m_ptr = m_alloc(n);
+        m_size = 0;
+        m_cap = n;
+    }
+
     void *(*m_alloc)(u32 n);  // 0x00
     void (*m_free)(void *p);  // 0x04
     void *m_ptr;              // 0x08
@@ -155,8 +170,9 @@ public:
     int Func140EA0(CUserFlagWriter *w, const char **s);
     int Func140D40(CUserFlagWriter *w, const char **s);
     UserFlagTable *FindTable(int id);
-    void Func140938(int a, const char **s);
-    void Func1409A8(int a, char *buf, const char **s);
+    int Func140938(CUserFlagWriter *w, const char **s);
+    int Func1409A8(CUserFlagWriter *w, const char *tok, const char **s);
+    int Func140D40(CUserFlagWriter *w, const char **s, int depth);
     void Print13F740(const char *fmt, ...);
     void Print13F7B0(const char *fmt, ...);
     void Print13F820(const char *fmt, ...);
@@ -171,6 +187,8 @@ public:
     int Func141F68(int a, u32 id, int b);
     int Func142318(int a, u32 id, int b);
     int Func1425D8(int a, u32 id, int b);
+    int Func13FD00(const char *s, struct UserFlagBits *tbl);
+    virtual int Vf13F948(const char *name);
     int CheckId(int id, int a2);
     int ParsePairs(const char *s, UserFlagStrPair *out);
 
@@ -262,6 +280,32 @@ struct CSvmWorkF {
     u8 pad708[0x291C - 0x708];
     s32 m_forced;             // 0x291C
 };
+
+extern "C" const char *func_0024AD10(const char *s, char *buf, int a, int n);
+extern "C" const char *func_0024A710(const char *s, void *out, int a, const char *b, const char *c);
+extern "C" s32 func_0024A7D8(const char *s, const char *a, const char *b);
+extern "C" const char *func_00248D38(CPushBuf *buf, const char *s);
+extern char *D_002A1940;
+extern char D_002D62A8[];
+struct UserFlagBits { const char *name; s32 v; s32 m8; s32 n; u8 *bits; };
+
+typedef int (CUserFlagMgr::*UserFlagHandler)(int a, u32 id, int b);
+struct CSvmHook {
+    u8 pad0[0x50];
+    CUserFlagMgr *m_owner;    // 0x50
+    UserFlagHandler m_fn;     // 0x54
+    u8 pad5C[0x290C - 0x5C];
+    s32 m290C;                // 0x290C
+    s32 m2910;                // 0x2910
+    void ResetRun() {
+        m290C = 1;
+        m2910 = 0;
+    }
+    void Set(CUserFlagMgr *o, UserFlagHandler f) {
+        m_owner = o;
+        m_fn = f;
+    }
+};
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -271,58 +315,6 @@ CUserFlagMgr::CUserFlagMgr() throw() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F390);
-
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func13F488__12CUserFlagMgri);
-
-void CUserFlagMgr::Func13F648Vprint(const char *tag, const char *fmt, va_list ap) {
-    char buf[0x100];
-    char msg[0x100];
-    strcpy(buf, tag);
-    vsprintf(msg, fmt, ap);
-    strcpy(buf + strlen(buf), msg);
-    if (m_logObj && m_log) {
-        (m_logObj->*m_log)(buf);
-    } else {
-        Func235DE0(buf);
-    }
-}
-
-void CUserFlagMgr::Print13F740(const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    Func13F648Vprint(D_002D6240, fmt, ap);
-    va_end(ap);
-}
-
-void CUserFlagMgr::Print13F7B0(const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    Func13F648Vprint(D_002D6250, fmt, ap);
-    va_end(ap);
-}
-
-void CUserFlagMgr::Print13F820(const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    Func13F648Vprint(D_002D6260, fmt, ap);
-    va_end(ap);
-}
-
-int FindUserFlagName(const char *s) {
-    int i;
-    for (i = 0; D_002A0D40[i].name; i++) {
-        if (!strcmp(D_002A0D40[i].name, s)) return i;
-    }
-    return -1;
-}
-
-int CompareUserFlagNames(const char **a, const char **b) {
-    return strcmp(*a, *b);
-}
-
-int CompareUserFlagNames2(const char **a, const char **b) {
-    return strcmp(*a, *b);
-}
 
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE8);
@@ -419,7 +411,87 @@ INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6218);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6220);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6228);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6230);
-INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6238);
+
+void CUserFlagMgr::Func13F488(int v) throw() {
+    if (v) {
+        m_logObj = 0;
+        memset(&m_log, 0, sizeof(m_log));
+        memset(m_entries, 0, sizeof(m_entries));
+        m_unk61C = -1;
+        m_unk620 = -1;
+        m_unk624 = 0;
+        m_unk628 = 0;
+        ((CSvmHook *)&m_svm)->Set(this, &CUserFlagMgr::Dispatch1411B8);
+        ((CSvmHook *)&m_svm2)->Set(this, &CUserFlagMgr::Dispatch1411B8);
+        m_buf58E0.Reserve(16);
+        m_buf5914.Reserve(16);
+    }
+    m_unk58DC = 0;
+    m_buf58E0.Clear();
+    m_unk58F4 = 0;
+    m_unk58F8 = -1;
+    m_unk58FC = 0;
+    m_unk5900 = -1;
+    m_unk5904 = -1;
+    m_unk5908 = 0;
+    m_unk590C = 1;
+    m_unk5910 = 0;
+    m_buf5914.Clear();
+    ((CSvmHook *)&m_svm)->ResetRun();
+    ((CSvmHook *)&m_svm2)->ResetRun();
+    m_unk5928 = 0;
+}
+
+void CUserFlagMgr::Func13F648Vprint(const char *tag, const char *fmt, va_list ap) {
+    char buf[0x100];
+    char msg[0x100];
+    strcpy(buf, tag);
+    vsprintf(msg, fmt, ap);
+    strcpy(buf + strlen(buf), msg);
+    if (m_logObj && m_log) {
+        (m_logObj->*m_log)(buf);
+    } else {
+        Func235DE0(buf);
+    }
+}
+
+void CUserFlagMgr::Print13F740(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Func13F648Vprint(D_002D6240, fmt, ap);
+    va_end(ap);
+}
+
+void CUserFlagMgr::Print13F7B0(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Func13F648Vprint(D_002D6250, fmt, ap);
+    va_end(ap);
+}
+
+void CUserFlagMgr::Print13F820(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Func13F648Vprint(D_002D6260, fmt, ap);
+    va_end(ap);
+}
+
+int FindUserFlagName(const char *s) {
+    int i;
+    for (i = 0; D_002A0D40[i].name; i++) {
+        if (!strcmp(D_002A0D40[i].name, s)) return i;
+    }
+    return -1;
+}
+
+int CompareUserFlagNames(const char **a, const char **b) {
+    return strcmp(*a, *b);
+}
+
+int CompareUserFlagNames2(const char **a, const char **b) {
+    return strcmp(*a, *b);
+}
+
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6240);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6250);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6260);
@@ -430,6 +502,68 @@ INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6280);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6290);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62A0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62A8);
+#if 0 // DIFF 1 (g1): retail tests idx < 0x180 with a plain beqz, ours gets beqzl (nested ifs, &&, goto and signed/unsigned forms all the same)
+int CUserFlagMgr::Vf13F948(const char *name) {
+    char line[0x100];
+    char path[0x100];
+    char tok[0x100];
+    u32 idx;
+    char *text = 0;
+    int ok = 0;
+    Reset140040();
+    Func2491A8(path, name, D_002A1944, D_002A1948, D_002A194C);
+    if (Func249248(path) && (text = func_0024A4A0(D_002A1950)) != 0) {
+        s32 n = 0, i;
+        const char *s;
+        for (i = 0; D_002A0D40[i].name; i++) {
+        }
+        n = i;
+        char *used = (char *)__builtin_alloca(n);
+        memset(used, 0, n);
+        m_unk61C = -1;
+        m_unk620 = -1;
+        s = text;
+        while (s = func_0024AD10(s, line, 1, 0x100), *s || line[0]) {
+            const char *p;
+            s32 k;
+            if (!line[0]) continue;
+            p = Func24A570(line, tok, D_002D62A0, D_002D62A0);
+            if (strcmp(tok, D_002A1940)) continue;
+            p = func_0024A710(p, &idx, 0, D_002D62A8, D_002D62A0);
+            Func24A570(p, tok, D_002D62A8, D_002D62A0);
+            if (idx >= 0x180) continue;
+            k = FindUserFlagName(tok);
+            if (k < 0) continue;
+            {
+                s32 v = idx;
+                m_entries[v] = (UserFlagEntry *)&D_002A0D40[k];
+                used[k] = 1;
+                if (m_unk61C < 0 || v < m_unk61C) m_unk61C = v;
+                if (m_unk620 < 0 || m_unk620 < v) m_unk620 = v;
+            }
+        }
+        if (m_unk61C < 0) m_unk61C = 0;
+        if (m_unk620 < 0) m_unk620 = 0;
+        for (i = 0; i < n; i++) {
+            if (!used[i]) Func235DE0("*** not attached '%s'\n", D_002A0D40[i].name);
+        }
+        func_00248C30(&m_buf);
+        ok = 1;
+        m_unk628 = Func13FD00(text, 0);
+        m_unk624 = m_buf.Func248CC8(m_unk628 * sizeof(UserFlagBits), 1, 1);
+        Func13FD00(text, (UserFlagBits *)m_unk624);
+        m_unk630 = ParsePairs(text, 0);
+        m_unk62C = m_buf.Func248CC8(m_unk630 * sizeof(UserFlagStrPair), 1, 1);
+        ParsePairs(text, (UserFlagStrPair *)m_unk62C);
+        func_0028A140(m_unk624, m_unk628, 0x14, CompareUserFlagNames);
+        func_0028A140(m_unk62C, m_unk630, 0x8, CompareUserFlagNames2);
+    }
+    func_00248C70(&m_buf);
+    if (text) D_002B91B0(text);
+    Func249348();
+    return ok;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F948);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62C8);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62D0);
@@ -437,9 +571,58 @@ INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62D8);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62E0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62E8);
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013FD00);
+int CUserFlagMgr::Func13FD00(const char *s, UserFlagBits *tbl) {
+    char line[0x100];
+    char tok[0x100];
+    s32 v;
+    s32 n = 0;
+    CPushBuf *buf = &m_buf;
+    while (s = func_0024AD10(s, line, 1, 0x100), *s || line[0]) {
+        const char *p = Func24A570(line, tok, D_002D62A0, D_002D62A0);
+        if (strcmp(tok, D_002A1940)) continue;
+        p = func_0024A710(p, &v, 0, D_002D62A8, D_002D62A0);
+        if (v < m_unk61C) continue;
+        if (m_unk620 < v) continue;
+        if (tbl) {
+            s32 i, len;
+            p = Func24A570(p, tok, D_002D62A8, D_002D62A0);
+            len = func_0024A7D8(p, D_002D62A8, D_002D62A0);
+            tbl[n].v = v;
+            tbl[n].name = func_00248D38(buf, tok);
+            tbl[n].m8 = 0;
+            tbl[n].n = len;
+            tbl[n].bits = buf->Func248CC8(len, 1, 1);
+            for (i = 0; i < len; i++) {
+                u8 b;
+                p = Func24A570(p, tok, D_002D62A8, D_002D62A0);
+                b = tok[0] == '(';
+                if (!b) tbl[n].m8 = i;
+                tbl[n].bits[i] = b;
+            }
+        }
+        n++;
+    }
+    return n;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013FF08);
+int CUserFlagMgr::ParsePairs(const char *s, UserFlagStrPair *out) {
+    char line[0x100];
+    char tok[0x100];
+    s32 n = 0;
+    CPushBuf *buf = &m_buf;
+    while (s = func_0024AD10(s, line, 1, 0x100), *s || line[0]) {
+        const char *p = Func24A570(line, tok, D_002D62A0, D_002D62A0);
+        if (strcmp(tok, D_002A1954)) continue;
+        p = Func24A840(p, tok, 0, D_002D62A0, 0x100);
+        if (*p == '(') continue;
+        if (out) {
+            out[n].key = (char *)func_00248D38(buf, tok);
+            out[n].value = (char *)func_00248D38(buf, p);
+        }
+        n++;
+    }
+    return n;
+}
 
 void CUserFlagMgr::Reset140040() {
     m_unk61C = -1;
@@ -478,7 +661,20 @@ int CUserFlagWriter::Write(const void *src, int n) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func1401B8__15CUserFlagWriteri);
+int CUserFlagWriter::Func1401B8(int v) {
+    s32 n = 0;
+    s32 t = v;
+    s32 i;
+    while (t > 0) {
+        t >>= 7;
+        n++;
+    }
+    n = n < 1 ? 1 : n;
+    for (i = n - 1; i >= 0; i--) {
+        Put(((u32)v >> (i * 7)) & 0x7F | (i > 0 ? 0x80 : 0));
+    }
+    return n;
+}
 
 int IsNumber(const char *s) {
     int n = 0, i;
@@ -501,7 +697,29 @@ int IsFloat(const char *s) {
     return i > 0 && dots == 1 && digits > 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00140358);
+const char *Func140358(const char *s, char *dst) {
+    s32 depth = 0;
+    s = Func24AB90(s, D_002D62A0);
+    while (*s) {
+        switch (*s) {
+        case '(':
+            depth++;
+            break;
+        case ')':
+            if (depth == 0) goto done;
+            depth--;
+            break;
+        case ',':
+            if (depth == 0) goto done;
+            break;
+        }
+        *dst++ = *s++;
+    }
+done:
+    *dst = 0;
+    Func24ABE0(dst, D_002D62A0);
+    return s;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00140440);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6318);
@@ -541,13 +759,98 @@ void *CUserFlagMgr::FindFlag2(const char *name) {
     return bsearch(&key, m_unk62C, m_unk630, 0x8, (int (*)(const void *, const void *))CompareUserFlagNames2);
 }
 
-void CUserFlagMgr::Func140938(int a, const char **v) {
+int CUserFlagMgr::Func140938(CUserFlagWriter *w, const char **v) {
     char buf[0x20];
     *v = Func24A840(*v, buf, D_002A19C8, D_002D62A0, 0x100);
-    Func1409A8(a, buf, v);
+    return Func1409A8(w, buf, v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func1409A8__12CUserFlagMgriPcPPCc);
+#if 0 // DIFF 59, same length (g1): block layout only; retail cross-jumps the 'unknown %s' print of the switch default and the FindFlag2 failure into one stub after the t < 0 check, and hoists the "." address into s0. Needs the 3-arg Func140D40 overload (alias it to the 2-arg symbol when porting)
+int CUserFlagMgr::Func1409A8(CUserFlagWriter *w, const char *tok, const char **s) {
+    s32 n, t;
+    s32 op = FindString((const char **)D_002A19C8, tok);
+    if (op >= 0) {
+        op = D_002A1970[op];
+        switch (op) {
+        case 0x39:
+            t = Func140D40(w, s, 0);
+            if (t < 0) return -1;
+            n = t;
+            if (**s != ')') {
+                Print13F740(D_002D63F0);
+                return -1;
+            }
+            (*s)++;
+            break;
+        case 0x33:
+        case 0x34:
+        case 0x37:
+            if (op == 0x33) op = 0x35;
+            if (op == 0x34) op = 0x36;
+            t = Func140938(w, s);
+            if (t < 0) return -1;
+            n = t;
+            n += w->Func1401B8(op);
+            break;
+        case 0x3A:
+            Print13F740(D_002D63F8);
+            return -1;
+        default:
+            Print13F740(D_002D6400, tok);
+            return -1;
+        }
+    } else if (IsNumber(tok)) {
+        if (**s == '.') {
+            char num[0x20];
+            char frac[0x20];
+            f32 f;
+            strcpy(num, tok);
+            (*s)++;
+            strcpy(num + strlen(num), D_002D6410);
+            *s = Func24A840(*s, frac, 0, D_002D62A0, 0x100);
+            strcpy(num + strlen(num), frac);
+            if (**s == 'f') (*s)++;
+            if (!IsFloat(num)) {
+                Print13F740(D_002D6400, num);
+                return -1;
+            }
+            f = func_00285498(func_002890E8(num));
+            n = w->Func1401B8(0x41);
+            n += w->Func1401B8(*(s32 *)&f);
+        } else {
+            s32 v = atoi(tok);
+            n = w->Func1401B8(0x40);
+            n += w->Func1401B8(v);
+        }
+    } else if (!strcmp(tok, D_002D6418)) {
+        char str[0x100];
+        *s = Func24A570(*s, str, D_002D6418, D_002D6260);
+        if ((*s)[-1] != '"') {
+            Print13F740(D_002D6420);
+            return -1;
+        }
+        n = w->Func1401B8(0x42);
+        n += w->Write(str, strlen(str) + 1);
+    } else {
+        void *e = FindFlag(tok);
+        if (e) {
+            t = func_00140440(this, w, s, e);
+        } else {
+            UserFlagStrPair *p = (UserFlagStrPair *)FindFlag2(tok);
+            if (!p) {
+                Print13F740(D_002D6400, tok);
+                return -1;
+            } else {
+                t = Func1409A8(w, p->value, s);
+            }
+        }
+        if (t < 0) return -1;
+        n = t;
+    }
+    return n;
+}
+#endif
+INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func1409A8__12CUserFlagMgrP15CUserFlagWriterPCcPPCc);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6400);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6410);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6418);
@@ -974,7 +1277,18 @@ int CUserFlagMgr::CheckId(int id, int a2) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_00142B38);
+int CUserFlagMgr::SingleBit(u32 mask, int exact) {
+    s32 i, n;
+    if (!mask) return -1;
+    n = D_002A26E4->Func1091B0(0x27);
+    for (i = 0; i < n; i++) {
+        if (((s32)mask >> i) & 1) {
+            if (exact && (mask & ~(1 << i))) return -1;
+            return i;
+        }
+    }
+    return -1;
+}
 
 int CUserFlagMgr::Clamp142BD8(UserFlagSvmArg *p, int ofs, int v) {
     if (p->lo == 0 && p->hi == 0) return v;

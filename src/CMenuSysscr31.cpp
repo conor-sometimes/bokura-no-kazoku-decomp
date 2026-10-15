@@ -38,6 +38,56 @@ public:
     s32 m_unk7C;              // 0x7C
     s32 m_unk80;              // 0x80
 };
+
+u8 *Func237570(s32 v);
+void Func237A88(void *p, s32 v);
+void *Func237C30(void *p);
+void Func238158(void *p, s32 v);
+void Func225240(s32 v);
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+};
+class CMenuRecordWin {
+public:
+    void Func1A39A8(f32 *v, s32 *n, s32 k);
+};
+class CMenuMgrSub1B4768 {
+public:
+    int GetEntry0(s32 i);
+    void SetUnk20(f32 x, f32 y, f32 z);
+    void SetUnk30(f32 a, f32 b, f32 c, f32 d);
+    void SetUnk40(f32 a, f32 b, f32 c, f32 d);
+    void SetUnk50(s32 v);
+};
+class CMenuMgr {
+public:
+    int Func1B4ED0(s32 e);
+};
+class CMenuMgrSub1B5BF8 {
+public:
+    void Reset();
+    void SetUnk30(s32 v);
+    void SetUnk10(f32 a, f32 b, f32 c);
+    void SetUnk1C(f32 v);
+    void SetUnk0(f32 a, f32 b);
+};
+extern CMenuMgrSub1B4768 *D_002A5530;
+extern CMenuMgrSub1B5BF8 *D_002A5534;
+extern "C" int func_001B50B0(CMenuMgrSub1B4768 *m, s32 v);
+extern "C" int func_001B5E18(CMenuMgrSub1B5BF8 *p);
+extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);
+extern "C" int func_0018A1F0(void *p);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+#include "CFlagWork.h"
+struct CS31Win {
+    u8 pad0[0x34];
+    f32 m34;                  // 0x34
+};
 // @decl-end
 
 CMenuSysscr31::CMenuSysscr31() {
@@ -60,7 +110,40 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF110);
 INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF118);
 INCLUDE_RODATA("asm/nonmatchings/CMenuSysscr31", D_002DF138);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr31", Draw__13CMenuSysscr31);
+s32 CMenuSysscr31::Draw() {
+    if ((u32)(m_state - 3) < 2) {
+        f32 one = 1.0f, zero = 0.0f;
+        u8 *p = Func237570(0x60);
+        f32 v[2];
+        char buf[0x100];
+        Func237A88(p, 6);
+        Func238158(Func237C30(p + 0x50), 1);
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(m_cmd->Draw());
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(func_0018A1F0(m_unk64));
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_unk6C)->Func1A4298());
+        ((CMenuRecordWin *)m_unk6C)->Func1A39A8(v, (s32 *)&v[1], 9);
+        D_002A5530->SetUnk30(one, one, zero, zero);
+        D_002A5530->SetUnk40(one, one, one, ((CS31Win *)m_unk6C)->m34);
+        D_002A5530->SetUnk20(v[0], v[1], zero);
+        D_002A5530->SetUnk50(1);
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x18)));
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B50B0(D_002A5530, 0x18));
+        ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5E18(D_002A5534));
+        D_002A5534->Reset();
+        D_002A5534->SetUnk30(1);
+        D_002A5534->SetUnk10(0.78f, 0.78f, 0.78f);
+        D_002A5534->SetUnk1C(((CS31Win *)m_unk6C)->m34);
+        D_002A5534->SetUnk0(one, one);
+        sprintf(buf, "%d", D_002A26E4->Func1091B0(0x1C));
+        ((CMenuRecordWin *)m_unk6C)->Func1A39A8(v, (s32 *)&v[1], 10);
+        ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B5FE0(D_002A5534, buf, v[0], v[1]));
+        Func225088();
+        Func225240((s32)p);
+        return Func2250C0();
+    }
+    Func225088();
+    return Func2250C0();
+}
 
 CMenuSysscr27 *CMenuSysscr27::Create() {
     CMenuSysscr27 *p = (CMenuSysscr27 *)operator new(0x78);

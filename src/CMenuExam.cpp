@@ -150,6 +150,8 @@ public:
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 
 extern char D_002DAEB8[];
+
+struct CGsRect { s32 x0, y0, x1, y1; };
 // @decl-end
 
 CMenuExam::CMenuExam() {
@@ -360,7 +362,12 @@ void Func186690(s32 *out, f32 *in) {
     out[1] = (s32)(in[1] * 16.0f) + 0x7200;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_001866D0);
+void Func1866D0(CGsRect *r, f32 x, f32 y, f32 w, f32 h) {
+    r->x0 = (s32)(x * 16.0f) + 0x6C00;
+    r->y0 = (s32)(y * 16.0f) + 0x7200;
+    r->x1 = r->x0 + (s32)(w * 16.0f);
+    r->y1 = r->y0 + (s32)(h * 16.0f);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_00186730);
 

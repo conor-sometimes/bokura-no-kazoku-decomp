@@ -15,6 +15,11 @@ public:
 #include "CFlagWork.h"
 extern CFlagWork *D_002A4B60;
 extern "C" void func_00196B50(void *p);
+// A selection rectangle and its colour (two of them at 0x4F0).
+struct CCsRect {
+    f32 x, y, w, h;
+    f32 r, g, b, a;
+};
 // Vtable 0x2C1A60: Update (key method, 0x1986A8) and Draw.
 class CCommandSelect : public CCommandBase {
 public:
@@ -22,11 +27,18 @@ public:
     virtual s32 Update();
     virtual s32 Draw();
     void Func199108(s32 k, f32 x, f32 y, f32 w, f32 h);
+    CCsRect *Rect(s32 k) {
+        u32 o = k * 32 + 0x4F0;
+        return (CCsRect *)((u8 *)this + o);
+    }
     void Func199150(f32 *x, f32 *y, f32 *w, f32 *h, s32 n);
     void Func1992E0(s32 a, s32 b);
     void Func1993A0(s32 k, s32 n);
+    void Func198FA0(s32 k);
 
-    u8 pad4EC[0x54];
+    u8 pad4EC[0x4];
+    CCsRect m_rect[2];        // 0x4F0
+    u8 pad530[0x10];
 };
 
 // The command list's records as CCommandSelect's code sees them (CCommandBaseRec, 0x48 bytes).
@@ -60,6 +72,81 @@ public:
     void Func1A39A8(f32 *v, s32 *n, s32 k);
     void Func1A3B58(f32 *v, s32 *n, s32 k);
 };
+
+extern CFlagWork *D_002A5358;
+extern "C" void func_00196938(void *p, s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+class CSePlayer {
+public:
+    virtual ~CSePlayer();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual void F7();
+    virtual void F8();
+    virtual void F9();
+    virtual void F10();
+    virtual void F11();
+    virtual void F12();
+    virtual void F13();
+    virtual void Play(s32 id);
+};
+extern CSePlayer *D_002A5468;
+extern char D_002DD9E8[];
+int Func235DE0(const char *fmt, ...);
+
+u8 *Func237570(s32 v);
+void Func237A88(void *p, s32 v);
+void *Func237C30(void *p);
+void Func238158(void *p, s32 v);
+void Func225088();
+void Func225240(s32 v);
+s32 Func2250C0();
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+};
+class CMenuMgrSub1B4768 {
+public:
+    int GetEntry0(s32 i);
+    void Reset1B4D28();
+    void SetUnk20(f32 x, f32 y, f32 z);
+    void SetUnk4C(f32 v);
+};
+class CMenuMgr {
+public:
+    int Func1B4ED0(s32 e);
+};
+class CMenuMgrSub1B6418 {
+public:
+    void SetUnk4C(f32 v);
+};
+extern CMenuMgrSub1B4768 *D_002A5530;
+extern void *D_002A5534;
+extern CMenuMgrSub1B6418 *D_002A5538;
+extern void *D_002A3AF8;
+extern s32 D_002A5390[];
+extern "C" int func_001B50B0(CMenuMgrSub1B4768 *m, s32 v);
+extern "C" int func_001B5E18(void *p);
+extern "C" int func_001B66E8(void *p);
+extern "C" int func_00197950(CCommandSelect *c);
+extern "C" int func_001972E8(CCommandSelect *c);
+extern "C" int func_00197AE0(CCommandSelect *c);
+extern "C" int func_001974F8(CCommandSelect *c);
+extern "C" int func_001976A0(CCommandSelect *c);
+extern "C" int func_00197FA8(CCommandSelect *c);
+// Named by another lane as taking no arguments; retail passes D_002A3AF8.
+extern "C" int MemorialMenuFunc17B4A0__Fv(void *p);
+struct CCsWin {
+    u8 pad0[0x34];
+    f32 m34;                  // 0x34
+};
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD928);
@@ -72,7 +159,38 @@ CCommandSelect::CCommandSelect() {
 
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", Update__14CCommandSelect);
 
-INCLUDE_ASM("asm/nonmatchings/CCommandSelect", Draw__14CCommandSelect);
+s32 CCommandSelect::Draw() {
+    u8 *p;
+    f32 v[2];
+    if (!m_win) {
+        Func225088();
+        return Func2250C0();
+    }
+    p = Func237570(0x60);
+    Func237A88(p, 6);
+    Func238158(Func237C30(p + 0x50), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_win)->Func1A4298());
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x2F)));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_00197950(this));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x21)));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001972E8(this));
+    D_002A5530->Reset1B4D28();
+    ((CMenuRecordWin *)m_win)->Func1A39A8(v, (s32 *)&v[1], 0x44);
+    D_002A5530->SetUnk20(v[0], v[1], 0.0f);
+    D_002A5530->SetUnk4C(((CCsWin *)m_win)->m34);
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B50B0(D_002A5530, D_002A5390[((ICurFlag *)D_002A26E4)->Vf2991B0()]));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_00197AE0(this));
+    if (NumRows() >= 2) ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001974F8(this));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(MemorialMenuFunc17B4A0__Fv(D_002A3AF8));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001976A0(this));
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B5E18(D_002A5534));
+    if (NumRows() >= 2) ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00197FA8(this));
+    D_002A5538->SetUnk4C(((CCsWin *)m_win)->m34);
+    ((CUnk237E90 *)(p + 0x40))->Func237E90(func_001B66E8(D_002A5538));
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
 
 void CCommandRecs::ClearRec(s32 i) {
     memset(&m_recs[i], 0, sizeof(CCmdRec));
@@ -96,12 +214,37 @@ void CCommandRecs::Remove(s32 k) {
 #endif
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_00198E40);
 
-INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_00198FA0);
+void CCommandSelect::Func198FA0(s32 k) {
+    s32 a, b, c, d, e;
+    if (k < 0 || D_002A5358->Func1091B0(0x200) - 1 < k) {
+        return (void)Func235DE0(D_002DD9E8, k);
+    }
+    a = D_002A5358->Func1091B0(k + 0x201);
+    b = D_002A5358->Func1091B0(k + 0x211);
+    c = D_002A5358->Func1091B0(k + 0x221);
+    d = D_002A5358->Func1091B0(k + 0x231);
+    e = D_002A5358->Func1091B0(k + 0x1EF);
+    func_00196938(this, a, b, c, d, 1, e != 0);
+    D_002A5468->Play(8);
+}
 
 void CCommandSelectSub1990E0::Clear() {
     memset(m_data, 0, sizeof(m_data));
 }
 
+#if 0 // 19 vs 18 insns (g1): the rect half matches with the Rect(k) helper and the four m_rect[k].colour stores give retail's copy chain, but ours folds 0x500 into the index (k*32 + 0x500) where retail keeps this + k*32 with displacement 0x500
+void CCommandSelect::Func199108(s32 k, f32 x, f32 y, f32 w, f32 h) {
+    CCsRect *q = Rect(k);
+    q->h = h;
+    q->x = x;
+    q->y = y;
+    q->w = w;
+    m_rect[k].r = 1.0f;
+    m_rect[k].g = 1.0f;
+    m_rect[k].b = 1.0f;
+    m_rect[k].a = 1.0f;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", Func199108__14CCommandSelectiffff);
 
 void CCommandSelect::Func199150(f32 *x, f32 *y, f32 *w, f32 *h, s32 n) {

@@ -25,7 +25,7 @@ public:
     virtual s32 V13();
     virtual s32 V14();
     virtual s32 V15();
-    virtual s32 V16();
+    virtual s32 V16(char *out, const char *src);
     virtual s32 RunScript(const char *script, int v);
     virtual s32 V18(s32 a, s32 b, s32 c, s32 d);
     virtual s32 Dispatch1411B8(int a, unsigned int b, int c);

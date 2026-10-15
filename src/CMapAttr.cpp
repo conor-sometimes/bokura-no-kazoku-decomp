@@ -3,21 +3,26 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 class CMapAttr {
 public:
+    CMapAttr();
+    virtual ~CMapAttr();
     void Func1182B8();
     void CallFunc1182B8();
     s32 Load119230(const char *src);
     s32 Save118448(char *out);
+    int SaveFile(const char *path);
+    int LoadFile(const char *path);
 
     s32 m_flags;              // 0x0
     u8 pad4[0xC];
     f32 m10, m14, m18;        // 0x10
-    u8 pad1C[0x4];
+    f32 m1C;                  // 0x1C
     f32 m20, m24, m28;        // 0x20
-    u8 pad2C[0x4];
+    f32 m2C;                  // 0x2C
     f32 m30, m34;             // 0x30
-    u8 pad38[0x8];
+    f32 m38, m3C;             // 0x38
     f32 m40;                  // 0x40
-    u8 pad44[0xC];
+    f32 m44;                  // 0x44
+    s32 m48, m4C;             // 0x48
     s32 m50[3];               // 0x50
     u8 pad5C[0x4];
     f32 m60[3][4];            // 0x60
@@ -27,12 +32,12 @@ public:
     s32 mE8;                  // 0xE8
     u8 padEC[0x4];
     f32 mF0, mF4;             // 0xF0
-    u8 padF8[0x8];
+    s32 mF8, mFC;             // 0xF8
     s32 m100[4];              // 0x100
     s32 m110[3];              // 0x110
-    u8 pad11C[0x4];
+    s32 m11C;                 // 0x11C
     s32 m120[3];              // 0x120
-    u8 pad12C[0x4];
+    s32 m12C;                 // 0x12C
     s32 m130[4];              // 0x130
     s32 m140[4];              // 0x140
     s32 m150;                 // 0x150
@@ -95,13 +100,93 @@ extern "C" s32 func_002943A8(void *arr);
 extern "C" CMapAttrLight *func_002943B0(void *arr, s32 i);
 extern "C" s32 func_002943C8(void *arr);
 extern "C" CVec4 *func_002943D0(void *arr, s32 i);
+extern "C" void func_00294308(void *arr);
+
+extern char D_002D3AD8[], D_002D3B00[];
+extern "C" void *func_0024A3D8(s32 n);
+extern "C" s32 func_002301B0(const char *path, char *buf, s32 n);
+extern void (*D_002B91B0)(void *p);
+void *Func24A4C0(const char *name);
+int Func235DE0(const char *fmt, ...);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapAttr", func_00118210);
+CMapAttr::CMapAttr() {
+    func_00294308(mD0);
+    Func1182B8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapAttr", func_00118248);
 
-INCLUDE_ASM("asm/nonmatchings/CMapAttr", Func1182B8__8CMapAttr);
+void CMapAttr::Func1182B8() {
+    s32 i;
+    m_flags = 0;
+    m10 = 0.0f;
+    m14 = 0.0f;
+    m18 = -100.0f;
+    m1C = 1.0f;
+    m20 = 0.0f;
+    m24 = 0.0f;
+    m28 = 0.0f;
+    m2C = 1.0f;
+    m30 = 0.0f;
+    m34 = 0.0f;
+    m38 = 0.0f;
+    m3C = 0.0f;
+    m40 = 45.0f;
+    m44 = 1.0f;
+    m48 = 0;
+    m4C = 0;
+    for (i = 0; i < 3; i++) {
+        m60[i][0] = 0.0f;
+        m60[i][1] = 0.0f;
+        m60[i][2] = 0.0f;
+        m60[i][3] = 0.0f;
+        m90[i][0] = 0.0f;
+        m90[i][1] = 0.0f;
+        m90[i][2] = 0.0f;
+        m90[i][3] = 0.0f;
+    }
+    m_flags |= 1;
+    m60[0][0] = 0.5f;
+    m60[0][1] = 0.5f;
+    m60[0][2] = 0.0f;
+    m60[0][3] = 0.0f;
+    m90[0][0] = 1.0f;
+    m90[0][1] = 1.0f;
+    m90[0][2] = 1.0f;
+    m90[0][3] = 0.0f;
+    mC0[0] = 0.25f;
+    mC0[1] = 0.25f;
+    mC0[2] = 0.25f;
+    mC0[3] = 1.0f;
+    mE8 = 0;
+    mF0 = 1.5f;
+    mF4 = 1.5f;
+    mF8 = 0;
+    mFC = 0;
+    m100[0] = 0;
+    m100[1] = 0;
+    m100[2] = 0;
+    m100[3] = 0x80;
+    m110[0] = 0x80;
+    m110[1] = 0x80;
+    m110[2] = 0x80;
+    m11C = 0x80;
+    m120[0] = 0x80;
+    m120[1] = 0x80;
+    m120[2] = 0x80;
+    m12C = 0x80;
+    m130[0] = 0;
+    m130[1] = 0;
+    m130[2] = 0;
+    m130[3] = 0x80;
+    m140[0] = 0;
+    m140[1] = 0;
+    m140[2] = 0;
+    m140[3] = 0x80;
+    func_00294388(mD0, 0);
+    m150 = -1;
+}
 
 s32 CMapAttr::Save118448(char *out) {
     char key[0x100];
@@ -353,9 +438,30 @@ s32 CMapAttr::Load119230(const char *src) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapAttr", func_00119B08);
+int CMapAttr::SaveFile(const char *path) {
+    char *buf = 0;
+    s32 n = Save118448(0);
+    if (n <= 0 || (buf = (char *)func_0024A3D8(n)) == 0 || Save118448(buf) != n || func_002301B0(path, buf, n) <= 0) {
+        if (buf) D_002B91B0(buf);
+        Func235DE0(D_002D3AD8, path);
+        return 0;
+    }
+    D_002B91B0(buf);
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapAttr", func_00119BE0);
+int CMapAttr::LoadFile(const char *path) {
+    char *buf;
+    if ((buf = (char *)Func24A4C0(path)) == 0 || !Load119230(buf)) {
+        if (buf) {
+            D_002B91B0(buf);
+        }
+        Func235DE0(D_002D3B00, path);
+        return 0;
+    }
+    D_002B91B0(buf);
+    return 1;
+}
 
 void CMapAttr::CallFunc1182B8() {
     Func1182B8();

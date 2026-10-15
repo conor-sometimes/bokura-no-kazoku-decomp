@@ -29,10 +29,12 @@ class CMapEffParam {
 public:
     u8 pad0[0x4];
     u32 m_unk4;               // 0x4
-    u8 pad8[0x3C];
+    u8 pad8[0x8];
+    char m_name[0x34];        // 0x10
     s32 m_unk44;              // 0x44
     s32 m_unk48;              // 0x48
-    u8 pad4C[0xC8];
+    u8 pad4C[0xC4];
+    s32 m_unk110;             // 0x110
     f32 m_unk114;             // 0x114
     f32 m_unk118;             // 0x118
     u8 pad11C[0x10];
@@ -85,7 +87,7 @@ public:
     void Func120298(CMapEffTarget *t);
     void Func11F5D8();
     void Func11F2A8();
-    void Func11F390(f32 t);
+    int Func11F390(f32 t);
     void Func11F0F8();
     void Func11F660();
     void Func11F9C0();
@@ -100,7 +102,9 @@ public:
     f32 m_unk2C;              // 0x2C
     f32 m_unk30;              // 0x30
     f32 m_unk34;              // 0x34
-    u8 pad38[0xC];
+    f32 m_unk38;              // 0x38
+    f32 m_unk3C;              // 0x3C
+    u8 pad40[0x4];
     CMapEffNode *m_active;    // 0x44
     CMapEffNode *m_free;      // 0x48
 };
@@ -128,7 +132,9 @@ struct CMapEffArea {
     s32 m_unk128;             // 0x128
 };
 struct CMapEffDrop {
-    u8 pad0[0x20];
+    f32 x, y, z, w;           // 0x0
+    s32 m10;                  // 0x10
+    u8 pad14[0xC];
 };
 struct CMapEffFlake {
     CMapEffFlake *m_next;     // 0x0
@@ -172,7 +178,7 @@ public:
     void FreeAll();
     void Func122B38();
     void Func122808();
-    void Func1228F0(f32 t);
+    int Func1228F0(f32 t);
     void Func122660();
     void Func122BC0();
 
@@ -253,6 +259,7 @@ public:
     CMapEffAquariumWork(CMapEffAquariumSub *sub);
     virtual ~CMapEffAquariumWork();
     void Func1236C8(s32 i);
+    void CirclePos(CVec4 *out, CVec4 *c, f32 ang, f32 r);
     void Func1247F8();
     void Func123590();
     void Func1239E8(s32 i);
@@ -335,7 +342,7 @@ public:
     CMapEffBreathNode *m_freeNodes; // 0xD0
     u8 padD4[0xC];
     CMapEffBreathPart m_parts[256]; // 0xE0
-    s32 m_unk40E0;            // 0x40E0
+    CMapEffBreathPart *m_unk40E0; // 0x40E0 (active list)
     CMapEffBreathPart *m_freeParts; // 0x40E4
 };
 
@@ -528,6 +535,55 @@ inline s32 RandInt(CMapEffRand *r, s32 lo, s32 hi) {
     if (lo == hi) return lo;
     return r->Next32() % (hi - lo + 1) + lo;
 }
+
+extern f32 D_002A6800[];
+inline s32 FtoI15(f32 f) {
+    s32 r;
+    asm volatile("mfc1 %0, %1\n\tqmtc2.ni %0, $vf2\n\tvftoi15.x $vf2, $vf2\n\tqmfc2.ni %0, $vf2" : "=r"(r) : "f"(f));
+    return r;
+}
+
+inline f32 TblSin(f32 a) { return D_002A6800[(FtoI15(a) >> 1) & 0x3FFF]; }
+inline f32 TblCos(f32 a) { return D_002A6800[(((FtoI15(a) >> 1) & 0x3FFF) + 0x1000) & 0x3FFF]; }
+
+s32 Func24E0F0(const char *a, s32 b, s32 c);
+struct CMapEffSnowNode {
+    CMapEffSnowNode *m_next;  // 0x0
+    s32 m4;                   // 0x4
+    u8 pad8[0x8];
+    CVec4 m10;                // 0x10
+    f32 m20;                  // 0x20
+    f32 m24;                  // 0x24
+    s32 m28;                  // 0x28
+};
+
+inline f32 Rand01(CMapEffRand *r) { return (f32)(s32)(r->Next32() & 0xFFFF) / 65535.0f; }
+extern "C" void func_00270A98(CVec4 *d, const CVec4 *a, const CVec4 *b);
+extern "C" void func_00270B00(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 VuSqrt(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8");
+    return r;
+}
+struct CMapEffLeafNode {
+    CMapEffLeafNode *m_next;  // 0x0
+    u8 pad4[0xC];
+    CVec4 m10;                // 0x10
+    u8 pad20[0x14];
+    f32 m34;                  // 0x34
+};
+
+struct CMapEffLeafNode2 {
+    CMapEffLeafNode2 *m_next; // 0x0
+    s32 m4;                   // 0x4
+    u8 pad8[0x8];
+    CVec4 m10;                // 0x10
+    u8 pad20[0x10];
+    s32 m30;                  // 0x30
+    f32 m34;                  // 0x34
+    f32 m38;                  // 0x38
+    s32 m3C;                  // 0x3C
+};
 // @decl-end
 
 CMapEffObjRes::CMapEffObjRes() {
@@ -749,7 +805,35 @@ void CMapEffLeafWork::FreeAll() {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F2A8__15CMapEffLeafWork);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F390__15CMapEffLeafWorkf);
+int CMapEffLeafWork::Func11F390(f32 t) {
+    CVec4 p;
+    CMapEffRand *r;
+    CMapEffLeafNode2 *n;
+    f32 tz;
+    f32 k;
+    if (!m_free) return 0;
+    r = (CMapEffRand *)pad8;
+    tz = Rand01(r);
+    p.y = -(m_param->m_unk114 + m_param->m_unk118) * (1.0f - t);
+    p.x = r->Range(m_rect.x0, m_rect.x1);
+    p.z = m_rect.z0 + (m_rect.z1 - m_rect.z0) * (tz * tz);
+    p.w = 1.0f;
+    if (!Func24E0F0(m_param->m_name, m_param->m_unk110, (s32)&p)) return 0;
+    k = -p.y / m_unk20;
+    p.x += -TblSin(m_unk24) * m_unk28 * k * t;
+    p.z += -TblCos(m_unk24) * m_unk28 * k * t;
+    n = (CMapEffLeafNode2 *)m_free;
+    m_free = (CMapEffNode *)n->m_next;
+    n->m4 = 0;
+    Func270C50(&n->m10, &p);
+    n->m30 = 0;
+    n->m38 = 1.0f;
+    n->m34 = m_unk28;
+    n->m3C = 0;
+    n->m_next = (CMapEffLeafNode2 *)m_active;
+    m_active = (CMapEffNode *)n;
+    return 1;
+}
 
 void CMapEffLeafWork::Func11F5D8() {
     while (m_unk2C < m_unk30 && m_free) {
@@ -759,7 +843,50 @@ void CMapEffLeafWork::Func11F5D8() {
     m_unk30 += 1.0f / 59.94f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F660__15CMapEffLeafWork);
+void CMapEffLeafWork::Func11F660() {
+    m_unk3C += m_unk38;
+    if (1.0f < m_unk3C) {
+        m_unk3C = 0.0f;
+        m_unk38 = 1.0f / (f32)(s32)(((CMapEffRand *)pad8)->Next32() % 181 + 120);
+    }
+    if (0.0f < m_unk3C) {
+        CVec4 a;
+        CVec4 b;
+        CVec4 c;
+        CVec4 d;
+        f32 r;
+        f32 ang;
+        f32 hi;
+        f32 lo;
+        f32 r2;
+        CMapEffLeafNode *n;
+        a.x = m_rect.x0;
+        a.y = 0.0f;
+        a.z = m_rect.z0;
+        a.w = 1.0f;
+        b.x = (m_rect.x0 + m_rect.x1) * 0.5f;
+        b.y = 0.0f;
+        b.z = (m_rect.z0 + m_rect.z1) * 0.5f;
+        b.w = 1.0f;
+        func_00270A98(&c, &b, &a);
+        func_00270B00(&d, &c, &c);
+        r = VuSqrt(d.x + d.y + d.z);
+        ang = m_unk24 + 0.25f;
+        b.x = -TblSin(ang) * r;
+        b.z = -TblCos(ang) * r;
+        hi = m_unk3C;
+        lo = m_unk3C - m_unk38;
+        r2 = r + r;
+        for (n = (CMapEffLeafNode *)m_active; n; n = n->m_next) {
+            f32 t;
+            func_00270A98(&c, &n->m10, &b);
+            func_00270B00(&d, &c, &c);
+            t = VuSqrt(d.x + d.y + d.z) / r2;
+            if (t <= lo || hi < t) continue;
+            n->m34 += m_unk28 * ((CMapEffRand *)pad8)->Range(-0.5f, 1.2f);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F9C0__15CMapEffLeafWork);
 
@@ -787,7 +914,26 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001215B0);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121788);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121810);
+void CMapEffRainWork::Func121810(CMapEffDrop *d, s32 top) {
+    CVec4 p;
+    CMapEffRand *r = (CMapEffRand *)&m_unk8;
+    f32 t;
+    f32 dy;
+    p.x = r->Range(m_rect.x0, m_rect.x1);
+    if (top) {
+        f32 h = -m_param->m_unk114;
+        p.y = r->Range(h + h - 50.0f, h);
+    } else {
+        p.y = -m_param->m_unk114;
+    }
+    t = (f32)(s32)(r->Next32() & 0xFFFF) / 65535.0f;
+    p.z = m_rect.z0 + (m_rect.z1 - m_rect.z0) * (t * t);
+    d->m10 = Func24E0F0(m_param->m_name, m_param->m_unk110, (s32)&p);
+    dy = (m_param->m_unk118 - p.y) / 5.0f;
+    d->x = p.x - TblSin(m_unk20) * m_unk24 * dy;
+    d->y = p.y;
+    d->z = p.z - TblCos(m_unk20) * m_unk24 * dy;
+}
 
 void CMapEffRainWork::Spawn(const CVec4 *v) {
     CMapEffNode *p = m_free;
@@ -812,7 +958,18 @@ void CMapEffRainWork::Func121AD0() {
     Step();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func121C18__15CMapEffRainWork);
+void CMapEffRainWork::Func121C18() {
+    s32 i;
+    for (i = 0; i < m_unk2C; i++) {
+        CMapEffDrop *d = &m_drops[i];
+        f32 y = d->y;
+        d->x += TblSin(m_unk20) * m_unk24;
+        d->y = y + 5.0f;
+        d->z += TblCos(m_unk20) * m_unk24;
+        if (y < m_param->m_unk118 && m_param->m_unk118 <= d->y && d->m10) Spawn((CVec4 *)d);
+        if (m_param->m_unk118 + 50.0f < d->y) Func121810(d, 0);
+    }
+}
 
 void CMapEffRainWork::Step() {
     CMapEffNode **pp = &m_active;
@@ -866,7 +1023,38 @@ void CMapEffSnowWork::FreeAll() {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122808__15CMapEffSnowWork);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1228F0__15CMapEffSnowWorkf);
+int CMapEffSnowWork::Func1228F0(f32 t) {
+    CVec4 p;
+    CMapEffRand *r;
+    CMapEffSnowNode *n;
+    f32 tz;
+    f32 k;
+    if (!m_free) return 0;
+    r = (CMapEffRand *)&m_unk8;
+    tz = Rand01(r);
+    p.x = r->Range(m_rect.x0, m_rect.x1);
+    p.y = -m_param->m_unk114 * (1.0f - t);
+    p.z = m_rect.z0 + (m_rect.z1 - m_rect.z0) * (tz * tz);
+    p.w = 1.0f;
+    if (!Func24E0F0((const char *)m_param->m_pts, m_param->m_count, (s32)&p)) return 0;
+    k = -p.y / m_unk20;
+    p.x += -TblSin(m_unk28) * m_unk24 * k * t;
+    p.z += -TblCos(m_unk28) * m_unk24 * k * t;
+    n = (CMapEffSnowNode *)m_free;
+    m_free = (CMapEffNode *)n->m_next;
+    n->m4 = 0;
+    Func270C50(&n->m10, &p);
+    n->m20 = 0.0f;
+    if (t == n->m20) {
+        n->m24 = n->m20;
+    } else {
+        n->m24 = 1.0f;
+    }
+    n->m28 = 0;
+    n->m_next = (CMapEffSnowNode *)m_active;
+    m_active = (CMapEffNode *)n;
+    return 1;
+}
 
 void CMapEffSnowWork::Func122B38() {
     while (m_unk30 < m_unk2C && m_free) {
@@ -876,7 +1064,37 @@ void CMapEffSnowWork::Func122B38() {
     m_unk2C += 1.0f / 59.94f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122BC0__15CMapEffSnowWork);
+void CMapEffSnowWork::Func122BC0() {
+    CMapEffSnowNode **pp = (CMapEffSnowNode **)&m_active;
+    CMapEffSnowNode *n;
+    while ((n = *pp) != 0) {
+        switch (n->m4) {
+        case 0:
+            n->m24 += 0.011111111f;
+            n->m24 = n->m24 < 1.0f ? n->m24 : 1.0f;
+            n->m10.x += TblSin(m_unk28) * m_unk24;
+            n->m10.y += m_unk20;
+            n->m10.z += TblCos(m_unk28) * m_unk24;
+            if (n->m10.y < m_param->m_unk118) break;
+            n->m4++;
+        case 1:
+            n->m24 -= 0.0055555555f;
+            break;
+        }
+        if (n->m28) {
+            n->m24 -= 0.016666666f;
+        } else if (0.0f < n->m10.y && !Func24E0F0((const char *)m_param->m_pts, m_param->m_count, (s32)&n->m10)) {
+            n->m28 = 1;
+        }
+        if (n->m24 <= 0.0f) {
+            *pp = n->m_next;
+            n->m_next = (CMapEffSnowNode *)m_free;
+            m_free = (CMapEffNode *)n;
+        } else {
+            pp = &n->m_next;
+        }
+    }
+}
 
 void CMapEffSnowWork::CallFunc122DD8(s32 unused, s32 v) {
     Func122DD8(v);
@@ -903,7 +1121,11 @@ void CMapEffAquariumWork::Func123590() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001235E8);
+void CMapEffAquariumWork::CirclePos(CVec4 *out, CVec4 *c, f32 ang, f32 r) {
+    out->x = c->x + r * D_002A6800[(FtoI15(ang) >> 1) & 0x3FFF];
+    out->z = c->z + r * D_002A6800[(((FtoI15(ang) >> 1) & 0x3FFF) + 0x1000) & 0x3FFF];
+    out->w = 1.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123670);
 
@@ -1120,7 +1342,26 @@ void CMapEffBreathWork::Func125C38() {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125DB8__17CMapEffBreathWorkP17CMapEffBreathNodei);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func126068__17CMapEffBreathWork);
+void CMapEffBreathWork::Func126068() {
+    CMapEffBreathPart **pp = &m_unk40E0;
+    CMapEffBreathPart *p;
+    while ((p = *pp) != 0) {
+        f32 ang = p->m20;
+        f32 amp = p->m24;
+        p->m10.x -= TblSin(p->m20) * p->m24;
+        p->m10.y -= 0.016666666f;
+        p->m10.z -= TblCos(p->m20) * p->m24;
+        p->m24 -= p->m24 / 5.0f;
+        p->m30 -= p->m34;
+        if (p->m30 <= 0.0f) {
+            *pp = p->m_next;
+            p->m_next = m_freeParts;
+            m_freeParts = p;
+        } else {
+            pp = &p->m_next;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00126170);
 

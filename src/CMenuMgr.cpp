@@ -128,8 +128,20 @@ public:
     virtual void Slot20();
 };
 
+// Pad repeat state (inline constructor).
+struct CMenuMgrKey {
+    CMenuMgrKey() {
+        m_unk4 = -1;
+        m_unk2 = 0;
+        m_unk0 = 0;
+    }
+    s16 m_unk0;               // 0x0
+    s16 m_unk2;               // 0x2
+    s32 m_unk4;               // 0x4
+};
 class CMenuMgr : public IMenuMgr {
 public:
+    CMenuMgr();
     virtual ~CMenuMgr();
     virtual s32 GetPad(s32 *a, s32 *b, s32 *c);
     virtual void UpdateProc();
@@ -150,7 +162,8 @@ public:
     void Start1B4418(u32 id, s32 arg);
     int Load1B4050(const char *dir);
 
-    u8 pad4[0x48];
+    CMenuMgrKey m_key;        // 0x4
+    u8 padC[0x40];
     s32 m_unk4C;              // 0x4C
     u64 m_unk50;              // 0x50
     u64 m_unk58;              // 0x58
@@ -295,6 +308,7 @@ public:
     void SetUnk40(f32 x, f32 y, f32 z, f32 w);
     void SetUnk4C(f32 v);
     void GetDefaultSize(f32 *w, f32 *h);
+    void Update1B6570();
 
     f32 m_unk0;               // 0x0
     f32 m_unk4;               // 0x4
@@ -546,9 +560,51 @@ extern char D_002E0610[], D_002E0618[], D_002E0630[], D_002E0640[], D_002E0658[]
 extern u8 D_002A55C0[];
 int BcdToInt(int v);
 extern char D_002E04C0[], D_002E04E8[];
+
+extern f32 D_002A6800[];
+extern s32 D_002A55A0[];
+// VU0 float to 1.15 fixed point (sine-table index), as in CSwingBoneObj.
+inline s32 Ftoi15(f32 x) {
+    s32 i;
+    asm volatile(
+        "mfc1 %0, %1\n"
+        "qmtc2.ni %0, $vf2\n"
+        "vftoi15.x $vf2, $vf2\n"
+        "qmfc2.ni %0, $vf2\n"
+        : "=r"(i) : "f"(x));
+    return i;
+}
+extern CMenuMgr *D_002A5468;
+extern CFlagWork *D_002A5358;
+extern CFlagWork *D_002A4638[6];
+extern char D_002A4B68[], D_002A4650[], D_002A43B8[];
+void *NewStatusWinSub1A0A10();
+void *NewMemorialSub17B3A0();
+void *NewStatusSub19B8C8();
+void *NewChrBodyWin();
+int GetFontTable(u32 i);
+extern "C" void *func_0025C230(void *p);
+extern "C" void func_0025C438(s32 a, void *b);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", __8CMenuMgr);
+CMenuMgr::CMenuMgr() {
+    func_0025C230(&m_snd);
+    D_002A5468 = this;
+    m_proc = 0;
+    NewStatusWinSub1A0A10();
+    CMenuMgrSub1B6418::Create();
+    CMenuMgrSub1B5BF8::Create();
+    CMenuMgrSub1B4768::Create();
+    NewMemorialSub17B3A0();
+    NewStatusSub19B8C8();
+    NewChrBodyWin();
+    D_002A5358 = new CFlagWork((s32)D_002A4B68, -1);
+    D_002A4B60 = new CFlagWork((s32)D_002A4650, -1);
+    for (s32 i = 0; i < 6; i++) {
+        D_002A4638[i] = new CFlagWork((s32)D_002A43B8, -1);
+    }
+    if (GetFontTable(1)) func_0025C438(GetFontTable(1), &m_snd);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B3DD0);
 
@@ -1044,7 +1100,30 @@ void CMenuMgrSub1B6418::GetDefaultSize(f32 *w, f32 *h) {
     *h = 24.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B6570);
+void CMenuMgrSub1B6418::Update1B6570() {
+    m_unk50++;
+    if (m_unk50 >= D_002A4B60->Func1091B0(0x17)) {
+        m_unk50 = 0;
+        m_unk54++;
+        if (m_unk54 >= D_002A55A0[m_unkDC]) m_unk54 = 0;
+    }
+    if (m_unkE0 != 2) return;
+    if (m_unk5C > 0) {
+        f32 k = 0.318309886f;
+        s32 n = D_002A4B60->Func1091B0(0x18);
+        f32 t = 1.0f - (f32)m_unk5C / (f32)n;
+        u8 *tbl = (u8 *)D_002A6800;
+        f32 s = *(f32 *)(tbl + ((Ftoi15(t * 0.5f) << 1) & 0xFFFC));
+        m_unk5C--;
+        f32 f = t + s * k;
+        m_unk0 = (m_unk20 - m_unk10) * f + m_unk10;
+        m_unk4 = (m_unk24 - m_unk14) * f + m_unk14;
+    } else {
+        m_unk0 = m_unk20;
+        m_unk4 = m_unk24;
+        m_unkE0 = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B66E8);
 

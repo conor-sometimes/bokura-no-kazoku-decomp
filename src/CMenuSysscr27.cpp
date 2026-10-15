@@ -21,6 +21,8 @@ extern "C" int sprintf(char *buf, const char *fmt, ...);
 //@sym sprintf 0x28AF70
 class CMenuSysscr27Win {
 public:
+    void Func1A98F8();
+    void Func1A9BF8();
     void Func1A9D30();
     void Func1A9ED8(s32 k);
     void Func1A9E60();

@@ -8,27 +8,27 @@
 class INameDBMgr {
 public:
     virtual void Release() = 0;
-    virtual int Func16C848() = 0;
+    virtual int Func16C848(const char *path) = 0;
     virtual void Init() = 0;
-    virtual int Func16CBD0() = 0;
+    virtual void Func16CBD0(s32 kind) = 0;
     virtual void Push16CDC0(s32 kind, const char *name) = 0;
 };
-// Vtable 0x2C1398: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
-// Func16C848, not the destructor (slot 5).
+// Vtable 0x2C1398: slot 0 is an inline `delete this` (emitted elsewhere), the destructor is slot
+// 5. Release is declared, not defined, so it is the key method and the vtable stays asm.
 class CNameDBMgr : public INameDBMgr {
 public:
     CNameDBMgr();
-    virtual void Release() { delete this; }
-    virtual int Func16C848();
+    virtual void Release();
+    virtual int Func16C848(const char *path);
     virtual void Init();
-    virtual int Func16CBD0();
+    virtual void Func16CBD0(s32 kind);
     virtual void Push16CDC0(s32 kind, const char *name);
     virtual ~CNameDBMgr();
     static CNameDBMgr *Create(void *a);
 
     CPushBuf m_buf;           // 0x4
-    u8 m_unk10[0x28];         // 0x10
-    u8 m_unk38[0x28];         // 0x38
+    char **m_tables[10];      // 0x10
+    s32 m_counts[10];         // 0x38
 };
 extern "C" void func_0016CF98(void *p, void *a);
 extern CNameDBMgr *D_002A35B0;
@@ -46,12 +46,29 @@ extern s32 D_002A3640[];
 extern s32 D_002A3610[];
 extern char D_002D9CE8[];
 extern "C" s32 func_0016C6D8(s32 kind);
+
+extern "C" unsigned int strlen(const char *s);
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+void *Func24A4C0(const char *name);
+extern void (*D_002B91B0)(void *p);
+const char *Func24AF10(void *p, const char *key);
+const char *Func24AFE8(const char *s, char *buf, s32 k, s32 size);
+extern "C" s32 func_0024B040(const char *s, s32 k);
+extern "C" void func_00248C30(void *buf);
+extern "C" void func_00248C70(void *buf);
+extern "C" char *func_00248DA8(void *buf);
+extern "C" char *func_00248DC0(void *buf);
+extern s32 D_002A366C, D_002A3670, D_002A3674;
+extern const char *D_002A3678;
+extern const char *D_002A35B8[];
 // @decl-end
 
 CNameDBMgr::CNameDBMgr() {
     D_002A35B0 = this;
-    memset(m_unk38, 0, 0x28);
-    memset(m_unk10, 0, 0x28);
+    memset(m_counts, 0, 0x28);
+    memset(m_tables, 0, 0x28);
 }
 
 CNameDBMgr::~CNameDBMgr() {
@@ -59,12 +76,58 @@ CNameDBMgr::~CNameDBMgr() {
     D_002A35B0 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", func_0016C848);
+int CNameDBMgr::Func16C848(const char *path) {
+    char buf[256];
+    char a[256];
+    char b[256];
+    void *data;
+    int opened;
+    s32 i, j, n;
+    const char *p;
+    const char *q;
+    char *s;
+    int ok = 0;
+    data = 0;
+    opened = 0;
+    Func2491A8(buf, path, D_002A366C, D_002A3670, D_002A3674);
+    if (Func249248(buf)) {
+        opened = 1;
+        data = Func24A4C0(D_002A3678);
+        if (data) {
+            func_00248C30(&m_buf);
+            for (i = 0; i < 10; i++) {
+                p = Func24AF10(data, D_002A35B8[i]);
+                if (*p) {
+                    n = func_0024B040(p, 1);
+                    m_counts[i] = n;
+                    m_tables[i] = (char **)m_buf.Func248CC8(n * 4, 1, 1);
+                    for (j = 0; j < n; j++) {
+                        p = Func24AFE8(p, a, 1, 0x100);
+                        q = (const char *)func_0024A570((void *)a, func_00248DA8(&m_buf), D_002D9CD8, D_002D9CE0);
+                        if (*q) {
+                            func_0024A570((void *)q, b, D_002D9CD8, D_002D9CE0);
+                            s = func_00248DA8(&m_buf);
+                            strcpy(s + strlen(s), D_002D9CD8);
+                            s = func_00248DA8(&m_buf);
+                            strcpy(s + strlen(s), b);
+                        }
+                        m_tables[i][j] = func_00248DC0(&m_buf);
+                    }
+                }
+            }
+            func_00248C70(&m_buf);
+            ok = 1;
+        }
+    }
+    if (data) D_002B91B0(data);
+    if (opened) Func249348();
+    return ok;
+}
 
 void CNameDBMgr::Init() {
     m_buf.Func248E00();
-    memset(m_unk38, 0, 0x28);
-    memset(m_unk10, 0, 0x28);
+    memset(m_counts, 0, 0x28);
+    memset(m_tables, 0, 0x28);
 }
 
 void Func16CB08(s32 type, s32 base, void *src) {

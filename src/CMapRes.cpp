@@ -35,13 +35,22 @@ extern "C" void func_0011BD00(void *p);
 struct CMapItem {
     CMapItem *m_next0;        // 0x0
     CMapItem *m_next4;        // 0x4
-    u8 pad8[0x28];
+    char m_name[0x20];        // 0x8
+    s32 m28;                  // 0x28
+    s32 m2C;                  // 0x2C
     s32 m30;                  // 0x30
     void *m34;                // 0x34
-    u8 pad38[0x8];
+    s32 m38;                  // 0x38
+    s32 m3C;                  // 0x3C
     s32 m40;                  // 0x40
-    s32 m44;                  // 0x44
-    u8 pad48[0x1C];
+    void *m44;                // 0x44
+    s32 m48;                  // 0x48
+    s32 m4C;                  // 0x4C
+    s32 m50;                  // 0x50
+    s32 m54;                  // 0x54
+    s32 m58;                  // 0x58
+    s32 m5C;                  // 0x5C
+    s32 m60;                  // 0x60
 };
 struct CMapPair {
     s32 a;                    // 0x0
@@ -109,6 +118,39 @@ extern "C" s32 func_00247140();
 extern "C" void func_00127E98(CMapSndRes *s, const char *name);
 extern const char *D_002A0634, *D_002A0638, *D_002A063C, *D_002A0644;
 extern char D_002D3D10[];
+
+// Text writer: func_0024B818 is its printf (returns the length; writes only when m_p is set).
+struct CTextOut {
+    char *m_p;
+    s32 m4;
+    s32 m8;
+    s32 mC;
+};
+extern "C" s32 func_0024B818(CTextOut *w, const char *fmt, ...);
+extern "C" s32 func_00118448(CMapAttr *a, char *p);
+extern "C" s32 func_0011BD90(CMapEffRes *e, char *p);
+extern const char *D_002A0624;
+extern char D_002D3C70[], D_002D3C78[], D_002D3C88[];
+
+extern const char *D_002A0624;
+extern char D_002D3D10[], D_002D3D30[];
+void *Func248E48(const char *name);
+void Func24B600(char *dst, const char *src, s32 n);
+extern "C" int strcmp(const char *a, const char *b);
+extern "C" void func_00253048(void *tex, void **a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+extern "C" void *func_00248E60(const char *name);
+struct CIpuHeader {
+    u8 pad0[0x8];
+    u16 m_width;              // 0x8
+    u16 m_height;             // 0xA
+};
+extern "C" void *func_001EF728(void *data, s32 size);
+extern "C" s32 func_001EF890(void *ipu, s32 mode);
+extern "C" void func_001EFC20(void *ipu, void *buf, s32 mode, s32 a, s32 b);
+extern "C" CIpuHeader *func_001EF878(void *ipu);
+extern "C" void func_001EF810(void *ipu);
+void *Func245D00(int size);
 // @decl-end
 
 CMapRes::CMapRes() {
@@ -144,7 +186,36 @@ INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C30);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C38);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C40);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C48);
-INCLUDE_ASM("asm/nonmatchings/CMapRes", Func119F48__7CMapResPc);
+s32 CMapRes::Func119F48(char *buf) {
+    CTextOut w;
+    s32 i, j, n, r;
+    w.m_p = buf;
+    n = func_0024B818(&w, "[%s]\n", D_002A0620);
+    for (i = 0; i < m_unk0; i++) {
+        CMapItem *it = &m_unk4[i];
+        n += func_0024B818(&w, "\t%s %d %d %d\n", it->m_name, it->m38, it->m3C, it->m40);
+    }
+    for (i = 0; i < m_unk10; i++) {
+        n += func_0024B818(&w, "\t%s ", D_002A0624);
+        if (m_unk14[i].m_flags & 1) n += func_0024B818(&w, D_002D3C70, D_002A0628);
+        if (m_unk14[i].m_flags & 2) n += func_0024B818(&w, D_002D3C70, D_002A062C);
+        if (m_unk14[i].m_flags & 4) n += func_0024B818(&w, D_002D3C70, D_002A0630);
+        for (j = 0; j < m_unk14[i].m_num; j++) {
+            n += func_0024B818(&w, D_002D3C78, m_unk14[i].m_pairs[j].a, m_unk14[i].m_pairs[j].b);
+            if (j < m_unk14[i].m_num - 1) n += func_0024B818(&w, D_002D3C80);
+            else n += func_0024B818(&w, D_002D3C88);
+        }
+    }
+    n += func_0024B818(&w, D_002D3C88);
+    r = func_00118448(m_attr, w.m_p);
+    if (r < 0) return -1;
+    if (w.m_p) w.m_p += r;
+    n += r;
+    r = func_0011BD90(m_eff, w.m_p);
+    if (r < 0) return -1;
+    if (w.m_p) w.m_p += r;
+    return n + r;
+}
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C70);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C78);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3C80);
@@ -166,7 +237,79 @@ int CMapRes::Save11A1E8(const char *path) {
 }
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3CB8);
 
-INCLUDE_ASM("asm/nonmatchings/CMapRes", LoadMapItems__FP8CMapItemPv);
+s32 LoadMapItems(CMapItem *items, void *text) {
+    char line[0x100];
+    char tok[0x100];
+    const char *p;
+    s32 n;
+    CMapItem *it;
+    if (text) {
+        const char *s;
+        n = 0;
+        it = items;
+        s = Func24AF10(text, D_002A0620);
+        if (*s) {
+            p = s;
+            goto start;
+        }
+    }
+    return 0;
+start:
+    while ((p = Func24AFE8(p, line, 1, 0x100), *p) || line[0]) {
+        const char *q = Func24A570(line, tok, D_002D3C80, D_002D3CB8);
+        if (!strcmp(tok, D_002A0624)) continue;
+        if (items) {
+            it->m28 = n;
+            it->m30 = -1;
+            Func24B600(it->m_name, tok, 0x20);
+            q = func_0024A710(q, &it->m38, 0, D_002D3C80, D_002D3CB8);
+            q = func_0024A710(q, &it->m3C, 0, D_002D3C80, D_002D3CB8);
+            func_0024A710(q, &it->m40, 0, D_002D3C80, D_002D3CB8);
+            if (strstr(tok, ".tm2")) {
+                it->m34 = Func248E48(tok);
+                if (!it->m34) {
+                    Func235DE0("*** failed to load %s\n", tok);
+                } else {
+                    func_00253048(it->m34, &it->m44, &it->m48, &it->m4C, &it->m50, &it->m54, &it->m58, &it->m5C, &it->m60);
+                    if (it->m4C & 7) Func235DE0("!!! invalid width (fname=%s, width=%d)\n", tok, it->m4C);
+                    if (it->m5C > 16) func_0023C048(it->m5C, it->m54, it->m54);
+                    it->m2C = 0;
+                }
+            } else if (strstr(tok, ".ipu")) {
+                void *f = 0;
+                void *ipu = 0;
+                void *buf = 0;
+                s32 size = func_0022FF58(tok);
+                if (size <= 0 || (f = func_00248E60(tok)) == 0 || (ipu = func_001EF728(f, size)) == 0 ||
+                    (buf = Func245D00(func_001EF890(ipu, 2))) == 0) {
+                    Func235DE0(D_002D3D10, tok);
+                } else {
+                    func_001EFC20(ipu, buf, 2, 0, 0);
+                    CIpuHeader *h = func_001EF878(ipu);
+                    it->m34 = buf;
+                    it->m44 = buf;
+                    it->m48 = 2;
+                    it->m4C = h->m_width;
+                    it->m50 = h->m_height;
+                    it->m2C = 1;
+                    it->m54 = 0;
+                    it->m58 = 0;
+                    it->m5C = 0;
+                    it->m60 = 0;
+                    buf = 0;
+                }
+                if (buf) D_002B91B0(buf);
+                if (ipu) func_001EF810(ipu);
+                if (f) D_002B91B0(f);
+            } else {
+                Func235DE0(D_002D3D30, tok);
+            }
+        }
+        it++;
+        n++;
+    }
+    return n;
+}
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3D10);
 INCLUDE_RODATA("asm/nonmatchings/CMapRes", D_002D3D30);
 

@@ -93,6 +93,7 @@ public:
     void Update1789B8();
     int Func1787E8(u32 i, s32 a, s32 b);
     int Draw179198();
+    int DrawRow178B30(s32 k);
     void SetUnk4(s32 v);
     void SetUnk50(f32 x, f32 y);
     void SetUnkAC(s32 v);
@@ -129,6 +130,7 @@ public:
 class CMenuLoadMemorialSub179568 {
 public:
     void Update1795F8();
+    int Draw17A370();
     int Func179438(u32 i, s32 a);
     void SetUnk50(f32 x, f32 y);
     int Create();
@@ -214,6 +216,7 @@ public:
     void Create();
     void Update();
     void Hide();
+    void Refresh17A968();
     void Func17AFC8();
     void Start();
     s32 m_state;              // 0x0
@@ -230,16 +233,20 @@ public:
     CStatusItem *m_unkC;      // 0xC
     CStatusItem *m_unk10;     // 0x10
 };
+class CMenuRecordWin;
 class CMenuLoadMemorialSub17D160 {
 public:
     int Next();
     int Prev();
     void Func17BDF0();
     void Func17BFA0(int v);
+    int Draw17D3B0();
     s32 m_state;              // 0x0
     s32 m_unk4;               // 0x4
     s32 m_unk8;               // 0x8
-    u8 padC[0xA0];
+    CMenuRecordWin *m_unkC;   // 0xC
+    CMenuRecordWin *m_unk10;  // 0x10
+    u8 pad14[0x98];
     s32 m_unkAC;              // 0xAC
 };
 class CMenuLoadMemorialSub17DC50 {
@@ -285,6 +292,7 @@ public:
     void SetUnk30(f32 a, f32 b, f32 c, f32 d);
     void SetUnk40(f32 a, f32 b, f32 c, f32 d);
     void SetUnk20(f32 a, f32 b, f32 c);
+    void SetUnk58(u32 v);
 };
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
 class CMenuMgrSub1B5BF8 {
@@ -297,7 +305,7 @@ public:
     void SetUnk0(f32 a, f32 b);
     void SetUnk5C(s32 v);
 };
-extern "C" void func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);
+extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 extern char D_002DA9A0[];
 extern "C" int sprintf(char *buf, const char *fmt, ...);
@@ -311,6 +319,64 @@ public:
 
 extern "C" f32 func_001865B8(void *p);
 s32 Func145738(s32 a, s32 b);
+
+struct CTextBuf;
+extern "C" CTextBuf *func_0010BF88(CTextBuf *p);
+// Font text object (0x90 bytes; 0x10BF88 initialises it, 0x256xxx draw it).
+struct CTextBuf {
+    CTextBuf() { func_0010BF88(this); }
+    void Clear() { m0 = 0; }
+    s32 m0;                   // 0x0
+    u8 pad4[0xC];
+    f32 m10;                  // 0x10
+    f32 m14;                  // 0x14
+    f32 m18;                  // 0x18
+    f32 m1C;                  // 0x1C
+    u8 pad20[0x10];
+    f32 m30;                  // 0x30
+    f32 m34;                  // 0x34
+    f32 m38;                  // 0x38
+    f32 m3C;                  // 0x3C
+    u8 pad40[0x18];
+    s32 m58;                  // 0x58
+    u8 pad5C[0x4];
+    f32 m60;                  // 0x60
+    f32 m64;                  // 0x64
+    f32 m68;                  // 0x68
+    f32 m6C;                  // 0x6C
+    u8 pad70[0x20];
+};
+extern "C" const char *func_00256260(CTextBuf *p, s32 id);
+extern "C" const char *func_0024BA08(char *buf, s32 v);
+extern "C" const char *func_001A36B0(CMenuRecordWin *w, s32 k);
+extern "C" void func_001A3E28(CMenuRecordWin *w, s32 k, f32 *col);
+extern char D_002DA968[], D_002DA970[], D_002DA978[];
+struct CMemorialIds { s32 v[5]; };
+extern const CMemorialIds D_002DA980;
+
+extern "C" int func_001B5E18(CMenuMgrSub1B5BF8 *p);
+extern "C" void func_001A3EA8(CMenuRecordWin *w, f32 *col, s32 k);
+extern "C" void func_00256648(CTextBuf *p);
+extern "C" void func_00256930(CTextBuf *p, const char *s);
+extern "C" void func_00256988(CTextBuf *p, const char *fmt, ...);
+extern "C" int func_00256668(CTextBuf *p);
+extern "C" u32 func_001863F0(s32 a, s32 b, s32 c);
+extern "C" int func_0017C2C0(CMenuLoadMemorialSub17D160 *p, s32 i);
+extern s32 D_002A3B18[];
+extern s32 D_002A3B30[];
+struct CMemorialPair { s32 m0; s32 m4; };
+extern CMemorialPair D_002A3B50[];
+extern char D_002DAA18[];
+#define MGR ((CMenuMgrSub1B4768 *)D_002A5530)
+#define SUB ((CMenuLoadMemorialSub17B3A0 *)D_002A3AF8)
+
+struct CGsRect { s32 x0, y0, x1, y1; };
+extern "C" void func_001A3EA8(CMenuRecordWin *w, f32 *col, s32 k);
+void Func1866D0(CGsRect *r, f32 x, f32 y, f32 w, f32 h);
+extern "C" int func_00186730(CGsRect *r, f32 *col, s32 k);
+extern "C" int func_00179790(CMenuLoadMemorialSub179568 *p, s32 i);
+
+extern s32 D_002A3B70[];
 // @decl-end
 
 CMenuLoadMemorial::CMenuLoadMemorial() {
@@ -569,7 +635,67 @@ void CMenuLoadMemorialSub179568::Update1795F8() {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_00179790);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017A370);
+int CMenuLoadMemorialSub179568::Draw17A370() {
+    f32 col[4];
+    f32 cx, cy;
+    f32 ex, ey;
+    f32 ax, ay;
+    CGsRect rect;
+    f32 tmp[4];
+    s32 i;
+    u8 *p = Func237570(0x50);
+    Func237A88(p, 5);
+    Func238158(Func237C30(p + 0x40), 1);
+    f32 save = m_unk54;
+    for (i = 0; i < 4; i++) {
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(func_00179790(this, i));
+        m_unk54 += func_001A4060(m_unk0, 0);
+    }
+    m_unk54 = save;
+    ((CMenuRecordWin *)m_unk0)->Func1A39A8(&ax, (s32 *)&ay, 2);
+    ((CMenuRecordWin *)m_unk0)->Func1A39A8(&cx, (s32 *)&cy, 6);
+    ((CMenuRecordWin *)m_unk0)->Func1A39A8(&ex, (s32 *)&ey, 7);
+    func_001A3EA8((CMenuRecordWin *)m_unk0, col, 6);
+    col[3] = m_unk60 * 128.0f;
+    {
+        s32 m;
+    for (m = 0; m < 4; m++) {
+        s32 v = m_unk34[m];
+        tmp[m] = 0.0f;
+        if (v < 0) continue;
+        tmp[m] = ex + (v / 100) * 13.0f + (v % 100) / 10;
+        Func1866D0(&rect, cx + m_unk50 + ax, cy + ey * m + m_unk54 + ay, 2.0f, ey);
+        ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00186730(&rect, col, 0));
+        Func1866D0(&rect, cx + tmp[m] + m_unk50 + ax, cy + ey * m + m_unk54 + ay, 2.0f, ey);
+        ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00186730(&rect, col, 0));
+    }
+    }
+    {
+        s32 j;
+    for (j = 0; j < 4; j++) {
+        if (m_unk34[j] >= 0) {
+            Func1866D0(&rect, cx + m_unk50 + ax, cy + ey * j + m_unk54 + ay, tmp[j] + 2.0f, 2.0f);
+            ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00186730(&rect, col, 0));
+            break;
+        }
+    }
+    }
+    {
+        s32 k;
+    for (k = 0; k < 4; k++) {
+        if (m_unk34[k] < 0) continue;
+        if (0.0f <= tmp[k + 1] - tmp[k]) {
+            Func1866D0(&rect, cx + tmp[k] + m_unk50 + ax, cy + ey * (k + 1) + m_unk54 + ay, tmp[k + 1] - tmp[k], 2.0f);
+        } else {
+            Func1866D0(&rect, cx + tmp[k + 1] + m_unk50 + ax, cy + ey * (k + 1) + m_unk54 + ay, tmp[k] - tmp[k + 1] + 2.0f, 2.0f);
+        }
+        ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00186730(&rect, col, 0));
+    }
+    }
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017A828);
 
@@ -583,7 +709,99 @@ void CMenuLoadMemorialSub17A8D8b::Hide() {
     if (m_items[2]) m_items[2]->Func1A3378();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017A968);
+void CMenuLoadMemorialSub17A8D8b::Refresh17A968() {
+    char out[0x100];
+    char num[0x100];
+    char num2[0x100];
+    CTextBuf tb;
+    char buf[0x100];
+    CMemorialIds ids;
+    f32 col[4];
+    s32 i;
+    tb.Clear();
+    if (m_items[0]) {
+        CMenuRecordWin *w;
+        if (D_002A26E4->Vf2991E8() == 0) {
+            const char *s1 = func_00256260(&tb, D_002A26E4->Vf2991B0() + 0xAD);
+            sprintf(buf, D_002DA968, func_00256260(&tb, 0xAA), s1);
+        } else if (D_002A26E4->Vf2991E8() == 0x23) {
+            const char *s1 = func_00256260(&tb, D_002A26E4->Vf2991B0() + 0xAD);
+            sprintf(buf, D_002DA968, func_00256260(&tb, 0xAB), s1);
+        } else {
+            const char *s1 = func_00256260(&tb, D_002A26E4->Vf2991B0() + 0xAD);
+            const char *n = func_0024BA08(num, D_002A26E4->Vf2991E8() + 1);
+            sprintf(buf, D_002DA970, n, func_00256260(&tb, 0xAC), s1);
+        }
+        {
+            const char *n = func_0024BA08(num, D_002A26E4->Vf299218());
+            sprintf(out, func_001A36B0((CMenuRecordWin *)m_items[0], 0x15), buf, n);
+            ((CMenuRecordWin *)m_items[0])->Func1A3740(0x15, out);
+        }
+        {
+            s32 v = D_002A26E4->Get145118();
+            const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[0], 0x16);
+            const char *hi;
+            if (v >= 10) hi = func_0024BA08(num, v / 10);
+            else hi = D_002DA978;
+            sprintf(out, fmt, hi, func_0024BA08(num2, v % 10));
+            ((CMenuRecordWin *)m_items[0])->Func1A3740(0x16, out);
+        }
+        ids = D_002DA980;
+        {
+            s32 j;
+            for (j = 0; j < 5; j++) {
+                const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[0], j + 0x17);
+                sprintf(out, fmt, func_0024BA08(num, D_002A26E4->Func1091B0(ids.v[j])));
+                ((CMenuRecordWin *)m_items[0])->Func1A3740(j + 0x17, out);
+            }
+        }
+        {
+            const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[0], 0x1C);
+            s32 a = D_002A26E4->Func1091B0(0x1F);
+            s32 b = D_002A26E4->Func1091B0(0x20);
+            s32 c = D_002A26E4->Func1091B0(0x21);
+            sprintf(out, fmt, func_0024BA08(num, a + b + c));
+            ((CMenuRecordWin *)m_items[0])->Func1A3740(0x1C, out);
+        }
+        for (i = 0; i < 3; i++) {
+            s32 a, b;
+            col[3] = 128.0f;
+            if (D_002A26E4->Func1091B0(9)) {
+                a = D_002A26E4->Func1091B0(i + 0xD);
+                b = D_002A26E4->Func1091B0(i + 0x10);
+            } else {
+                a = D_002A26E0->Get143F20(i);
+                b = D_002A26E0->Func1091B0(i + 0xA);
+            }
+            if (!a) {
+                col[0] = col[1] = col[2] = 64.0f;
+            } else {
+                col[0] = col[1] = col[2] = 128.0f;
+            }
+            func_001A3E28((CMenuRecordWin *)m_items[0], i + 0x1D, col);
+            func_001A3E28((CMenuRecordWin *)m_items[0], i + 0x12, col);
+            if (a == 0) {
+                sprintf(out, func_001A36B0((CMenuRecordWin *)m_items[0], i + 0x20));
+            } else {
+                const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[0], i + 0x1D);
+                const char *nb = func_0024BA08(num, b);
+                sprintf(out, fmt, nb, func_0024BA08(num2, a));
+            }
+            ((CMenuRecordWin *)m_items[0])->Func1A3740(i + 0x1D, out);
+        }
+    }
+    if (m_items[1]) {
+        const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[1], 2);
+        const char *n = func_0024BA08(num, D_002A26E4->Func1091B0(1));
+        sprintf(out, fmt, n, func_00256260(&tb, D_002A26E4->Func1091B0(0x16) + 4));
+        ((CMenuRecordWin *)m_items[1])->Func1A3740(2, out);
+    }
+    if (m_items[2]) {
+        const char *fmt = func_001A36B0((CMenuRecordWin *)m_items[2], 3);
+        sprintf(out, fmt, func_0024BA08(num, D_002A26E4->Func1091B0(0x1C)));
+        ((CMenuRecordWin *)m_items[2])->Func1A3740(3, out);
+    }
+}
 
 void CMenuLoadMemorialSub17A8D8b::Func17AFC8() {
     m_state = 1;
@@ -751,7 +969,34 @@ void MemorialFunc17B758(s32 v, f32 x, f32 y, f32 a, f32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017B850);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", Func17BDF0__26CMenuLoadMemorialSub17D160);
+void CMenuLoadMemorialSub17D160::Func17BDF0() {
+    s32 base;
+    {
+        s32 i;
+        for (i = 0xD; i < 0x13; i++) func_001A3DC8(m_unkC, i, 0);
+    }
+    base = m_unk8 - 6;
+    if (base < 0) base = 0;
+    {
+        s32 j;
+        for (j = 0; j < 7 && base + j <= m_unk8; j++) {
+            if (D_002A3B70[0] != -1) {
+                s32 n = base + j;
+                s32 k;
+                for (k = 0; D_002A3B70[k] != -1; k++) {
+                    if (n == D_002A3B70[k]) func_001A3DC8(m_unkC, j + 0xC, 1);
+                }
+            }
+        }
+    }
+    if (D_002A26E4->Func1091B0(m_unk4 + 0x46) == 9) {
+        s32 a = D_002A26E4->Func1091B0(m_unk4 + 0x34) - D_002A26E4->Func1091B0(m_unk4 + 0x4C);
+        s32 j;
+        for (j = 0; j < 7 && base + j <= m_unk8; j++) {
+            if (a == base + j) func_001A3DC8(m_unkC, j + 0xC, 1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", Func17BFA0__26CMenuLoadMemorialSub17D160i);
 
@@ -809,7 +1054,114 @@ int CMenuLoadMemorialSub17D160::Prev() {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017D240);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", func_0017D3B0);
+int CMenuLoadMemorialSub17D160::Draw17D3B0() {
+    f32 x, y;
+    f32 x2, y2;
+    char buf[0x100];
+    f32 col[4];
+    CTextBuf tb;
+    f32 z, w;
+    u8 *p = Func237570(0x70);
+    Func237A88(p, 7);
+    Func238158(Func237C30(p + 0x60), 1);
+    if (m_unkC) {
+        s32 first, cnt;
+        s32 i, j, k;
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_unkC)->Func1A4298());
+        MGR->Reset1B4D28();
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(D_002A5530->Func1B4ED0(MGR->GetEntry0(0x44)));
+        MGR->SetUnk40(1.0f, 1.0f, 1.0f, ((CUnk1A4298 *)m_unkC)->m_unk34);
+        m_unkC->Func1A39A8(&x, (s32 *)&y, 0x1C);
+        MGR->SetUnk20(x, y, 0.0f);
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B50B0(MGR, 0x44));
+        SUB->CallFunc17B3E8();
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(SUB->Func17B4A0());
+        m_unkC->Func1A39A8(&x, (s32 *)&y, 0x1B);
+        SUB->SetUnk10(x, y);
+        SUB->SetUnk20(0.95f, 0.95f);
+        SUB->SetUnk30(1.0f, 1.0f, 1.0f, ((CUnk1A4298 *)m_unkC)->m_unk34);
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(SUB->Draw17B4D8(m_unk4));
+        ((CUnk237E90 *)(p + 0x50))->Func237E90(func_001B5E18(D_002A5534));
+        D_002A5534->Reset();
+        D_002A5534->SetUnk30(1);
+        D_002A5534->SetUnk1C(((CUnk1A4298 *)m_unkC)->m_unk34);
+        D_002A5534->SetUnk34(1);
+        D_002A5534->SetUnk0(0.85f, 0.85f);
+        first = m_unk8 - 6;
+        if (first < 0) first = 0;
+        cnt = m_unk8 - first + 1;
+        m_unkC->Func1A39A8(&x2, (s32 *)&y2, 0x1E);
+        m_unkC->Func1A39A8(&x, (s32 *)&y, 0x1D);
+        func_001A3EA8(m_unkC, col, 0x1D);
+        D_002A5534->SetUnk10(col[0] / 255.0f, col[1] / 255.0f, col[2] / 255.0f);
+        for (i = 0; i < cnt; i++) {
+            sprintf(buf, D_002DA9A0, first + i);
+            ((CUnk237E90 *)(p + 0x50))->Func237E90(func_001B5FE0(D_002A5534, buf, x + x2 * i, y));
+        }
+        D_002A5534->SetUnk0(0.9f, 0.9f);
+        m_unkC->Func1A39A8(&x, (s32 *)&y, 0x1F);
+        for (j = 0; j < 5; j++) {
+            for (k = 0; k < cnt; k++) {
+                s32 v = D_002A26E4->Func1091B0(D_002A3B18[j] + k + (first + m_unk4 * 36));
+                func_001A3EA8(m_unkC, col, func_001863F0(Func145738(m_unk4, 1), j, v) + 0x20);
+                D_002A5534->SetUnk10(col[0] / 255.0f, col[1] / 255.0f, col[2] / 255.0f);
+                sprintf(buf, D_002DA9A0, v + 1);
+                ((CUnk237E90 *)(p + 0x50))->Func237E90(func_001B5FE0(D_002A5534, buf, x + x2 * k, y + y2 * j));
+            }
+        }
+    }
+    if (m_unk10) {
+        s32 i;
+        ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_unk10)->Func1A4298());
+        m_unk10->Func1A39A8(&z, (s32 *)&w, 0x1D);
+        for (i = 0; i < 4; i++) {
+            s32 f, n;
+            f32 a;
+            ((CUnk237E90 *)(p + 0x40))->Func237E90(func_0017C2C0(this, i));
+            f = D_002A5358->Func1091B0(m_unk4 + 0xD6);
+            if (!f) continue;
+            if (m_unk8 != D_002A26E4->Func1091B0(m_unk4 + 0x34)) continue;
+            n = D_002A26E4->Get144B68(D_002A3B30[i], m_unk4, f);
+            if (n <= 0) continue;
+            ((CUnk237E90 *)(p + 0x30))->Func237E90(D_002A5530->Func1B4ED0(MGR->GetEntry0(0x45)));
+            m_unk10->Func1A39A8(&x, (s32 *)&y, i + 0x24);
+            m_unk10->Func1A39A8(&x2, (s32 *)&y2, 0x23);
+            MGR->Reset1B4D28();
+            MGR->SetUnk40(1.0f, 1.0f, 1.0f, ((CUnk1A4298 *)m_unk10)->m_unk34);
+            MGR->SetUnk20(x - x2, y - y2, 0.0f);
+            ((CUnk237E90 *)(p + 0x30))->Func237E90(func_001B50B0(MGR, 0x45));
+            tb.Clear();
+            *(f32 *)&tb.pad40[0] = 0.0f;
+            *(f32 *)&tb.pad40[4] = 0.0f;
+            *(f32 *)&tb.pad40[8] = 0.0f;
+            *(f32 *)&tb.pad40[0xC] = 0.0f;
+            tb.m58 = 2;
+            *(s32 *)&tb.pad4[0] = 0;
+            *(s32 *)&tb.pad40[0x14] = 0;
+            *(s32 *)&tb.pad70[0] = 0;
+            *(s32 *)&tb.pad40[0x10] = 0;
+            tb.m3C = ((CUnk1A4298 *)m_unk10)->m_unk34; tb.m30 = 1.0f; tb.m34 = 1.0f; tb.m38 = 1.0f;
+            tb.m18 = tb.m10 = x - 320.0f; tb.m1C = tb.m14 = y - 224.0f;
+            func_00256648(&tb);
+            func_00256930(&tb, func_00256260(&tb, func_001A4060((CStatusItem *)m_unk10, 0x22)));
+            ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00256668(&tb));
+            a = ((CUnk1A4298 *)m_unk10)->m_unk34;
+            if (D_002A26E4->Func1091B0(D_002A3B50[i].m0 + m_unk4) + D_002A26E4->Func1091B0(D_002A3B50[i].m4 + m_unk4) >= n) {
+                if (((CUnk1A4298 *)m_unk10)->m_unk34 == 1.0f) a = 1.9f;
+            }
+            m_unk10->Func1A39A8(&x, (s32 *)&y, i + 0x28);
+            *(s32 *)&tb.pad40[0x10] = 1;
+            tb.m30 = 1.0f; tb.m34 = 1.0f; tb.m38 = 1.0f; tb.m3C = a;
+            tb.m18 = tb.m10 = x - 320.0f; tb.m1C = tb.m14 = y - 224.0f;
+            func_00256648(&tb);
+            func_00256988(&tb, D_002DAA18, func_00256260(&tb, func_001A4060((CStatusItem *)m_unk10, 0x22) + 1), n);
+            ((CUnk237E90 *)(p + 0x30))->Func237E90(func_00256668(&tb));
+        }
+    }
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
 
 CMenuLoadMemorialSub17DC50 *NewMemorialSub17DC50() {
     CMenuLoadMemorialSub17DC50 *p = (CMenuLoadMemorialSub17DC50 *)operator new(0xA4);

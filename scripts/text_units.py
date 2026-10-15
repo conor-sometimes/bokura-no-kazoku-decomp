@@ -37,7 +37,13 @@ def funcs(paths):
 
 
 def main():
-    f, addrs = funcs(sys.argv[1:])
+    global LO, HI
+    args = sys.argv[1:]
+    prefix = 'Unit'
+    if args[:1] == ['--range']:      # --range LO HI PREFIX: another region (dklib: 0x245648 0x283858 Dk)
+        LO, HI, prefix = int(args[1], 16), int(args[2], 16), args[3]
+        args = args[4:]
+    f, addrs = funcs(args)
     sufmin = [1 << 32] * (len(f) + 1)
     for i in range(len(f) - 1, -1, -1):
         sufmin[i] = min([sufmin[i + 1]] + f[i][2])
@@ -50,7 +56,7 @@ def main():
             cuts.append(addrs[i + 1])
             n = ins = 0
     for a in cuts:
-        name = 'CAppMain' if a == LO else f'Unit{a:06X}'
+        name = 'CAppMain' if a == 0x1E91B8 else f'{prefix}{a:06X}'
         print(f'      - [0x{a - 0xFF000:X}, cpp, {name}]')
 
 

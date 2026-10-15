@@ -101,6 +101,8 @@ extern CEvClock *D_002A3568;
 int Func235DE0(const char *fmt, ...);
 typedef int (CEvHost::*CEvCallback3)(int a, int b, int c);
 typedef void (CEvHost::*CEvCallback2)(int a, int b);
+class CSvmWork;
+typedef int (CEvHost::*CEvCallbackW)(CSvmWork *w, int id);
 extern char D_002D5968[];
 extern char D_002D5A78[];
 struct CEventItem {
@@ -117,6 +119,7 @@ public:
     void Func12E858();
     void Unload12E968();
     int Load12E910(CSvmData *data);
+    int SlotAsInt(s32 i, s32 def);
     void CopyFrom(CSvmWork *o);
     u8 pad0[0x47C];
     s32 m47C;                 // 0x47C
@@ -157,6 +160,7 @@ public:
     int Func138828(int i);
     int IsSpecial(int id);
     int Call132F40(int a, int b, int c);
+    int CallNum133000(int a, s32 *val, int c);
     void Call1355E0(int a, int b);
     void Release1354C0();
     int SkipTime(int lo, int hi, int v);
@@ -166,6 +170,7 @@ public:
     int Wait133B90(CEvWait *w);
     s32 GetSe13AF08(const char *name);
     void Update135A28();
+    int Cmd13AA80(CSvmWork *w, int id, int reset);
 
     s32 m0;                   // 0x0
     s32 m4;                   // 0x4
@@ -205,7 +210,10 @@ public:
     u8 m_FD08[0x10];          // 0xFD08
     CEvHost *m_FD18;          // 0xFD18
     CEvCallback3 m_FD1C;      // 0xFD1C
-    u8 padFD24[0x24];
+    u8 padFD24[0xC];
+    CEvHost *m_FD30;          // 0xFD30
+    CEvCallbackW m_FD34;      // 0xFD34
+    u8 padFD3C[0xC];
     CEvHost *m_FD48;          // 0xFD48
     CEvCallback2 m_FD4C;      // 0xFD4C
     char m_log[9][0x20];      // 0xFD54
@@ -223,6 +231,8 @@ public:
     void Func250840(void *p);
 };
 extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" int func_00289118(const char *s);
 extern char D_002D56E0[], D_002D56E8[];
 inline void SmReset(CStateMachine *s) { s->m_state = -1; s->m_depth = 0; s->m_flags = 0; }
 class CSndDrvEv {
@@ -309,11 +319,8 @@ public:
     s32 m_unk0;               // 0x0
 };
 extern CTaskMgr390 *D_0029F390;
-
-//@sym Update135A28__9CEventObj 0x135A28
-
-//@sym Wait133B90__9CEventObjP7CEvWait 0x133B90
-//@sym Clear132998__9CEventObj 0x132998
+extern "C" int func_00138908(CEventObj *o, char *buf, CSvmWork *w, int id);
+extern "C" void func_00250810(void *p, const char *name);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
@@ -413,7 +420,16 @@ INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5688);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5690);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5698);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56A0);
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00133000);
+int CEventObj::CallNum133000(int a, s32 *val, int c) {
+    char buf[256];
+    if (m_FD18 && m_FD1C) {
+        sprintf(buf, "%d", *val);
+        *val = -1;
+        if (!(m_FD18->*m_FD1C)(a, (int)buf, c)) return 0;
+        *val = func_00289118(buf);
+    }
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56B0);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56C8);
 

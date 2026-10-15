@@ -6,11 +6,25 @@ struct CResortDBEntry20 {
 };
 #include "CPushBuf.h"
 struct CResortDBEntry;
+struct CResortSub10 {
+    const char *m0;           // 0x0
+    const char *m4;           // 0x4
+    s32 m8;                   // 0x8
+    s32 mC;                   // 0xC
+};
 struct CResortRec30 {
     s32 m_id;                 // 0x0
     s32 m4;                   // 0x4
     s32 m8;                   // 0x8
-    u8 padC[0x24];
+    s32 mC;                   // 0xC
+    const char *m10;          // 0x10
+    s32 m14;                  // 0x14
+    s32 m18;                  // 0x18
+    s32 m1C;                  // 0x1C
+    s32 m20;                  // 0x20
+    s32 m24;                  // 0x24
+    CResortSub10 *m28;        // 0x28
+    s32 m2C;                  // 0x2C
 };
 struct CResortRecC {
     s32 m_id;                 // 0x0
@@ -86,7 +100,7 @@ public:
     s32 Func171F68(void *data);
     s32 Func1722D8(void *data);
     s32 Func172498(void *data);
-    void Func172690();
+    s32 Func172690();
 };
 
 struct CResortDBEntry {
@@ -120,6 +134,11 @@ const char *Func24A570(const char *s, char *buf, const char *a, const char *b);
 const char *Func24AF10(void *p, const char *key);
 const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
 extern const char D_002DA0D8[], D_002DA0E0[];
+
+int CountLines172640(const char *p);
+extern "C" char *func_0024A778(char *p, f32 *v, f32 def, const char *s1, const char *s2);
+extern "C" char *func_00248DA8(void *buf);
+extern "C" char *func_00248DC0(void *buf);
 // @decl-end
 
 CResortDBMgr::CResortDBMgr() {
@@ -165,7 +184,45 @@ s32 CResortDBMgr::Load171EC0() {
     return ok;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func171F68__12CResortDBMgrPv);
+s32 CResortDBMgr::Func171F68(void *data) {
+    char line[256];
+    char tok[256];
+    const char *p;
+    s32 i, j;
+    const char *q;
+    p = Func24AF10(data, "INFO");
+    if (!*p) return 0;
+    m_unk14 = func_0024B040(p, 1);
+    m_unk10 = (CResortRec30 *)m_buf.Func248CC8(m_unk14 * sizeof(CResortRec30), 1, 1);
+    for (i = 0; i < m_unk14; i++) {
+        CResortRec30 *r = &m_unk10[i];
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = func_0024A710(line, &r->m_id, 0, D_002DA0D8, D_002DA0E0);
+        q = Func24A570(q, func_00248DA8(&m_buf), D_002DA0D8, D_002DA0E0);
+        r->m4 = (s32)func_00248DC0(&m_buf);
+        q = func_0024A710(q, &r->m8, 0, D_002DA0D8, D_002DA0E0);
+        q = func_0024A710(q, &r->mC, 0, D_002DA0D8, D_002DA0E0);
+        q = func_0024A710(q, &r->m1C, 0, D_002DA0D8, D_002DA0E0);
+        q = func_0024A710(q, &r->m20, 0, D_002DA0D8, D_002DA0E0);
+        q = func_0024A710(q, &r->m24, 0, D_002DA0D8, D_002DA0E0);
+        q = Func24A570(q, func_00248DA8(&m_buf), D_002DA0D8, D_002DA0E0);
+        r->m10 = func_00248DC0(&m_buf);
+        q = func_0024A710(q, &r->m14, 0, D_002DA0D8, D_002DA0E0);
+        q = func_0024A710(q, &r->m18, 0, D_002DA0D8, D_002DA0E0);
+        r->m2C = func_0024A7D8(q, D_002DA0D8, D_002DA0E0) / 4;
+        r->m28 = (CResortSub10 *)m_buf.Func248CC8(r->m2C * sizeof(CResortSub10), 1, 1);
+        for (j = 0; j < r->m2C; j++) {
+            CResortSub10 *e = &r->m28[j];
+            q = Func24A570(q, func_00248DA8(&m_buf), D_002DA0D8, D_002DA0E0);
+            e->m0 = func_00248DC0(&m_buf);
+            q = Func24A570(q, func_00248DA8(&m_buf), D_002DA0D8, D_002DA0E0);
+            e->m4 = func_00248DC0(&m_buf);
+            q = func_0024A710(q, &e->m8, 0, D_002DA0D8, D_002DA0E0);
+            q = func_0024A710(q, &e->mC, 0, D_002DA0D8, D_002DA0E0);
+        }
+    }
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0D8);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0E0);
 
@@ -203,7 +260,38 @@ int CountLines172640(const char *p) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func172690__12CResortDBMgr);
+s32 CResortDBMgr::Func172690() {
+    char line[256];
+    void *data;
+    s32 i, j;
+    int ok = 0;
+    data = Func24A4C0("location.txt");
+    if (data) {
+        m_numColors = CountLines172640((const char *)data);
+        m_colors = (CResortColorRec *)m_buf.Func248CC8(m_numColors * sizeof(CResortColorRec), 1, 1);
+        const char *p = (const char *)data;
+        for (i = 0; i < m_numColors; i++) {
+            CResortColorRec *r = &m_colors[i];
+            p = Func24ADE0(p, func_00248DA8(&m_buf), 0x100);
+            r->m_name = func_00248DC0(&m_buf);
+            r->m_count = func_0024B040(p, 1);
+            const char *q = p;
+            r->m_vals = (CVec4 *)m_buf.Func248CC8(r->m_count * sizeof(CVec4), 1, 1);
+            for (j = 0; j < r->m_count; j++) {
+                CVec4 *v = &r->m_vals[j];
+                q = Func24AFE8(q, line, 1, 0x100);
+                char *s = func_0024A778(line, &v->x, 0.0f, D_002DA0D8, D_002DA0E0);
+                s = func_0024A778(s, &v->y, 0.0f, D_002DA0D8, D_002DA0E0);
+                s = func_0024A778(s, &v->z, 0.0f, D_002DA0D8, D_002DA0E0);
+                func_0024A778(s, &v->w, 0.0f, D_002DA0D8, D_002DA0E0);
+                v->w /= 360.0f;
+            }
+        }
+        ok = 1;
+    }
+    if (data) D_002B91B0(data);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA108);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA118);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA128);
