@@ -21,6 +21,10 @@ extern "C" u8 D_2EB750[];
 extern "C" u8 D_4246B0[];
 extern "C" u8 D_4246C0[];
 extern "C" void *func_002941B0(void);
+
+class CVec4;
+void Func270C50(CVec4 *dst, const CVec4 *src);
+void Func270CA0(CVec4 *dst, void *src);
 // @decl-end
 
 extern "C" void *__tf14CDiffMotionObj(void) {
@@ -129,15 +133,15 @@ extern "C" void *__tf9CCharaObj(void) {
 
 extern "C" s32 func_00293F70(u8 *p) { return *(s32 *)(p + 0x14); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00293F78);
+extern "C" void func_00293F78(u8 *p, const CVec4 *v) { Func270C50((CVec4 *)(p + 0xA0), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00293F98);
+extern "C" void func_00293F98(u8 *p, const CVec4 *v) { Func270C50((CVec4 *)(p + 0xB0), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00293FB8);
+extern "C" void func_00293FB8(u8 *p, const CVec4 *v) { Func270C50((CVec4 *)(p + 0xC0), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00293FD8);
+extern "C" void func_00293FD8(u8 *p, const CVec4 *v) { Func270C50((CVec4 *)(p + 0xD0), v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00293FF8);
+extern "C" void func_00293FF8(u8 *p, void *v) { Func270CA0((CVec4 *)(p + 0xE0), v); }
 
 extern "C" u8 *func_00294018(u8 *p) { return p + 0xA0; }
 
@@ -155,7 +159,7 @@ extern "C" s32 func_00294048(u8 *p) { return *(s32 *)(p + 0x2C); }
 
 extern "C" s32 func_00294050(u8 *p) { return *(s32 *)(p + 0x30); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib293CB0", func_00294058);
+extern "C" void func_00294058(u8 *p, const CVec4 *v) { Func270C50((CVec4 *)(p + 0x120), v); }
 
 extern "C" u8 *func_00294078(u8 *p) { return p + 0x120; }
 

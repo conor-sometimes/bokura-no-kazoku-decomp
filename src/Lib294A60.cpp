@@ -34,26 +34,138 @@ extern "C" u8 D_424760[];
 extern "C" u8 D_424790[];
 extern "C" void *__tf11CMapEffWork(void);
 extern "C" void *func_00295D00(void);
+
+struct TArrayBase { s32 m0; u8 *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *m_vptr; };
+extern void *(*D_002B91A4)(u32 n);
+extern void (*D_002B91B0)(void *p);
+extern void *(*D_002B91AC)(void *p, u32 n);
+extern "C" void *memcpy(void *, const void *, u32);
+extern "C" void *memset(void *, s32, u32);
+extern "C" void __builtin_delete(void *);
+void Func235DE0(const char *fmt, ...);
+struct CMapAttrLightPos { s32 m[4]; };
+struct TArrB { s32 m0; CMapAttrLightPos *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *m_vptr; };
+class CModelAccSub118168 { public: CModelAccSub118168 *Init(); };
+extern "C" void func_00294E90(TArrB *a, s32 flags);
+// The map light (0xC0 bytes): its constructor is CModelAccSub118168::Init (it returns this), its
+// destructor only destroys the TArray<CMapAttrLightPos> at 0x28.
+struct CMapAttrLight {
+    CMapAttrLight() { ((CModelAccSub118168 *)this)->Init(); }
+    ~CMapAttrLight() { func_00294E90(&m_pos, 2); }
+    u8 m0[0x28];
+    TArrB m_pos;              // 0x28
+    u8 m40[0x80];
+};
+extern "C" char D_002D3B28[];
+struct MapEffInfo;
+extern "C" char D_002D4188[];
+struct TArrA { s32 m0; CMapAttrLight *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *m_vptr; };
+extern u8 TArrA_vt[] asm("_vt$t6TArray3Z13CMapAttrLighti_16_Zt10TAllocator1Z13CMapAttrLight");
+extern "C" void func_00294308(TArrA *a);
+extern "C" void func_00294330(TArrA *a, s32 flags);
+extern "C" void func_00294388(TArrA *a, s32 n);
+extern "C" s32 func_002943A8(TArrA *a);
+extern "C" CMapAttrLight *func_002943B0(TArrA *a, s32 i);
+extern "C" CMapAttrLight *func_002945F8(TArrA *a, s32 i);
+extern "C" CMapAttrLight *func_00294420(TArrA *a, s32 i);
+extern "C" CMapAttrLight *func_002947D0(TArrA *a, s32 i);
+extern "C" void func_00294438(TArrA *a, s32 n, s32 init);
+extern "C" CMapAttrLight *func_002947E8(TArrA *a, s32 n);
+extern "C" void func_00294818(TArrA *a, CMapAttrLight *p);
+extern "C" void func_00294848(TArrA *a, CMapAttrLight *p, CMapAttrLight *src, s32 n);
+extern "C" void func_002948B0(TArrA *a, CMapAttrLight *p, s32 n);
+extern "C" CMapAttrLight *func_00294908(TArrA *a, CMapAttrLight *p, s32 n);
+extern "C" void func_00294A98(TArrA *a, CMapAttrLight *p, CMapAttrLight *src);
+extern "C" void func_00294C28(TArrA *a, CMapAttrLight *p);
+extern u8 TArrB_vt[] asm("_vt$t6TArray3Z16CMapAttrLightPosi_16_Zt10TAllocator1Z16CMapAttrLightPos");
+extern "C" void func_002942E0(TArrB *a);
+extern "C" void func_00294E90(TArrB *a, s32 flags);
+extern "C" void func_002943E8(TArrB *a, s32 n);
+extern "C" s32 func_002943C8(TArrB *a);
+extern "C" CMapAttrLightPos *func_002943D0(TArrB *a, s32 i);
+extern "C" CMapAttrLightPos *func_00294610(TArrB *a, s32 i);
+extern "C" CMapAttrLightPos *func_00294408(TArrB *a, s32 i);
+extern "C" CMapAttrLightPos *func_002947C0(TArrB *a, s32 i);
+extern "C" void func_00294620(TArrB *a, s32 n, s32 init);
+extern "C" CMapAttrLightPos *func_00294948(TArrB *a, s32 n);
+extern "C" void func_00294970(TArrB *a, CMapAttrLightPos *p);
+extern "C" void func_002949A0(TArrB *a, CMapAttrLightPos *p, CMapAttrLightPos *src, s32 n);
+extern "C" void func_00294A08(TArrB *a, CMapAttrLightPos *p, s32 n);
+extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n);
+extern "C" void func_00294C48(TArrB *a, CMapAttrLightPos *p, CMapAttrLightPos *src);
+extern "C" void func_00294C78(TArrB *a, CMapAttrLightPos *p);
+struct TArrC { s32 m0; MapEffInfo * *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *m_vptr; };
+extern u8 TArrC_vt[] asm("_vt$t6TArray3ZP10MapEffInfoi_16_Zt10TAllocator1ZP10MapEffInfo");
+extern "C" void func_00295090(TArrC *a);
+extern "C" void func_002950B8(TArrC *a, s32 flags);
+extern "C" void func_00295188(TArrC *a, s32 n);
+extern "C" s32 func_00295110(TArrC *a);
+extern "C" MapEffInfo * *func_00295118(TArrC *a, s32 i);
+extern "C" MapEffInfo * *func_002951A8(TArrC *a, s32 i);
+extern "C" MapEffInfo * *func_00295170(TArrC *a, s32 i);
+extern "C" MapEffInfo * *func_00295208(TArrC *a, s32 i);
+extern "C" void func_00295218(TArrC *a, s32 n, s32 init);
+extern "C" MapEffInfo * *func_002954D0(TArrC *a, s32 n);
+extern "C" void func_002954F8(TArrC *a, MapEffInfo * *p);
+extern "C" void func_00295528(TArrC *a, MapEffInfo * *p, MapEffInfo * *src, s32 n);
+extern "C" void func_00295590(TArrC *a, MapEffInfo * *p, s32 n);
+extern "C" MapEffInfo * *func_002955E8(TArrC *a, MapEffInfo * *p, s32 n);
+extern "C" void func_00295620(TArrC *a, MapEffInfo * *p, MapEffInfo * *src);
+extern "C" void func_00295638(TArrC *a, MapEffInfo * *p);
+extern "C" void func_00295130(TArrC *a, MapEffInfo * *v);
+extern "C" void func_002951B8(TArrC *a, s32 pos, MapEffInfo * *v);
+extern "C" void func_002953A8(TArrC *a, s32 pos, s32 n);
+extern "C" void func_002954B8(TArrC *a, s32 pos, MapEffInfo * *v);
+
+struct ListTag { s32 isHead; ListTag *prev; ListTag *next; void *vptr; };
+extern u8 CListTag_vt[] asm("_vt$8CListTag");
+extern u8 CMapEffWork_vt[] asm("_vt$11CMapEffWork");
+extern void (*D_002B91B0)(void *p);
+extern u8 TArrLightPos_vt[] asm("_vt$t6TArray3Z16CMapAttrLightPosi_16_Zt10TAllocator1Z16CMapAttrLightPos");
+extern "C" void func_00294CC0(TArrB *a, s32 pos, TArrB *src);
+extern "C" void func_00294D70(TArrB *a, s32 pos, s32 n);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294A60);
+extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n) {
+    D_002B91AC(p, n * sizeof(CMapAttrLightPos));
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294A98);
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294C28);
-
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294C48);
-
-extern "C" void func_00294C78(void) {
+extern "C" void func_00294C28(TArrA *a, CMapAttrLight *p) {
+    func_00294E90(&p->m_pos, 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294C80);
+extern "C" void func_00294C48(TArrB *a, CMapAttrLightPos *p, CMapAttrLightPos *src) {
+    if (p) *p = *src;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294CC0);
+extern "C" void func_00294C78(TArrB *a, CMapAttrLightPos *p) {
+}
+
+// TArray<CMapAttrLightPos> copy constructor
+extern "C" void func_00294C80(TArrB *a, TArrB *src) {
+    a->m_vptr = TArrLightPos_vt;
+    a->m_data = 0;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_grow = 16;
+    return (void)func_00294CC0(a, 0, src);
+}
+
+extern "C" void func_00294CC0(TArrB *a, s32 pos, TArrB *src) {
+    s32 i;
+    func_00294D70(a, pos, func_002943C8(src));
+    for (i = 0; i < func_002943C8(src); i++) a->m_data[pos + i] = src->m_data[i];
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294D70);
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294E90);
+extern "C" void func_00294E90(TArrB *a, s32 flags) {
+    func_002943E8(a, 0);
+    if (flags & 1) return (void)__builtin_delete(a);
+}
 
 extern "C" void *__tft6TArray3Z16CMapAttrLightPosi_16_Zt10TAllocator1Z16CMapAttrLightPos(void) {
     if (*(s32 *)D_2EB770 == 0) {
@@ -98,9 +210,17 @@ extern "C" void *__tf7CMapObj(void) {
     return D_2EB780;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295050);
+extern "C" void func_00295050(u8 *p, s32 a, s32 b) {
+    *(s32 *)(p + 0x10) = a;
+    *(s32 *)(p + 0x14) = b;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295060);
+extern "C" void func_00295060(u8 *p, s32 a, s32 b, s32 c, s32 d) {
+    *(s32 *)(p + 0x20) = a;
+    *(s32 *)(p + 0x24) = b;
+    *(s32 *)(p + 0x28) = c;
+    *(s32 *)(p + 0x2C) = d;
+}
 
 extern "C" s32 func_00295078(u8 *p) { return *(s32 *)(p + 0x0); }
 
@@ -108,45 +228,120 @@ extern "C" s32 func_00295080(u8 *p) { return *(s32 *)(p + 0x4); }
 
 extern "C" s32 func_00295088(u8 *p) { return *(s32 *)(p + 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295090);
+extern "C" void func_00295090(TArrC *a) {
+    a->m_vptr = TArrC_vt;
+    a->m_data = 0;
+    a->m_count = 0;
+    a->m_cap = 0;
+    a->m_grow = 16;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002950B8);
+extern "C" void func_002950B8(TArrC *a, s32 flags) {
+    func_00295188(a, 0);
+    if (flags & 1) return (void)__builtin_delete(a);
+}
 
-extern "C" s32 func_00295110(u8 *p) { return *(s32 *)(p + 0xC); }
+extern "C" s32 func_00295110(TArrC *a) { return a->m_count; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295118);
+extern "C" MapEffInfo * *func_00295118(TArrC *a, s32 i) {
+    return func_002951A8(a, i);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295130);
+extern "C" void func_00295130(TArrC *a, MapEffInfo * *v) {
+    func_002951B8(a, func_00295110(a), v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295170);
+extern "C" MapEffInfo * *func_00295170(TArrC *a, s32 i) {
+    return func_00295208(a, i);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295188);
+extern "C" void func_00295188(TArrC *a, s32 n) {
+    func_00295218(a, n, 1);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002951A8);
+extern "C" MapEffInfo * *func_002951A8(TArrC *a, s32 i) {
+    return &a->m_data[i];
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002951B8);
+extern "C" void func_002951B8(TArrC *a, s32 pos, MapEffInfo * *v) {
+    func_002953A8(a, pos, 1);
+    func_002954B8(a, pos, v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295208);
+extern "C" MapEffInfo * *func_00295208(TArrC *a, s32 i) {
+    return &a->m_data[i];
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295218);
+extern "C" void func_00295218(TArrC *a, s32 n, s32 init) {
+    if (a->m_cap < n) {
+        MapEffInfo * *p;
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        p = func_002954D0(a, a->m_cap);
+        if (p == 0) {
+            Func235DE0(D_002D4188, a->m_cap * sizeof(MapEffInfo *));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(MapEffInfo *));
+            func_002954F8(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (init) {
+        if (a->m_count < n) {
+            MapEffInfo *tmp = 0;
+            func_00295528(a, a->m_data + a->m_count, &tmp, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_00295590(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_002954F8(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_002955E8(a, a->m_data, a->m_cap);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002953A8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002954B8);
+extern "C" void func_002954B8(TArrC *a, s32 pos, MapEffInfo * *v) {
+    a->m_data[pos] = *v;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002954D0);
+extern "C" MapEffInfo * *func_002954D0(TArrC *a, s32 n) {
+    return (MapEffInfo * *)D_002B91A4(n * sizeof(MapEffInfo *));
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002954F8);
+extern "C" void func_002954F8(TArrC *a, MapEffInfo * *p) {
+    if (p) D_002B91B0(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295528);
+extern "C" void func_00295528(TArrC *a, MapEffInfo * *p, MapEffInfo * *src, s32 n) {
+    s32 i;
+    for (i = 0; i < n; i++) func_00295620(a, &p[i], src);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295590);
+extern "C" void func_00295590(TArrC *a, MapEffInfo * *p, s32 n) {
+    s32 i;
+    for (i = 0; i < n; i++) func_00295638(a, &p[i]);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002955E8);
+extern "C" MapEffInfo * *func_002955E8(TArrC *a, MapEffInfo * *p, s32 n) {
+    D_002B91AC(p, n * sizeof(MapEffInfo *));
+    return p;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295620);
+extern "C" void func_00295620(TArrC *a, MapEffInfo * *p, MapEffInfo * *src) {
+    if (p) *p = *src;
+}
 
-extern "C" void func_00295638(void) {
+extern "C" void func_00295638(TArrC *a, MapEffInfo * *p) {
 }
 
 extern "C" void *__tft6TArray3ZP10MapEffInfoi_16_Zt10TAllocator1ZP10MapEffInfo(void) {
@@ -172,7 +367,16 @@ extern "C" void *__tf10CMapEffObj(void) {
 
 extern "C" s32 func_00295700(u8 *p) { return *(s32 *)(p + 0x0); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00295708);
+// CMapEffObjRes::~CMapEffObjRes() (linkonce, deleting): only the CListTag base's unlink
+extern "C" void CMapEffObjRes_dtor(ListTag *p, s32 flags) asm("_$_13CMapEffObjRes");
+extern "C" void CMapEffObjRes_dtor(ListTag *p, s32 flags) {
+    p->vptr = CListTag_vt;
+    p->prev->next = p->next;
+    p->next->prev = p->prev;
+    p->next = p;
+    p->prev = p;
+    if (flags & 1) return (void)__builtin_delete(p);
+}
 
 extern "C" void *__tf13CMapEffObjRes(void) {
     if (*(s32 *)D_424750 == 0) {
@@ -189,7 +393,11 @@ extern "C" void *__tf11CMapEffWork(void) {
     return D_2EB798;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002957F8);
+// CMapEffWork::~CMapEffWork() (linkonce, deleting; vptr at 0, operator delete through D_002B91B0)
+extern "C" void func_002957F8(void **p, s32 flags) {
+    *p = CMapEffWork_vt;
+    if (flags & 1) D_002B91B0(p);
+}
 
 // CMapEffWork[1]
 extern "C" s32 func_00295830(u8 *p) { return 0; }

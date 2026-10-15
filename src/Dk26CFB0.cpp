@@ -30,6 +30,22 @@ void func_0026E540(BitStr *s, int n);
 typedef struct { u8 p0[0x110]; int m110; u8 p114[0x24]; int m138; u8 p13C[0x2C]; int m168; u8 p16C[0x20]; int m18C; u8 p190[0x40]; int m1D0; int p1D4; int *m1D8; int m1DC; int m1E0; int p1E4; int *m1E8; int m1EC; int m1F0; int p1F4; int *m1F8; int m1FC; } Mpeg;
 typedef struct { u64 pmode; u64 m8; u64 m10; u64 m18; u64 m20; } DispEnv;
 #define HW64(a) (*(volatile u64 *)(a))
+
+void func_0026BCE8(void *m, int cmd);
+void func_00267A98(void *, int *);
+typedef struct { u8 p0[0x10]; int m10; u8 p14[0xC]; u64 m20; } MT;
+typedef struct { u8 p0[4]; int m4, m8, mC, m10; u8 p14[0x14]; int m28; u8 p2C[0x18]; int m44, m48, m4C, m50, m54, m58, m5C, m60; } MP;
+typedef struct { u8 p0[0x98]; int m98; u8 p9C[4]; u64 mA0; u8 pA8[0x20]; int mC8; int mCC, mD0, mD4, mD8, mDC, mE0, mE4, mE8; u8 pEC[0x18C - 0xEC]; int m18C; u8 p190[0x870 - 0x190]; MT *m870; } MM;
+void func_0026D720(void *m, MP *p, void *a, void *b, void *c);
+int func_0026D3C8(void *m, MP *p);
+void func_0026E260(void *m, MP *p);
+void func_0026D468(void *m, MP *p);
+int func_0026D6F8(int *p);
+extern u32 D_002BD968[16];
+
+typedef struct { u8 p0[0xF4]; int mF4; int mF8; int mFC; } MS;
+int sprintf(char *, const char *, ...);
+extern const char D_002E9968[];
 // @decl-end
 
 int func_0026CFB0(Mpeg *m)
@@ -72,7 +88,19 @@ void func_0026D080(Mpeg *m, int a, int b)
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D110);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D3C8);
+int func_0026D3C8(void *vm, MP *s)
+{
+    MS *m = vm;
+    char buf[256];
+    int ok;
+    if (m->mF8) ok = m->mF4 >= s->m4 && m->mF8 >= s->m8;
+    else ok = m->mFC >= s->mC * s->m10;
+    if (!ok) {
+        sprintf(buf, D_002E9968, s->m4, s->m8);
+        func_002683A0(m, buf);
+    }
+    return ok;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D468);
 
@@ -89,7 +117,29 @@ int func_0026D6F8(int *p)
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D720);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D898);
+void func_0026D898(void *vm, int vp, int n)
+{
+    MM *m = vm;
+    MP *p = (MP *)vp;
+    MT *t;
+    func_0026D720(m, p, (u8 *)m->m870 + 0x10, (u8 *)m->m870 + 0x18, (u8 *)m->m870 + 0x20);
+    t = m->m870;
+    m->m98 = t->m10;
+    m->mA0 = D_002BD968[(int)(t->m20 >> 5) & 0xF];
+    m->mE4 = p->m5C;
+    m->mE8 = p->m60;
+    m->mCC = p->m44;
+    m->mD0 = p->m48;
+    m->mD4 = p->m4C;
+    m->mD8 = p->m50;
+    m->mDC = p->m54;
+    m->mE0 = p->m58;
+    if (func_0026D3C8(m, p) && p->m28 == 1) {
+        if (m->mC8) func_0026E260(m, p);
+        else func_0026D468(m, p);
+        func_0026D6F8((int *)m);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026D9A8);
 
@@ -104,7 +154,25 @@ void func_0026DCD0(void *addr, int size)
     if (s) func_0027BD78();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DD58);
+void func_0026DD58(void *m, void *addr, int n)
+{
+    int s;
+    int v[5];
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+    s = func_0027BD20();
+    HWREG(0x1000B010) = (u32)addr & 0x0FFFFFFF;
+    HWREG(0x1000B020) = n << 6;
+    HWREG(0x1000B000) = 0x100;
+    if (s) func_0027BD78();
+    func_0026BCE8(m, n | 0x70000000);
+    v[0] = 4;
+    func_00267A98(((MM *)m)->m870, v);
+    while ((HWREG(0x1000B000) >> 8) & 1)
+        ;
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DE80);
 

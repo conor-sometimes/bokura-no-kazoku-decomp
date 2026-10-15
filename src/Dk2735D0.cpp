@@ -64,6 +64,18 @@ s32 func_00273AD0(s32 a);
 int func_00272ED0(int, int);
 extern int D_41D194;
 extern int D_002BDAA4;
+
+typedef char *va_list;
+#define va_start(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(0) < 8 ? (8 - __builtin_args_info(0)) * 8 : 0))
+#define va_end(ap)
+int func_002748E0(const char *fmt, va_list ap);
+extern void *D_002BDAA0;
+void func_002745F8(int c);
+typedef struct { u8 p0[0xF4]; int mF4; int mF8; int mFC; } MS;
+typedef struct { u8 p0[4]; int m4, m8, mC, m10; } MI;
+int sprintf(char *, const char *, ...);
+extern const char D_002E9968[];
+void func_002683A0(void *m, const char *msg);
 // @decl-end
 
 SYSCALL(func_002735D0, 0x7C)
@@ -369,9 +381,28 @@ INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274778);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_002748E0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274ED8);
+int func_00274ED8(const char *fmt, ...)
+{
+    va_list ap;
+    int r;
+    va_start(ap, fmt);
+    r = func_002748E0(fmt, ap);
+    va_end(ap);
+    return r;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274F10);
+int func_00274F10(const char *fmt, ...)
+{
+    va_list ap;
+    int r;
+    void *old = D_002BDAA0;
+    D_002BDAA0 = func_002745F8;
+    va_start(ap, fmt);
+    r = func_002748E0(fmt, ap);
+    va_end(ap);
+    D_002BDAA0 = old;
+    return r;
+}
 
 void func_00274F70(R *a, R *b) { b->m1C[a->m10] = a->m14; }
 

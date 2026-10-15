@@ -90,11 +90,28 @@ extern "C" void func_00265580(Rx *);
 
 extern "C" void func_00273420(s32);
 struct McCmd { s32 m0, m4, m8, mC, m10, m14, m18, m1C; u8 data[0x10]; };
+
+extern "C" s32 func_002632B8(void);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_002631E0);
+extern "C" void *func_002631E0(void (*cb)(s32), s32 arg) {
+    void *old; s32 r;
+    if (D_002BBC00 < 0) func_002632B8();
+    r = func_0027BD20(); old = (void *)D_41A808; D_41A810 = arg; D_41A808 = cb;
+    asm volatile("sw $28, %0" : "=m"(D_41A80C));
+    if (r) func_0027BD78();
+    return old;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263260);
+extern "C" void func_00263260(void) {
+    void (*cb)(s32) = D_41A808;
+    if (cb && !D_002BBBE4) {
+        u32 save;
+        asm volatile("move %0, $28\n\tlw $28, %1" : "=&r"(save) : "m"(D_41A80C));
+        cb(D_41A810);
+        asm volatile("move $28, %0" : : "r"(save));
+    }
+}
 
 extern "C" s32 func_002632B8(void) { s32 r; D_002BBBE4 = 1; r = func_0027BD20(); func_002752D0(0x80000012, (void *)func_00263260, 0); if (r) func_0027BD78(); D_002BBBE4 = 0; D_002BBC00 = 1; return 1; }
 
@@ -208,7 +225,17 @@ extern "C" s32 func_002647F0(s32 x) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_002648C0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_002649B8);
+extern "C" s32 func_002649B8(s32 x, s32 *p) {
+    s32 r; s32 *buf = (s32 *)D_002BD200;
+    if (!func_00263980(0x1A)) return -1;
+    buf[0] = x;
+    func_00275698(buf, 4);
+    if (func_002760B0(D_002BD740, 5, 0, buf, 4, D_002BCDC0, 8, 0, 0) < 0) { func_002731C0(*(volatile s32 *)&D_002BBBEC); return -1; }
+    if (p) *p = *(s32 *)UNCACHED(D_002BCDC0 + 4);
+    r = *(s32 *)UNCACHED(D_002BCDC0);
+    func_002731C0(D_002BBBEC);
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00264AA8);
 

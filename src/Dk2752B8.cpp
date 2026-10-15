@@ -72,6 +72,27 @@ int func_00275B18();
 int func_00275DD0();
 typedef struct C2 { int m0, m4, m8, mC, m10, m14; u8 p18[0x20]; struct C2 *m38; int m3C; void *m40; } C2;
 typedef struct { int m0, m4; C2 *m8; } C2Q;
+
+typedef struct { PE *m0; int m4; int m8; int mC; int m10; u8 p14[0x10]; int m24; } RpcClient;
+typedef struct { u8 p0[0x14]; void *m14; int m18; void *m1C; int m20, m24, m28; } RpcPkt;
+PE *func_00275910(Pool *p);
+void func_002759B8(P *p);
+int func_002754D0(int a, int b, int c, int d, int e, int f);
+int func_002731B0(int);
+typedef struct { int m0; void *m4; int m8, mC, m10; void *m14; int m18; void *m1C; int m20, m24; } RpcData;
+extern RpcData D_41EBC0_r __asm__("D_41EBC0");
+extern u8 D_41D3C0[];
+extern u8 D_41DBC0[];
+extern u8 D_41E3C0[];
+void func_002752D0(int n, void *func, void *arg);
+void func_00274FE8(void);
+int func_002735B0(int);
+int func_002735A0(int, int);
+s32 func_00274FA0(s32 n);
+void func_00275A48();
+void func_00275E10();
+void func_00276020();
+void func_00275B58();
 // @decl-end
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
@@ -146,7 +167,43 @@ int func_00275B18(int a, int b, int c, Req *r)
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275B58);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275C28);
+int func_00275C28(RpcClient *cd, int a, int b, int c, int mode)
+{
+    RpcPkt *p;
+    SemaParam s;
+    p = (RpcPkt *)func_00275910((Pool *)&D_41EBC0);
+    if (!p) return -1;
+    cd->m0 = (PE *)p;
+    cd->m4 = p->m18;
+    p->m20 = a;
+    p->m24 = b;
+    p->m28 = c;
+    p->m14 = p;
+    p->m1C = cd;
+    if (!(mode & 1)) {
+        s.init_count = 0;
+        s.max_count = 1;
+        cd->m8 = func_002731A0(&s);
+        if (cd->m8 < 0) {
+            func_002759B8((P *)p);
+            return -3;
+        }
+        if (func_002754D0(0x8000000C, (int)p, 0x40, 0, 0, 0) == 0) {
+            func_002759B8((P *)p);
+            func_002731B0(cd->m8);
+            return -2;
+        }
+        func_002731E0(cd->m8);
+        func_002731B0(cd->m8);
+        return 0;
+    }
+    cd->m8 = -1;
+    if (func_002754D0(0x8000000C, (int)p, 0x40, 0, 0, 0) == 0) {
+        func_002759B8((P *)p);
+        return -2;
+    }
+    return 0;
+}
 
 Ent *func_00275D80(int id, Ctx *c)
 {
@@ -165,7 +222,43 @@ int func_00275DD0(int a, int b, int c, Req *r)
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275E10);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275EE0);
+int func_00275EE0(RpcClient *cd, int rpc, int mode)
+{
+    RpcPkt *p;
+    SemaParam s;
+    cd->m10 = 0;
+    cd->m24 = 0;
+    p = (RpcPkt *)func_00275910((Pool *)&D_41EBC0);
+    if (!p) return -1;
+    cd->m0 = (PE *)p;
+    cd->m4 = p->m18;
+    p->m20 = rpc;
+    p->m14 = p;
+    p->m1C = cd;
+    if (!(mode & 1)) {
+        s.init_count = 0;
+        s.max_count = 1;
+        cd->m8 = func_002731A0(&s);
+        if (cd->m8 < 0) {
+            func_002759B8((P *)p);
+            return -3;
+        }
+        if (func_002754D0(0x80000009, (int)p, 0x40, 0, 0, 0) == 0) {
+            func_002759B8((P *)p);
+            func_002731B0(cd->m8);
+            return -2;
+        }
+        func_002731E0(cd->m8);
+        func_002731B0(cd->m8);
+        return 0;
+    }
+    cd->m8 = -1;
+    if (func_002754D0(0x80000009, (int)p, 0x40, 0, 0, 0) == 0) {
+        func_002759B8((P *)p);
+        return -2;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00276020);
 

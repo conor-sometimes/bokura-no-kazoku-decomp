@@ -407,3 +407,5 @@ D_002E0D40 = 0x002E0D40;
 func_001B6570 = 0x001B6570; /* old name still called from another unit (merge interim 8) */
 func_0025DBB8 = 0x0025DBB8; /* old name still called from another unit (merge interim 8) */
 func_00280260 = 0x00280260; /* old name still called from another unit (merge interim 8) */
+/* lane L2: soft-float subtract the compiler calls by name (func_00284E90, lane L1's unit); __fixdfdi's -a */
+dpsub = 0x00284E90;

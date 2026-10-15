@@ -77,6 +77,9 @@ extern const char D_002E9318[];
 extern const char D_002E9330[];
 extern const char D_002E9358[];
 extern "C" s32 func_002666D0(void);
+
+extern "C" u64 func_00266738(u32, u64);
+struct StrEnt { u64 id; u64 m8; s32 m10; s32 m14; void *m18; s32 m1C; };
 // @decl-end
 
 extern "C" void func_00265918(char *dst) {
@@ -218,7 +221,25 @@ INCLUDE_ASM("asm/nonmatchings/Dk265918", func_002669C0);
 
 extern "C" s32 func_00266CD0(s32 a, s32 b, s32 c) { return func_002669C0(a, b, c, 0, -1); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00266CF0);
+extern "C" s32 func_00266CF0(SceMpeg *mp, s32 type, s32 ch, s32 cb, s32 data) {
+    register u32 gp asm("$28");
+    MpegSys *s = mp->sys;
+    s32 r = 0, i;
+    StrEnt *tbl; s32 n; u64 id;
+    tbl = *(StrEnt **)((u8 *)s + 0x60);
+    id = func_00266738(type, ch);
+    n = *(s32 *)((u8 *)s + 0x64);
+    for (i = 0; i < n; i++) if (id == tbl[i].id) { r = tbl[i].m10; break; }
+    if (i < 64) {
+        tbl[i].id = id;
+        tbl[i].m10 = cb;
+        tbl[i].m14 = data;
+        tbl[i].m8 = D_002BD7A8[type].m8;
+        { void *g; asm volatile("move %0, $28" : "=r"(g)); tbl[i].m18 = g; }
+        (*(s32 *)((u8 *)s + 0x64))++;
+    }
+    return r;
+}
 
 extern "C" s32 func_00266DE8(void *bs, PackHdr *h) {
     u32 a, b, c, n, i;
@@ -294,9 +315,22 @@ extern "C" s32 func_00267A08(SceMpeg *p) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00267A60);
+extern "C" s32 func_00267A60(SceMpeg *p, s32 i, s32 a, s32 b) { MpegSys *s = p->sys; s32 old = s->mC[i].m0; void *g; s->mC[i].m0 = a; s->mC[i].m4 = b; asm volatile("move %0, $28" : "=r"(g)); s->mC[i].m8 = g; return old; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00267A98);
+extern "C" s32 func_00267A98(SceMpeg *mp, s32 *d) {
+    s32 r = 0;
+    MpegSys *s;
+    if (mp && (s = mp->sys)) {
+        s32 (*fn)(SceMpeg *, s32 *, s32) = (s32 (*)(SceMpeg *, s32 *, s32))s->mC[*d].m0;
+        if (fn) {
+            void *ngp = s->mC[*d].m8, *save;
+            asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(save) : "r"(ngp) : "memory");
+            r = fn(mp, d, s->mC[*d].m4);
+            asm volatile("move $28, %0" : : "r"(save) : "memory");
+        }
+    }
+    return r;
+}
 
 extern "C" s32 func_00267B10(SceMpeg *mp) { struct { s32 m0; s32 pad[7]; } t; t.m0 = 1; func_00267A98(mp, &t.m0); return 1; }
 

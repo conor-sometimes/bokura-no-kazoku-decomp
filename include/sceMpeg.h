@@ -10,7 +10,7 @@ struct SceMpeg;
 struct MpegCb {
     s32 m0;
     s32 m4;
-    u32 m8;
+    void *m8;
 };
 
 struct MpegBuf {

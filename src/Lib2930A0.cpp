@@ -64,9 +64,36 @@ extern "C" void *func_00293B68(void);
 extern u8 IFadeMgr_vt[] asm("_vt$8IFadeMgr");
 extern u8 IPadMgr_vt[] asm("_vt$7IPadMgr");
 extern u8 ISnapMgr_vt[] asm("_vt$8ISnapMgr");
+
+extern "C" s64 func_00283490(double);
+// List node as laid out by CListTag (include/CList.h); the linkonce destructors below unlink it.
+struct ListTag { s32 isHead; ListTag *prev; ListTag *next; void *vptr; };
+extern u8 CListTag_vt[] asm("_vt$8CListTag");
+extern u8 CCacheInfo_vt[] asm("_vt$10CCacheInfo");
+extern "C" void __builtin_delete(void *);
+extern "C" void func_00286B98(void *, const char *, void *, s32);
+extern "C" void *__tf8CListTag(void);
+extern "C" u8 D_424660[];
+extern "C" char D_002D2D38[];
+extern "C" u8 D_002D2D40[];
+// A class whose slot 0 is an inline Release() { delete this; } and whose destructor is slot 6.
+class CRelease7 {
+public:
+    virtual void Release();
+    virtual void Func1();
+    virtual void Func2();
+    virtual void Func3();
+    virtual void Func4();
+    virtual void Func5();
+    virtual ~CRelease7();
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002930A0);
+// libgcc __fixdfdi (soft-float double to 64-bit int)
+extern "C" s64 func_002930A0(double a) {
+    if (a < 0) return -func_00283490(-a);
+    return func_00283490(a);
+}
 
 extern "C" void *__tf9CBootMain(void) {
     if (*(s32 *)D_4245A0 == 0) {
@@ -194,7 +221,11 @@ extern "C" s32 func_00293538(u8 *p) { return *(s32 *)(p + 0x4C); }
 // CFadeMgr[9]
 extern "C" s32 func_00293540(u8 *p) { return *(s32 *)(p + 0x48) != 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293550);
+extern "C" f32 func_00293550(u8 *p) {
+    s32 d = *(s32 *)(p + 0x44);
+    if (d != 0) return (f32)*(s32 *)(p + 0x40) / (f32)d;
+    return 0.0f;
+}
 
 // CFadeMgr[11]
 extern "C" s32 func_00293590(u8 *p) { return *(s32 *)(p + 0x48); }
@@ -202,7 +233,9 @@ extern "C" s32 func_00293590(u8 *p) { return *(s32 *)(p + 0x48); }
 // CFadeMgr[12]
 extern "C" void func_00293598(u8 *p, s32 v) { *(s32 *)(p + 0x50) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002935A0);
+extern "C" void func_002935A0(u8 *p, s32 v) {
+    *(s32 *)(p + 0xC) = v < 0 ? 8 : v;
+}
 
 // ISnapMgr[0]
 // ISnapMgr::~ISnapMgr() (linkonce, deleting): the interface's implicit destructor
@@ -238,7 +271,10 @@ extern "C" s32 func_002936C8(u8 *p) { return *(s32 *)(p + 0x20); }
 // CSnapMgr[10]
 extern "C" s32 func_002936D0(u8 *p) { return *(s32 *)(p + 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936D8);
+extern "C" void func_002936D8(u8 *p, s32 v) {
+    *(s32 *)(p + 0x30) = v;
+    *(s32 *)(p + 0x28) = 1;
+}
 
 // CSnapMgr[12]
 extern "C" void func_002936E8(u8 *p) { *(s32 *)(p + 0x2C) = 0; }
@@ -261,13 +297,37 @@ extern "C" void *__tf8CListTag(void) {
     return D_2EB708;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293788);
+// CListTag::~CListTag() (linkonce, deleting)
+extern "C" void CListTag_dtor(ListTag *p, s32 flags) asm("_$_8CListTag");
+extern "C" void CListTag_dtor(ListTag *p, s32 flags) {
+    p->vptr = CListTag_vt;
+    p->prev->next = p->next;
+    p->next->prev = p->prev;
+    p->next = p;
+    p->prev = p;
+    if (flags & 1) return (void)__builtin_delete(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf5CList);
+extern "C" void *__tf5CList(void) {
+    if (*(s32 *)D_424660 == 0) {
+        __tf8CListTag();
+        func_00286B98(D_424660, D_002D2D38, D_002D2D40, 1);
+    }
+    return D_424660;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293840);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002938F0);
+// CCacheInfo::~CCacheInfo() (linkonce, deleting): only the CListTag base's unlink
+extern "C" void CCacheInfo_dtor(ListTag *p, s32 flags) asm("_$_10CCacheInfo");
+extern "C" void CCacheInfo_dtor(ListTag *p, s32 flags) {
+    p->vptr = CListTag_vt;
+    p->prev->next = p->next;
+    p->next->prev = p->prev;
+    p->next = p;
+    p->prev = p;
+    if (flags & 1) return (void)__builtin_delete(p);
+}
 
 extern "C" void *__tf10CCacheInfo(void) {
     if (*(s32 *)D_424670 == 0) {
@@ -295,7 +355,8 @@ extern "C" void *__tf12CTexCacheMgr(void) {
     return D_424680;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293AF0);
+// CTexCacheMgr slot 0: inline Release() { delete this; }
+extern "C" void func_00293AF0(CRelease7 *p) { delete p; }
 
 extern "C" void *func_00293B28(void) {
     if (*(s32 *)D_2EB710 == 0) {
@@ -340,6 +401,16 @@ extern "C" void *__tf8CFaceRes(void) {
     return D_2EB720;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C70);
+extern "C" void func_00293C70(u8 *p, s32 a, s32 b, s32 c, s32 d) {
+    *(s32 *)(p + 0x34) = a;
+    *(s32 *)(p + 0x38) = b;
+    *(s32 *)(p + 0x3C) = c;
+    *(s32 *)(p + 0x40) = d;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C88);
+extern "C" void func_00293C88(u8 *p, s32 *v) {
+    *(s32 *)(p + 0x44) = v[0];
+    *(s32 *)(p + 0x48) = v[1];
+    *(s32 *)(p + 0x4C) = v[2];
+    *(s32 *)(p + 0x50) = v[3];
+}
