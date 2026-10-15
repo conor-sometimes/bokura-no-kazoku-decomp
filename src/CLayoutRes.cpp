@@ -26,6 +26,9 @@ public:
 
 class CLayoutResSub1B8748 : public CPushBuf {
 public:
+    s32 LoadClut(class CLayoutTex *t, CPushBuf *b);
+    s32 LoadTex(class CLayoutTex *t, CPushBuf *b);
+    s32 Load(const char *dir);
     void Clear();
     s32 Init();
     s32 Func1B96F0(void *p);
@@ -63,6 +66,37 @@ const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
 long Func289140(const char *s);
 
 //@sym strcmp 0x28B190
+
+extern "C" char *strstr(const char *s, const char *t);
+extern "C" int strncmp(const char *a, const char *b, unsigned int n);
+
+int Func249248(void *p);
+void Func249348();
+extern void *D_002A5988;
+extern "C" s32 func_0024A4A0(void *p);
+extern "C" void func_00248C30(void *p);
+extern "C" void func_00248C70(void *p);
+extern "C" s32 func_001B8890(void *p, s32 data);
+
+#include "libc.h"
+class CLayoutTex {
+public:
+    s32 m_unk0;               // 0x0
+    void *m_data;             // 0x4
+    s32 m_unk8;               // 0x8
+    s32 m_unkC;               // 0xC
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    s32 m_unk20;              // 0x20
+    s32 m_unk24;              // 0x24
+};
+extern "C" char *func_00248DA8(void *p);
+extern "C" s32 func_00248DC0(void *p);
+extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+s32 Func235DE0(const char *fmt, ...);
 // @decl-end
 
 CLayoutRes::CLayoutRes() {
@@ -81,7 +115,28 @@ void CLayoutResSub1B8748::Clear() {
     m_unkC = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B8760);
+s32 CLayoutResSub1B8748::Load(const char *dir) {
+    s32 ok = 0;
+    s32 pushed = 0;
+    s32 opened = 0;
+    Release();
+    if (dir && dir[0]) {
+        if (!Func249248((void *)dir)) goto end;
+        opened = 1;
+    }
+    m_unkC = func_0024A4A0(D_002A5988);
+    if (m_unkC) {
+        func_00248C30(this);
+        pushed = 1;
+        if (func_001B8890(this, m_unkC)) {
+            ok = Init() != 0;
+        }
+    }
+end:
+    if (pushed) func_00248C70(this);
+    if (opened) Func249348();
+    return ok;
+}
 
 s32 CountTokens(const char *p) {
     char buf[0x100];
@@ -195,7 +250,15 @@ INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", jtbl_002E09A0);
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E09C0);
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0A10);
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0A20);
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B8BE0);
+s32 GetLayoutPartType(const char *s) {
+    if (strstr(s, ".tm2")) return 3;
+    if (strstr(s, ".cl2")) return 4;
+    if (strcmp(s, "box") == 0) return 1;
+    if (strcmp(s, "line") == 0) return 2;
+    if (strncmp(s, "text:", 4) == 0) return 5;
+    if (strncmp(s, "form:", 4) == 0) return 6;
+    return 0;
+}
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0A58);
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0A60);
 INCLUDE_RODATA("asm/nonmatchings/CLayoutRes", D_002E0A68);
@@ -246,9 +309,31 @@ void *CLayoutResSub1B8748::CopyFrom(CPushBuf *b) {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B9930);
+s32 CLayoutResSub1B8748::LoadTex(CLayoutTex *t, CPushBuf *b) {
+    t->m_data = CopyFrom(b);
+    if (!t->m_data) return 0;
+    strcpy(func_00248DA8(this), (const char *)b);
+    t->m_unk0 = func_00248DC0(this);
+    if (!func_00253048(t->m_data, &t->m_unk8, &t->m_unkC, &t->m_unk10, &t->m_unk14, &t->m_unk18, &t->m_unk1C, &t->m_unk20, &t->m_unk24)) {
+        Func235DE0("*** invalid texture %s\n", b);
+        return 0;
+    }
+    if (t->m_unk20 > 0x10) func_0023C048(t->m_unk20, t->m_unk18, t->m_unk18);
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B9A30);
+s32 CLayoutResSub1B8748::LoadClut(CLayoutTex *t, CPushBuf *b) {
+    t->m_data = CopyFrom(b);
+    if (!t->m_data) return 0;
+    strcpy(func_00248DA8(this), (const char *)b);
+    t->m_unk0 = func_00248DC0(this);
+    if (!func_00253048(t->m_data, &t->m_unk8, &t->m_unkC, &t->m_unk10, &t->m_unk14, &t->m_unk18, &t->m_unk1C, &t->m_unk20, &t->m_unk24)) {
+        Func235DE0("*** invalid CLUT %s\n", b);
+        return 0;
+    }
+    if (t->m_unk20 > 0x10) func_0023C048(t->m_unk20, t->m_unk18, t->m_unk18);
+    return 1;
+}
 
 void CLayoutResSub1B8748::Release() {
     Func248E00();

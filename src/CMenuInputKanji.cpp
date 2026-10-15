@@ -14,12 +14,14 @@ public:
     virtual s32 Func1A50C8() = 0;
     virtual s32 Func1A64D0() = 0;
 };
-// Vtable 0x2C1B38: the key method is Func1A4FE0 (slot 0); the destructor is slot 6.
+// Vtable 0x2C1B38: slot 0 is Func1A4FE0, the destructor is slot 6 (slot order comes from
+// IMenuInputKanji). Func29B570 (inline in retail, never defined here) is declared first so it is
+// the key method: Func1A4FE0 can be C++ while the vtable stays asm.
 class CMenuInputKanji : public IMenuInputKanji {
 public:
     CMenuInputKanji(s32 kind);
-    virtual s32 Func1A4FE0();
     virtual s32 Func29B570();
+    virtual s32 Func1A4FE0();
     virtual s32 Func29B578();
     virtual s32 SetNameBuf(char *buf);
     virtual s32 Func1A50C8();
@@ -31,7 +33,9 @@ public:
     CBgWork m_bg;             // 0x4C
     s32 m_unk58;              // 0x58
     s32 m_kind;               // 0x5C
-    u8 pad60[0x820];
+    u8 pad60[0x1C];
+    void *m_unk7C;            // 0x7C
+    u8 pad80[0x800];
     char *m_nameBuf;          // 0x880
 };
 s32 Func235DE0(const char *fmt, ...);
@@ -56,6 +60,81 @@ public:
     u8 pad68[0xC];
 };
 CMenuSysscr32 *NewMenuInputKanji2();
+
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+};
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+void *Func237570(int size);
+void Func237A88(void *p, int n);
+void *Func237C30(void *p);
+void Func238158(void *p, int v);
+void Func225088();
+int Func2250C0();
+void Func225240(int v);
+class CMenuMgrSub1B6418 {
+public:
+    void SetUnk0And20(f32 x, f32 y);
+    void Move1B6488(f32 x, f32 y);
+    void SetUnkE0(s32 v);
+};
+extern CMenuMgrSub1B6418 *D_002A5538;
+// The window item (CStatusWin.cpp); CUnk1A4298 above is the same object.
+class CVec4;
+class CStatusItem {
+public:
+    void GetMappedUnkC0(f32 *x, f32 *y, s32 n);
+    int Select(s32 n);
+    void SetMappedColor(s32 n, const CVec4 *v);
+    u8 pad0[0x38];
+    s32 m_mapCount;           // 0x38
+};
+extern const char D_002DF0B8[];
+extern "C" int func_001B66E8(void *p);
+class CMenuSub1A7658 {
+public:
+    int Func1A7658();
+    void Func1A7038();
+    void Func1A7308(s32 n);
+    void Func1A7130();
+    void Func1A71F0();
+
+    u8 pad0[0x48];
+    CUnk1A4298 *m_unk48;      // 0x48
+    u8 pad4C[0x4];
+    s32 m_unk50;              // 0x50
+};
+
+extern void (*D_002B91B0)(void *p);
+
+//@sym Func1A7038__14CMenuSub1A7658 0x1A7038
+
+#include "CFlagWork.h"
+extern CFlagWork *D_002A4B60;
+// Sound player (global D_002A5468, as in CMenuAsksavequit.cpp); slot 14 plays a system sound.
+class CSePlayer {
+public:
+    virtual ~CSePlayer();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual void F7();
+    virtual void F8();
+    virtual void F9();
+    virtual void F10();
+    virtual void F11();
+    virtual void F12();
+    virtual void F13();
+    virtual void Play(s32 id);
+};
+extern CSePlayer *D_002A5468;
 // @decl-end
 
 CMenuInputKanji::CMenuInputKanji(s32 kind) {
@@ -65,7 +144,11 @@ CMenuInputKanji::CMenuInputKanji(s32 kind) {
 CMenuInputKanji::~CMenuInputKanji() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A4FE0);
+s32 CMenuInputKanji::Func1A4FE0() {
+    func_00245818(&m_bg, 1);
+    if (m_unk7C) D_002B91B0(m_unk7C);
+    delete this;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDED0);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDEE0);
@@ -173,11 +256,60 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEE88);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEE90);
 INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEE98);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A7038);
+void CMenuSub1A7658::Func1A7038() {
+    f32 sel[4];
+    f32 col[4];
+    s32 i, j, n;
+    for (i = 0; i < 4; i++) {
+        sel[i] = D_002A4B60->Func1091B0(i + 0xB);
+        col[i] = D_002A4B60->Func1091B0(i + 0xF);
+    }
+    n = ((CStatusItem *)m_unk48)->m_mapCount;
+    ((CStatusItem *)m_unk48)->Select(m_unk50);
+    for (j = 0; j < n; j++) {
+        if (j == m_unk50) ((CStatusItem *)m_unk48)->SetMappedColor(j, (CVec4 *)sel);
+        else ((CStatusItem *)m_unk48)->SetMappedColor(j, (CVec4 *)col);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A7130);
+void CMenuSub1A7658::Func1A7130() {
+    s32 n = ((CStatusItem *)m_unk48)->m_mapCount;
+    s32 old = m_unk50;
+    f32 x, y;
+    if (n < 2) return;
+    m_unk50 = old - 1;
+    if (m_unk50 < 0) {
+        if (n == 2) m_unk50 = 0;
+        else m_unk50 = n - 1;
+    }
+    if (m_unk50 != old) {
+        Func1A7038();
+        ((CStatusItem *)m_unk48)->GetMappedUnkC0(&x, &y, m_unk50);
+        D_002A5538->Move1B6488(x, y);
+        D_002A5468->Play(0);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A71F0);
+void CMenuSub1A7658::Func1A71F0() {
+    s32 n = ((CStatusItem *)m_unk48)->m_mapCount;
+    s32 old = m_unk50;
+    f32 x, y;
+    if (n < 2) return;
+    m_unk50 = old + 1;
+    if (old + 1 >= n) {
+        if (n == 2) m_unk50 = 1;
+        else {
+            m_unk50 = 0;
+            D_002A5468->Play(0);
+        }
+    }
+    if (m_unk50 != old) {
+        Func1A7038();
+        ((CStatusItem *)m_unk48)->GetMappedUnkC0(&x, &y, m_unk50);
+        D_002A5538->Move1B6488(x, y);
+        D_002A5468->Play(0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A72D8);
 
@@ -185,11 +317,32 @@ void CMenuInputKanji::SetUnk4C(s32 v) {
     m_bg.m_unk0 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A7308);
+void CMenuSub1A7658::Func1A7308(s32 n) {
+    f32 x, y;
+    s32 cnt = ((CStatusItem *)m_unk48)->m_mapCount;
+    if (n < 0 || cnt - 1 < n) {
+        Func235DE0(D_002DF0B8, n);
+        n = 0;
+    }
+    Func1A7038();
+    ((CStatusItem *)m_unk48)->GetMappedUnkC0(&x, &y, n);
+    D_002A5538->SetUnk0And20(x, y);
+    D_002A5538->SetUnkE0(1);
+    m_unk50 = n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A73B0);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", Func1A7658__14CMenuSub1A7658);
+int CMenuSub1A7658::Func1A7658() {
+    u8 *p = (u8 *)Func237570(0x60);
+    Func237A88(p, 6);
+    Func238158(Func237C30(p + 0x50), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(m_unk48->Func1A4298());
+    ((CUnk237E90 *)(p + 0x40))->Func237E90(func_001B66E8(D_002A5538));
+    Func225088();
+    Func225240((int)p);
+    return Func2250C0();
+}
 
 CMenuSysscr32 *NewMenuInputKanji2() {
     return new CMenuSysscr32;

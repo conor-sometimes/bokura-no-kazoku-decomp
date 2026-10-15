@@ -1,9 +1,12 @@
 # Translation units
 
 The game's .text from 0x1002A8 to 0x1E91B8 is split into 127 C++ units (`src/<Class>.cpp`),
-one per guessed original translation unit; the rest of .text stays assembly for now
-(`asm/crt0.s`, and `asm/text_1e91b8.s` from CAppMain on: C-style code without vtables, then
-the Sony SDK libraries and the linkonce code).
+one per guessed original translation unit. The C-style code after it (CAppMain 0x1E91B8 up to
+dklib at 0x245648) is cut into 41 more units, `src/CAppMain.cpp` and `src/Unit<addr>.cpp`, by
+scripts/text_units.py: no vtables there, so cuts go only where no .rodata literal is shared
+across them, every ~2500 instructions. Those boundaries are plausible, not proven. The rest of
+.text stays assembly for now (`asm/crt0.s`, and `asm/text_245648.s`: dklib, the Sony SDK
+libraries and the linkonce code).
 
 ## Evidence (scripts/find_units.py)
 

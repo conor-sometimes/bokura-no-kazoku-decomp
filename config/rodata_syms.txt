@@ -109,3 +109,4 @@ D_002E0740 = 0x002E0740; // force_not_migration:True
 D_002E0760 = 0x002E0760; // force_not_migration:True
 D_002E07A8 = 0x002E07A8; // force_not_migration:True
 D_002E07D8 = 0x002E07D8; // force_not_migration:True
+D_002D3680 = 0x002D3680; // force_not_migration:True

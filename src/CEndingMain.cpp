@@ -4,11 +4,7 @@
 #include "CProcess.h"
 #include "IFadeMgr.h"
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 int Func251B88();
 int Func235DE0(const char *fmt, ...);
 extern "C" int sprintf(char *buf, const char *fmt, ...);

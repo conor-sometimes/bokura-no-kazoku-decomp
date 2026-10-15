@@ -33,11 +33,7 @@ public:
     static CInterfRes *Create();
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 extern void *D_002A0BE4;
 extern "C" void func_00250840(void *p, void *item);
 extern "C" int func_00250A48(void *p, void *item);

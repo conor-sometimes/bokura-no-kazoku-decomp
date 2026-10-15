@@ -26,10 +26,7 @@ public:
     u8 pad0[0x78];
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
+#include "CFlagWork.h"
 extern CFlagWork *D_002A5358;
 inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
 // CMenuExGetMoney's unit starts here (its text starts before its first vtable function).

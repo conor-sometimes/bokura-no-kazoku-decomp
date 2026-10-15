@@ -21,8 +21,21 @@ public:
     f32 m_unk34;              // 0x34
 };
 
+// Task-side tag (as CTaskTag8 in CInterfRes.cpp): m4 = -1, m0 = m2 = 0.
+struct CStatusTag {
+    CStatusTag() {
+        m_unk4 = -1;
+        m_unk2 = 0;
+        m_unk0 = 0;
+    }
+    s16 m_unk0;               // 0x0
+    s16 m_unk2;               // 0x2
+    s32 m_unk4;               // 0x4
+};
+
 class CStatusBase {
 public:
+    CStatusBase();
     f32 GetItemUnk34();
     s32 GetItemState();
     void Advance2To3();
@@ -32,7 +45,8 @@ public:
     void Select19A858(u32 k);
     virtual void Refresh(u32 k);
 
-    u8 pad0[0x48];
+    CStatusTag m_tag;         // 0x0
+    u8 pad8[0x40];
     CStatusItem* m_item;      // 0x48
     s32 m_state;              // 0x4C
     u32 m_unk50;              // 0x50
@@ -129,12 +143,8 @@ public:
 
 void *operator new(unsigned int n);
 int Func235DE0(const char *fmt, ...);
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
+#include "CFlagWork.h"
 extern CFlagWork *D_002A4B60;
-extern CFlagWork *D_002A26E4;
 class CChrBodyWin {
 public:
     void Func188778(f32 *a, f32 *b, f32 *c, f32 *d);
@@ -155,7 +165,10 @@ int StepDigit(int *out, int *p, int base, int range, f32 t);
 extern char D_002DDA38[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A830);
+CStatusBase::CStatusBase() {
+    m_unk50 = 0;
+    m_state = 0;
+}
 
 void CStatusBase::Select19A858(u32 k) {
     if (k >= 6) {

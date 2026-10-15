@@ -134,11 +134,50 @@ extern char D_002E1470[];
 extern char D_002E1478[];
 extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
 void Func235DE0(const char *fmt, ...);
+
+#include "CList.h"
+class CLayoutRes {
+public:
+    CLayoutRes();
+    virtual ~CLayoutRes();
+    u8 pad0[0x20];
+};
+class CMiniGame4Res : public CListTag {
+public:
+    CMiniGame4Res() {}
+    // The retail destructor is inline (library 0x29C9B8), so Load is the real key method;
+    // declaring the destructor non-inline here keeps this unit from emitting the vtable.
+    virtual ~CMiniGame4Res();
+    virtual s32 Load();
+    virtual void Release();
+    CLayoutRes m10;           // 0x10
+    CLayoutRes m34;           // 0x34
+};
+
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+extern char D_002E13E0[], D_002E13E8[], D_002E13F8[], D_002E1410[], D_002E1420[];
+class CLayoutResSub1B8748 {
+public:
+    s32 Load(const char *dir);
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D4B50);
+CMiniGame4Res *NewMiniGame4Res() {
+    return new CMiniGame4Res;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D4BA8);
+s32 CMiniGame4Res::Load() {
+    char path[256];
+    Release();
+    Func2491A8(path, 0, (s32)D_002E13E0, (s32)D_002E13E8, (s32)D_002E13F8);
+    if (((CLayoutResSub1B8748 *)&m10)->Load(path)) {
+        Func2491A8(path, 0, (s32)D_002E13E0, (s32)D_002E1410, (s32)D_002E1420);
+        if (((CLayoutResSub1B8748 *)&m34)->Load(path)) {
+            D_002A5A04 = (CMiniGame4Data *)this;
+        }
+    }
+    return D_002A5A04 != 0;
+}
 
 void CMiniGame4ResObj::Release1D4C68() {
     D_002A5A04 = 0;

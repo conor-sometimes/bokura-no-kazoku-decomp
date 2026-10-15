@@ -284,7 +284,7 @@ INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C88);
 INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108E10);
 
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C90);
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108E38);
+INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108E38__9CFlagWorkPCc);
 
 s32 CFlagWork::GetType(s32 id) {
     if (id < 0 || id > m_numDefs - 1) {

@@ -23,6 +23,10 @@ public:
     CMemTex m_texF8;          // 0xF8
     u8 pad124[0x228];
     s32 m_unk34C;             // 0x34C
+    u8 pad350[0x50];
+    char m_name[0x424];       // 0x3A0
+    s32 m_unk7C4;             // 0x7C4
+    s32 m_unk7C8;             // 0x7C8
 };
 int Func249248(void *buf);
 void Func249348();
@@ -97,11 +101,9 @@ public:
 
     u8 pad18[0x10238];
 };
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E0;
+#include "CFlagWork.h"
+
+#include "libc.h"
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CTitleMain", __10CTitleMain);
@@ -146,7 +148,13 @@ void CTitleMain::ReleaseTextures() {
     m_tex74.Func2546F0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CTitleMain", Func101368__10CTitleMainPCci);
+void CTitleMain::Func101368(const char *s, s32 v) {
+    if (strcmp(m_name, s)) {
+        strcpy(m_name, s);
+        m_unk7C4 = v;
+        m_unk7C8 = 1;
+    }
+}
 
 void CTitleMain::CallFunc101368(s32 v) {
     Func101368(D_002D1988, v);

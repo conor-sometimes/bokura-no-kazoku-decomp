@@ -32,6 +32,15 @@ CSysFlagSub145BD0 *NewSysFlagSub145BD0();
 int FindFlagIdByName(const char *s);
 int FindInt145848(int *p, int v);
 const char *FlagNameById(int v);
+
+struct CFlagRange {
+    s32 m_id;
+    s32 m_base;
+};
+extern CFlagRange D_002A2820[];
+extern char D_002D7940[];
+extern char D_002D79C8[];
+int Func145738(int name, int flag);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00143A90);
@@ -90,7 +99,16 @@ s32 CSysFlag::Get143F20(s32 x) {
     return Func1091B0(x + 0x2155);
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00143FA8);
+void CSysFlag::Vf143FA8(u32 a, u32 b, u32 c, u32 bit, s32 set) {
+    if (a < 3 && b < 14 && c < 0x81 && bit < 16) {
+        s32 id = (a * 13 + b) * 128 + c + 0xDD5;
+        s32 mask = 1 << bit;
+        s32 v = Func1091B0(id);
+        if (set) v |= mask;
+        else v &= ~mask;
+        Func108FF0(id, v);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144070);
 
@@ -123,7 +141,29 @@ INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144270);
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144378);
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144440);
+void CSysFlag::Merge144440(CFlagWork *w) {
+    s32 i;
+    for (i = 0; i < 3; i++) {
+        SetMax(i + 0xCF, w->Func1091B0(i + 0xCF));
+        SetMax(i + 0xD2, w->Func1091B0(i + 0xD2));
+        SetMax(i + 0x2155, w->Func1091B0(i + 0x2155));
+        SetMax(i + 0xA, w->Func1091B0(i + 0xA));
+    }
+    for (i = 0; i < 0xD00; i++) SetMax(i + 0xD5, w->Func1091B0(i + 0xD5));
+    for (i = 0; i < 0x1380; i++) OrBits(i + 0xDD5, w->Func1091B0(i + 0xDD5));
+    for (i = 0; i < 0x80; i++) {
+        SetMax(i + 0x2158, w->Func1091B0(i + 0x2158));
+        SetMax(i + 0x21D8, w->Func1091B0(i + 0x21D8));
+    }
+    for (i = 0; i < 0x80; i++) {
+        OrBits(i + 0x2278, w->Func1091B0(i + 0x2278));
+        OrBits(i + 0x22F8, w->Func1091B0(i + 0x22F8));
+        OrBits(i + 0x2378, w->Func1091B0(i + 0x2378));
+        OrBits(i + 0x23F8, w->Func1091B0(i + 0x23F8));
+        OrBits(i + 0x2478, w->Func1091B0(i + 0x2478));
+    }
+    for (i = 0; i < 0x12C; i++) OrBits(i + 0x2500, w->Func1091B0(i + 0x2500));
+}
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_001446D8);
 
@@ -135,7 +175,23 @@ INCLUDE_ASM("asm/nonmatchings/ISysFlag", __8CCurFlag);
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144808);
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144880);
+void ICurFlag::Vf144880(CFlagWork *src) {
+    s32 i;
+    s32 n = Func1091B0(0x16);
+    for (i = 0; i < 0xD00; i++) Func108FF0(i + 0x226A, src->Func1091B0(i + 0xD5));
+    for (i = 0; i < 0x20; i++) Func108FF0(i + 0x3C3E, src->Func1091B0(i + 0x2258));
+    for (i = 0; i < 8; i++) Func108FF0(i + 0x1562, src->Func1091B0(i + 0x24F8));
+    for (i = 0; i < 0x80; i++) {
+        Func108FF0(i + 0x2F6A, src->Func1091B0(i + 0x2158));
+        Func108FF0(i + 0x2FEA, src->Func1091B0(i + 0x21D8));
+    }
+    Func108FF0(1, src->Func1091B0(n + 0xCF));
+    Func108FF0(8, src->Func1091B0(n + 0xD2));
+    Func109248(1, 0, 999);
+    Func109248(8, 0, 999);
+    Func108FF0(0x14, src->Func1091B0(0xD));
+    for (i = 0; i < 3; i++) Func108FF0(i + 0xA, src->Func1091B0(i + 0xD2));
+}
 
 void CCurFlag::SetNamed(s32 base, int name, s32 v) {
     int b = Func1456A8(name);
@@ -152,7 +208,22 @@ int CCurFlag::GetNamed(s32 base, int name) {
     return Func1091B0(base + b);
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144B68);
+s32 CCurFlag::Get144B68(s32 base, s32 name, s32 b) {
+    s32 r = Func1456A8(name);
+    s32 i, v, k;
+    if (r < 0) return 0;
+    k = r * 16;
+    v = 0;
+    for (i = 0; i < 16; i++) {
+        v = Func1091B0(k + 0x1F6 + i);
+        if (v <= 0 || v == b) break;
+    }
+    if (v <= 0) {
+        Func235DE0(D_002D79C8, b);
+        return -1;
+    }
+    return Func1091B0(base + k + i);
+}
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144C60);
 
@@ -289,7 +360,17 @@ int Func1456A8(int name) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", Func145738__Fii);
+int Func145738(int name, int flag) {
+    int n, i;
+    if (!D_002A26E4) return -1;
+    n = D_002A26E4->Func1091B0(0x27);
+    if (name < n) return D_002A26E4->Func1091B0(name + 0x28);
+    if (!flag) return name;
+    for (i = 0; i < n; i++) {
+        if (D_002A26E4->Func1091B0(i + 0x28) == name) return name;
+    }
+    return -1;
+}
 
 int FindFlagIdByName(const char *s) {
     int i = Func24B998(D_002A26E8, s);
@@ -326,9 +407,28 @@ s32 CCurFlag::Get1458F0(int name, s32 a, s32 b, s32 c, s32 d, s32 e) {
     return Select(r);
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00145A28);
+void CCurFlag::Vf145A28(s32 k) {
+    s32 i, j;
+    for (i = 0; i < 6; i++) {
+        if (k < 0 || k == i) {
+            for (j = 0; D_002A2820[j].m_id >= 0; j++) D_002A26E4->Func108FF0(D_002A2820[j].m_base + i, 0);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00145AD0);
+void CCurFlag::Vf145AD0(s32 id, s32 off, s32 v) {
+    s32 i;
+    for (i = 0; D_002A2820[i].m_id >= 0; i++) {
+        if (D_002A2820[i].m_id == id) {
+            if (id == 0xB8) {
+                D_002A26E4->Func108FF0(D_002A2820[i].m_base + off, 1);
+            } else {
+                D_002A26E4->Func109108(D_002A2820[i].m_base + off, v - D_002A26E4->Func1091B0(D_002A2820[i].m_id + off));
+            }
+            return;
+        }
+    }
+}
 
 CSysFlagSub145BD0 *NewSysFlagSub145BD0() {
     CSysFlagSub145BD0 *p = (CSysFlagSub145BD0 *)operator new(0x28);

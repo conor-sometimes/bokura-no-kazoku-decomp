@@ -3,7 +3,7 @@
 import json,os,sys
 R=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ctx=json.load(open(R+'/build/bk/ctx.json'))
-LO,HI=0x1002A8,0x1E91B8
+LO,HI=0x1002A8,0x245648  # C++ units, then the C-style units (scripts/text_units.py)
 everything=[int(l,16) for l in open(R+'/config/functions.txt') if l.startswith('0x')]
 allf=[a for a in everything if LO<=a<HI]
 remaining={int(k,16) for k in ctx if LO<=int(k,16)<HI}

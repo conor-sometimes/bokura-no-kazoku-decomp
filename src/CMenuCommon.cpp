@@ -50,11 +50,7 @@ public:
 };
 
 //@sym Update18D8B8__20CMenuCommonSub18E0E0 0x18D8B8
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 class CMenuMgrSub1B6418 {
 public:
     void Move1B6488(f32 x, f32 y);

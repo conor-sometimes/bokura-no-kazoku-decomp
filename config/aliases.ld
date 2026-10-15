@@ -120,7 +120,6 @@ func_0011CAE0 = 0x0011CAE0; /* __13CMapEffObjRes (CMapEffObjRes::Create in CMapE
 __11CFont25C230 = 0x0025C230; /* func_0025C230 (font object ctor, library) */
 Init1691D0__10CInterfMgr = 0x001691D0; /* func_001691D0 (IInterfMgr unit) */
 __12CSndWorkReal = 0x00128870; /* func_00128870 (CSndWorkReal unit) */
-__9CSceneSet = 0x0012C4A8; /* func_0012C4A8 (CSceneSet unit) */
 __9CEventObj = 0x00132270; /* func_00132270 (CEventObj unit) */
 _$_9CEventObj = 0x001327F8; /* func_001327F8 (CEventObj unit) */
 _$_12CSndWorkReal = 0x00128BB0; /* func_00128BB0 (CSndWorkReal unit) */
@@ -139,3 +138,52 @@ func_0012C7E0 = 0x0012C7E0; /* now ReleaseSnd__9CSceneSet (merge vt1-3) */
 func_00132208 = 0x00132208; /* now Release__9CEventRes (merge vt1-3) */
 func_0013E668 = 0x0013E668; /* now __9CMovieObj (merge vt1-3) */
 func_0013E6D8 = 0x0013E6D8; /* now _$_9CMovieObj (merge vt1-3) */
+func_0012DFB0 = 0x0012DFB0; /* LoadFile__7CSvmResPCc (CEventRes), lane g1 */
+Func10DBD8__8CFaceObj = 0x0010DBD8; /* = Func10DBD8__8CFaceObji (CCharaObj), lane g1 */
+Func10DC80__8CFaceObj = 0x0010DC80; /* = Func10DC80__8CFaceObjPii (CCharaObj), lane g1 */
+__9CFontWork = 0x002561D0; /* CFontWork::CFontWork (library, g2) */
+func_0010BF88 = 0x0010BF88; /* __10CEFontWork (g2) */
+func_001B9D40 = 0x001B9D40; /* __10CLayoutObj (g2) */
+func_001BD188 = 0x001BD188; /* __16CLayoutHourglass (g2) */
+func_001BD1E0 = 0x001BD1E0; /* Load__16CLayoutHourglassP10CLayoutResPCc (g2) */
+func_001B9D70 = 0x001B9D70; /* _$_10CLayoutObj (g2) */
+/* lane g3: TArray constructors (linkonce template code) called from CSceneSet's constructor */
+__6CDkArr = 0x00296578; /* func_00296578 */
+__7CDkList = 0x002965F8; /* func_002965F8 */
+func_001B8760 = 0x001B8760; /* Load__19CLayoutResSub1B8748PCc (CMiniGame6Res calls the old name) */
+Func25CFC8__8CSndWorki = 0x0025CFC8; /* lane g3: library, func_0025CFC8 */
+func_00196B50 = 0x00196B50; /* Func196B50__15CMenuRecordList (CCommandSelect calls the old name) */
+/* lane g5: CMenuRecordWin is CStatusItem (0x1A3xxx); old names other units call */
+Func1A39A8__14CMenuRecordWinPfPii = 0x001A39A8; /* = GetPos__11CStatusItemPfT1i */
+Func1A3B58__14CMenuRecordWinPfPii = 0x001A3B58; /* = GetUnk10__11CStatusItemPfT1i */
+func_001A36B0 = 0x001A36B0; /* = GetUnkE4__11CStatusItemi (CMenuSysscr27) */
+func_001A3CF8 = 0x001A3CF8; /* = GetUnkC0__11CStatusItemPfT1i (CMenuCommon) */
+func_001A4060 = 0x001A4060; /* = GetUnkEC__11CStatusItemi (CMenuCommon) */
+func_00168DC8 = 0x00168DC8; /* = __10CInterfRes (CGameResort) */
+Func1A0CF0__10CStatusWinPCc = 0x001A0CF0; /* = Find__19CStatusWinSub1A0A10PCc (D_002A5408 is a CStatusWinSub1A0A10) */
+func_001A3DC8 = 0x001A3DC8; /* = SetUnkF0__11CStatusItemii */
+func_0012D1C8 = 0x0012D1C8; /* = NewCharaResObj__Fv (ICharaResMgr) */
+Func1A3740__14CMenuRecordWiniPCc = 0x001A3740; /* = SetText__11CStatusItemiPCc */
+/* bss words the C code names but no asm references by symbol (r1) */
+D_2FD890 = 0x002FD890;
+D_2FD894 = 0x002FD894;
+/* .bss globals that spimdisasm leaves unnamed (no D_ in undefined_syms_auto.txt) but C now
+   references (lane r2, 2026-10-15) */
+D_30E180 = 0x0030E180;
+D_30E184 = 0x0030E184;
+D_30E188 = 0x0030E188;
+_ctype_ = 0x002EAE78; /* newlib ctype table (ro_tail); tolower() macro in Unit204500 */
+D_310D9C = 0x00310D9C; /* .bss word before D_310DA0, unnamed by spimdisasm (positive %lo) */
+func_00111490 = 0x00111490; /* old name used by CCharaObj (interim merge 2026-10-15) */
+func_001869C8 = 0x001869C8; /* LoadExamTex__FP8CExamTexPCc (CMenuCommon calls the old name) */
+func_00196E90 = 0x00196E90; /* Func196E90__15CMenuRecordListi (CCommandBase calls the old name) */
+/* CCharaObj::Func114050 / CallFunc114050 take a float (lane g4, 2026-10-15): old names */
+Func114050__9CCharaObjii = 0x00114050; /* = Func114050__9CCharaObjiif */
+CallFunc114050__9CCharaObji = 0x00114030; /* = CallFunc114050__9CCharaObjif */
+Func1159A0__9CCharaObjii = 0x001159A0; /* = Func1159A0__9CCharaObjiif */
+D_2FD9CC = 0x002FD9CC;
+D_2FDA08 = 0x002FDA08;
+D_316990 = 0x00316990;
+D_316992 = 0x00316992;
+func_0010D8F8 = 0x0010D8F8; /* old name still called from another unit (interim merge 2) */
+func_00110868 = 0x00110868; /* old name still called from another unit (interim merge 2) */

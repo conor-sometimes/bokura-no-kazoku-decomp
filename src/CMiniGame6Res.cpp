@@ -132,9 +132,30 @@ extern "C" void func_0024F610(void *p);
 void *Alloc1E7E58(s32 size);
 void CallMiniGame6Hook();
 void Func1E9168(void *a);
+
+#include "CList.h"
+class CLayoutRes {
+public:
+    CLayoutRes();
+    ~CLayoutRes();
+    u8 pad[0x24];
+};
+// Vtable _vt$13CMiniGame6Res: destructor (0x1E3440), Load (0x1E34E8), Release (0x1E35A8).
+class CMiniGame6Res : public CListTag {
+public:
+    CMiniGame6Res() {}
+    virtual ~CMiniGame6Res();
+    virtual s32 Load(const char *path);
+    virtual void Release();
+
+    CLayoutRes m_res10;       // 0x10
+    CLayoutRes m_res34;       // 0x34
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E33E8);
+CMiniGame6Res *CreateMiniGame6Res() {
+    return new CMiniGame6Res;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3440);
 

@@ -14,12 +14,7 @@ public:
     s32 m_unk58;              // 0x58
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-    void Func108FF0(s32 id, s32 v);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 extern CFlagWork *D_002A5358;
 extern "C" void func_00185648(s32 i);
 extern "C" void func_00185868(s32 i, s32 a, s32 b);
@@ -45,6 +40,22 @@ extern CExamFlagDef D_002A3DB0[];
 extern CFlagWork *D_002A4638[];
 extern "C" char *func_0024BA08(char *buf, s32 v);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
+
+void *Func248E48(const char *name);
+extern char D_002DAF58[], D_002DAF70[];
+extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+struct CExamTex {
+    void *m_data;             // 0x0
+    s32 m_unk4;               // 0x4
+    s32 m_unk8;               // 0x8
+    s32 m_unkC;               // 0xC
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    s32 m_unk20;              // 0x20
+};
 // @decl-end
 
 CMenuExam::CMenuExam() {
@@ -179,6 +190,18 @@ INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_001866D0);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_00186730);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_001869C8);
+s32 LoadExamTex(CExamTex *t, const char *name) {
+    if (!t) return 0;
+    void *d = Func248E48(name);
+    if (!d) {
+        Func235DE0(D_002DAF58, name);
+        return 0;
+    }
+    t->m_data = d;
+    func_00253048(d, &t->m_unk4, &t->m_unk8, &t->m_unkC, &t->m_unk10, &t->m_unk14, &t->m_unk18, &t->m_unk1C, &t->m_unk20);
+    if (t->m_unk1C > 0x10) func_0023C048(t->m_unk1C * t->m_unk20, t->m_unk14, t->m_unk14);
+    Func235DE0(D_002DAF70, name, t->m_unkC, t->m_unk10);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_00186AC8);

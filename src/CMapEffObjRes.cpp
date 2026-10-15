@@ -32,7 +32,8 @@ public:
     u8 pad8[0x3C];
     s32 m_unk44;              // 0x44
     s32 m_unk48;              // 0x48
-    u8 pad4C[0xCC];
+    u8 pad4C[0xC8];
+    f32 m_unk114;             // 0x114
     f32 m_unk118;             // 0x118
     u8 pad11C[0x10];
     s32 m_unk12C;             // 0x12C
@@ -63,7 +64,7 @@ public:
     s32 LoadHandles();
     s32 LoadTables();
     s32 LoadEntries();
-    void Func11CD60(s32 i, s32 v);
+    s32 Func11CD60(s32 i, s32 v);
     s32 Func11CE50();
 
     s32 m_tables[31];         // 0x10
@@ -72,6 +73,9 @@ public:
 };
 extern CMapEffObjRes *D_002A06F0;
 
+struct CMapEffRect {
+    f32 x0, z0, x1, z1;
+};
 class CMapEffLeafWork {
 public:
     s32 IsHit(s32 id);
@@ -79,10 +83,24 @@ public:
     void Func11FE20(s32 unused, CMapEffTarget *t);
     void Func11FE88(CMapEffTarget *t);
     void Func120298(CMapEffTarget *t);
+    void Func11F5D8();
+    void Func11F2A8();
+    void Func11F390(f32 t);
+    void Func11F0F8();
+    void Func11F660();
+    void Func11F9C0();
 
     CMapEffObjRes *m_res;     // 0x0
     CMapEffParam *m_param;    // 0x4
-    u8 pad8[0x3C];
+    u8 pad8[0x8];
+    CMapEffRect m_rect;       // 0x10
+    f32 m_unk20;              // 0x20
+    f32 m_unk24;              // 0x24
+    f32 m_unk28;              // 0x28
+    f32 m_unk2C;              // 0x2C
+    f32 m_unk30;              // 0x30
+    f32 m_unk34;              // 0x34
+    u8 pad38[0xC];
     CMapEffNode *m_active;    // 0x44
     CMapEffNode *m_free;      // 0x48
 };
@@ -102,14 +120,12 @@ struct CMapEffArea {
     u8 pad0[0x10];
     CVec4 m_pts[16];          // 0x10
     s32 m_count;              // 0x110
-    u8 pad114[0x8];
+    f32 m_unk114;             // 0x114
+    f32 m_unk118;             // 0x118
     s32 m_unk11C;             // 0x11C
     s32 m_unk120;             // 0x120
     s32 m_unk124;             // 0x124
     s32 m_unk128;             // 0x128
-};
-struct CMapEffRect {
-    f32 x0, z0, x1, z1;
 };
 struct CMapEffDrop {
     u8 pad0[0x20];
@@ -131,6 +147,8 @@ public:
     void Func121DE8(s32 unused, CMapEffTarget *t);
     void Func121E28(CMapEffTarget *t);
     void Func122088(CMapEffTarget *t);
+    void Func121AD0();
+    void Func121C18();
 
     CMapEffParam *m_param;    // 0x4
     s32 m_unk8;               // 0x8
@@ -152,6 +170,11 @@ public:
     void Func122DD8(s32 v);
     void CallFunc122DD8(s32 unused, s32 v);
     void FreeAll();
+    void Func122B38();
+    void Func122808();
+    void Func1228F0(f32 t);
+    void Func122660();
+    void Func122BC0();
 
     CMapEffArea *m_param;     // 0x4
     s32 m_unk8;               // 0x8
@@ -186,15 +209,45 @@ public:
     s32 m_unk8;               // 0x8
 };
 
+struct CMapEffAquariumKey {
+    f32 x;
+    f32 m_time;               // 0x4
+    f32 z;
+    f32 w;
+};
 class CMapEffAquariumSlot {
 public:
-    u8 pad0[0x110];
+    CMapEffAquariumKey m_keys[16]; // 0x0
+    CVec4 m_unk100;           // 0x100
     CMapEffAquariumFish m_fish; // 0x110
-    u8 pad11C[0x14];
+    f32 m_unk11C;             // 0x11C
+    f32 m_unk120;             // 0x120
+    f32 m_unk124;             // 0x124
+    s32 m_unk128;             // 0x128
+    s32 m_unk12C;             // 0x12C
     s32 m_busy;               // 0x130
     u8 pad134[0xC];
 };
 
+struct CMapEffAquaObj {
+    u8 pad0[0x40];
+    f32 m_unk40;              // 0x40
+    u8 pad44[0x10];
+    f32 m_unk54;              // 0x54
+    u8 pad58[0x4];
+    s32 m_unk5C;              // 0x5C
+    u8 pad60[0x4];
+    s32 m_unk64;              // 0x64
+    u8 pad68[0x8];
+};
+struct CMapEffAquaArg {
+    u8 pad0[0x4];
+    s32 m_unk4;               // 0x4
+};
+struct CMapEffAquaTarget {
+    u8 pad0[0xF0];
+    CUnk237E90 m_unkF0;       // 0xF0
+};
 class CMapEffAquariumWork : public CMapEffWork {
 public:
     CMapEffAquariumWork(CMapEffAquariumSub *sub);
@@ -211,8 +264,15 @@ public:
     void Func124160(s32 i);
     void UpdateAll();
     void Func124540();
+    void Func124460(s32 i);
+    void Func1245C8(CMapEffAquaArg *a, CMapEffAquaTarget *t);
+    void Func1246A8();
+    void Func124888(CMapEffAquaTarget *t, s32 i);
+    void Func124AA0(CMapEffAquaTarget *t);
+    void Func123850(s32 i, s32 k);
 
-    u8 pad4[0x380C];
+    u8 pad4[0xC];
+    CMapEffAquaObj m_objs[128]; // 0x10
     CMapEffAquariumSlot m_slots[8]; // 0x3810
     u32 m_seed;               // 0x4210
     CMapEffAquariumSub *m_sub; // 0x4214
@@ -276,9 +336,12 @@ public:
 
 class CMapEffSwingDef {
 public:
-    u8 pad0[0x4];
+    s32 m_id;                 // 0x0
     s32 m_count;              // 0x4
-    u8 pad8[0x40];
+    u8 pad8[0x10];
+    s32 m_kind[4];            // 0x18
+    u8 pad28[0x10];
+    f32 m_times[4];           // 0x38
 };
 extern CMapEffSwingDef D_002A0998[];
 
@@ -357,6 +420,90 @@ extern const char D_002D45A8[];
 extern s32 D_002A07D0;
 extern s32 D_002A07D4;
 extern s32 D_002A07D8;
+
+extern const double D_002D4750;
+extern const double D_002D47D0;
+extern "C" void func_001ECE18(s32 a, s32 b, f32 t);
+extern "C" s32 func_0011B428(s32 a, f32 t, s32 b);
+
+extern "C" void func_00201E50(f32 *a, f32 *b);
+extern "C" void func_00201E08(s32 *a, s32 *b, s32 *c);
+extern CVec4 D_002D4890, D_002D48A0, D_002D48B0, D_002D48C0, D_002D48D0, D_002D48E0, D_002D48F0;
+extern CVec4 D_002D47E0, D_002D47F0, D_002D4800, D_002D4810, D_002D4820, D_002D4830;
+extern CVec4 D_002A0830[];
+inline s32 RingEmpty(CMapEffAquariumFish *f) { return f->m_unk8 ? f->m_unk0 == f->m_unk4 : 1; }
+inline s32 RingFull(CMapEffAquariumFish *f) { return f->m_unk8 ? f->m_unk0 == (f->m_unk4 + 1) % f->m_unk8 : 1; }
+inline s32 RingPeek(CMapEffAquariumFish *f) { return RingEmpty(f) ? -1 : f->m_unk0; }
+inline void RingPop(CMapEffAquariumFish *f) { if (!RingEmpty(f)) f->m_unk0 = (f->m_unk0 + 1) % f->m_unk8; }
+inline s32 RingPush(CMapEffAquariumFish *f) {
+    if (RingFull(f)) return -1;
+    s32 k = f->m_unk4;
+    f->m_unk4 = (f->m_unk4 + 1) % f->m_unk8;
+    return k;
+}
+inline s32 RingNext(CMapEffAquariumFish *f, s32 k) {
+    if (RingEmpty(f) || k < 0 || f->m_unk8 - 1 < k) return -1;
+    s32 n = (k + 1) % f->m_unk8;
+    return n == f->m_unk4 ? -1 : n;
+}
+struct CMapEffRand {
+    u32 m_seed;
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Next32() {
+        u32 a = Next() << 16;
+        return a | Next();
+    }
+    f32 Range(f32 lo, f32 hi) {
+        return (f32)(s32)(Next32() & 0xFFFF) / 65535.0f * (hi - lo) + lo;
+    }
+};
+
+inline void CalcRect(CMapEffRect *r, CMapEffArea *a) {
+    CVec4 *p = a->m_pts;
+    s32 n = a->m_count;
+    s32 i;
+    r->x0 = r->x1 = p->x;
+    r->z0 = r->z1 = p->z;
+    for (i = 1; i < n; i++) {
+        CVec4 *q = &p[i];
+        f32 x = q->x;
+        f32 z = q->z;
+        if (x < r->x0) r->x0 = x;
+        if (z < r->z0) r->z0 = z;
+        if (r->x1 < x) r->x1 = x;
+        if (r->z1 < z) r->z1 = z;
+    }
+}
+
+void Func23B1D0(s32 h);
+extern "C" void func_001F20F8(s32 h);
+extern "C" s32 func_001EB920(s32 p, s32 i);
+extern "C" s32 func_001EADA0(s32 a);
+extern "C" void func_001ECCA8(s32 h);
+extern const char D_002D45C8[];
+extern const char D_002D45F0[];
+inline CListTag *ListNext(CListTag *t) {
+    CListTag *n = t->m_next;
+    return n->m_isHead ? 0 : n;
+}
+inline CListTag *ListFirst(CListTag *h) {
+    CListTag *r;
+    if (!h->m_next->m_isHead) r = h->m_next; else r = 0;
+    return r;
+}
+inline s32 ListIndexOf(CListTag *head, void *x) {
+    CListTag *t = ListFirst(head);
+    s32 i = 0;
+    while (t) {
+        if (t == x) return i;
+        t = ListNext(t);
+        i++;
+    }
+    return -1;
+}
 // @decl-end
 
 CMapEffObjRes::CMapEffObjRes() {
@@ -431,7 +578,36 @@ s32 CMapEffObjRes::Func11CE50() {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011CF20);
+void CMapEffObjRes::Vf11CF20() {
+    s32 i;
+    for (i = 0; i < 31; i++) {
+        if (m_tables[i] >= 0) {
+            Func23B1D0(m_tables[i]);
+            m_tables[i] = -1;
+        }
+    }
+    for (i = 0; i < 13; i++) {
+        if (m_handles[i] >= 0) {
+            func_001F20F8(m_handles[i]);
+            m_handles[i] = -1;
+        }
+    }
+    for (i = 0; i < 7; i++) {
+        if (m_entries[i].m_handle >= 0) {
+            func_001ECCA8(m_entries[i].m_handle);
+            m_entries[i].m_handle = -1;
+        }
+        if (m_entries[i].m_unk8) {
+            D_002B91B0((void *)m_entries[i].m_unk8);
+            m_entries[i].m_unk8 = 0;
+        }
+        if (m_entries[i].m_unk4) {
+            D_002B91B0((void *)m_entries[i].m_unk4);
+            m_entries[i].m_unk4 = 0;
+        }
+    }
+    D_002A06F0 = 0;
+}
 
 int ApplyDefaultLights() {
     Func201CC0(0, &D_002D4640);
@@ -524,7 +700,19 @@ s32 CMapEffLeafWork::IsHit(s32 id) {
     return id == -200;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F0F8);
+void CMapEffLeafWork::Func11F0F8() {
+    CalcRect(&m_rect, ((CMapEffArea *)m_param));
+    m_unk24 = (f32)((CMapEffArea *)m_param)->m_unk120 / 360.0f;
+    m_unk28 = (f32)((CMapEffArea *)m_param)->m_unk124 * (0.1f - 0.0f) / 100.0f + 0.0f;
+    m_unk2C = (f32)((CMapEffArea *)m_param)->m_unk128 * (0.07f - 1.0f) / 100.0f + 1.0f;
+    if (m_unk34 != m_unk2C) {
+        Func11F2A8();
+        m_unk34 = m_unk2C;
+    }
+    Func11F5D8();
+    Func11F660();
+    Func11F9C0();
+}
 
 void CMapEffLeafWork::FreeAll() {
     CMapEffNode *p;
@@ -535,15 +723,21 @@ void CMapEffLeafWork::FreeAll() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F2A8);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F2A8__15CMapEffLeafWork);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F390);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F390__15CMapEffLeafWorkf);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F5D8);
+void CMapEffLeafWork::Func11F5D8() {
+    while (m_unk2C < m_unk30 && m_free) {
+        Func11F390(0.0f);
+        m_unk30 -= m_unk2C;
+    }
+    m_unk30 += 1.0f / 59.94f;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F660);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F660__15CMapEffLeafWork);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F9C0);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func11F9C0__15CMapEffLeafWork);
 
 void CMapEffLeafWork::Func11FE20(s32 unused, CMapEffTarget *t) {
     t->m_unk220.Func237E90(ApplyDefaultLights());
@@ -585,9 +779,16 @@ void CMapEffRainWork::Spawn(const CVec4 *v) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121AD0);
+void CMapEffRainWork::Func121AD0() {
+    CalcRect(&m_rect, ((CMapEffArea *)m_param));
+    m_unk20 = (f32)((CMapEffArea *)m_param)->m_unk11C / 360.0f;
+    m_unk24 = (f32)((CMapEffArea *)m_param)->m_unk120 * 10.0f / 100.0f + 0.0f;
+    m_unk2C = ((((CMapEffArea *)m_param)->m_unk124 > 128 ? 128 : ((CMapEffArea *)m_param)->m_unk124) << 7) / 100;
+    Func121C18();
+    Step();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121C18);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func121C18__15CMapEffRainWork);
 
 void CMapEffRainWork::Step() {
     CMapEffNode **pp = &m_active;
@@ -617,7 +818,18 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122440);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001225F0);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122660);
+void CMapEffSnowWork::Func122660() {
+    CalcRect(&m_rect, m_param);
+    m_unk28 = (f32)m_param->m_unk120 / 360.0f;
+    m_unk24 = (f32)m_param->m_unk124 * (0.1f - 0.0f) / 100.0f + 0.0f;
+    m_unk30 = (f32)m_param->m_unk128 * (0.05f - 1.0f) / 100.0f + 1.0f;
+    if (m_unk34 != m_unk30) {
+        Func122808();
+        m_unk34 = m_unk30;
+    }
+    Func122B38();
+    Func122BC0();
+}
 
 void CMapEffSnowWork::FreeAll() {
     CMapEffNode *p;
@@ -628,13 +840,19 @@ void CMapEffSnowWork::FreeAll() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122808);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122808__15CMapEffSnowWork);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001228F0);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1228F0__15CMapEffSnowWorkf);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122B38);
+void CMapEffSnowWork::Func122B38() {
+    while (m_unk30 < m_unk2C && m_free) {
+        Func1228F0(0.0f);
+        m_unk2C -= m_unk30;
+    }
+    m_unk2C += 1.0f / 59.94f;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122BC0);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122BC0__15CMapEffSnowWork);
 
 void CMapEffSnowWork::CallFunc122DD8(s32 unused, s32 v) {
     Func122DD8(v);
@@ -667,17 +885,50 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123670);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001236C8);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123850);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123850__19CMapEffAquariumWorkii);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1239E8__19CMapEffAquariumWorki);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123D88__19CMapEffAquariumWorki);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123E28__19CMapEffAquariumWorki);
+void CMapEffAquariumWork::Func123E28(s32 i) {
+    if ((u32)i < 8) {
+        CMapEffAquariumSlot *s = &m_slots[i];
+        s32 now = Func251B88();
+        s32 n = (s32)((f32)(now - s->m_unk12C) * s->m_unk124);
+        if (n != 0) {
+            s->m_unk12C = now;
+            if (s->m_busy) {
+                s32 j;
+                for (j = 0; j < n; j++) {
+                    Func123850(i, RingPush(&s->m_fish));
+                }
+            }
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123F40__19CMapEffAquariumWorki);
+void CMapEffAquariumWork::Func123F40(s32 i) {
+    if ((u32)i < 8) {
+        CMapEffAquariumSlot *s = &m_slots[i];
+        s32 k;
+        while ((k = RingPeek(&s->m_fish)) != -1) {
+            if (s->m_unk120 < (s->m_keys + k)->m_time) break;
+            RingPop(&s->m_fish);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124000__19CMapEffAquariumWorki);
+void CMapEffAquariumWork::Func124000(s32 i) {
+    if ((u32)i < 8) {
+        CMapEffAquariumSlot *s = &m_slots[i];
+        s32 k;
+        for (k = RingPeek(&s->m_fish); k != -1; k = RingNext(&s->m_fish, k)) {
+            s32 o = k * 16 + 4;
+            *(f32 *)((u8 *)s + o) += -0.2f;
+        }
+    }
+}
 
 void CMapEffAquariumWork::UpdateOne(s32 i) {
     Func123D88(i);
@@ -698,7 +949,7 @@ void CMapEffAquariumWork::UpdateAll() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00124460);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124460__19CMapEffAquariumWorki);
 
 void CMapEffAquariumWork::Func124540() {
     if (m_unk421C == -1) {
@@ -711,9 +962,27 @@ void CMapEffAquariumWork::Func124540() {
     UpdateAll();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001245C8);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1245C8__19CMapEffAquariumWorkP14CMapEffAquaArgP17CMapEffAquaTarget);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001246A8);
+void CMapEffAquariumWork::Func1246A8() {
+    Func270C50(&m_unk4230[0], Func2023B8(0));
+    Func270C50(&m_unk4230[1], Func2023B8(1));
+    Func270C50(&m_unk4230[2], Func2023B8(2));
+    Func270C50(&m_unk4260[0], Func2023A0(0));
+    Func270C50(&m_unk4260[1], Func2023A0(1));
+    Func270C50(&m_unk4260[2], Func2023A0(2));
+    Func270C50(&m_unk4290, Func202390());
+    func_00201E50(&m_unk42A0, &m_unk42A4);
+    func_00201E08(&m_unk42A8, &m_unk42AC, &m_unk42B0);
+    Func201CC0(0, &D_002D47E0);
+    Func201CC0(1, &D_002D47F0);
+    Func201CC0(2, &D_002D4800);
+    Func201D18(0, &D_002D4810);
+    Func201D18(1, &D_002D4820);
+    Func201D18(2, &D_002D4830);
+    Func201E30(150.0f, 1000.0f);
+    Func201DE0(0x5F, 0xA6, 0xBC);
+}
 
 void CMapEffAquariumWork::Func1247F8() {
     Func201D78(&m_unk4290);
@@ -727,9 +996,9 @@ void CMapEffAquariumWork::Func1247F8() {
     Func201DE0(m_unk42A8, m_unk42AC, m_unk42B0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00124888);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124888__19CMapEffAquariumWorkP17CMapEffAquaTargeti);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00124AA0);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124AA0__19CMapEffAquariumWorkP17CMapEffAquaTarget);
 
 void MapEffToGrid(s32 *out, const CVec4 *v) {
     out[0] = (s32)(v->x * 16.0f) + 0x6C00;
@@ -765,7 +1034,19 @@ void CMapEffBreathWork::Func1259C8(s32 v) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125A18__17CMapEffBreathWorki);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125BA8__17CMapEffBreathWorki);
+void CMapEffBreathWork::Func125BA8(s32 v) {
+    CMapEffBreathNode **pp = (CMapEffBreathNode **)&m_unkCC;
+    CMapEffBreathNode *n;
+    while ((n = *pp) != 0) {
+        if (ListIndexOf((CListTag *)(v + 8), (void *)n->m_unk4) < 0) {
+            *pp = n->m_next;
+            n->m_next = m_freeNodes;
+            m_freeNodes = n;
+        } else {
+            pp = &n->m_next;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125C38__17CMapEffBreathWork);
 
@@ -824,7 +1105,22 @@ void CMapEffSwingWork::Func126A20(s32 unused, s32 a) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func126AC0__16CMapEffSwingWork);
+void CMapEffSwingWork::Func126AC0() {
+    Func270C50(&m_unk20[0], Func2023B8(0));
+    Func270C50(&m_unk20[1], Func2023B8(1));
+    Func270C50(&m_unk20[2], Func2023B8(2));
+    Func270C50(&m_unk50[0], Func2023A0(0));
+    Func270C50(&m_unk50[1], Func2023A0(1));
+    Func270C50(&m_unk50[2], Func2023A0(2));
+    Func270C50(&m_unk80, Func202390());
+    Func201D78(&D_002D4890);
+    Func201CC0(0, &D_002D48A0);
+    Func201CC0(1, &D_002D48B0);
+    Func201CC0(2, &D_002D48C0);
+    Func201D18(0, &D_002D48D0);
+    Func201D18(1, &D_002D48E0);
+    Func201D18(2, &D_002D48F0);
+}
 
 void CMapEffSwingWork::Func126BD8() {
     Func201D78(&m_unk80);

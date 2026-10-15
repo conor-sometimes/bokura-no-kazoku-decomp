@@ -4,11 +4,20 @@
 extern s32 D_002A0394;
 extern s32 D_002A0398;
 
-class CEFontWork {
+// Library font object (0x2561D0 constructor, vtable _vt$9CFontWork); the vptr follows its
+// fields at 0x7C.
+class CFontWork {
 public:
+    CFontWork();
+    virtual ~CFontWork();
+    u8 pad0[0x7C];
+};
+class CEFontWork : public CFontWork {
+public:
+    CEFontWork();
+    virtual ~CEFontWork();
     void CopyUnk84(const CEFontWork *src);
 
-    u8 pad0[0x80];
     s32 m_unk80;              // 0x80
     s32 m_unk84;              // 0x84
 };
@@ -38,9 +47,9 @@ public:
     virtual void Vf2();
     virtual void Vf3();
     virtual void Vf4();
-    virtual void Vf5();
-    virtual void Vf6();
-    virtual void Vf7();
+    virtual void Vf5(s32 a, s32 b);
+    virtual void Vf6(s32 a);
+    virtual void Vf7(s32 a);
     virtual void Vf8();
     virtual void Vf9();
     virtual void Vf10();
@@ -49,7 +58,7 @@ public:
     virtual void Vf13();
     virtual void Vf14();
     virtual void Vf15();
-    virtual void Vf16();
+    virtual s32 Vf16(void *p);
     virtual void Vf17();
     virtual void Vf18();
     virtual void Vf19();
@@ -67,8 +76,8 @@ public:
     virtual void Vf31();
     virtual void Stop(s32 h, s32 a);
     virtual void Vf33();
-    virtual void Vf34();
-    virtual void Vf35();
+    virtual void Vf34(s32 a);
+    virtual s32 Vf35(void *p);
     virtual void Vf36();
     virtual void Vf37();
     virtual void Vf38();
@@ -81,9 +90,50 @@ public:
 extern CSndDrv2BA248 *D_002BA248;
 extern char D_002D2B90[], D_002D2BC8[];
 void StopEFontSe();
+extern "C" void func_001F0C60(void (*f)(s32 *), const char *name, s32 a, s32 b);
+void PlayEFontSe(s32 *p);
+s32 GetEFontUnk2A0398();
+extern char D_002D2BE0[], D_002D2C08[];
+struct CFontTable {
+    u8 pad0[0x34];
+    u8 m34;                   // 0x34
+    u8 pad35[0x7];
+    s16 m3C;                  // 0x3C
+    s16 m3E;                  // 0x3E
+    void SetUnk3C(s32 v) {
+        if (v >= 0) {
+            m3E = v;
+            m3C = v;
+        } else {
+            m3C = v;
+            m3E = -v;
+        }
+        m34 = 1;
+    }
+};
+#include "CFlagWork.h"
+extern void *(*D_002B91A4)(u32 size);
+extern u32 D_002A0290;
+extern u8 D_002A02A0[];
+extern u8 D_0029F3A0[], D_0029F470[];
+extern char D_002D2B70[];
+extern "C" void *func_00206790(u32 size);
+extern "C" void *func_002070F8(u32 size);
+extern "C" void func_00219620(u32 p, u32 size);
+extern "C" void func_002195D8(void *p, u32 size);
+extern "C" void func_00219590(void *p, u32 size);
+extern "C" void func_00219668(u32 a, u32 b);
+extern "C" void func_00219368(s32 a);
+extern "C" void func_00219430(void *p);
+extern "C" void func_002063B0(s32 a, s32 b);
+extern "C" void func_0025C230(void *p);
+extern "C" void func_0025C438(s32 a, s32 b);
+void LoadEFontSe();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CEFontWork", func_0010BF88);
+CEFontWork::CEFontWork() {
+    m_unk80 = 0;
+}
 
 void CEFontWork::CopyUnk84(const CEFontWork *src) {
     m_unk80 = src->m_unk84;
@@ -107,7 +157,17 @@ void FreeFontData() {
     if (D_002A0298) Func207148(D_002A0298);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEFontWork", func_0010CA90);
+void InitFontTables() {
+    CFontTable *t;
+    t = (CFontTable *)GetFontTable(1);
+    t->SetUnk3C(D_002A26E0->Func1091B0(0x262D));
+    t = (CFontTable *)GetFontTable(2);
+    t->SetUnk3C(D_002A26E0->Func1091B0(0x262E));
+    t = (CFontTable *)GetFontTable(3);
+    t->SetUnk3C(D_002A26E0->Func1091B0(0x262F));
+    t = (CFontTable *)GetFontTable(4);
+    t->SetUnk3C(D_002A26E0->Func1091B0(0x2630));
+}
 
 void LoadEFontSe() {
     D_002BA248->Load(D_002D2B90);
@@ -129,7 +189,16 @@ void PlayEFontSe(s32 *p) {
     D_002A0398 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEFontWork", func_0010CCC8);
+int StartEFontSe(const char *name) {
+    if (GetEFontUnk2A0398()) {
+        Func235DE0(D_002D2BE0);
+        return 0;
+    }
+    if (!name || !*name) name = D_002D2C08;
+    func_001F0C60(PlayEFontSe, name, 0, 0);
+    D_002A0398 = 1;
+    return 1;
+}
 
 void StopEFontSe() {
     if (D_002A0394 >= 0) {

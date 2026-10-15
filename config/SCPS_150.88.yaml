@@ -166,7 +166,48 @@ segments:
       - [0xD5B50, cpp, CMiniGame4Res]   # also CMiniGame4
       - [0xDFA18, cpp, CMiniGame5Res]   # also CMiniGame5
       - [0xE43E8, cpp, CMiniGame6Res]   # also CMiniGame6
-      - [0xEA1B8, asm, text_1e91b8]   # CAppMain on: C-style units, no vtables to split by
+      - [0xEA1B8, cpp, CAppMain]   # C-style units from here on (no vtables): cut where no literal is shared, scripts/text_units.py
+      - [0xEC8E8, cpp, Unit1EB8E8]
+      - [0xEF008, cpp, Unit1EE008]
+      - [0xF1518, cpp, Unit1F0518]
+      - [0xF2EC0, cpp, Unit1F1EC0]
+      - [0xF5918, cpp, Unit1F4918]
+      - [0x100680, cpp, Unit1FF680]
+      - [0x102DB0, cpp, Unit201DB0]
+      - [0x105500, cpp, Unit204500]
+      - [0x107508, cpp, Unit206508]
+      - [0x109128, cpp, Unit208128]
+      - [0x10B410, cpp, Unit20A410]
+      - [0x10DBF0, cpp, Unit20CBF0]
+      - [0x10F938, cpp, Unit20E938]
+      - [0x111070, cpp, Unit210070]
+      - [0x113790, cpp, Unit212790]
+      - [0x115938, cpp, Unit214938]
+      - [0x116A38, cpp, Unit215A38]
+      - [0x118F50, cpp, Unit217F50]
+      - [0x11A970, cpp, Unit219970]
+      - [0x11CEC0, cpp, Unit21BEC0]
+      - [0x11E820, cpp, Unit21D820]
+      - [0x120250, cpp, Unit21F250]
+      - [0x122008, cpp, Unit221008]
+      - [0x123CE0, cpp, Unit222CE0]
+      - [0x125D58, cpp, Unit224D58]
+      - [0x127AE8, cpp, Unit226AE8]
+      - [0x129F78, cpp, Unit228F78]
+      - [0x12CFD0, cpp, Unit22BFD0]
+      - [0x12EE48, cpp, Unit22DE48]
+      - [0x131578, cpp, Unit230578]
+      - [0x133B78, cpp, Unit232B78]
+      - [0x135318, cpp, Unit234318]
+      - [0x137130, cpp, Unit236130]
+      - [0x138A88, cpp, Unit237A88]
+      - [0x13B1D8, cpp, Unit23A1D8]
+      - [0x13D680, cpp, Unit23C680]
+      - [0x13F868, cpp, Unit23E868]
+      - [0x141FD8, cpp, Unit240FD8]
+      - [0x144AB8, cpp, Unit243AB8]
+      - [0x146450, cpp, Unit245450]
+      - [0x146648, asm, text_245648]   # dklib (engine library), Sony SDK, linkonce code
       - [0x1A0230, data, ctors]          # .ctors .dtors .reginfo, pad, .data up to the vtables
       # Vtables (.gnu.linkonce.d._vt$*), one piece per unit in link order: scripts/data_units.py, docs/units.md
       - {start: 0x1C0A40, type: .data, name: CBootMain, linker_section: .gnu.linkonce.d.*}
@@ -277,7 +318,7 @@ segments:
       - {start: 0x1C2F18, type: .data, name: CMenuProcess, linker_section: .gnu.linkonce.d.*}
       - [0x1C2F40, data, vt_CMenuMgr]
       - {start: 0x1C2FF8, type: .data, name: CLayoutRes, linker_section: .gnu.linkonce.d.*}
-      - [0x1C3010, data, vt_CLayoutObj]
+      - {start: 0x1C3010, type: .data, name: CLayoutObj, linker_section: .gnu.linkonce.d.*}
       - [0x1C3028, data, vt_CMiniGame1Res]
       - [0x1C30A8, data, vt_CMiniGame2Res]
       - [0x1C3128, data, vt_CMiniGame3Res]

@@ -5,6 +5,7 @@
 extern "C" {
 int strcmp(const char *a, const char *b);   /* 0x28B190 */
 char *strcpy(char *dst, const char *src);   /* 0x28B2D4 */
+unsigned int strlen(const char *s);         /* 0x28B3E8 */
 void *memset(void *dst, int c, unsigned int n); /* 0x289FB0 */
 }
 

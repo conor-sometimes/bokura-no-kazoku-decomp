@@ -49,22 +49,57 @@ extern CInterfMgr *D_002A3568;
 int GetFontTable(u32 i);
 extern "C" void func_0025C438(int tbl, CFont25C230 *f);
 void Func23B1D0(s32 h);
-class CInterfRes {
+#include "CList.h"
+// Vtable _vt$10CInterfRes: destructor, Load, Release. Key method: the destructor (0x168DF0,
+// merged unit: stays asm).
+class CInterfRes : public CListTag {
 public:
-    void Release();
+    CInterfRes();
+    virtual ~CInterfRes();
+    virtual s32 Load(const char *path);
+    virtual void Release();
 
-    u8 pad0[0x10];
     s32 *m_handles;           // 0x10
 };
+extern CInterfRes *D_002A3540;
+extern s32 D_002A355C, D_002A3560, D_002A3564;
+extern const char *D_002A3548[];
+extern void (*D_002B91B0)(void *p);
+extern "C" void *func_00248E60(const char *name);
+s32 Func205BA0(void *p);
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
 
 //@sym __builtin_vec_delete 0x2456D0
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CInterfRes", func_00168DC8);
+CInterfRes::CInterfRes() {
+    D_002A3540 = this;
+    m_handles = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CInterfRes", func_00168DF0);
 
-INCLUDE_ASM("asm/nonmatchings/CInterfRes", func_00168E88);
+s32 CInterfRes::Load(const char *path) {
+    u8 buf[0x100];
+    s32 i;
+    Release();
+    Func2491A8(buf, path, D_002A355C, D_002A3560, D_002A3564);
+    if (!Func249248(buf)) return 0;
+    m_handles = new s32[4];
+    for (i = 0; i < 4; i++) {
+        void *p;
+        m_handles[i] = -1;
+        p = func_00248E60(D_002A3548[i]);
+        if (p) {
+            m_handles[i] = Func205BA0(p);
+            D_002B91B0(p);
+        }
+    }
+    Func249348();
+    return 1;
+}
 
 void CInterfRes::Release() {
     if (m_handles) {

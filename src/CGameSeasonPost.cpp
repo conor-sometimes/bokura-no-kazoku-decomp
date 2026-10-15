@@ -4,12 +4,7 @@
 #include "CProcess.h"
 #include "IGameDBMgr.h"
 
-class CFlagWork {
-public:
-    void Func108FF0(s32 id, s32 v);
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 
 // Same layout as the state block at the start of CMenuProcess.
 class CSeasonTimer {

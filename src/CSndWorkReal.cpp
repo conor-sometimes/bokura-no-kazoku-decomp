@@ -13,7 +13,27 @@ public:
     void Func25C840(s32 a, s32 b = 0, s32 c = 0);
     int Func25C990(s32 a);
     int Func25CAC0(s32 a);
+    void Func25CB90(s32 a, s32 b, s32 c);
+    void Func25C648(s32 a, s32 b);
+    void SetVol(s32 h, s32 x) {
+        if (x >= 0) Func25CB90(h, x, x);
+        else Func25CB90(h, x, -x);
+    }
 };
+class CResCache {
+public:
+    void Func250840(void *p);
+
+    u8 pad0[0x13C];
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual s32 Open(const char *name);   // slot 3
+};
+extern "C" void func_00250828(void *cache, const char *name);
+extern "C" s32 func_0025CEA0(void *snd);
+extern "C" s32 func_0025CEE8(void *snd, s32 i);
+extern CResCache *D_002A0BEC;
 
 // Linear fade: value moves from m_from to m_to over m_dur frames.
 class CSndFade {
@@ -63,9 +83,10 @@ public:
     s32 m_unk2C;              // 0x2C
     s32 m_unk30;              // 0x30
     s32 m_unk34;              // 0x34
-    u8 pad38[0x4];
+    s32 m_unk38;              // 0x38
     s32 m_unk3C;              // 0x3C
     s32 m_unk40;              // 0x40
+    u8 m_snd[4];              // 0x44: CSndWork
 };
 
 class CCharaObj;
@@ -105,10 +126,68 @@ public:
     s32 m_unk1C8;             // 0x1C8
 };
 
+class CSndObj18 {
+public:
+    u8 pad0[0x34];
+    u8 m_unk34;               // 0x34
+    u8 pad35[0x7];
+    s16 m_unk3C;              // 0x3C
+    s16 m_unk3E;              // 0x3E
+};
+class CSndDrvB {
+public:
+    virtual void Vf0();
+    virtual void Vf1();
+    virtual void Vf2();
+    virtual void Vf3();
+    virtual void Vf4();
+    virtual void Vf5();
+    virtual void Vf6();
+    virtual void Vf7();
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void Vf11();
+    virtual void Vf12();
+    virtual void Vf13();
+    virtual void Vf14();
+    virtual void Vf15();
+    virtual void Vf16();
+    virtual void Vf17();
+    virtual void Vf18();
+    virtual s32 Find19(s32 kind);
+    virtual void Vf20();
+    virtual void Vf21();
+    virtual void Vf22();
+    virtual void Vf23();
+    virtual void Vf24();
+    virtual void Vf25();
+    virtual void Vf26();
+    virtual void Vf27();
+    virtual void Vf28();
+    virtual void Vf29();
+    virtual void Vf30();
+    virtual void Vf31();
+    virtual void Vf32();
+    virtual void Vf33();
+    virtual void Vf34();
+    virtual void Vf35();
+    virtual void Vf36();
+    virtual void Vf37();
+    virtual void Vf38();
+    virtual s32 *Get39(const char *name);
+};
+extern CSndDrvB *D_002BA248;
+extern "C" int func_0020E698(s32 h, const char *name);
+s32 IsSndPrefixed(const char *s);
+extern "C" unsigned int strlen(const char *);
+
 class CSndWorkReal {
 public:
-    void CallFunc129458(const char *s);
-    void Func129458(const char *s);
+    void Func1291B8(s32 on, s32 dur);
+    s32 Func129CC8(const char *name);
+    void CallFunc129458(const char *s, s32 v);
+    void Func129458(const char *s, s32 v);
     int IsUnkA4Set();
     void SetUnkA8(s32 v);
     void SetChara(CCharaObj **pp);
@@ -116,7 +195,8 @@ public:
     void FadeIn(s32 on, s32 dur);
     void FadeTo(s32 dur, f32 v);
     void SetPlaying(s32 on, s32 dur);
-    void Func1292E0(const char *name, s32 v);
+    CSndEntry *Func1292E0(const char *name, s32 v);
+    void Stop129AE0(const char *name, s32 t);
     void StartAll();
     void Func1295E8();
     int Func129848();
@@ -132,13 +212,17 @@ public:
     CCharaObj *m_unk0;        // 0x0
     CCharaObj **m_unk4;       // 0x4
     CSndNode m_list;          // 0x8
-    u8 pad14[0x10];
+    u8 pad14[0x4];
+    CSndObj18 *m_unk18;       // 0x18
+    u8 pad1C[0x4];
+    CSndObj18 *m_unk20;       // 0x20
     s32 m_unk24;              // 0x24
     s32 m_unk28;              // 0x28
     s32 m_unk2C;              // 0x2C
     u8 pad30[0xC];
     CSndFade m_fade3C;        // 0x3C
-    u8 pad50[0x1C];
+    u8 pad50[0x8];
+    CSndFade m_fade58;        // 0x58
     CSndFade m_fade6C;        // 0x6C
     u8 pad80[0x4];
     CSndEntry *m_entries;     // 0x84
@@ -146,7 +230,8 @@ public:
     s32 m_playing;            // 0x8C
     s32 m_unk90;              // 0x90
     s32 m_unk94;              // 0x94
-    u8 pad98[0x8];
+    f32 m_unk98;              // 0x98
+    s32 m_unk9C;              // 0x9C
     CSndWork *m_unkA0;        // 0xA0
     s32 m_unkA4;              // 0xA4
     s32 m_unkA8;              // 0xA8
@@ -208,13 +293,35 @@ void CSndWorkReal::FadeIn(s32 on, s32 dur) {
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129020);
 
-void CSndWorkReal::CallFunc129458(const char *s) {
+void CSndWorkReal::CallFunc129458(const char *s, s32 v) {
     if (s[0]) {
-        Func129458(s);
+        Func129458(s, v);
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_001291B8);
+void CSndWorkReal::Func1291B8(s32 on, s32 dur) {
+    if (dur <= 0) {
+        s32 v;
+        f32 f;
+        CSndObj18 *o;
+        m_fade58.m_cur = on ? 0.0f : 1.0f;
+        f = m_fade58.m_cur;
+        m_fade58.m_from = f;
+        m_fade58.m_to = f;
+        o = m_unk18;
+        o->m_unk34 = 1;
+        v = (s32)(f * 128.0f);
+        o->m_unk3E = v; //@p
+        o->m_unk3C = v; //@p
+        m_fade58.m_t = 0; //@p
+        m_fade58.m_dur = 0; //@p
+    } else {
+        m_fade58.m_from = m_fade58.m_cur;
+        m_fade58.m_to = on ? 0.0f : 1.0f;
+        m_fade58.m_dur = dur;
+        m_fade58.m_t = 0;
+    }
+}
 
 void CSndWorkReal::SetPlaying(s32 on, s32 dur) {
     if (m_playing == on) {
@@ -236,10 +343,57 @@ void CSndWorkReal::FadeTo(s32 dur, f32 v) {
 }
 
 INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4CB8);
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func1292E0__12CSndWorkRealPCci);
+CSndEntry *CSndWorkReal::Func1292E0(const char *name, s32 v) {
+    CSndEntry *e;
+    for (e = m_entries; e; e = e->m_next) {
+        if (strcmp(e->m_name, name) == 0 && e->m_unk24 == v) break;
+    }
+    if (e) {
+        e->m_unk40++;
+    } else {
+        e = m_free;
+        if (e) {
+            s32 h;
+            m_free = e->m_next;
+            strcpy(e->m_name, name);
+            e->m_unk24 = v;
+            func_00250828(D_002A0BEC, e->m_name);
+            h = D_002A0BEC->Open(e->m_name);
+            e->m_unk2C = 0;
+            e->m_unk28 = h;
+            e->m_unk40 = 1;
+            e->m_unk30 = 0;
+            e->m_unk34 = 0;
+            e->m_unk3C = 0;
+            if (h && !m_unk9C) {
+                ((CSndWork *)e->m_snd)->Func25C648(h, 0);
+                ((CSndWork *)e->m_snd)->SetVol(e->m_unk28, e->m_unk2C * e->m_unk38);
+            }
+            e->m_next = m_entries;
+            m_entries = e;
+        } else {
+            Func235DE0("*** empty env unit\n");
+        }
+    }
+    return e;
+}
 INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4CD8);
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func129458__12CSndWorkRealPCc);
+void CSndWorkReal::Func129458(const char *name, s32 v) {
+    CSndEntry *prev = (CSndEntry *)&m_entries;
+    CSndEntry *e;
+    for (e = m_entries; e; prev = e, e = e->m_next) {
+        if (strcmp(e->m_name, name) == 0 && e->m_unk24 == v) {
+            if (--e->m_unk40 > 0) continue;
+            prev->m_next = e->m_next;
+            if (e->m_unk28) ((CSndWork *)e->m_snd)->Func25C840(e->m_unk28, 0, 0);
+            D_002A0BEC->Func250840(e->m_name);
+            e->m_next = m_free;
+            m_free = e;
+            return;
+        }
+    }
+}
 
 void CSndWorkReal::StartAll() {
     CSndEntry *e;
@@ -275,9 +429,32 @@ void CSndWorkReal::StopSound() {
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129900);
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129AE0);
-INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4D40);
-INCLUDE_RODATA("asm/nonmatchings/CSndWorkReal", D_002D4D48);
+void CSndWorkReal::Stop129AE0(const char *name, s32 t) {
+    CSndWork *snd;
+    s32 i, h;
+    if (strcmp(name, "BGM") == 0 || strcmp(name, "") == 0) {
+        snd = (CSndWork *)m_unk28;
+        for (i = func_0025CEA0(snd) - 1; i >= 0; i--) {
+            s32 k = func_0025CEE8(snd, i);
+            if (m_unkA4 != k) snd->Func25C840(k, 0, t);
+        }
+    }
+    if (strcmp(name, "SE") == 0 || strcmp(name, "") == 0) {
+        snd = (CSndWork *)m_unk24;
+        for (i = func_0025CEA0(snd) - 1; i >= 0; i--) {
+            snd->Func25C840(func_0025CEE8(snd, i), 0, t);
+        }
+    }
+    snd = (CSndWork *)GetVolume(name);
+    if (snd) {
+        h = Func129CC8(name);
+        snd->Func25C840(h, 0, t);
+        if (m_unkA4 == h) {
+            m_unkA0 = 0;
+            m_unkA4 = 0;
+        }
+    }
+}
 
 s32 CSndWorkReal::GetVolume(const char *s) {
     return IsSndPrefixed(s) ? m_unk28 : m_unk24;
@@ -287,7 +464,23 @@ int CSndWorkReal::IsUnkA4Set() {
     return m_unkA0 != 0 && m_unkA4 != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129CC8);
+s32 CSndWorkReal::Func129CC8(const char *name) {
+    if (IsSndPrefixed(name)) {
+        char buf[0x100];
+        s32 h;
+        strcpy(buf, name + strlen(D_002A0BB0));
+        h = D_002BA248->Find19(6);
+        if (h >= 0) {
+            s32 r = func_0020E698(h, buf);
+            if (r >= 0) return r | 0x8060000;
+        }
+        return 0;
+    } else {
+        s32 *p = D_002BA248->Get39(name);
+        if (p) return *p;
+        return 0;
+    }
+}
 
 void CSndWorkReal::Func129D90() {
     UpdateOwner();

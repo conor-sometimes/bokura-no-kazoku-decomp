@@ -11,12 +11,15 @@ public:
     virtual void Vf2932F0(s32 v);
     virtual void Vf2932F8(s32 id);
     void Func108700();
+    void Func108448(s32 a, s32 b);
     void CopyFrom(CFlagWork *w);
     s32 Save(u8 *buf);
+    int Func108E38(const char *name);
     void Func108FF0(s32 id, s32 v);
     int Func1091B0(s32 id);
     void Func109108(s32 id, s32 delta);
     void Func109248(s32 id, s32 lo, s32 hi);
+    void SetStr(s32 id, const char *s);
 
     u8 pad0[0x18];
     s32 m_unk18;              // 0x18
@@ -32,7 +35,7 @@ class ICurFlag : public CFlagWork {
 public:
     virtual ~ICurFlag();
     virtual void Release();
-    virtual void Vf144880();
+    virtual void Vf144880(CFlagWork *src);
     virtual s32 Vf2991B0();
     virtual s32 Vf2991E8();
     virtual s32 Vf299218();
@@ -44,7 +47,7 @@ public:
     virtual s32 Vf2993C8(s32 id);
     virtual s32 Get144B68(s32 base, s32 a, s32 b) = 0;
     virtual void Set144C60(s32 base, s32 a, s32 v, s32 x) = 0;
-    virtual void Vf144D68() = 0;
+    virtual int Vf144D68(s32 base, int name, s32 b) = 0;
     virtual void Set144E28(int name, s32 v) = 0;
     virtual int Get145008(s32 base, int name, u32 k) = 0;
     virtual s32 Get145118() = 0;
@@ -62,8 +65,8 @@ public:
     virtual s32 Get1455D0() = 0;
     virtual s32 Select(s32 v) = 0;
     virtual s32 Get1458F0(int name, s32 a, s32 b, s32 c, s32 d, s32 e) = 0;
-    virtual void Vf145A28() = 0;
-    virtual void Vf145AD0() = 0;
+    virtual void Vf145A28(s32 k) = 0;
+    virtual void Vf145AD0(s32 id, s32 off, s32 v) = 0;
 };
 
 class CCurFlag : public ICurFlag {
@@ -75,7 +78,7 @@ public:
     virtual int GetNamed(s32 base, int name);
     virtual s32 Get144B68(s32 base, s32 a, s32 b);
     virtual void Set144C60(s32 base, s32 a, s32 v, s32 x);
-    virtual void Vf144D68();
+    virtual int Vf144D68(s32 base, int name, s32 b);
     virtual void Set144E28(int name, s32 v);
     virtual int Get145008(s32 base, int name, u32 k);
     virtual s32 Get145118();
@@ -93,8 +96,8 @@ public:
     virtual s32 Get1455D0();
     virtual s32 Select(s32 v);
     virtual s32 Get1458F0(int name, s32 a, s32 b, s32 c, s32 d, s32 e);
-    virtual void Vf145A28();
-    virtual void Vf145AD0();
+    virtual void Vf145A28(s32 k);
+    virtual void Vf145AD0(s32 id, s32 off, s32 v);
     virtual int Get145090(s32 x);
 };
 
@@ -107,17 +110,18 @@ public:
     virtual void Load143BD8(CCurFlag *cur) = 0;
     virtual void Load143CD0(CCurFlag *cur) = 0;
     virtual s32 Get143F20(s32 x) = 0;
-    virtual void Vf143FA8() = 0;
+    virtual void Vf143FA8(u32 a, u32 b, u32 c, u32 bit, s32 set) = 0;
     virtual int GetBit144070(u32 a, u32 b, u32 c, u32 bit) = 0;
     virtual s32 Get1440F8(s32 x) = 0;
     virtual int SumFlags() = 0;
     virtual int GetOption(int k) = 0;
-    virtual void Vf144270() = 0;
+    virtual void Vf144270(s32 base, int name, s32 b, s32 set) = 0;
     virtual int Get144378(s32 base, s32 a, s32 b) = 0;
     virtual void Merge144440(CFlagWork *w) = 0;
 };
 class CSysFlag : public ISysFlag {
 public:
+    CSysFlag();
     virtual ~CSysFlag();
     virtual void Vf2932F0(s32 v);
     virtual void Vf2990F0();
@@ -125,12 +129,12 @@ public:
     virtual void Load143BD8(CCurFlag *cur);
     virtual void Load143CD0(CCurFlag *cur);
     virtual s32 Get143F20(s32 x);
-    virtual void Vf143FA8();
+    virtual void Vf143FA8(u32 a, u32 b, u32 c, u32 bit, s32 set);
     virtual int GetBit144070(u32 a, u32 b, u32 c, u32 bit);
     virtual s32 Get1440F8(s32 x);
     virtual int SumFlags();
     virtual int GetOption(int k);
-    virtual void Vf144270();
+    virtual void Vf144270(s32 base, int name, s32 b, s32 set);
     virtual int Get144378(s32 base, s32 a, s32 b);
     virtual void Merge144440(CFlagWork *w);
     void SetMax(s32 id, s32 v);

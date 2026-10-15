@@ -222,3 +222,26 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   (CMovieObj 0x13EC28); check rocheck after porting a switch. *(bokura)*
 - **CDemoMain's constructor leaves member-ctor delay slots empty** from the third member on while
   ours fills them: maybe that unit was built with exceptions (retail has 0x7C of .gcc_except_table). *(bokura)*
+## r2
+- **Unnamed .bss words**: spimdisasm leaves some `lui 0x31; sw -0x1E80` pairs as raw constants (no
+  `D_` in undefined_syms_auto.txt, also positive-`%lo` ones like 0x310D9C). A constant address in C
+  compiles through `$at`, not retail's `$2`, so name the word and define it in config/aliases.ld
+  (adding it to symbol_addrs.txt does not get it defined). Often a struct member works instead:
+  `D_30F580.m1820[i]` emits `D_30F580+0x1820` and links to the same bytes. *(bokura)*
+- **newlib `tolower` keeps the `lui` in the loop**: `(_ctype_+1)[(unsigned)c]` with `_ctype_` at
+  0x2EAE78 matched; indexing `D_002EAE79` directly hoists the address out of the loop. *(bokura)*
+- **Clamps**: `v = v < lo ? lo : (v > hi ? hi : v);` gives retail's branchy shape (bltz/beql);
+  if/else-if chains and inline Clamp helpers if-convert to `movz`. Storing the clamp to a
+  global matched only through a temp (`s32 t = ...; g.m510 = t;`). *(bokura)*
+- **"if (ok) return x; return 0;" with retail's bnez-to-return layout** matched only as
+  `if (cond) goto found; return 0; found: return e->x;` (about 15 slot getters). *(bokura)*
+- **List init loops want pointer walks**: `for (i = 0, n = tbl; i < N; i++, n++)` matched the
+  free-list builders where `&tbl[i]` did not (0x20D6E0, 0x20B9F0). *(bokura)*
+- **Unlink-by-id loops**: `pp = &head; for (;;) { e = *pp; if (!e) return; if (e->id == id) {...; return;} pp = &e->next; }`
+  keeps retail's top-tested loop; a `for (...; (e = *pp) != 0; ...)` gets rotated. Inside it,
+  `if (flag) p->x = 1; else p->x = 2;` (not `?:`) keeps the movz in the loop. *(bokura)*
+- **Range switch trees**: `case 0: break;` before `case 1: case 2:` reproduced retail's
+  `t < 3` then `t > 0` order (0x20C280). *(bokura)*
+- **Callee arity from pass-through registers**: a wrapper that leaves $a1/$a2 untouched before a
+  `j` passes extra arguments; when a later function calls it with more args, widen the
+  extern "C" prototype (func_0020E470, func_0020E808). *(bokura)*

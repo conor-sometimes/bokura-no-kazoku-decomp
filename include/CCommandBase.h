@@ -9,6 +9,7 @@
 class CCommandBase {
 public:
     CCommandBase();                   // 0x198080
+    s32 NumRows();                    // 0x1984E0
     virtual s32 Update() = 0;
     virtual s32 Draw() = 0;
 

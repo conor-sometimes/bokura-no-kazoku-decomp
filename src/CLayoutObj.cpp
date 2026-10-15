@@ -34,13 +34,16 @@ public:
 class CLayoutRes {
 public:
     CLayoutObjPart *Func1B9B80(int v);
+    u8 pad0[0xC];
+    void *m_text;             // 0xC
 };
-class CUnk25C230 {
-public:
-    void Func25C230();
-};
+class CLayoutHourglass;
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CLayoutObj, its
+// only virtual. The vptr follows its fields at 0x164.
 class CLayoutObj {
 public:
+    CLayoutObj();
+    virtual ~CLayoutObj();
     void Func1B9E28();
     void CallFunc1B9E28();
     void SetUnk30(f32 x, f32 y);
@@ -55,13 +58,17 @@ public:
     int Set(CLayoutRes *res, int v);
     void Func1B9D40();
     void Init1BD188();
-    void Func1BA210(int a, f32 x, f32 y, f32 z, f32 w);
-    void Draw1BA1D0(int a, f32 x, f32 y, f32 z, f32 w);
+    void Func1BA210(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
+    void Draw1BA1D0(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w, f32 sx, f32 sy);
     void Func1BA440(int a, f32 x, f32 y, f32 z, f32 w);
+    int Func1BA520(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w, f32 sx, f32 sy);
     int Draw1BA5D0(int a, f32 x, f32 y, f32 z, f32 w);
     void Printf(const char *fmt, ...);
     CLayoutEntry *FindEntry(const char *name);
     CLayoutEntry *GetEntry(int i);
+    // The 0x1BD188 object (CLayoutHourglass) starts with a CLayoutObj; some of its methods are
+    // still declared here.
+    CLayoutHourglass *Hg() { return (CLayoutHourglass *)this; }
 
     s32 m_unk0;               // 0x0
     CLayoutObjPart *m_part;   // 0x4
@@ -81,9 +88,24 @@ public:
     f32 m_unk50;              // 0x50
     f32 m_unk54;              // 0x54
     u8 pad58[0xC];
-    char m_text[0x10C];       // 0x64
-    CUnk25C230 m_unk170;      // 0x170
-    u8 pad171[0x6B];
+    char m_text[0x100];       // 0x64
+    // vptr 0x164; 16-byte aligned (size 0x170)
+} __attribute__((aligned(16)));
+// Sound object (library, 0x25C230 constructor, 0x25C2C0 destructor), 0x6C bytes.
+class CSndWork {
+public:
+    void Func25C648(s32 a, s32 b);
+    u8 pad0[0x6C];
+};
+extern "C" void func_0025C230(void *p);
+class CLayoutHourglass {
+public:
+    CLayoutHourglass();
+    int Load(CLayoutRes *res, const char *name);
+    void Update();
+
+    CLayoutObj m_obj;         // 0x000
+    CSndWork m_snd;           // 0x170
     s32 m_unk1DC;             // 0x1DC
     s32 m_unk1E0;             // 0x1E0
     s32 m_unk1E4;             // 0x1E4
@@ -91,7 +113,7 @@ public:
     s32 m_unk1EC;             // 0x1EC
     s32 m_unk1F0;             // 0x1F0
     s32 m_unk1F4;             // 0x1F4
-    u8 pad1F8[0x4];
+    s32 m_unk1F8;             // 0x1F8
     s32 m_unk1FC;             // 0x1FC
     s32 m_unk200;             // 0x200
 };
@@ -132,11 +154,45 @@ int LayoutFlagX(int v);
 int LayoutFlagY(int v);
 const char *ParseUInt(const char *s, int *out);
 const char *ParseSjis(const char *s, s16 *out);
+void Func2251E8();
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+extern "C" s32 func_0023A0E8();
+extern "C" s32 func_0023A2F0(s32 a);
+extern "C" u64 func_0023C650(s32 a);
+extern "C" u64 func_0023C658(s32 a);
+void *Func237570(s32 size);
+void Func237A88(void *p, s32 n);
+void *Func237C30(void *p);
+void Func238158(void *p, s32 v);
+class CDisp2BA128 {
+public:
+    virtual void Vf0();
+    virtual void Vf1();
+    virtual void Vf2();
+    virtual void Vf3();
+    virtual u64 GetFrame();
+    virtual u64 GetZBuf();
+};
+extern CDisp2BA128 *D_002BA128;
+extern "C" CLayoutEntry *func_001B9E78(CLayoutObj *o, s32 i);
+const char *Func24AF10(void *p, const char *key);
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 k, s32 n);
+extern "C" long atol(const char *s);
+extern char D_002E0D50[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001B9D40);
+CLayoutObj::CLayoutObj() {
+    m_unk0 = 0;
+    m_part = 0;
+    Func1B9F60();
+    return;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001B9D70);
+CLayoutObj::~CLayoutObj() {
+    Func1B9E28();
+}
 
 int CLayoutObj::Set(CLayoutRes *res, int v) {
     Func1B9E28();
@@ -187,7 +243,16 @@ void CLayoutObj::Printf(const char *fmt, ...) {
     va_end(ap);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1B9FF0__10CLayoutObj);
+void CLayoutObj::Func1B9FF0() {
+    CLayoutDraw *d = (CLayoutDraw *)this;
+    d->m8 = (CLayoutDrawObj *)Func237570(0x30);
+    Func237A88(d->m8, 3);
+    Func238158(Func237C30((u8 *)d->m8 + 0x20), 1);
+    *(u64 *)((u8 *)this + 0x10) = D_002BA128->GetFrame();
+    d->m18 = D_002BA128->GetZBuf();
+    m_text[0] = 0;
+    ((CLayoutObjSub1BA0A0 *)this)->Reset();
+}
 
 void CLayoutObjSub1BA0A0::Reset() {
     m_unk50 = 0;
@@ -203,7 +268,20 @@ int CLayoutObj::Func1BA0C0() {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1BA0F0__10CLayoutObj);
+void CLayoutObj::Func1BA0F0() {
+    Func225088();
+    func_00227A20();
+    func_00226DF8(0x42, 0x44);
+    func_00226DF8(8, 0xA);
+    func_00226DF8(0x4A, 0);
+    func_00226DF8(0x49, 0);
+    func_00226DF8(0x14, 0x60);
+    func_00226DF8(0x3B, 0x80);
+    func_00226DF8(0x47, 0x39001);
+    func_00227AA8();
+    Func2251E8();
+    ((CLayoutDraw *)this)->m8->m10.Func237E90(Func2250C0());
+}
 
 int CLayoutObj::Func1BA1A0() {
     Func1B9FF0();
@@ -211,16 +289,26 @@ int CLayoutObj::Func1BA1A0() {
     return Func1BA0C0();
 }
 
-void CLayoutObj::Draw1BA1D0(int a, f32 x, f32 y, f32 z, f32 w) {
-    Func1BA210(a, x, y, z + m_unk30 + m_unk50, w + m_unk34 + m_unk54);
+void CLayoutObj::Draw1BA1D0(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w, f32 sx, f32 sy) {
+    Func1BA210(e, a, x, y, z + m_unk30 + m_unk50, w + m_unk34 + m_unk54);
 }
 
 INCLUDE_RODATA("asm/nonmatchings/CLayoutObj", D_002E0BE8);
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1BA210__10CLayoutObjiffff);
+INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1BA210__10CLayoutObjP12CLayoutEntryiffff);
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", Func1BA440__10CLayoutObjiffff);
+void CLayoutObj::Func1BA440(int a, f32 x, f32 y, f32 z, f32 w) {
+    s32 n = ((CLayoutObjSub1B9E60 *)this)->GetPartUnk8();
+    for (s32 i = 0; i < n; i++) {
+        ((CLayoutObjSub1BA0A0 *)this)->Reset();
+        Draw1BA1D0(func_001B9E78(this, i), a, y, x, z, w, 1.0f, 1.0f);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BA520);
+int CLayoutObj::Func1BA520(CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w, f32 sx, f32 sy) {
+    Func1B9FF0();
+    Draw1BA1D0(e, a, x, y, z, w, sx, sy);
+    return Func1BA0C0();
+}
 
 int CLayoutObj::Draw1BA5D0(int a, f32 x, f32 y, f32 z, f32 w) {
     Func1B9FF0();
@@ -228,9 +316,23 @@ int CLayoutObj::Draw1BA5D0(int a, f32 x, f32 y, f32 z, f32 w) {
     return Func1BA0C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BA650);
+void SetFrameZMask(u32 flags) {
+    if (flags & 0x40000000) {
+        u64 fr = func_0023C650(func_0023A2F0(func_0023A0E8()));
+        u64 zb = func_0023C658(func_0023A2F0(func_0023A0E8()));
+        func_00226DF8(0x4E, ((zb & 0x3FFF) >> 5) | (((zb >> 32) & 0x3F) << 24) | ((u64)0x8000 << 17));
+        func_00226DF8(0x4C, ((fr & 0x3FFF) >> 5) | (((fr >> 14) & 0x3F) << 16) | (((fr >> 32) & 0x3F) << 24) | ((u64)0xFFFFFF << 32));
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BA728);
+void SetFrameZ(u32 flags) {
+    if (flags & 0x40000000) {
+        u64 fr = func_0023C650(func_0023A2F0(func_0023A0E8()));
+        u64 zb = func_0023C658(func_0023A2F0(func_0023A0E8()));
+        func_00226DF8(0x4E, ((zb & 0x3FFF) >> 5) | (((zb >> 32) & 0x3F) << 24));
+        func_00226DF8(0x4C, ((fr & 0x3FFF) >> 5) | (((fr >> 14) & 0x3F) << 16) | (((fr >> 32) & 0x3F) << 24));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BA7E8);
 
@@ -288,11 +390,33 @@ const char *ParseUInt(const char *s, int *out) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BCFB0);
-INCLUDE_RODATA("asm/nonmatchings/CLayoutObj", D_002E0D40);
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BD188);
+CLayoutHourglass::CLayoutHourglass() {
+    func_0025C230(&m_snd);
+    m_unk1DC = 0;
+    m_unk1E4 = 0;
+    m_unk1E8 = 0;
+    m_unk1EC = 0;
+    m_unk1F0 = 0;
+    m_unk1FC = 1;
+    m_unk1F4 = -1;
+    m_unk200 = 1;
+    m_unk1E0 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BD1E0);
+int CLayoutHourglass::Load(CLayoutRes *res, const char *name) {
+    char buf[0x100];
+    const char *p = Func24AF10(res->m_text, D_002E0D50);
+    if (!*p) return 0;
+    s32 i = 0;
+    s32 *v = &m_unk1F8;
+    for (; i < 1; i++) {
+        p = func_0024AD10(p, buf, 1, 0x100);
+        if (!buf[0]) break;
+        *v++ = atol(buf);
+    }
+    return m_obj.Set(res, (int)name);
+}
 
 void CLayoutObj::CallFunc1B9E28() {
     Func1B9E28();
@@ -306,20 +430,38 @@ void CLayoutObj::SetUnk30(f32 x, f32 y) {
 }
 
 void CLayoutObj::SetUnk1DC(s32 v) {
-    m_unk1DC = v;
+    Hg()->m_unk1DC = v;
 }
 
 void CLayoutObj::CopyUnk1DC() {
-    m_unk1E0 = m_unk1DC;
+    Hg()->m_unk1E0 = Hg()->m_unk1DC;
 }
 
 void CLayoutObj::ResetUnk1E0() {
-    m_unk1E4 = 0;
-    m_unk1E8 = 0;
-    m_unk1E0 = 0;
-    m_unk1F4 = -1;
+    Hg()->m_unk1E4 = 0;
+    Hg()->m_unk1E8 = 0;
+    Hg()->m_unk1E0 = 0;
+    Hg()->m_unk1F4 = -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BD320);
+void CLayoutHourglass::Update() {
+    if (m_unk1E0) {
+        s32 t = --m_unk1E0;
+        if (t == 0) {
+            m_unk1E0 = 0;
+            m_unk1F4 = 0;
+        } else if (t < 0xB5) {
+            s32 old = m_unk1F4;
+            s32 sec = t / 60 + 1;
+            m_unk1F4 = sec;
+            if (sec != old && m_unk200) m_snd.Func25C648(0x73, 0);
+        }
+        m_unk1E8 = m_unk1E4 = (s32)((f32)(m_unk1DC - m_unk1E0) / (f32)m_unk1DC * 22.0f);
+        if (m_unk1F8 < ++m_unk1EC) {
+            if (++m_unk1F0 >= 4) m_unk1F0 = 0;
+            m_unk1EC = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BD420);

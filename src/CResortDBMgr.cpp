@@ -14,23 +14,34 @@ struct CResortRec30 {
 };
 struct CResortRecC {
     s32 m_id;                 // 0x0
-    u8 pad4[0x8];
-};
-struct CResortNameRec {
-    const char *m_name;       // 0x0
     s32 *m_values;            // 0x4
-    u8 pad8[0x4];
+    s32 m_count;              // 0x8
+};
+// "GET" rows: id (index + 0x10), then m_count pairs of values.
+struct CResortNameRec {
+    s32 m_id;                 // 0x0
+    s32 *m_values;            // 0x4
+    s32 m_count;              // 0x8
 };
 int Func1456A8(int v);
+class CVec4 {
+public:
+    f32 x, y, z, w;
+};
+struct CResortColorRec {
+    const char *m_name;       // 0x0
+    CVec4 *m_vals;            // 0x4
+    s32 m_count;              // 0x8
+};
 const char *Func24ADE0(const char *p, char *buf, int n);
 // Interface without fields (its RTTI name only): the vptr is at 0.
 class IResortDBMgr {
 public:
     virtual void Release() = 0;
-    virtual int Func171DE8() = 0;
+    virtual int Func171DE8(const char *path) = 0;
     virtual void Init() = 0;
     virtual struct CResortRec30 *Func172920(s32 id) = 0;
-    virtual int Func172968() = 0;
+    virtual int Func172968(const char *name, s32 idx, CVec4 *out) = 0;
     virtual int Func29A3F0() = 0;
     virtual int Func29A430() = 0;
     virtual int Func172A60(const char *name, s32 a, s32 b) = 0;
@@ -40,16 +51,17 @@ public:
     virtual CResortDBEntry20 *GetEntryC(s32 i) = 0;
     virtual CResortDBEntry *GetEntryB(s32 i) = 0;
 };
-// Vtable 0x2C1570: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
-// Func171DE8, not the destructor (slot 13). Slots 5 and 6 are inline too.
+// Vtable 0x2C1570: slot 0 is an inline `delete this` (0x29A3B8, emitted elsewhere), the
+// destructor is slot 13; slots 5 and 6 are inline too. Release is declared, not defined, so it is
+// the key method and the vtable stays asm while Func171DE8 is C++.
 class CResortDBMgr : public IResortDBMgr {
 public:
     CResortDBMgr();
-    virtual void Release() { delete this; }
-    virtual int Func171DE8();
+    virtual void Release();
+    virtual int Func171DE8(const char *path);
     virtual void Init();
     virtual CResortRec30 *Func172920(s32 id);
-    virtual int Func172968();
+    virtual int Func172968(const char *name, s32 idx, CVec4 *out);
     virtual int Func29A3F0();
     virtual int Func29A430();
     virtual int Func172A60(const char *name, s32 a, s32 b);
@@ -68,8 +80,13 @@ public:
     s32 m_numNames;           // 0x1C
     CResortRecC *m_recsC;     // 0x20
     s32 m_numC;               // 0x24
-    s32 m_unk28;              // 0x28
-    s32 m_unk2C;              // 0x2C
+    CResortColorRec *m_colors; // 0x28
+    s32 m_numColors;          // 0x2C
+    s32 Load171EC0();
+    s32 Func171F68(void *data);
+    s32 Func1722D8(void *data);
+    s32 Func172498(void *data);
+    void Func172690();
 };
 
 struct CResortDBEntry {
@@ -80,6 +97,29 @@ extern CResortDBEntry D_002A3850[];
 extern CResortDBMgr *D_002A36E8;
 
 extern CResortDBEntry20 D_002A3760[];
+
+//@sym Func171F68__12CResortDBMgrPv 0x171F68
+//@sym Func1722D8__12CResortDBMgrPv 0x1722D8
+//@sym Func172498__12CResortDBMgrPv 0x172498
+//@sym Func172690__12CResortDBMgr 0x172690
+#include "libc.h"
+extern "C" void func_00248C30(CPushBuf *p);
+extern "C" void func_00248C70(CPushBuf *p);
+void *Func24A4C0(const char *name);
+extern void (*D_002B91B0)(void *p);
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+int Func235DE0(const char *fmt, ...);
+void Func270C50(CVec4 *dst, const CVec4 *src);
+
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
+extern "C" s32 func_0024A7D8(const char *s, const char *a, const char *b);
+extern "C" s32 func_0024B040(const char *s, s32 k);
+const char *Func24A570(const char *s, char *buf, const char *a, const char *b);
+const char *Func24AF10(void *p, const char *key);
+const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
+extern const char D_002DA0D8[], D_002DA0E0[];
 // @decl-end
 
 CResortDBMgr::CResortDBMgr() {
@@ -95,21 +135,64 @@ CResortDBMgr::~CResortDBMgr() {
 void CResortDBMgr::Clear() {
     m_unk10 = 0;
     m_unk14 = 0;
-    m_unk28 = 0;
-    m_unk2C = 0;
+    m_colors = 0;
+    m_numColors = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171DE8);
+int CResortDBMgr::Func171DE8(const char *path) {
+    u8 buf[0x100];
+    CPushBuf *pb = &m_buf;
+    Init();
+    Func2491A8(buf, path, (s32)"FILE", (s32)"resortdb", (s32)"data/resortdb.xap");
+    if (!Func249248(buf)) return 0;
+    Func235DE0("resort database ...\n");
+    func_00248C30(pb);
+    if (Load171EC0()) Func172690();
+    func_00248C70(pb);
+    Func249348();
+    Func235DE0("size=%d\n", pb->m_unk4);
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171EC0);
+s32 CResortDBMgr::Load171EC0() {
+    s32 ok = 0;
+    void *data = Func24A4C0("resort.txt");
+    if (data) {
+        if (Func171F68(data) && Func1722D8(data)) ok = Func172498(data) != 0;
+        if (data) D_002B91B0(data);
+    }
+    Func235DE0(" resort (%d)\n", ok);
+    return ok;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00171F68);
+INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func171F68__12CResortDBMgrPv);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0D8);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA0E0);
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_001722D8);
+INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func1722D8__12CResortDBMgrPv);
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172498);
+s32 CResortDBMgr::Func172498(void *data) {
+    char buf[0x100];
+    const char *p = Func24AF10(data, "ORDER");
+    CPushBuf *pb;
+    s32 i, j;
+    if (!*p) return 0;
+    m_numC = func_0024B040(p, 1);
+    pb = &m_buf;
+    m_recsC = (CResortRecC *)pb->Func248CC8(m_numC * 12, 1, 1);
+    for (i = 0; i < m_numC; i++) {
+        CResortRecC *e = &m_recsC[i];
+        const char *q;
+        p = Func24AFE8(p, buf, 1, 0x100);
+        q = func_0024A710(buf, &e->m_id, 0, D_002DA0D8, D_002DA0E0);
+        e->m_count = func_0024A7D8(q, D_002DA0D8, D_002DA0E0);
+        e->m_values = (s32 *)pb->Func248CC8(e->m_count * 4, 1, 1);
+        for (j = 0; j < e->m_count; j++) {
+            q = func_0024A710(q, &e->m_values[j], 0, D_002DA0D8, D_002DA0E0);
+        }
+    }
+    return 1;
+}
 
 int CountLines172640(const char *p) {
     s32 n = 0;
@@ -120,7 +203,7 @@ int CountLines172640(const char *p) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172690);
+INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func172690__12CResortDBMgr);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA108);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA118);
 INCLUDE_RODATA("asm/nonmatchings/CResortDBMgr", D_002DA128);
@@ -151,7 +234,19 @@ CResortRec30 *CResortDBMgr::Func172920(s32 id) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", func_00172968);
+int CResortDBMgr::Func172968(const char *name, s32 idx, CVec4 *out) {
+    s32 i;
+    memset(out, 0, 0x10);
+    for (i = 0; i < m_numColors; i++) {
+        CResortColorRec *e = &m_colors[i];
+        if (!strcmp(e->m_name, name)) {
+            if (idx < 0 || idx >= e->m_count) return 0;
+            Func270C50(out, &e->m_vals[idx]);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 // Func172A60: `for (i < m_numNames) if (Func1456A8(name_i) == Func1456A8(name)) { s32 *row =
 // e->m_values + a * 2; return row[b]; } return -1;` is DIFF 2: retail adds `a*8 + base` with the

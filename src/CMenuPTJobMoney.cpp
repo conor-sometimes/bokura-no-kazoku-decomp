@@ -11,10 +11,7 @@ public:
     u8 pad0[0x7C];
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(int id);
-};
+#include "CFlagWork.h"
 extern CFlagWork *D_002A5358;
 extern char D_002DBA30[];
 

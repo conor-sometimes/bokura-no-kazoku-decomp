@@ -124,3 +124,60 @@ Per lane:
   table lands 8 bytes late in .rodata), 0x122440/0x1215B0 (bbox loop), 0x1AE528 (done loop
   threaded away), CChrBodyWin and CMenuSysscr27 (class decls need restructuring).
 - Solved this round from older entries: the 0..1 clamps 0x18E700, 0x18E670, 0x18F4D8, 0x18F448.
+
+## r2
+
+Lane r2 (goal 6b, 2026-10-15): units Unit1FF680, Unit201DB0, Unit204500, Unit206508,
+Unit208128, Unit20A410, Unit20CBF0 (render lights, file/string helpers, IOP sound RPC). 293 of
+377 matched. Tried and left:
+
+- 0x2062B8 (Unit204500, 13 insns, clamp-to-[0,1] setter returning the old value): best
+  `s32 old = D_002A5DE8; D_002A5DE8 = v < 0 ? 0 : (v < 2 ? v : 1); return old;` DIFF 10: same
+  branches and registers, but ours materialises `&D_002A5DE8` (lui+addiu) once, retail keeps
+  `%lo(D_002A5DE8)($6)` in the lw and both sw. Array/struct-member forms of the global and
+  if/else chains don't change it.
+- 0x2073D0 (Unit206508, 72 insns, sound voice/channel table init): best (struct S30F580 with
+  the node free list, inline PushFree/InsertNode helpers, the dummy channel through its own
+  symbol D_3121A0) DIFF 36-42: the first loop wants retail's `daddu $5,$3; daddu $4,$5`
+  copies, and constant loads (0x1BAFF0, 0x5010) schedule differently; bk perm over the 9 field
+  stores found nothing.
+- 0x2087E8, 0x2088B8, 0x208948 (Unit208128, 36-51 insns, seq-slot getters with two debug
+  prints `D_002E2F90` (bad index) / `D_002E2FB8` (slot unused)): retail cross-jumps both
+  `if (func_00206088() & 1) Func235DE0(fmt, i)` tails into one call site; ours keeps two
+  (`if (e->m0 & 1) return e->m4;` form: 0x2088B8 38 vs 36 insns, 0x2087E8 DIFF 17).
+- 0x2091F0, 0x209250 (Unit208128, 24 insns, chunk search `while (off < hdr->size)`): retail
+  re-reads the bound `lw 8(base)` at the loop bottom; ours hoists it (while, for, do-while and
+  goto loops all hoist). 1 insn short.
+- 0x20B0B8, 0x20C238 (Unit20A410, 18 insns, "return the slot's flag byte if bit 0 is set"):
+  retail tests `lbu; andi 1; andi 0xFF` (a u8-returning inline) and then re-loads the byte for
+  the return; ours reuses the first load. Only `*(volatile u8 *)` gets the reload (DIFF 2).
+- 0x20E798 (Unit20CBF0, 28 insns, bank sub-table lookup `t[k+1] ? (char *)t + t[k+1] : 0`):
+  DIFF 8-9: retail ends with a branch (`bnez off` with `addu` in the delay slot, then
+  `daddu $2,$0,$0`), ours if-converts to `xori`/`movz`; early-return, else and pointer forms tried.
+- 0x2060F0 (Unit204500, 32 insns, switch 0/1/2 -> 3/4/5 then RPC 0x30): DIFF 16, all
+  scheduling: retail stores `buf[1] = v` straight from $a1 before the call setup, ours copies v
+  to $v1 and stores it in the jal delay slot (array, struct, store-order variants tried).
+- 0x20E698 (Unit20CBF0, 47 insns, find a bank entry by name with strcmp): ours guards the
+  loop twice (`bgtz` + `b`) where retail falls from `blez n` into a bottom-tested loop
+  (do-while, for, nested-if forms all 1019+).
+- 0x20E808 (Unit20CBF0, 43 insns, two-level bank lookup): DIFF 8, ours computes `n*4 + t`
+  where retail does `t + n*4` and fills one delay slot differently; `(t + n)[2]` didn't help.
+- 0x2061D8 (Unit204500, 56 insns, master pan: clamp both to [-128,127], store, push to the
+  four sound modules): DIFF 8-10, only the registers of the two clamped values swap
+  ($6/$3 in retail); statement order, fresh locals and a struct pointer tried.
+- 0x20D118 (Unit20CBF0, 104 insns, voice pan: mono packet or two stereo packets by
+  voice type 1..3): retail tests `t < 4` then `t > 0`; ours folds them to `(t-1) < 3`
+  and lays the blocks out differently (110 insns; nested ifs, goto and switch tried).
+- 0x208F98, 0x209058 (Unit208128): same two-debug-print shape as 0x2088B8 (cross-jumped
+  print call), not tried separately.
+
+Not tried yet (mostly large): 0x1FF680 0x1FF960 0x1FFC20 0x1FFF78 0x200130 0x2003A8 0x2005D0
+0x2008A0 0x200B28 0x201820 0x201998 (Unit1FF680); 0x202040 0x202168 0x202430 0x202600 0x202A60
+0x202C08 0x202D68 0x203108 0x2032F8 0x203500 0x203708 0x203A18 0x2042C0 0x2043B8 (Unit201DB0,
+several with VU0 macro code / vcallms); 0x204500 0x204548 0x204BC8 0x204CC0 0x204E08 0x204FD8
+0x205398 0x205898 0x205908 0x205980 0x205A80 0x205BA0 0x205DE0 (Unit204500; 0x205898/0x205908/
+0x205DE0 return an 8-byte struct in $v0 built from an uninitialised register); 0x206808 0x206A18
+0x207530 0x207960 0x207B80 0x207CD8 (Unit206508); 0x208260 0x208670 0x208B30 0x208E48 0x209CC0
+0x209F50 0x20A098 (Unit208128); 0x20AA60 0x20AD90 0x20B160 0x20B448 0x20B5A0 0x20BA88 0x20BDF0
+0x20C338 (Unit20A410); 0x20CC08 0x20CDF0 0x20D2B8 0x20D780 0x20DA30 0x20DB78 0x20DC98 0x20DFD8
+(Unit20CBF0).

@@ -10,6 +10,7 @@ int Func235DE0(const char *fmt, ...);
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);
 class CGameEventObj {
 public:
+    void Func165380(s32 k);
     void Func164878(s32 k);
     void Func164D38(s32 k);
     void Func163908();
@@ -59,6 +60,18 @@ extern s32 D_002A34B8[];
 extern char D_002D97F8[], D_002D98C0[], D_002D98D0[];
 
 extern char D_002D98B0[];
+
+#include "CProcess.h"
+class CGameResort : public CProcess {
+public:
+    CGameResort(s32 a, s32 b, s32 c, s32 d);
+    virtual ~CGameResort();
+    u8 pad18[0x6D0 - 0x18];
+};
+class CTaskList24F5C0 {
+public:
+    s32 Func24F5C0(void *task, s32 pri);
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameEventObj", __13CGameEventObji);
@@ -94,7 +107,13 @@ INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D97D0);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D97E0);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D97F0);
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", Func163880__Fi);
+s32 Func163880(s32 v) {
+    s32 i, n = 0;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        if (D_002A26E4->Func1091B0(i + 0x3A) == v) n++;
+    }
+    return n;
+}
 
 void CGameEventObj::Func163908() {
     s32 ids[0x100];
@@ -281,7 +300,12 @@ void CGameEventObj::Func1650E8() {
     D_002A5358->Func108FF0(0x28F, -1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00165380);
+void CGameEventObj::Func165380(s32 k) {
+    s32 *p = IdPtr(k);
+    D_002A26E4->Func108FF0(0x15, *p);
+    D_002A26E4->Func108FF0(m_unkFF20 + 0x64, 9);
+    D_002A26E4->Func108FF0(m_unkFF20 + 0x6A, *p);
+}
 
 s32 CGameEventObj::Func165410(s32 a, s32 b, s32 c, s32 lo, s32 hi) {
     s32 v[5];
@@ -418,7 +442,13 @@ s32 CGameEventObj::Func165ED0(s32 k) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", Func165F78__Fi);
+s32 Func165F78(s32 v) {
+    s32 i;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        if (D_002A26E4->Func1091B0(i + 0x28) == v) return i;
+    }
+    return i;
+}
 
 void CGameEventObj::Func165FF0() {
     s32 ids[0x80];
@@ -489,4 +519,7 @@ s32 CGameEventObj::Func166548(s32 k) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00166748);
+void CreateGameResort(CTaskList24F5C0 *list, s32 a, s32 b, s32 c, s32 d) {
+    CGameResort *t = new CGameResort(a, b, c, d);
+    list->Func24F5C0(t, 0);
+}

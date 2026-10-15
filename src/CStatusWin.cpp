@@ -29,7 +29,7 @@ public:
     f32 m_unkDC;              // 0xDC
     s32 m_unkE0;              // 0xE0
     s32 m_unkE4;              // 0xE4
-    u8 padE8[0x4];
+    char *m_text;             // 0xE8
     s32 m_unkEC;              // 0xEC
     s32 m_unkF0;              // 0xF0
     s32 m_unkF4;              // 0xF4
@@ -38,13 +38,18 @@ public:
 
 class CStatusItem {
 public:
+    void Func1A3378();
+    void SetText(s32 i, const char *s);
+    int GetUnk10(f32 *x, f32 *y, s32 i);
+    int Func1A38D0(s32 i);
+    int GetPos(f32 *x, f32 *y, s32 i);
     void Func1A3628();
     void SetUnk34(f32 v);
     void Start();
     void ResetColors();
     s32 GetUnkE4(s32 i);
     int Select(s32 n);
-    int SetMappedColor(s32 n, const CVec4 *v);
+    void SetMappedColor(s32 n, const CVec4 *v);
     int GetMappedUnkC0(f32 *x, f32 *y, s32 n);
     int SetPos(s32 i, f32 x, f32 y);
     int GetUnk60Ofs(f32 *x, f32 *y, s32 i);
@@ -54,7 +59,7 @@ public:
     int SetUnk70(s32 i, f32 x, f32 y);
     int GetUnkC0(f32 *x, f32 *y, s32 i);
     int SetUnkC0(s32 i, f32 x, f32 y);
-    int SetUnkF0(s32 i, s32 v);
+    void SetUnkF0(s32 i, s32 v);
     int SetColor(s32 i, const CVec4 *v);
     int GetColor(CVec4 *out, s32 i);
     int ScaleAlpha(s32 i, f32 s);
@@ -77,10 +82,7 @@ public:
     f32 m_unk84;              // 0x84
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
+#include "CFlagWork.h"
 extern CFlagWork *D_002A4B60;
 int Func235DE0(const char *fmt, ...);
 void Func270C50(CVec4 *dst, const CVec4 *src);
@@ -97,7 +99,8 @@ public:
     void Func19E008();
     void Func19E0B8();
     void Func19E148(f32 v);
-    void Func19E5C8(f32 v, s32 n);
+    s32 Func19E5C8(f32 v, s32 n);
+    s32 Func19E300(char *out, s32 n);
     void Func19E6A0(f32 v);
     void Func19E780(f32 v);
     void Func19ECB0(f32 x, f32 y);
@@ -116,7 +119,7 @@ public:
     u8 pad0[0x48];
     CStatusItem* m_item;      // 0x48
     s32 m_state;              // 0x4C
-    u8 pad50[0x4];
+    u32 m_unk50;              // 0x50
     s32 m_unk54;              // 0x54
     u8 pad58[0x4];
     s32 m_unk5C;              // 0x5C
@@ -141,6 +144,7 @@ public:
     void Clear();
     u64 SwapUnk0(u64 v);
     u64 SwapUnk8(u64 v);
+    CStatusWinSub1A1BF0 *Find(const char *name);
 
     u64 m_unk0;               // 0x0
     u64 m_unk8;               // 0x8
@@ -209,6 +213,7 @@ class CStatusWinSub1A4A40 {
 public:
     s32 Load();
     void Func1A4E88();
+    s32 Func1A4AE0(u32 k);
 
     u8 pad0[0x58];
     CStatusItem *m_item;      // 0x58
@@ -216,7 +221,36 @@ public:
     s32 m_unk6C;              // 0x6C
     u8 pad70[0xC];
     void *m_unk7C;            // 0x7C
+    char m_str[0x100];        // 0x80
 };
+
+//@sym SetColor__11CStatusItemiPC5CVec4 0x1A3E28
+extern const char D_002DE848[];
+extern const char D_002DE788[];
+
+//@sym SetUnkF0__11CStatusItemii 0x1A3DC8
+#include "libc.h"
+extern CFlagWork *D_002A5358;
+extern "C" void func_00185AA0(void *p, s32 k, s32 a, s32 b, s32 c, s32 d, s32 e);
+extern const char D_002DDEE0[];
+extern const char D_002DE090[];
+extern const char D_002DEF20[][8];
+const char *Func24AF10(void *p, const char *key);
+const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
+extern "C" unsigned int strlen(const char *s);
+extern const char D_002DEB40[];
+inline char *StrCat(char *d, const char *s) { strcpy(d + strlen(d), s); return d; }
+
+//@sym Func19E300__10CStatusWinPci 0x19E300
+#include "IGameDBMgr.h"
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+void Func185F18(char *buf, s32 a, s32 b);
+void Func185E80(char *buf, s32 a);
+extern const char D_002DDF00[];
+extern const char D_002DE6A8[], D_002DE6C8[];
+extern const char D_002DE480[];
+extern "C" unsigned int strlen(const char *s);
+#include "libc.h"
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -285,17 +319,58 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DDC0);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DE80);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E008__10CStatusWin);
+void CStatusWin::Func19E008() {
+    s32 i;
+    switch (m_unk60) {
+    case 0:
+        for (i = 5; i < 15; i++) m_item->SetUnkF0(i, 0);
+        break;
+    case 1:
+        for (i = 5; i < 11; i++) m_item->SetUnkF0(i, 0);
+        break;
+    default:
+        Func235DE0(D_002DDEE0, m_unk60);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E0B8__10CStatusWin);
+void CStatusWin::Func19E0B8() {
+    char buf[0x200];
+    char *name = D_002A2988->GetCharaName(m_unk50);
+    sprintf(buf, (const char *)m_item->GetUnkE4(5), (char *)this + 0x80, name);
+    m_item->SetText(5, buf);
+    m_item->SetUnkF0(5, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E148__10CStatusWinf);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019E300);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E300__10CStatusWinPci);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E5C8__10CStatusWinfi);
+s32 CStatusWin::Func19E5C8(f32 v, s32 n) {
+    char buf[0x100];
+    char tmp[0x100];
+    s32 r = Func19E300(tmp, n);
+    s32 c;
+    sprintf(buf, (const char *)m_item->GetUnkE4(7), tmp);
+    c = (s32)(v * 128.0f);
+    c = c < 0 ? 0 : (c < 0x100 ? c : 0xFF);
+    sprintf(tmp, D_002DDF00, c, buf);
+    m_item->SetText(7, tmp);
+    m_item->SetUnkF0(7, 1);
+    return r;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E6A0__10CStatusWinf);
+void CStatusWin::Func19E6A0(f32 v) {
+    char buf[0x100];
+    char a[0x100];
+    char b[0x100];
+    s32 c = (s32)(v * 128.0f);
+    c = c < 0 ? 0 : (c < 0x100 ? c : 0xFF);
+    Func185F18(a, m_unk50, 1);
+    Func185E80(b, m_unk50);
+    sprintf(buf, (const char *)m_item->GetUnkE4(8), c, a, b);
+    m_item->SetText(8, buf);
+    m_item->SetUnkF0(8, 1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19E780__10CStatusWinf);
 
@@ -309,8 +384,8 @@ int CStatusWin::SetUnk50(u32 i) {
     if (i >= 6) {
         return Func235DE0(D_002DDF98, i);
     }
-    if (*(u32 *)&pad50 != i) {
-        *(u32 *)&pad50 = i;
+    if (m_unk50 != i) {
+        m_unk50 = i;
         Func19F4A8();
         CallFunc19F400();
     }
@@ -350,7 +425,13 @@ extern "C" void func_0019F498() {
 extern "C" void func_0019F4A0() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19F4A8__10CStatusWin);
+void CStatusWin::Func19F4A8() {
+    s32 a = D_002A5358->Func1091B0(m_unk50 + 0x52);
+    s32 b = D_002A5358->Func1091B0(m_unk50 + 0x58);
+    s32 c = D_002A5358->Func1091B0(m_unk50 + 0x5E);
+    s32 d = D_002A5358->Func1091B0(m_unk50 + 0x4C);
+    func_00185AA0((u8 *)this + 0x80, m_unk50, a, b, c, d, D_002A5358->Func1091B0(m_unk50 + 0x46));
+}
 
 void CStatusWin::StartItem1() {
     if (m_item) {
@@ -489,7 +570,15 @@ u64 CStatusWinSub1A0A10::SwapUnk8(u64 v) {
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A0CF0__10CStatusWinPCc);
+CStatusWinSub1A1BF0 *CStatusWinSub1A0A10::Find(const char *name) {
+    s32 i;
+    for (i = 0; i < m_unk10; i++) {
+        CStatusWinSub1A1BF0 *p = &m_unk14[i];
+        if (!strcmp((const char *)p, name)) return p;
+    }
+    Func235DE0(D_002DE090, name);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A0D98);
 
@@ -511,7 +600,24 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", _$_19CStatusWinSub1A1BF0);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A1CF0);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A3378__11CStatusItem);
+void CStatusItem::Func1A3378() {
+    s32 i;
+    m_state = 0;
+    m_unk34 = 0;
+    m_unk30 = 0;
+    m_sel = 0;
+    m_unk80 = 0;
+    m_unk84 = 0;
+    for (i = 0; i < m_count; i++) {
+        CStatusEntry *e = &m_entries[i];
+        s32 k;
+        e->m_unkF0 = 1;
+        Func270C50((CVec4 *)e->m_unk60, (CVec4 *)e->m_pos);
+        Func270C50((CVec4 *)e->m_unk70, (CVec4 *)e->m_unk10);
+        for (k = 0; k < 4; k++) Func270C50(&e->m_cur[k], &e->m_col[k]);
+        if (e->m_unkF4 == 8 && e->m_text) e->m_text[0] = D_002DE480[0];
+    }
+}
 
 void CStatusItem::SetUnk34(f32 v) {
     m_unk34 = v;
@@ -549,9 +655,26 @@ void CStatusItem::Start() {
     m_unk30 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A36B0);
+s32 CStatusItem::GetUnkE4(s32 i) {
+    if (i < 0 || m_count - 1 < i) {
+        Func235DE0(D_002DE660, this, i);
+        return 0;
+    }
+    CStatusEntry *e = &m_entries[i];
+    if (e->m_unkF4 != 8 && e->m_unkF4 != 5) {
+        Func235DE0(D_002DE680, this, i);
+        return 0;
+    }
+    return e->m_unkE4;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A3740__14CMenuRecordWiniPCc);
+void CStatusItem::SetText(s32 i, const char *s) {
+    if (i < 0 || m_count - 1 < i) return (void)Func235DE0(D_002DE660, this, i);
+    if (strlen(s) > 0x200) return (void)Func235DE0(D_002DE6A8, this, s);
+    CStatusEntry *e = &m_entries[i];
+    if (e->m_unkF4 != 8) return (void)Func235DE0(D_002DE6C8, this, i);
+    strcpy(e->m_text, s);
+}
 
 int CStatusItem::Select(s32 n) {
     if (n == -1) {
@@ -567,43 +690,97 @@ int CStatusItem::Select(s32 n) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A38D0);
+void CStatusItem::SetMappedColor(s32 n, const CVec4 *v) {
+    if (n < 0 || m_mapCount - 1 < n) return (void)Func235DE0(D_002DE720, this, n);
+    SetColor(m_map[n], v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3930);
+int CStatusItem::GetMappedUnkC0(f32 *x, f32 *y, s32 n) {
+    if (n < 0 || m_mapCount - 1 < n) return Func235DE0(D_002DE758, this, n);
+    CStatusEntry *e = &m_entries[m_map[n]];
+    *x = e->m_unkC0[0];
+    *y = e->m_unkC0[1];
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A39A8__14CMenuRecordWinPfPii);
+int CStatusItem::GetPos(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE788, this, i);
+    CStatusEntry *e = &m_entries[i];
+    *x = e->m_pos[0];
+    *y = e->m_pos[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3A18);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3A78);
+int CStatusItem::GetUnk60Ofs(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE7E8, this, i);
+    CStatusEntry *e = &m_entries[i];
+    *x = e->m_unk60[0] + m_unk80;
+    *y = e->m_unk60[1] + m_unk84;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3AF8);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A3B58__14CMenuRecordWinPfPii);
+int CStatusItem::GetUnk10(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE848, this, i);
+    CStatusEntry *e = &m_entries[i];
+    *x = e->m_unk10[0];
+    *y = e->m_unk10[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3BC8);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3C28);
+int CStatusItem::GetUnk70(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE8A8, this, i);
+    CStatusEntry *e = &m_entries[i];
+    *x = e->m_unk70[0];
+    *y = e->m_unk70[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3C98);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3CF8);
+int CStatusItem::GetUnkC0(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE908, this, i);
+    CStatusEntry *e = &m_entries[i];
+    *x = e->m_unkC0[0];
+    *y = e->m_unkC0[1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3D68);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3DC8);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", SetUnkF0__11CStatusItemii);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3E28);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", SetColor__11CStatusItemiPC5CVec4);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3EA8);
+int CStatusItem::GetColor(CVec4 *out, s32 i) {
+    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE9D0, this, i);
+    CStatusEntry *e = &m_entries[i];
+    out->x = e->m_col[0].x;
+    out->y = e->m_col[0].y;
+    out->z = e->m_col[0].z;
+    out->w = e->m_col[0].w;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3F20);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A3FA8);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A4008);
+s32 CStatusItem::GetUnkD0(s32 i) {
+    if (i < 0 || m_count - 1 < i) {
+        Func235DE0(D_002DEA30, this, i);
+        return -1;
+    }
+    CStatusEntry *e = &m_entries[i];
+    return e->m_unkD0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A4060);
+s32 CStatusItem::GetUnkEC(s32 i) {
+    if (i < 0 || m_count - 1 < i) {
+        Func235DE0(D_002DEA60, this, i);
+        return -1;
+    }
+    CStatusEntry *e = &m_entries[i];
+    return e->m_unkEC;
+}
 
 void CStatusWinSub1A40B8::SetUnk80(f32 x, f32 y) {
     m_unk80 = x;
@@ -638,7 +815,24 @@ s32 CStatusWinSub1A4A40::Load() {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A4AE0);
+s32 CStatusWinSub1A4A40::Func1A4AE0(u32 k) {
+    char buf[0x400];
+    const char *p;
+    if (k >= 0x30) {
+        m_str[0] = 0;
+        return 1;
+    }
+    p = Func24AF10(m_unk7C, D_002DEF20[k]);
+    if (!p) {
+        Func235DE0(D_002DEB40);
+        return 0;
+    }
+    m_str[0] = 0;
+    while ((p = Func24AFE8(p, buf, 1, 0x100), *p) || buf[0]) {
+        StrCat(m_str, buf);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A4BA8);
 

@@ -3,10 +3,25 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 class CSndWork {
 public:
+    void Func25C648(s32 h, s32 v);
     void Func25C840(s32 a, s32 b = 0, s32 c = 0);
     int Func25C990(s32 a);
     int Func25CAC0(s32 a);
     s32 Func25CF58(s32 a);
+    void Func25CFC8(s32 a);   // 0x25CFC8 (config/aliases.ld)
+    void Init() {
+        Func25CFC8(0);
+        m_unk3E = 0x80;
+        m_unk3C = 0x80;
+        m_unk34 = 1;
+    }
+
+    u8 pad0[0x34];
+    u8 m_unk34;               // 0x34
+    u8 pad35[0x7];
+    s16 m_unk3C;              // 0x3C
+    s16 m_unk3E;              // 0x3E
+    u8 pad40[0x2C];
 };
 
 class CCharaObj {
@@ -21,14 +36,23 @@ public:
         m_unk2 = 0;
         m_unk0 = 0;
     }
+    void Start(s32 n) {
+        m_unk2 = 0;
+        m_unk0 = 0;
+        m_unk4 = n;
+    }
 
     s16 m_unk0;               // 0x0
     s16 m_unk2;               // 0x2
     s32 m_unk4;               // 0x4
 };
 
+s32 MaxLineLen(const char *s);
 class CInterfMgr {
 public:
+    s32 PlayVoice169788(s32 id);
+    void SetText1693B0(const char *s, s32 frames);
+    void SetText169340(const char *s);
     void ResetUnkD4Below(s32 v);
     void ClearUnkDE8();
     void Func1692D0();
@@ -46,35 +70,57 @@ public:
     void Func16B2B0();
     void Func16C0B8();
     void Func16A650(s32 a, f32 x, f32 y, f32 w, f32 h);
+    void Func1696A0();
+    void Reset1691D0();
+    void Start169450(CCharaObj *c, const char *text, s32 frames, s32 a, s32 b);
+    void Func16BA80(s32 a, const char *text, s32 b);
 
     u8 pad0[0x8];
     CInterfTimer m_timer;     // 0x8
     u8 pad10[0x40];
     CSndWork m_snd;           // 0x50
-    u8 pad51[0x6B];
     CCharaObj *m_chara;       // 0xBC
     s32 m_unkC0;              // 0xC0
     s32 m_unkC4;              // 0xC4
     s32 m_voice;              // 0xC8
     s32 m_unkCC;              // 0xCC
-    u8 padD0[0x4];
+    s32 m_unkD0;              // 0xD0
     s32 m_unkD4;              // 0xD4
-    u8 padD8[0x814];
+    char m_textD8[0x400];     // 0xD8
+    s32 m_unk4D8;             // 0x4D8
+    s32 m_unk4DC;             // 0x4DC
+    char m_text4E0[0x400];    // 0x4E0
+    s32 m_unk8E0;             // 0x8E0
+    s32 m_unk8E4;             // 0x8E4
+    s32 m_unk8E8;             // 0x8E8
     s32 m_unk8EC;             // 0x8EC
-    u8 pad8F0[0x20];
+    s32 m_unk8F0;             // 0x8F0
+    s32 m_unk8F4;             // 0x8F4
+    s32 m_unk8F8;             // 0x8F8
+    s32 m_unk8FC;             // 0x8FC
+    s32 m_unk900;             // 0x900
+    f32 m_unk904;             // 0x904
+    s32 m_unk908;             // 0x908
+    s32 m_unk90C;             // 0x90C
     s32 m_unk910;             // 0x910
     s32 m_unk914;             // 0x914
     f32 m_unk918;             // 0x918
     f32 m_unk91C;             // 0x91C
-    u8 pad920[0x4C8];
+    s32 m_unk920;             // 0x920
+    f32 m_unk924;             // 0x924
+    CInterfTimer m_timer928;  // 0x928
+    u8 pad930[0xAC];
+    char m_text9DC[0x400];    // 0x9DC
+    s32 m_unkDDC;             // 0xDDC
+    s32 m_unkDE0;             // 0xDE0
+    s32 m_unkDE4;             // 0xDE4
     s32 m_unkDE8;             // 0xDE8
+    s32 m_unkDEC;             // 0xDEC
+    s32 m_unkDF0;             // 0xDF0
+    s32 m_unkDF4;             // 0xDF4
 };
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 extern s32 D_002A35E0[];
 u64 Func23AA40();
 
@@ -86,11 +132,118 @@ public:
 
     u8 pad0[0x60];
 };
+
+class CEventMesMgr {
+public:
+    virtual ~CEventMesMgr();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual s32 Format(char *src, s32 n, char *dst, s32 a, s32 b);
+};
+extern CEventMesMgr *D_002A0CE0;
+class CGsMgr {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void SetMode(s32 a, s32 b);
+    virtual void V6();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14();
+    virtual void V15();
+    virtual void V16();
+    virtual void V17();
+    virtual void V18();
+    virtual s32 GetBank(s32 k);
+};
+extern CGsMgr *D_002BA248;
+extern "C" s32 func_0020E698(s32 h, s32 id);
+inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+
+#include "CTask.h"
+#include "libc.h"
+s32 GetSeHandle169718(s32 id);
+s32 Func235DE0(const char *fmt, ...);
+struct CStr1 { char c[1]; };
+extern CStr1 D_002D9B30;
+extern char D_002D9B38[];
+extern "C" void func_0025CE30(CSndWork *p, s32 h, s32 v);
+extern "C" void func_0025C910(CSndWork *p, s32 h, s32 a, s32 b);
+// CInterfMgr as seen through its vtable (_vt$10CInterfMgr; vptr at 4 after CTask's field).
+class CInterfMgrV : public CTask {
+public:
+    virtual ~CInterfMgrV();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14();
+    virtual void V15();
+    virtual void V16();
+    virtual void V17();
+    virtual void V18();
+    virtual void V19();
+    virtual void V20();
+    virtual s32 IsVoicePlaying();
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169128);
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_001691D0);
+void CInterfMgr::Reset1691D0() {
+    m_timer.Reset();
+    m_snd.Init();
+    m_unkC4 = -1;
+    m_chara = 0;
+    m_unkC0 = 0;
+    m_voice = 0;
+    m_unkCC = 0;
+    m_unkD0 = 0;
+    m_unkD4 = 0;
+    m_textD8[0] = 0;
+    m_unk4D8 = 0;
+    m_unk4DC = 0;
+    m_text4E0[0] = 0;
+    m_unk8E0 = 0;
+    m_unk8E4 = 0;
+    m_unk8E8 = 0;
+    m_unk8EC = 0;
+    m_unk8F0 = 0;
+    m_unk8F4 = 0;
+    m_unk8F8 = 0;
+    m_unk8FC = 0;
+    m_unk900 = 0;
+    m_unk904 = 0;
+    m_unk910 = 0;
+    m_unk914 = 0;
+    m_unk918 = 0;
+    m_unk91C = 0;
+    m_unk920 = 0;
+    m_unk924 = 0;
+    m_timer928.Reset();
+    m_unkDDC = 0;
+    m_unkDE4 = 0;
+    m_unkDE0 = 0;
+    m_unkDE8 = 0;
+    m_unkDEC = 0;
+    m_unkDF0 = 0;
+    m_unkDF4 = 0;
+}
 
 void CInterfMgr::Func1692D0() {
     Func169950();
@@ -104,9 +257,35 @@ void CInterfMgr::Func169308() {
     Func16C0B8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169340);
+void CInterfMgr::SetText169340(const char *s) {
+    m_chara = 0;
+    strcpy(m_textD8, s);
+    *(CStr1 *)m_text4E0 = D_002D9B30;
+    m_unkC4 = 0;
+    m_unk8E0 = 0;
+    m_unk8E4 = 0;
+    m_unk904 = 0;
+    CInterfTimer *t = &m_timer;
+    t->Reset();
+    t->m_unk4 = m_unkC4;
+    m_unkC0 = 1;
+    m_unk8F4 = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_001693B0);
+void CInterfMgr::SetText1693B0(const char *s, s32 frames) {
+    *(CStr1 *)m_textD8 = D_002D9B30;
+    m_chara = 0;
+    strcpy(m_text4E0, s);
+    m_unk8E0 = 0;
+    m_unkC4 = 1;
+    m_unk904 = frames / 59.94f;
+    m_unk8E4 = 0;
+    CInterfTimer *t = &m_timer;
+    t->Reset();
+    t->m_unk4 = m_unkC4;
+    m_unkC0 = 1;
+    m_unk8F4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169450);
 
@@ -154,11 +333,34 @@ s32 MaxLineLen(const char *s) {
     return n < max ? max : n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_001696A0);
+void CInterfMgr::Func1696A0() {
+    D_002A0CE0->Format(m_textD8, m_unk4DC, m_text4E0, 0, 0);
+    m_unk8E8 = MaxLineLen(m_text4E0);
+    m_unk8E0 = 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169718);
+s32 GetSeHandle169718(s32 id) {
+    if (D_002BA248) {
+        s32 h = D_002BA248->GetBank(10);
+        if (h >= 0) {
+            s32 r = func_0020E698(h, id);
+            if (r >= 0) return r | 0x80A0000;
+        }
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169788);
+s32 CInterfMgr::PlayVoice169788(s32 id) {
+    if (((CInterfMgrV *)this)->IsVoicePlaying()) return 0;
+    m_unk910 = GetSeHandle169718(id);
+    D_002BA248->SetMode(6, 0x28000);
+    m_snd.Func25C648(m_unk910, 8);
+    func_0025CE30(&m_snd, m_unk910, 1);
+    func_0025C910(&m_snd, m_unk910, 1, 0);
+    D_002BA248->SetMode(4, 0x40000);
+    Func235DE0(D_002D9B38, id, m_unk910);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_001698A0);
 
@@ -180,11 +382,35 @@ INCLUDE_ASM("asm/nonmatchings/IInterfMgr", Func16AA28__10CInterfMgr);
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_0016B178);
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", Func16B1C8__10CInterfMgr);
+void CInterfMgr::Func16B1C8() {
+    f32 v;
+    if (m_unk914) v = m_unk918 + m_unk91C;
+    else v = m_unk918 - m_unk91C;
+    m_unk918 = v;
+    m_unk918 = Clamp01(v);
+    v = m_unk924;
+    if (m_unk920) v += 0.06666667f;
+    else v += -0.06666667f;
+    m_unk924 = v;
+    m_unk924 = Clamp01(v);
+    if (m_unk918 == 0.0f) {
+        m_unk924 = 0.0f;
+        m_unk920 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/IInterfMgr", Func16B2B0__10CInterfMgr);
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_0016BA80);
+void CInterfMgr::Func16BA80(s32 a, const char *text, s32 b) {
+    D_002A0CE0->Format((char *)text, 0, m_text9DC, 1, 1);
+    m_timer928.Start(0);
+    m_unkDF0 = b;
+    m_unkDDC = a;
+    m_unkDE4 = 1;
+    m_unkDE0 = 0;
+    m_unkDEC = 0;
+    m_unkDE8 = 1;
+}
 
 void CInterfMgr::ClearUnkDE8() {
     m_unkDE8 = 0;

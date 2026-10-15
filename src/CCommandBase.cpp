@@ -67,11 +67,7 @@ extern "C" void func_001A3840(void *win, s32 i);
 extern "C" s32 func_001971A0(void *p, s32 i);
 extern "C" void func_00196E90(void *p, s32 row);
 
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
-extern CFlagWork *D_002A26E4;
+#include "CFlagWork.h"
 extern char D_002DD878[];
 extern "C" int func_001456A8(s32 v);
 

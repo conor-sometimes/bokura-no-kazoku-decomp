@@ -11,7 +11,7 @@ for p in (R+'/config/symbol_addrs.txt',R+'/config/vtables.txt'):
         if m: SYMS[m.group(1)]=int(m.group(2),16)
 # function list from nonmatchings + asm
 funcs={}
-for p in glob.glob(R+'/asm/nonmatchings/*/*.s')+[R+'/asm/crt0.s',R+'/asm/text_1e91b8.s']:
+for p in glob.glob(R+'/asm/nonmatchings/*/*.s')+[R+"/asm/crt0.s",R+"/asm/text_245648.s"]:
     unit=os.path.basename(os.path.dirname(p)) if 'nonmatchings' in p else os.path.basename(p)[:-2]
     name=None
     for line in open(p):

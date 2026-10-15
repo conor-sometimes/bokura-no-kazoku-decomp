@@ -7,6 +7,7 @@
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CModelRes.
 class CModelRes {
 public:
+    s32 LoadFile(const char *name, s32 b);
     CModelRes();
     virtual ~CModelRes();
     void Release();
@@ -23,10 +24,75 @@ public:
 
 struct CModelRec {
     s32 m_id;                 // 0x0
-    u8 pad4[0x30];
+    u8 pad4[0x4];
+    s32 m_unk8;               // 0x8
+    u8 padC[0x4];
+    void *m_unk10;            // 0x10
+    u8 pad14[0x20];
 };
 extern "C" s32 func_00110560(CModelRec *recs, s32 a, s32 b, s32 c, s32 d, s32 *e, s32 *f);
 extern "C" void *func_00245678(u32 size);
+
+extern "C" void func_001F20F8(s32 h);
+extern void (*D_002B91B0)(void *p);
+
+extern "C" s32 func_001F2090(s32 k);
+extern "C" unsigned int strlen(const char *s);
+extern "C" char *strstr(const char *s, const char *t);
+struct CModelNames {
+    s32 m_num;                // 0x0
+    u8 pad4[0xC];
+    char *m_names[1];         // 0x10
+};
+struct CModelPart {
+    u8 pad0[0x6];
+    u16 m_flags;              // 0x6
+};
+struct CModelParts {
+    u8 pad0[0x8];
+    CModelPart m_parts[1];    // 0x8
+};
+struct CModelRec2 {
+    u8 pad0[0x4];
+    CModelParts *m_parts;     // 0x4
+    u8 pad8[0x8];
+    CModelNames *m_names;     // 0x10
+    u8 pad14[0x20];
+};
+extern CModelRec2 *D_002A5D0C;
+extern char *D_002A03C0;
+
+extern "C" s32 func_002051B8(s32 k);
+extern "C" const char *func_002051E0(s32 a, s32 k);
+extern "C" unsigned int strlen(const char *s);
+inline void StrAdd(char *d, const char *s) { strcpy(d + strlen(d), s); }
+extern "C" char *strstr(const char *s, const char *t);
+void *Func248E48(const char *name);
+s32 Func235DE0(const char *fmt, ...);
+extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+struct CModelTex {
+    u8 pad0[0x14];
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    s32 m_unk20;              // 0x20
+    s32 m_unk24;              // 0x24
+    s32 m_unk28;              // 0x28
+    s32 m_unk2C;              // 0x2C
+    s32 m_unk30;              // 0x30
+};
+extern "C" void func_0022DCE0();
+extern "C" void func_0022DD00();
+extern "C" void func_0022DC90(const char *s);
+extern "C" void func_0024B7B8(const char *s, char *a, char *b);
+extern "C" s32 func_00249070(const char *s);
+extern "C" void func_0024B650(const char *s, s32 b, char *a, s32 c);
+extern "C" void func_002490F8();
+void *Func24A4C0(const char *name);
+extern char *D_002A03D0;
+extern char *D_002A03D8;
+extern void (*D_002B91B0)(void *p);
 // @decl-end
 
 CModelRes::CModelRes() {
@@ -42,10 +108,48 @@ CModelRes::~CModelRes() {
     Release();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CModelRes", func_0010FFE8);
+void *LoadModelTex(CModelTex *t, s32 k) {
+    char buf[256];
+    s32 n = func_002051B8(k);
+    if (n <= 0) return 0;
+    const char *nm = func_002051E0(0, k);
+    strcpy(buf, nm);
+    StrAdd(buf, ".");
+    StrAdd(buf, "tm2");
+    void *d = Func248E48(buf);
+    if (!d) {
+        Func235DE0("*** failed to load XMD texture '%s'\n", buf);
+        return 0;
+    }
+    if (n >= 2) Func235DE0("!!! multiple texture (fname=%s, width=%d)\n", nm, n);
+    func_00253048(d, &t->m_unk14, &t->m_unk18, &t->m_unk1C, &t->m_unk20, &t->m_unk24, &t->m_unk28, &t->m_unk2C, &t->m_unk30);
+    if (t->m_unk1C & 7) Func235DE0("!!! invalid width (fname=%s, width=%d)\n", buf, t->m_unk1C);
+    if (t->m_unk2C > 0x10) func_0023C048(t->m_unk2C * t->m_unk30, t->m_unk24, t->m_unk24);
+    return d;
+}
 INCLUDE_RODATA("asm/nonmatchings/CModelRes", D_002D3130);
 
-INCLUDE_ASM("asm/nonmatchings/CModelRes", func_00110178);
+void Func110178(s32 k) {
+    s32 n = func_001F2090(k);
+    s32 j, i;
+    for (j = 0; j < n; j++) {
+        CModelRec2 *r = &D_002A5D0C[k + j];
+        if (!r) continue;
+        CModelNames *t = r->m_names;
+        if (!t) continue;
+        CModelParts *q = r->m_parts;
+        if (!q) continue;
+        for (i = 0; i < t->m_num; i++) {
+            char *s = strstr(t->m_names[i], D_002A03C0);
+            if (s) {
+                s += strlen(D_002A03C0);
+                s32 v = *s - '0';
+                v = v < 0 ? 0 : (v > 31 ? 31 : v);
+                q->m_parts[i].m_flags |= v << 1;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CModelRes", func_001102C8);
 INCLUDE_RODATA("asm/nonmatchings/CModelRes", D_002D31B8);
@@ -77,6 +181,45 @@ s32 CModelRes::Load(s32 a, s32 b) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CModelRes", func_00110868);
+s32 CModelRes::LoadFile(const char *name, s32 b) {
+    char buf[256];
+    char buf2[256];
+    s32 ok = 0;
+    void *data = 0;
+    func_0022DCE0();
+    if (strstr(name, D_002A03D0)) {
+        func_0024B7B8(name, buf, buf2);
+        func_0022DC90(buf);
+        data = Func24A4C0(buf2);
+        if (!data) goto err;
+        ok = Load((s32)data, b);
+    } else if (strstr(name, D_002A03D8)) {
+        if (!func_00249070(name)) {
+        err:
+            Func235DE0("*** failed to load '%s'\n", name);
+        } else {
+            func_0024B650(name, 0, buf, 0);
+            StrAdd(buf, D_002A03D0);
+            ok = LoadFile(buf, b);
+            func_002490F8();
+        }
+    } else {
+        Func235DE0("*** unknown model file path %s\n", name);
+    }
+    if (data) D_002B91B0(data);
+    func_0022DD00();
+    return ok;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CModelRes", Release__9CModelRes);
+void CModelRes::Release() {
+    s32 i;
+    if (m_unk4 == 0) return;
+    for (i = 0; i < m_unk0; i++) {
+        if (((CModelRec *)m_unk4)[i].m_unk8 >= 0) func_001F20F8(((CModelRec *)m_unk4)[i].m_unk8);
+        if (((CModelRec *)m_unk4)[i].m_unk10) D_002B91B0(((CModelRec *)m_unk4)[i].m_unk10);
+    }
+    if (m_unk4) delete[] (CModelRec *)m_unk4;
+    m_unk4 = 0;
+    m_unk0 = 0;
+    memset(m_unk14, 0, 8);
+}

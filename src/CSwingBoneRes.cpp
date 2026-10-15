@@ -1,7 +1,7 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
-struct CSwingBone { s32 id; u8 pad[0x18]; };
+struct CSwingBone { s32 id; u8 pad[0x14]; void *m_data; };
 int Func111960(CSwingBone *p, void *data);
 void *Func245D00(int size);
 class CSwingBoneRes2 {
@@ -16,15 +16,21 @@ public:
 // CSwingBoneRes2 is the same object's non-virtual part.
 class CSwingBoneRes {
 public:
+    CSwingBoneRes();
     virtual ~CSwingBoneRes();
 
     CSwingBone *m0;           // 0x0
     s32 m4;                   // 0x4
     // vptr 0x8
 };
+
+extern void (*D_002B91B0)(void *p);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_00111748);
+CSwingBoneRes::CSwingBoneRes() {
+    m0 = 0;
+    m4 = 0;
+}
 
 CSwingBoneRes::~CSwingBoneRes() {
     ((CSwingBoneRes2 *)this)->Func111CF8();
@@ -54,7 +60,17 @@ int CSwingBoneRes2::Load(void *data) {
 
 INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_00111BA8);
 
-INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", Func111CF8__14CSwingBoneRes2);
+void CSwingBoneRes2::Func111CF8() {
+    s32 i;
+    for (i = 0; i < m4; i++) {
+        if (m0[i].m_data) D_002B91B0(m0[i].m_data);
+    }
+    if (m0) {
+        D_002B91B0(m0);
+        m0 = 0;
+        m4 = 0;
+    }
+}
 
 CSwingBone *CSwingBoneRes2::Find(int id) {
     int i;

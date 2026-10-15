@@ -4,21 +4,33 @@
 //@sym memset 0x289FB0
 #include "libc.h"
 
+struct CFaceItem {
+    void *m_data;             // 0x0
+    u8 pad4[0xC];
+};
+struct CFaceGroup {
+    s32 m0;                   // 0x0
+    void *m_ptrs[3];          // 0x4
+    s32 m_nums[3];            // 0x10
+};
+struct CFacePart;
+struct CFaceSet;
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CFaceRes.
 class CFaceRes {
 public:
     CFaceRes();
     virtual ~CFaceRes();
     void Release();
+    int Load(const char *text);
 
-    s32 m_unk0;               // 0x00
+    CFaceItem *m_unk0;        // 0x00
     s32 m_unk4;               // 0x04
-    s32 m_unk8;               // 0x08
+    CFaceSet *m_unk8;         // 0x08
     s32 m_unkC;               // 0x0C
-    s32 m_unk10;              // 0x10
+    CFaceGroup *m_unk10;      // 0x10
     s32 m_unk14;              // 0x14
-    u8 m_unk18[0xC];          // 0x18
-    u8 m_unk24[0xC];          // 0x24
+    s32 m_unk18[3];           // 0x18
+    CFacePart *m_unk24[3];    // 0x24
     s32 m_unk30;              // 0x30
     s32 m_unk34;              // 0x34
     s32 m_unk38;              // 0x38
@@ -53,6 +65,48 @@ public:
     CFaceResRec *m_recs;      // 0x10
     s32 m_num;                // 0x14
 };
+struct CFacePart {
+    s32 m_id;                 // 0x00
+    char m_name[0x20];        // 0x04
+    s16 m24, m26, m28, m2A;   // 0x24
+    s16 m2C, m2E, m30, m32;   // 0x2C
+};
+struct CFaceSet {
+    s32 m_id;                 // 0x0
+    s32 m_num;                // 0x4
+    CFacePart *m_parts;       // 0x8
+};
+extern const char *D_002A03A4;
+extern const char *D_002A03A8;
+extern char D_002D2DC8[], D_002D2DD0[];
+const char *Func24A570(const char *s, char *out, const char *sep, const char *ws);
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 def, const char *s1, const char *s2);
+const char *Func24AF10(void *p, const char *key);
+const char *Func24AFE8(const char *s, char *buf, s32 k, s32 size);
+void *Func245D00(int size);
+s32 ParseFaceParts(CFacePart *parts, const char *p);
+inline void SetFacePart(CFacePart *p, s16 c, s16 a, s16 b, s16 d, s16 e, s16 f, s16 g) { p->m24 = -1; p->m26 = c; p->m28 = a; p->m2A = b; p->m2C = d; p->m2E = e; p->m30 = f; p->m32 = g; }
+extern void (*D_002B91B0)(void *p);
+extern s32 D_002A03A0;
+extern const char *D_002A03B0, *D_002A03B4, *D_002A03B8, *D_002A03BC;
+extern char D_002D2FE8[], D_002D2EE0[], D_002D3000[];
+s32 LoadFaceSets(CFaceSet *sets, void *text);
+extern "C" s32 func_0010ED30(CFaceItem *out, CFaceSet *sets, s32 n, s32 a, s32 b, s32 c, s32 d);
+extern "C" s32 func_0010F068(CFaceGroup *out, s32 *nums, const char *text, CFaceSet *sets, s32 n);
+extern "C" const char *func_0024B190(const char *p, const char *key, char *buf, const char *ws, s32 n);
+extern "C" void func_0022DCE0();
+extern "C" void func_0022DD00();
+extern "C" void func_0022DC90(const char *dir);
+extern "C" char *strstr(const char *a, const char *b);
+extern "C" int func_00249070(const char *p);
+extern "C" void func_002490F8();
+extern "C" void func_0024B650(const char *p, s32 a, char *buf, s32 b);
+extern "C" void func_0024B7B8(const char *p, char *dir, char *name);
+extern "C" unsigned int strlen(const char *s);
+char *Func24A4C0(const char *name);
+int Func235DE0(const char *fmt, ...);
+
+//@sym LoadFaceSets__FP8CFaceSetPv 0x10E7A8
 // @decl-end
 
 CFaceRes::CFaceRes() {
@@ -81,7 +135,7 @@ CFaceRes::~CFaceRes() {
 
 INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010E5E0);
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010E7A8);
+INCLUDE_ASM("asm/nonmatchings/CFaceRes", LoadFaceSets__FP8CFaceSetPv);
 
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DC0);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DC8);
@@ -95,11 +149,39 @@ INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2EE0);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", jtbl_002D2F00);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FB8);
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010EC18);
+CFacePart *FindFacePart(CFaceSet *sets, s32 nsets, s32 last, CFacePart *key) {
+    for (s32 i = 0; i < nsets; i++) {
+        s32 cnt = last;
+        if (i < nsets - 1) cnt = sets[i].m_num;
+        for (s32 j = 0; j < cnt; j++) {
+            CFacePart *p = &sets[i].m_parts[j];
+            if (*(s32 *)&p->m2C == *(s32 *)&key->m2C && *(s32 *)&p->m30 == *(s32 *)&key->m30 && !strcmp(p->m_name, key->m_name)) {
+                return p;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010ED30);
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010EF78);
+s32 FindFaceIds(CFaceSet **out, const char *p, CFaceSet *parts, s32 nparts) {
+    s32 id;
+    s32 n = 0;
+    while ((p = func_0024A710(p, &id, -1, D_002A03A4, D_002D2DD0), *p) || id >= 0) {
+        if (out) {
+            out[n] = 0;
+            for (s32 j = 0; j < nparts; j++) {
+                if (parts[j].m_id == id) {
+                    out[n] = &parts[j];
+                    break;
+                }
+            }
+        }
+        n++;
+    }
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010F068);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FD8);
@@ -108,11 +190,104 @@ INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FE0);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FE8);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FF0);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FF8);
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010F348);
+int CFaceRes::Load(const char *text) {
+    char buf[0x100];
+    s32 id;
+    Release();
+    m_unk30 = D_002A03A0++;
+    m_unkC = LoadFaceSets(0, (void *)text);
+    m_unk8 = (CFaceSet *)Func245D00(m_unkC * sizeof(CFaceSet));
+    LoadFaceSets(m_unk8, (void *)text);
+    m_unk4 = func_0010ED30(0, m_unk8, m_unkC, m_unk44, m_unk48, m_unk4C, m_unk50);
+    m_unk0 = (CFaceItem *)Func245D00(m_unk4 * sizeof(CFaceItem));
+    func_0010ED30(m_unk0, m_unk8, m_unkC, m_unk44, m_unk48, m_unk4C, m_unk50);
+    m_unk14 = func_0010F068(0, 0, text, m_unk8, m_unkC);
+    m_unk10 = (CFaceGroup *)Func245D00(m_unk14 * sizeof(CFaceGroup));
+    func_0010F068(m_unk10, m_unk18, text, m_unk8, m_unkC);
+    func_0024B190(Func24AF10((void *)text, D_002A03B0), D_002A03B4, buf, D_002D2FE8, 0x100);
+    const char *p = buf;
+    CFacePart **out = m_unk24;
+    for (s32 k = 2; k >= 0; k--, out++) {
+        *out = 0;
+        p = func_0024A710(p, &id, -1, D_002D2DC8, D_002D2DD0);
+        if (id >= 0) {
+            s32 j;
+            for (j = 0; j < m_unkC; j++) {
+                if (m_unk8[j].m_id == id) break;
+            }
+            if (j < m_unkC && m_unk8[j].m_num > 0 && m_unk8[j].m_parts->m24 >= 0) {
+                *out = m_unk8[j].m_parts;
+            }
+        }
+    }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010F580);
+int LoadFaceRes(CFaceRes *res, const char *path) {
+    char buf[0x100];
+    char name[0x100];
+    int ok = 0;
+    func_0022DCE0();
+    if (strstr(path, D_002A03B8)) {
+        if (!func_00249070(path)) {
+            Func235DE0(D_002D2EE0, path);
+        } else {
+            func_0024B650(path, 0, buf, 0);
+            const char *ext = D_002A03BC;
+            strcpy(buf + strlen(buf), ext);
+            ok = LoadFaceRes(res, buf);
+            func_002490F8();
+        }
+    } else if (strstr(path, D_002A03BC)) {
+        func_0024B7B8(path, buf, name);
+        func_0022DC90(0);
+        func_0022DC90(buf);
+        char *text = Func24A4C0(name);
+        if (!text) {
+            Func235DE0(D_002D2EE0, path);
+        } else {
+            ok = res->Load(text);
+        }
+        if (text) D_002B91B0(text);
+        func_0022DC90(0);
+    } else {
+        Func235DE0("*** unsupported format '%s'\n", path);
+    }
+    func_0022DD00();
+    return ok;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", Release__8CFaceRes);
+void CFaceRes::Release() {
+    s32 i;
+    for (i = 0; i < m_unkC; i++) {
+        if (m_unk8[i].m_parts) D_002B91B0(m_unk8[i].m_parts);
+    }
+    if (m_unk8) {
+        D_002B91B0(m_unk8);
+        m_unk8 = 0;
+        m_unkC = 0;
+    }
+    for (i = 0; i < m_unk4; i++) {
+        if (m_unk0[i].m_data) D_002B91B0(m_unk0[i].m_data);
+    }
+    if (m_unk0) {
+        D_002B91B0(m_unk0);
+        m_unk0 = 0;
+        m_unk4 = 0;
+    }
+    for (i = 0; i < m_unk14; i++) {
+        for (s32 k = 0; k < 3; k++) {
+            if (m_unk10[i].m_ptrs[k]) D_002B91B0(m_unk10[i].m_ptrs[k]);
+        }
+    }
+    if (m_unk10) {
+        D_002B91B0(m_unk10);
+        m_unk10 = 0;
+        m_unk14 = 0;
+    }
+    memset(m_unk18, 0, 0xC);
+    memset(m_unk24, 0, 0xC);
+}
 
 CFaceResRec *CFaceResSub10F8F0::Find(s32 id) {
     for (s32 i = 0; i < m_num; i++) {

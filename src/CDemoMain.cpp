@@ -42,6 +42,7 @@ public:
 class CMovieObj {
 public:
     CMovieObj();
+    int Func13EDC8();
     ~CMovieObj();
     u8 pad0[0x178];
 };
@@ -83,6 +84,40 @@ public:
     CMovieObj m_movie;        // 0x100D0
     s32 m_flag;               // 0x10248
 };
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" int func_00249248(void *f);
+extern "C" void func_00249348();
+extern "C" void func_00135BE0(void *obj, void *p);
+extern "C" void func_0012B180(void *snd, void *p);
+void *Func237570(s32 size);
+void Func237A88(void *p, s32 n);
+void *Func237C30(void *p);
+void Func238158(void *p, s32 v);
+void Func225088();
+int Func2250C0();
+void Func225240(s32 v);
+class CUnk237E90 {
+public:
+    void Func237E90(int v);
+};
+class CUnk2A5BC0 {
+public:
+    u8 pad0[0x50];
+    CUnk237E90 m_unk50;       // 0x50
+    u8 pad51[0xF];
+    CUnk237E90 m_unk60;       // 0x60
+};
+extern CUnk2A5BC0 *D_002A5BC0;
+class CTaskList24F5C0 {
+public:
+    s32 Func24F5C0(void *task, s32 pri);
+};
+class CEndingMain : public CProcess {
+public:
+    CEndingMain(s32 k);
+    virtual ~CEndingMain();
+    u8 pad18[0x2F4 - 0x18];
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CDemoMain", __9CDemoMaini);
@@ -100,7 +135,18 @@ INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A48);
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A50);
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A58);
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A60);
-INCLUDE_ASM("asm/nonmatchings/CDemoMain", func_001064D8);
+int DemoLoadFlags(void *unused, const char *name) {
+    char path[0x400];
+    sprintf(path, "data/demo/%s.xap", name);
+    int ok = 0;
+    int opened = 0;
+    if (func_00249248(path)) {
+        opened = 1;
+        ok = D_002A26E4->Func108E38("curflag.txt") != 0;
+    }
+    if (opened) func_00249348();
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A90);
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1A98);
 INCLUDE_RODATA("asm/nonmatchings/CDemoMain", D_002D1AA0);
@@ -123,6 +169,26 @@ void DemoKey106558(const s8 *p) {
 
 INCLUDE_ASM("asm/nonmatchings/CDemoMain", Update__9CDemoMain);
 
-INCLUDE_ASM("asm/nonmatchings/CDemoMain", Draw__9CDemoMain);
+void CDemoMain::Draw() {
+    switch (m_entry->m_unk0) {
+    case 1: {
+        void *p = Func237570(0x260);
+        Func237A88(p, 0x26);
+        Func238158(Func237C30((u8 *)p + 0x250), 1);
+        Func225088();
+        Func225240((s32)p);
+        D_002A5BC0->m_unk50.Func237E90(Func2250C0());
+        func_00135BE0(&m_obj, p);
+        func_0012B180(&m_snd, p);
+        return;
+    }
+    case 0:
+        D_002A5BC0->m_unk60.Func237E90(m_movie.Func13EDC8());
+        break;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CDemoMain", func_00107848);
+void CreateEndingMain(CTaskList24F5C0 *list, s32 k) {
+    CEndingMain *p = new CEndingMain(k);
+    list->Func24F5C0(p, 0);
+}

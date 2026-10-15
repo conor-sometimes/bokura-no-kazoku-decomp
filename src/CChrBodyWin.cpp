@@ -5,10 +5,7 @@ class CStatusBase {
 public:
     f32 GetItemUnk34();
 };
-class CFlagWork {
-public:
-    int Func1091B0(s32 id);
-};
+#include "CFlagWork.h"
 extern CFlagWork *D_002A464C;
 
 class CStatusBaseSub19AE68 {
@@ -105,7 +102,6 @@ void *operator new(unsigned int n);
 int Func235DE0(const char *fmt, ...);
 extern CFlagWork *D_002A4638;
 extern CFlagWork *D_002A5358;
-extern CFlagWork *D_002A26E4;
 extern CChrBodyWin *D_002A4308;
 extern void (*D_002B91B0)(void *p);
 extern char D_002DB400[], D_002DB380[], D_002DB310[];

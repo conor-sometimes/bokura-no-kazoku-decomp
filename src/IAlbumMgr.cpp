@@ -120,7 +120,7 @@ public:
     virtual void Vf29A2E0();
     virtual void Vf29A2E8();
     virtual void Vf29A320();
-    virtual void GetName(char *buf, s32 a, s32 b);
+    virtual s32 GetName(char *buf, s32 a, s32 b);
     virtual s32 Vf171510(char *buf, s32 a, s32 b, s32 c);
 };
 extern CPhotoDBMgr2 *D_002A36C0;
@@ -147,6 +147,10 @@ class CNameDBMgr {
 public:
     static CEventObj *Create(void *p);
 };
+
+#include "CFlagWork.h"
+struct CStr6 { char c[6]; };
+extern CStr6 D_002D9D78;
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016D548);
@@ -215,7 +219,14 @@ void Blit16DA20(u64 tex, s32 a, s32 b, s32 w, s32 y, s32 h, u8 *base) {
 
 INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016DAD0);
 
-INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016DEE8);
+void GetAlbumName16DEE8(char *dst, s32 a, s32 b) {
+    char buf[32];
+    D_002A36C0->GetName(buf, a, b);
+    strcpy(dst, buf);
+    if (a == 0x23 && b == 1 && D_002A26E4->Func1091B0(0x3B64)) {
+        *(CStr6 *)dst = D_002D9D78;
+    }
+}
 
 void GetPhotoName16DFA8(char *dst, s32 a, s32 b, s32 c) {
     char buf[0x50];
