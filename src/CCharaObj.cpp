@@ -370,8 +370,7 @@ void CCharaObj::Release113758() {
 void CCharaObj::Func113860(s32 v) {
     Func113898();
     m_unk18 = v;
-    Func1138E8();
-    return;
+    return Func1138E8();
 }
 
 void CCharaObj::Func113898() {
@@ -639,7 +638,13 @@ s32 CCharaObj::Func115388() {
     return m_unk288 < m_unk28C || m_unk2C0 < m_unk2C4 || m_unk2D0 < m_unk2D4 || m_unk300 < m_unk304;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_001153E8);
+s32 CCharaObj::Func1153E8() {
+    s32 r = 0;
+    if ((m_unk350 && !m_unk90) || (m_unk84 < 1.0f && m_unk88 > 0.0)) {
+        if (m_unk74 >= 0) r = 1;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00115470);
 

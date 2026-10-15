@@ -8,6 +8,10 @@ public:
     f32 AsFloat();
     int Get12E350();                  // returns the value as a string (char *)
     void Assign(CValue *o);
+    void SetInt(s32 v);
+    void SetFloat(f32 v);
+    void Set12E1D8(s32 v);
+    int Equals(CValue *o);
 
     s32 m_type;               // 0x0: 0 int, 1 float, 2 string
     union {
@@ -50,6 +54,7 @@ extern "C" int atoi(const char *);
 extern "C" float atoff(const char *);
 extern "C" int sprintf(char *, const char *, ...);
 extern "C" char *strcpy(char *, const char *);
+extern "C" int strcmp(const char *, const char *);
 extern "C" void *func_002303C0(const char *);
 extern void (*D_002B91B0)(void *p);
 extern char D_2EBF90[];

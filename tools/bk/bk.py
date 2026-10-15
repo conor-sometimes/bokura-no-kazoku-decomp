@@ -48,7 +48,7 @@ def compile_(decl,funcs,out,tag='t'):
     decl=unit_decl(funcs)+'\n'+decl
     src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
     cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
-    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-fno-exceptions','-I'+R+'/include','-Wa,-I'+R+'/include','-Wa,-g','-c','-o',out,cpp],capture_output=True,text=True)
+    r=subprocess.run([CC,'-O2','-G0','-fno-strict-aliasing','-fno-exceptions','-I'+R+'/include','-Wa,-I'+R+'/include']+(['-Wa,-g'] if any(a<0x1E91B8 for a,b in funcs) else [])+['-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)
 R_MIPS={4:'R_MIPS_26',5:'R_MIPS_HI16',6:'R_MIPS_LO16'}
@@ -155,13 +155,23 @@ def show(path, addr):
     addr=int(addr,16); decl,funcs=parse(path)
     o=W+'/t.o'; syms=compile_(decl,funcs,o)[0]
     idx=[a for a,b in funcs].index(addr); off,size,name=syms[idx]
-    d=subprocess.run([OD,'-d','-r','--start-address=%d'%off,'--stop-address=%d'%(off+size),o],capture_output=True,text=True).stdout
+    d=subprocess.run([OD,'-d','-z','-r','--start-address=%d'%off,'--stop-address=%d'%(off+size),o],capture_output=True,text=True).stdout
     mine=[l.split('\t',2)[-1] for l in d.splitlines() if re.match(r'\s+[0-9a-f]+:\t',l)]
     c=ctx[hex(addr)]; p=f"{R}/asm/nonmatchings/{c['unit']}/{c['name']}.s"
     theirs=[re.sub(r'\s+',' ',l.split('*/',1)[1].strip()) for l in open(p) if re.search(r'/\* \w+ [0-9A-F]{8} ',l)]
+    obj=read_obj(o); text=obj[1]; rel=obj[2]
+    mw=words(text,off,size//4); tw=words(rom,addr-0xFF000,c['n'])
+    theirs=[l for l in theirs if not l.startswith('.')] if len(theirs)>c['n'] else theirs
     for i in range(max(len(mine),len(theirs))):
         a=mine[i] if i<len(mine) else ''; b=theirs[i] if i<len(theirs) else ''
-        print(f'{a:<40} | {b}')
+        flag='  '
+        if i<len(mw) and i<len(tw):
+            r=rel.get(off+4*i); m=0xFFFFFFFF
+            if r in ('R_MIPS_HI16','R_MIPS_LO16'): m=0xFFFF0000
+            if r=='R_MIPS_26': m=0xFC000000
+            if (mw[i]&m)!=(tw[i]&m): flag='!!'
+        else: flag='!!'
+        print(f'{flag}{a:<40} | {b}')
 def fix_includes():
     # INCLUDE_ASM lines still naming func_XXXXXXXX for functions renamed in symbol_addrs
     names={}

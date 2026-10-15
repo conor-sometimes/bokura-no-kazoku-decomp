@@ -6,6 +6,7 @@ public:
     f32 GetItemUnk34();
 };
 #include "CFlagWork.h"
+#include "CProcess.h"
 extern CFlagWork *D_002A464C;
 
 class CStatusBaseSub19AE68 {
@@ -39,6 +40,7 @@ public:
     int Func1889F8();
     int Func187ED0(s32 k);
     void Func188CD8();
+    void Init189018(s32 mode);
     void Func188098(f32 x, f32 y, f32 s, f32 t);
     int Func187D68(s32 i, s32 f, s32 k);
     void Func187A68(char *buf, s32 i, s32 f, s32 k);
@@ -56,17 +58,19 @@ public:
     void SetMode5();
     f32 GetStatusUnk34();
 
-    u8 pad0[0x48];
+    CStateMachine m_sm;       // 0x0
     s32 m_unk48;              // 0x48
     s32 m_mode;               // 0x4C
-    u8 pad50[0x4];
+    s32 m_unk50;              // 0x50
     s32 m_unk54;              // 0x54
     s32 m_unk58b;             // 0x58
-    u8 pad5C[0x8];
+    u8 pad5C[0x4];
+    void *m_unk60;            // 0x60
     CStatusBase* m_status;    // 0x64
-    u8 pad68[0x4];
+    void *m_unk68;            // 0x68
     CStatusBaseSub19AE68* m_unk6C; // 0x6C
-    u8 pad70[0x128];
+    void *m_unk70;            // 0x70
+    u8 pad74[0x124];
     CChrBodyEntry m_ent[6];   // 0x198
     s32 m_unk360;             // 0x360
     s32 m_unk364;             // 0x364
@@ -263,8 +267,7 @@ void CChrBodyWin::Init1883D0() {
     m_unk394 = 1.0f;
     m_unk398 = 1.0f;
     memset(this, 0, 0x188);
-    Clear1884B0();
-    return;
+    return Clear1884B0();
 }
 
 CChrBodyWin::~CChrBodyWin() {

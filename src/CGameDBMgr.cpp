@@ -44,12 +44,17 @@ public:
 class CGameDBRec24 {
 public:
     s32 m_id;                 // 0x0
-    u8 pad4[0x20];
+    u8 pad4[0x8];
+    s32 mC;                   // 0xC
+    u8 pad10[0x14];
 };
 class CGameDBRec28 {
 public:
     s32 m_id;                 // 0x0
-    u8 pad4[0x24];
+    u8 pad4[0x8];
+    s32 mC;                   // 0xC (bit mask)
+    const char *m10;          // 0x10 (condition script)
+    u8 pad14[0x14];
 };
 class CGameDBRec34 {
 public:
@@ -75,7 +80,9 @@ class CGameDBRec74 {
 public:
     s32 m_id;                 // 0x0
     const char *m_names[13];  // 0x4
-    u8 pad38[0x3C];
+    u8 pad38[0x4];
+    const char *m3C;          // 0x3C (condition script)
+    const char *m40[13];      // 0x40 (condition scripts per name)
 };
 class CGameDBRecB0 {
 public:
@@ -114,7 +121,8 @@ public:
     s32 m4;                   // 0x4
     CGameDBItem14 *m8;        // 0x8
     s32 mC;                   // 0xC
-    u8 pad10[0xCF8];
+    s32 m10[36][23];          // 0x10
+    u8 padD00[0x8];
     u8 mD08[0x14];            // 0xD08
     u8 mD1C[0x14];            // 0xD1C
     s32 mD30;                 // 0xD30
@@ -137,6 +145,12 @@ int IsFlagKind(int v);
 class CGameDBMgr : public IGameDBMgr {
 public:
     virtual void Release();
+    s32 Func14E660(s32 id, s32 a, s32 b);
+    void Func14DB70(f32 *out, s32 name);
+    s32 Func14D430(s32 *out, s32 name);
+    s32 Func14D5F8(s32 *out, s32 name);
+    s32 Func14C2B0(s32 *ids, s32 *flags, s32 name);
+    s32 Func14C490(s32 *ids, s32 *flags, s32 name);
     CGameDBMgr();
     virtual ~CGameDBMgr();
     s32 Func14C998(s32 name);
@@ -316,6 +330,30 @@ extern "C" const char *func_0024AFE8(const char *s, char *buf, s32 k, s32 size);
 extern "C" const char *func_0024A570(const char *s, char *out, const char *a, const char *b);
 extern char D_002D7EC0[];
 extern char D_002D7EC8[];
+
+// CFlagWork seen with its vptr (at 0x1C); slot 9 here.
+class CFlagWorkV {
+public:
+    u8 pad0[0x1C];
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual s32 V6();
+    virtual void V7();
+    virtual void V8();
+    virtual s32 V9(s32 a, s32 b);
+};
+
+struct CGameDBRec18 {
+    u8 pad0[0xC];
+    s32 mC;                   // 0xC
+    s32 m10;                  // 0x10
+    s32 m14;                  // 0x14
+};
+int Func14FC70(s32 i, s32 bit);
 // @decl-end
 
 CGameDBMgr::CGameDBMgr() {
@@ -671,7 +709,16 @@ INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014D5F8);
 
 INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014D7C8);
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014DB70);
+void CGameDBMgr::Func14DB70(f32 *out, s32 name) {
+    s32 idx = Func1456A8(name);
+    if (idx < 0) return;
+    Func14D7C8(out, idx, D_002A26E4->Func1091B0(idx + 0x34));
+    out[0] += (f32)D_002A26E4->Func1091B0(0x76) / 100.0f;
+    out[1] += (f32)D_002A26E4->Func1091B0(0x7C) / 100.0f;
+    out[2] += (f32)D_002A26E4->Func1091B0(0x82) / 100.0f;
+    out[3] += (f32)D_002A26E4->Func1091B0(0x88) / 100.0f;
+    out[4] += (f32)D_002A26E4->Func1091B0(0x8E) / 100.0f;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014DCE0);
 
@@ -740,7 +787,22 @@ u8 *CGameDBMgr::GetCharaD1C(s32 id) {
     return m_charas[k].mD1C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014E660);
+s32 CGameDBMgr::Func14E660(s32 id, s32 a, s32 b) {
+    s32 k = Func14BB28(id);
+    s32 t, season;
+    if (k < 0) return 0;
+    id = Func1456A8(id);
+    if (id < 0) return 0;
+    if ((u32)a >= 0x17) return 0;
+    t = D_002A26E4->Func1091B0(0x17);
+    season = t % 4;
+    season = (D_002A26E4->Func1091B0(id + 0x34) * 4 + season + 3) / 4;
+    if ((u32)a < 15) {
+        if (b < 0) b = ((CFlagWorkV *)D_002A26E4)->V9(0x94, id);
+        a += b * 5;
+    }
+    return m_charas[k].m10[season][a];
+}
 
 s32 CGameDBMgr::GetCharaD30(s32 id) {
     s32 k = Func14BB28(id);
@@ -982,7 +1044,28 @@ int Func14FC70(s32 i, s32 bit) {
     return ((ICurFlag *)D_002A26E4)->GetBit1454F0(i, bit);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014FCC8);
+s32 CGameDBMgr::Func14FCC8(s32 i, s32 arg) {
+    s32 v = arg;
+    s32 k;
+    if (arg < 0) v = ((CFlagWorkV *)D_002A26E4)->V6();
+    if ((u32)(i - 0x20) < 3) return 1;
+    if (arg < 0) {
+        if (Func1456A8(i) >= 0) return 1;
+    } else if (i < m_unk24) {
+        for (k = 0; k < m_unk24; k++) {
+            if (v + 0x19 >= m_unk20[k].m_id) return 1;
+        }
+    } else if ((u32)(i - 0x10) < 8) {
+        for (k = 0; k < m_unk24; k++) {
+            if (m_unk20[k].m4 == i && v + 0x19 >= m_unk20[k].m_id) return 1;
+        }
+    }
+    for (k = 0; k < m_unk2C; k++) {
+        CGameDBRec18 *e = &((CGameDBRec18 *)m_unk28)[k];
+        if (e->mC == i && Func14FC70(arg, e->m14)) return 1;
+    }
+    return 0;
+}
 
 s32 CGameDBMgr::Func14FE60(s32 arg) {
     s32 n = D_002A26E4->Func1091B0(0x27) + 3;

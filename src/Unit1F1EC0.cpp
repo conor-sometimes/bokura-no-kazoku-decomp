@@ -73,6 +73,43 @@ extern "C" void func_00223FC0();
 extern "C" void func_002025E0();
 extern "C" void func_0023E5F0(void *p, s32 n);
 extern "C" void func_001F1F78(CXmnModelBlock **pp);
+
+struct CXmnGroup {
+    s16 m_count;              // 0x0
+    s16 m_max;                // 0x2
+    s16 m_unk4;               // 0x4
+    s16 m_unk6;               // 0x6
+    s32 m_a[16];              // 0x8
+    s32 m_b[16];              // 0x48
+    s32 m_idx[0x180];         // 0x88
+};
+struct CXmnRendG {
+    u8 pad0[0x94];
+    CXmnGroup *m_groups;      // 0x94
+    s32 m_unk98;              // 0x98
+};
+extern CXmnRendG D_30E170;
+extern s32 D_30E144, D_30E148;
+inline void XmnGroupInit(CXmnGroup *g, u32 size, u32 unit)
+{
+    g->m_max = size / unit;
+    g->m_unk6 = 0;
+    g->m_count = 0;
+    g->m_unk4 = 0;
+    s32 *a = g->m_a;
+    s32 *b = g->m_b;
+    for (s32 i = 0; i < 32; i += 2) {
+        *a++ = -1;
+        *b++ = -1;
+    }
+}
+inline void XmnGroupFill(CXmnGroup *g, s32 n)
+{
+    g->m_unk6 = 1;
+    if (g->m_max < n) n = g->m_max;
+    g->m_count = n;
+    for (s32 i = 0; i < n; i++) g->m_idx[i] = i;
+}
 // @decl-end
 
 extern "C" void func_001F1EC0()
@@ -149,7 +186,17 @@ extern "C" s32 func_001F2170()
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F1EC0", func_001F2230);
 
-INCLUDE_ASM("asm/nonmatchings/Unit1F1EC0", func_001F23E8);
+extern "C" void func_001F23E8()
+{
+    XmnGroupInit(&D_30E170.m_groups[0], 0x600, 6);
+    XmnGroupInit(&D_30E170.m_groups[1], 0x600, 6);
+    XmnGroupInit(&D_30E170.m_groups[2], 0x600, 6);
+    XmnGroupInit(&D_30E170.m_groups[3], 0x600, 6);
+    if (D_30E170.m_unk98) {
+        XmnGroupFill(&D_30E170.m_groups[0], D_30E144);
+        XmnGroupFill(&D_30E170.m_groups[1], D_30E148);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F1EC0", func_001F2628);
 

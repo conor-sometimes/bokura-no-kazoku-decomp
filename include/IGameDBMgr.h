@@ -34,7 +34,7 @@ public:
     virtual s32 Collect14BC20(s32 *out, s32 max);               // [8] 0x14BC20
     virtual s32 Func14BD00();                                   // [9] 0x14BD00
     virtual s32 Func14C048();                                   // [10] 0x14C048
-    virtual s32 Func14C2B0();                                   // [11] 0x14C2B0
+    virtual s32 Func14C2B0(s32 *ids, s32 *flags, s32 name);     // [11] 0x14C2B0
     virtual s32 Func14C490();                                   // [12] 0x14C490
     virtual s32 Func14C648(s32 *out, s32 name);                                   // [13] 0x14C648
     virtual s32 Func14C800(s32 *out, s32 name);                                   // [14] 0x14C800
@@ -44,10 +44,10 @@ public:
     virtual s32 Func14CC00();                                   // [18] 0x14CC00
     virtual s32 Func14CF78(s32 name);                                   // [19] 0x14CF78
     virtual const char *Func14D378(s32 name);                                   // [20] 0x14D378
-    virtual s32 Func14D430();                                   // [21] 0x14D430
-    virtual s32 Func14D5F8();                                   // [22] 0x14D5F8
-    virtual s32 Func14D7C8();                                   // [23] 0x14D7C8
-    virtual s32 Func14DB70();                                   // [24] 0x14DB70
+    virtual s32 Func14D430(s32 *out, s32 name);                 // [21] 0x14D430
+    virtual s32 Func14D5F8(s32 *out, s32 name);                 // [22] 0x14D5F8
+    virtual void Func14D7C8(f32 *out, s32 idx, s32 v);          // [23] 0x14D7C8
+    virtual void Func14DB70(f32 *out, s32 name);                // [24] 0x14DB70
     virtual s32 Func14DCE0();                                   // [25] 0x14DCE0
     virtual s32 GetUnk24();                                     // [26] 0x14E440
     virtual CGameDBRec8 *GetUnk20(s32 i);                       // [27] 0x14E448

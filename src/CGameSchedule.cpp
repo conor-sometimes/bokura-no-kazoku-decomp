@@ -109,6 +109,10 @@ public:
     void Func15DEA0();
     s32 Func15D468();
     s32 Func15F780(s32 b, s32 c, s32 d);
+    s32 Func15D620();
+    s32 Func15E048(s32 k);
+    s32 Func15E908();
+    void Func15F2C8(s32 who, s32 mode, s32 len);
     s32 Func15F9E0(s32 a, s32 b, s32 c, s32 d);
 
     u8 pad0[0x2C];
@@ -125,7 +129,7 @@ public:
     s32 m_unk240;             // 0x240
     s32 m_unk244;             // 0x244
     s32 m_unk248;             // 0x248
-    u8 pad24C[0x4];
+    s32 m_unk24C;             // 0x24C
     s32 m_unk250;             // 0x250
     s32 m_unk254;             // 0x254
     s32 m_unk258;             // 0x258
@@ -182,6 +186,57 @@ struct CGameDBRec1D0 {
     CGameDBRecSlot *m30;      // 0x30
 };
 extern char D_002D9230[];
+struct CGameDBRecAct {
+    s32 m0;                   // 0x0
+    u8 pad4[0x8];
+    const char *mC;           // 0xC
+    u8 pad10[0x1C];
+    s32 m2C;                  // 0x2C
+    s32 m30;                  // 0x30
+};
+s32 Func15A090(s32 k);
+class CEvLog0D38 {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14();
+    virtual void V15();
+    virtual void V16();
+    virtual void V17();
+    virtual s32 Printf(const char *fmt, s32 a, s32 b, s32 c);
+};
+extern CEvLog0D38 *D_002A0D38;
+extern "C" void func_001513D0(void *cfg, s32 a, s32 b, s32 c);
+struct CGameDBRec240b {
+    u8 pad0[0x8];
+    s32 m8;                   // 0x8
+    s32 mC;                   // 0xC
+    s32 m10;                  // 0x10
+};
+int Func251B88();
+struct CRand {
+    u32 m_seed;
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+};
+inline s32 RandRange(CRand *rnd, s32 lo, s32 hi) {
+    if (lo == hi) return lo;
+    return ((rnd->Next() << 16) | rnd->Next()) % (u32)(hi - lo + 1) + lo;
+}
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159850);
@@ -217,7 +272,7 @@ void CGameScheduleSub159F58::Advance() {
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159F80);
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015A090);
+INCLUDE_ASM("asm/nonmatchings/CGameSchedule", Func15A090__Fi);
 
 s32 Func15A120(s32 bits) {
     s32 i;
@@ -339,7 +394,25 @@ void CGameSchedule::Func15DEA0() {
     D_002A5358->Func108FF0(n + 0x2A7, -1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015E048);
+s32 CGameSchedule::Func15E048(s32 k) {
+    s32 who = D_002A5358->Func1091B0(k / 3 + 0x2A7);
+    s32 r = k % 3;
+    CGameDBRec240b *rec = (CGameDBRec240b *)D_002A2988->Get240(D_002A26E4->Func1091B0(who + 0x46), r);
+    if (!rec) return 0;
+    D_002A26E4->Func108FF0(0x1046, who);
+    D_002A26E4->Func108FF0(0x1047, r);
+    D_002A26E4->MoveMoney(Func15A090(k));
+    D_002A26E4->Func108FF0(0x1142, 3);
+    D_002A26E4->IncCur(0xE0);
+    D_002A26E0->Vf143FA8(D_002A26E4->Func1091B0(0x16), 0, 0xE0, 0, 1);
+    D_002A26E4->IncCur2(0xE0);
+    D_002A26E4->Func108FF0(who + 0x16C, 1);
+    D_002A0D38->Printf("pow(%d)+=%d", 1, who, rec->m8);
+    D_002A0D38->Printf("hum1(%d)+=%d", 1, who, rec->mC);
+    D_002A0D38->Printf("sci1(%d)+=%d", 1, who, rec->m10);
+    func_001513D0(m_unk2C, 3, who, 1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015E2A8);
 
@@ -415,7 +488,26 @@ s32 CGameSchedule::Func15E6E8() {
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", Func15E860__13CGameSchedule);
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015E908);
+s32 CGameSchedule::Func15E908() {
+    s32 ids[0x100];
+    s32 saved;
+    s32 ok = 0;
+    saved = D_002A26E4->Func1091B0(0x17);
+    for (s32 s = D_002A26E4->Vf2991B0() + 1; s < 4; s++) {
+        D_002A26E4->Func108FF0(0x17, D_002A26E4->Vf2991E8() * 4 + s);
+        if (Func15E6E8()) goto done;
+        for (s32 j = 0; j < 3; j++) {
+            s32 n = D_002A2988->Vf14BD00(D_002A26E4->Vf2991B0(), j, ids, 0x100);
+            for (s32 k = 0; k < n; k++) {
+                if (D_002A2988->Vf14DCE0(ids[k], 0, m_unk2C->m_unk4C4) >= 0) goto done;
+            }
+        }
+    }
+    ok = 1;
+done:
+    D_002A26E4->Func108FF0(0x17, saved);
+    return ok;
+}
 
 void CGameSchedule::Func15EAE0() {
     s32 i;

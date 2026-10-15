@@ -83,6 +83,9 @@ extern "C" int func_00235648(char *buf, s32 a, s32 b);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern s32 D_002A0D28, D_002A0D2C, D_002A0D30;
 extern char D_002D5D80[];
+
+int MovieBits13EC28(int psm);
+extern "C" void func_00227BF0(u64 tex, s32 a, s32 b, s32 w, s32 h, u8 *src);
 // @decl-end
 
 CMovieObj::CMovieObj() {
@@ -100,7 +103,6 @@ CMovieObj::~CMovieObj() {
     Func13E888();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5D58);
 INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5D60);
 INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5D68);
 INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5D78);
@@ -150,9 +152,30 @@ void CMovieObj::Apply13EBE8() {
     func_00244EE8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMovieObj", MovieBits13EC28__Fi);
+// GNU as 2.10 assembles the jump-table lui as a copy of the following lw unless the function
+// starts on its own .p2align (docs/lessons.md, CNameDBMgr).
+asm(".p2align 3");
+s32 MovieBits13EC28(s32 psm) {
+    switch (psm) {
+    case 0: return 32;
+    case 1: return 24;
+    case 2: case 10: return 16;
+    case 19: case 27: return 8;
+    case 20: case 36: case 44: return 4;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMovieObj", func_0013EC80);
+void MovieTiles13EC80(u64 tex, s32 x0, s32 y0, s32 w, s32 stride, s32 t1, s32 h, u8 *src) {
+    s32 bpp = MovieBits13EC28((s32)((tex >> 32) & 0x3F)) / 8;
+    for (s32 x = 0; x < w; x += 16) {
+        u8 *p = src + bpp * t1 * 16 + x * bpp * stride;
+        for (s32 y = 0; y < h; y += 16) {
+            func_00227BF0(tex, x0 + x, y0 + y, 16, 16, p);
+            p += bpp * 256;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMovieObj", Func13EDC8__9CMovieObj);
 

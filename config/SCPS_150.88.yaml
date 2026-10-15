@@ -257,7 +257,7 @@ segments:
       - {start: 0x1C1FD8, type: .data, name: CGameSeasonPrev, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2030, type: .data, name: CGameSeasonPost, linker_section: .gnu.linkonce.d.*}
       - [0x1C2088, data, vt_CGameSchedule]
-      - [0x1C2110, data, vt_CGameEventObj]
+      - {start: 0x1C2110, type: .data, name: CGameEventObj, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2128, type: .data, name: CGameResort, linker_section: .gnu.linkonce.d.*}
       - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr
       - [0x1C2398, data, vt_CNameDBMgr]
@@ -367,8 +367,8 @@ segments:
       - [0x1D6600, .rodata, CEventRes]
       - [0x1D6670, .rodata, CEventObj]
       - [0x1D68B0, .rodata, CEventMesRes]
-      - [0x1D6D58, .rodata, CMovieObj]
-      - [0x1D6ED8, .rodata, CUserFlagMgr]
+      - [0x1D6D60, .rodata, CMovieObj]
+      - [0x1D6EE0, .rodata, CUserFlagMgr]
       - [0x1D7930, rodata, ro_CSysFlag]   # also ISysFlag
       - [0x1D8B90, .rodata, CResNameMgr]
       - [0x1D8D80, rodata, ro_CGameDBMgr]

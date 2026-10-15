@@ -8,8 +8,29 @@ extern CFlagWork *D_002A5358;
 extern char D_002D9820[];
 int Func235DE0(const char *fmt, ...);
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);
-class CGameEventObj {
+#include "CProcess.h"
+// The event-script base (CEventObj unit): fields up to 0xFEC4, then its vptr (one slot, the
+// destructor).
+class CEventObj {
 public:
+    virtual ~CEventObj();
+
+    u8 pad0[0xFEC4];
+};
+// A resource object (vptr at 0xC: destructor, Load, Release) owned at 0x10134.
+class CGameEventRes {
+public:
+    virtual ~CGameEventRes();
+    virtual s32 Load(const char *name);
+    virtual void Release();
+
+    u8 pad0[0xC];
+    // vptr 0xC
+};
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CGameEventObj.
+class CGameEventObj : public CEventObj {
+public:
+    virtual ~CGameEventObj();
     void Func165380(s32 k);
     void Func164878(s32 k);
     void Func164D38(s32 k);
@@ -27,18 +48,24 @@ public:
     s32 Func166208(s32 k);
     s32 Func166348(s32 k);
     s32 Func166548(s32 k);
-    // &m_ids[k], computed as this + (k * 4 + 0xFF30) as retail does.
-    s32 *IdPtr(s32 k) {
-        u32 o = k * 4 + 0xFF30;
-        return (s32 *)((u8 *)this + o);
-    }
 
-    u8 pad0[0xFF20];
+    s32 m_unkFEC8;            // 0xFEC8
+    CStateMachine m_sm;       // 0xFECC
+    CBgWork m_bg;             // 0xFF14
     s32 m_unkFF20;            // 0xFF20
     u8 padFF24[0x8];
     s32 m_count;              // 0xFF2C
     s32 m_ids[0x80];          // 0xFF30
+    s32 m_unk10130;           // 0x10130
+    CGameEventRes *m_res;     // 0x10134
+    s32 m_unk10138;           // 0x10138
 };
+// &m_ids[k], computed as this + (k * 4 + 0xFF30) as retail does. A free function: an inline
+// member would be emitted out of line now that the key method (~CGameEventObj) is here.
+inline s32 *IdPtr(CGameEventObj *obj, s32 k) {
+    u32 o = k * 4 + 0xFF30;
+    return (s32 *)((u8 *)obj + o);
+}
 
 extern char D_002D9648[], D_002D97B0[], D_002D97D0[], D_002D97E0[], D_002D97F0[];
 s32 Func163880(s32 v);
@@ -76,7 +103,15 @@ public:
 
 INCLUDE_ASM("asm/nonmatchings/CGameEventObj", __13CGameEventObji);
 
-INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00160208);
+CGameEventObj::~CGameEventObj() {
+    CGameEventRes *r;
+    func_00245818(&m_bg, 1);
+    r = m_res;
+    if (r) {
+        r->Release();
+        delete r;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D9590);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D9598);
@@ -200,7 +235,7 @@ void CGameEventObj::Func164878(s32 k) {
         Func235DE0(D_002D9820, D_002A26E4->Func1091B0(m_unkFF20 + 0x46));
         return;
     }
-    p = IdPtr(k);
+    p = IdPtr(this, k);
     D_002A26E4->Func108FF0(m_unkFF20 + 0x64, v);
     D_002A26E4->Func108FF0(m_unkFF20 + 0x6A, *p);
     D_002A26E4->MoveMoney(D_002A2988->Find1E8(*p)->m_unk18);
@@ -230,10 +265,9 @@ void CGameEventObj::Func164A08() {
 }
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D98C0);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D98D0);
-INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D98E8);
 
 void CGameEventObj::Func164D38(s32 k) {
-    s32 *p = IdPtr(k);
+    s32 *p = IdPtr(this, k);
     if (*p == 0x400) {
         D_002A26E4->Func108FF0(0x15, 0);
         D_002A26E4->Func108FF0(m_unkFF20 + 0x64, 7);
@@ -301,7 +335,7 @@ void CGameEventObj::Func1650E8() {
 }
 
 void CGameEventObj::Func165380(s32 k) {
-    s32 *p = IdPtr(k);
+    s32 *p = IdPtr(this, k);
     D_002A26E4->Func108FF0(0x15, *p);
     D_002A26E4->Func108FF0(m_unkFF20 + 0x64, 9);
     D_002A26E4->Func108FF0(m_unkFF20 + 0x6A, *p);
@@ -381,7 +415,7 @@ void CGameEventObj::Func1656B8() {
 }
 
 s32 CGameEventObj::Func165A70(s32 k) {
-    s32 *p = IdPtr(k);
+    s32 *p = IdPtr(this, k);
     D_002A26E4->Func108FF0(0x15, *p);
     if (!D_002A2988->Find220(*p)) return 0;
     D_002A26E4->Func108FF0(m_unkFF20 + 0xDC, *p);
@@ -435,7 +469,7 @@ void CGameEventObj::Func165B18() {
 }
 
 s32 CGameEventObj::Func165ED0(s32 k) {
-    s32 *p = IdPtr(k);
+    s32 *p = IdPtr(this, k);
     D_002A26E4->Func108FF0(0x15, *p);
     if (!D_002A2988->Find20C(*p)) return 0;
     D_002A26E4->Func108FF0(m_unkFF20 + 0xE2, *p);
@@ -475,7 +509,7 @@ void CGameEventObj::Func165FF0() {
 }
 
 s32 CGameEventObj::Func166208(s32 k) {
-    s32 *p = IdPtr(k);
+    s32 *p = IdPtr(this, k);
     CGameDBRec *r;
     D_002A26E4->Func108FF0(0x15, *p);
     r = D_002A2988->Find234(*p);

@@ -26,8 +26,8 @@ struct CRxMcSlot {
     s32 m_result;             // 0x8
 };
 extern CRxMcSlot D_2ED208[2];
-extern CRxMcSlot *D_2ED200;
-extern CRxMcSlot *D_2ED220;
+extern volatile CRxMcSlot *D_2ED200;
+extern volatile CRxMcSlot *D_2ED220;
 extern s32 D_002A5C8C;
 extern const char D_002E2128[], D_002E2138[], D_002E2118[], D_002E2148[];
 s32 Func235DE0(const char *fmt, ...);
@@ -53,6 +53,24 @@ extern "C" s32 func_00265BB8(s32 port, s32 slot, s32 a);
 extern "C" s32 func_00264FB8(s32 port, s32 slot, s32 a);
 extern "C" s32 func_001ED6E0();
 extern "C" void func_001ED730(s32 i);
+
+extern "C" s32 func_001ED830(s32 nowait, s32 *res);
+inline u32 EeGetStatus()
+{
+    u32 r;
+    __asm__ volatile("sync.p");
+    __asm__ volatile("mfc0 %0, $12" : "=r"(r));
+    __asm__ volatile("sync.p");
+    return r;
+}
+extern "C" void func_0027BD78();
+struct CRxMcReqArgs {
+    CRxMcSlot *m_slot;        // 0x0
+    s32 (*m_fn)(s32 a, s32 b, s32 c, s32 d); // 0x4
+    s32 m_a, m_b, m_c, m_d;   // 0x8
+};
+struct CRxMcInfo { s32 m_type; s32 m_free; s32 m_format; };
+extern "C" s32 func_001EDA30(CRxMcInfo *info);
 // @decl-end
 
 extern "C" void func_001EB8E8(s32 nocase)
@@ -155,9 +173,31 @@ extern "C" s32 func_001ED818(s32 x)
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001ED830);
+extern "C" s32 func_001ED830(s32 nowait, s32 *res)
+{
+    if (nowait == 0) {
+        while (D_2ED200->m_busy) {
+            if (!(EeGetStatus() & 0x10000)) {
+                func_0027BD78();
+                Func235DE0(D_002E2118);
+                func_0027BD78();
+            }
+        }
+    }
+    if (res) {
+        if (D_2ED200->m_busy) *res = 0;
+        else *res = D_2ED200->m_result;
+    }
+    return D_2ED200->m_busy;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001ED908);
+extern "C" s32 func_001ED908(u32 mode)
+{
+    func_001ED830(0, 0);
+    s32 old = D_2ED200->m_port;
+    if (mode < 2) D_2ED200->m_port = mode;
+    return old;
+}
 
 extern "C" s32 func_001ED950() { return D_2ED200->m_port; }
 
@@ -168,7 +208,22 @@ extern "C" void func_001ED960(CRxMcSlot *p)
     p->m_port = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001ED978);
+extern "C" void func_001ED978(CRxMcReqArgs *r)
+{
+    CRxMcInfo info;
+    D_2ED220 = r->m_slot;
+    s32 (*fn)(s32, s32, s32, s32) = r->m_fn;
+    func_00273420(0);
+    s32 ret = fn(r->m_a, r->m_b, r->m_c, r->m_d);
+    D_2ED220->m_result = ret;
+    if (ret < 0 && fn != (s32 (*)(s32, s32, s32, s32))func_001EDA30) {
+        func_001EDA30(&info);
+        if (info.m_type < 2) {
+            if (info.m_type >= 0) D_2ED220->m_result = -200;
+        }
+    }
+    D_2ED220->m_busy = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001EDA30);
 

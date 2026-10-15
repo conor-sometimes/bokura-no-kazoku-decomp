@@ -80,6 +80,7 @@ public:
 };
 class CAlbumMgr : public IAlbumMgr {
 public:
+    void Func16E960();
     virtual ~CAlbumMgr();
     virtual void Update();
     virtual void Draw();
@@ -112,13 +113,17 @@ public:
 extern "C" s32 func_00251BA8();
 extern "C" void func_00251B98(s32 v);
 extern "C" void func_001F1BD8(s32 v);
+struct CPhotoEntry {
+    u8 pad0[0x4];
+    s32 m_id;                 // 0x4
+};
 class CPhotoDBMgr2 {
 public:
     virtual void Vf29A2A8();
     virtual void Vf1705C0();
     virtual void Init();
-    virtual void Vf29A2E0();
-    virtual void Vf29A2E8();
+    virtual s32 GetNum();
+    virtual CPhotoEntry *GetEntry(s32 i);
     virtual void Vf29A320();
     virtual s32 GetName(char *buf, s32 a, s32 b);
     virtual s32 Vf171510(char *buf, s32 a, s32 b, s32 c);
@@ -151,6 +156,79 @@ public:
 #include "CFlagWork.h"
 struct CStr6 { char c[6]; };
 extern CStr6 D_002D9D78;
+
+struct CPhotoSceneInfo {
+    s8 m_flag;                // 0x0
+    u8 pad1[0x1F];
+    s32 m_map;                // 0x20
+    s32 m_unk24;              // 0x24
+    f32 m_unk28;              // 0x28
+    f32 m_pos[3];             // 0x2C
+    f32 m_unk38;              // 0x38
+    f32 m_unk3C;              // 0x3C
+    f32 m_unk40;              // 0x40
+    s32 m_unk44;              // 0x44
+    s32 m_unk48;              // 0x48
+    s32 m_link;               // 0x4C
+};
+struct CSceneVec { f32 x, y, z; };
+struct CSceneCam {
+    u8 pad0[0x10];
+    CSceneVec m_pos;          // 0x10
+    u8 pad1C[0x4];
+    CSceneVec m_at;           // 0x20
+};
+struct CSceneMapRes { u8 pad0[0x18]; CSceneCam *m_cam; };
+struct CSceneMapItem {
+    u8 pad0[0x4C];
+    CSceneMapRes *m_res;      // 0x4C
+    s32 m_obj;                // 0x50
+};
+class CCharaObj {
+public:
+    void CallFunc114050(s32 v, f32 t);
+    void SetPart24Unk18(s32 v);
+    void SetUnk150(s32 v);
+};
+struct CSceneCharaF {
+    u8 pad0[0x64];
+    s32 m_unk64;              // 0x64
+    u8 pad68[0x4];
+    s32 m_unk6C;              // 0x6C
+    u8 pad70[0x10];
+    f32 m_unk80;              // 0x80
+    u8 pad84[0x1C];
+    f32 m_unkA0;              // 0xA0
+    f32 m_unkA4;              // 0xA4
+    f32 m_unkA8;              // 0xA8
+    u8 padAC[0x18];
+    f32 m_unkC4;              // 0xC4
+    u8 padC8[0x8];
+    f32 m_unkD0;              // 0xD0
+    f32 m_unkD4;              // 0xD4
+    f32 m_unkD8;              // 0xD8
+    u8 padDC[0x64];
+    s32 m_unk140;             // 0x140
+};
+struct CSceneCharaItem { u8 pad0[0x24]; CSceneCharaF *m_chara; };
+class CSceneSet {
+public:
+    CSceneMapItem *FindA(s32 id);
+    CSceneCharaItem *FindB(s32 id);
+};
+class CMapObj {
+public:
+    void SetFlag11B070(s32 i);
+};
+extern "C" void func_00201C20(f32 x, f32 y, f32 z);
+extern "C" void func_00201C88(f32 x, f32 y, f32 z);
+extern "C" s32 func_001170F0(CSceneCharaF *c);
+extern "C" void func_00115278(CSceneCharaF *c, CSceneCharaF *d, const char *s);
+extern char D_002D9D80[];
+class CPhotoEventObjSub8 {
+public:
+    void Func16E008(s32 a, s32 b, s32 c);
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016D548);
@@ -234,7 +312,51 @@ void GetPhotoName16DFA8(char *dst, s32 a, s32 b, s32 c) {
     strcpy(dst, buf);
 }
 
-INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", Func16E008__18CPhotoEventObjSub8iii);
+void CPhotoEventObjSub8::Func16E008(s32 a, s32 b, s32 c) {
+    CPhotoSceneInfo info;
+    s32 i, n;
+    CSceneMapItem *m = ((CSceneSet *)this)->FindA(0);
+    if (m) {
+        CSceneCam *cam = m->m_res->m_cam;
+        CSceneVec *p = &cam->m_pos;
+        CSceneVec *q = &cam->m_at;
+        func_00201C20(p->x, p->y, p->z);
+        func_00201C88(q->x, q->y, q->z);
+    }
+    n = D_002A36C0->GetNum();
+    for (i = 0; i < n; i++) {
+        s32 id = D_002A36C0->GetEntry(i)->m_id;
+        if (!D_002A36C0->Vf171510((char *)&info, a, b, id)) continue;
+        if (info.m_flag) {
+            CSceneCharaItem *ch = ((CSceneSet *)this)->FindB(id);
+            if (ch) {
+                if (c == 0) {
+                    ch->m_chara->m_unkA0 = info.m_pos[0];
+                    ch->m_chara->m_unkA4 = info.m_pos[1];
+                    ch->m_chara->m_unkA8 = info.m_pos[2];
+                    ch->m_chara->m_unkC4 = info.m_unk38;
+                }
+                ch->m_chara->m_unkD0 = info.m_unk3C;
+                ch->m_chara->m_unkD4 = info.m_unk40;
+                ch->m_chara->m_unkD8 = info.m_unk3C;
+                ((CCharaObj *)ch->m_chara)->CallFunc114050(info.m_unk24, 0.0f);
+                ch->m_chara->m_unk80 = info.m_unk28;
+                ch->m_chara->m_unk140 = info.m_unk44;
+                ((CCharaObj *)ch->m_chara)->SetPart24Unk18(info.m_unk48);
+                ((CCharaObj *)ch->m_chara)->SetUnk150(0);
+                ch->m_chara->m_unk6C = 0;
+                CSceneCharaF *cc = ch->m_chara;
+                cc->m_unk64 = func_001170F0(cc);
+                if (info.m_link >= 0) {
+                    CSceneCharaItem *l = ((CSceneSet *)this)->FindB(info.m_link);
+                    if (l) func_00115278(ch->m_chara, l->m_chara, D_002D9D80);
+                }
+                continue;
+            }
+        }
+        if (info.m_map >= 0 && m) ((CMapObj *)m->m_obj)->SetFlag11B070(info.m_map);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", Func16E280__10CUnk16E280);
 

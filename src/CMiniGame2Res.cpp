@@ -37,6 +37,7 @@ struct CMiniGame2Text {
     void *m_text;             // 0x40
 };
 struct CRand {
+    CRand() { m_seed = 1; }
     u32 m_seed;
     u32 Next() {
         m_seed = m_seed * 0x19660D + 1;
@@ -55,44 +56,68 @@ extern CMenuMgrSub1B6418 *D_002A5538;
 // are called explicitly.
 extern "C" void func_001B9D70(void *p, s32 flags);
 extern "C" void func_0025C2C0(void *p, s32 flags);
+// Member objects of the task (layout objects and a sound handle; library / CLayoutObj code).
+extern "C" void func_001B9D40(void *p);
+extern "C" void *func_001BD188(void *p);
+extern "C" void func_0025C230(void *p);
+struct CMgLayout {
+    CMgLayout() { func_001B9D40(this); }
+    u8 pad[0x170];
+};
+struct CMgLayout2 {
+    CMgLayout2() { func_001BD188(this); }
+    u8 pad[0x210];
+};
+struct CMgSnd {
+    CMgSnd() { func_0025C230(this); }
+    u8 pad[0x74];
+};
+u32 Func251B88();
 // The mini-game 2 task (vtable _vt$10CMiniGame2, key method ~CMiniGame2); 0xE50 bytes.
 class CMiniGame2 : public CProcess {
 public:
+    CMiniGame2(int a, int b) throw();
     virtual ~CMiniGame2();
     virtual void Update();
     virtual void Draw();
-    void Init1C4540(int a, int b);
     int Pick();
     int LoadCursor();
     int LoadColor();
     int LoadLevel();
     int LoadConf();
 
-    u8 pad18[0x30 - 0x18];
+    u8 pad18[0x2C - 0x18];
+    s32 m2C;                  // 0x2C
     s32 m30;                  // 0x30
-    u8 pad34[0x80 - 0x34];
+    CStateMachine m_sm;       // 0x34
+    void *m7C;                // 0x7C: question data
     s32 m80;                  // 0x80
     u8 pad84[0xC];
-    u8 m_layout0[0x170];      // 0x90
-    u8 m_layout1[0x170];      // 0x200
-    u8 m_layout2[0x170];      // 0x370
-    u8 m_layout3[0x170];      // 0x4E0
-    u8 m_layout4[0x170];      // 0x650
-    u8 m_layout5[0x170];      // 0x7C0
-    u8 m_layout6[0x170];      // 0x930
-    u8 m_layout7[0x170];      // 0xAA0
-    u8 m_sndC10[0xA0];        // 0xC10
+    CMgLayout m_layout0;      // 0x90
+    CMgLayout m_layout1;      // 0x200
+    CMgLayout m_layout2;      // 0x370
+    CMgLayout m_layout3;      // 0x4E0
+    CMgLayout m_layout4;      // 0x650
+    CMgLayout m_layout5;      // 0x7C0
+    CMgLayout m_layout6;      // 0x930
+    CMgLayout2 m_layout7;     // 0xAA0
     CRand m_rand;             // 0xCB0
-    u8 m_sndCB4[0x74];        // 0xCB4
+    CMgSnd m_snd;             // 0xCB4
     s32 mD28[7];              // 0xD28: CONF values
-    u8 padD44[0xD6C - 0xD44];
+    s32 mD44;                 // 0xD44
+    s32 mD48[3];              // 0xD48
+    s32 mD54, mD58, mD5C, mD60, mD64, mD68; // 0xD54
     s32 mD6C;                 // 0xD6C
     s32 mD70;                 // 0xD70
     s32 mD74;                 // 0xD74
     s32 mD78;                 // 0xD78
-    u8 padD7C[0xDD0 - 0xD7C];
+    s32 m_q[10];              // 0xD7C
+    s32 mDA4;                 // 0xDA4
+    s32 mDA8[10];             // 0xDA8
     CMiniGame2Color m_color[4]; // 0xDD0
     CMiniGame2Pos m_pos[3];   // 0xE10
+    s32 mE40;                 // 0xE40
+    u8 padE44[0xC];
 };
 void CreateMiniGame2Res(CResMgr24F *mgr, int a, int b);
 
@@ -111,6 +136,20 @@ extern "C" int func_001B8760(void *p, const char *path);
 s32 Func249248(void *buf);
 void Func249348();
 extern "C" int func_001C4260(CMiniGame2Res *r, const char *name);
+
+struct CRandR {
+    u32 m_seed;
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Rand(u32 n) { return ((Next() << 16) | Next()) % n; }
+    s32 Range(s32 lo, s32 hi) {
+        if (hi < lo) hi = lo;
+        if (hi == lo) return 0;
+        return lo + Rand(hi - lo + 1);
+    }
+};
 // @decl-end
 
 CMiniGame2Res *NewCMiniGame2Res() {
@@ -150,16 +189,30 @@ void CMiniGame2Res::Release() {
 }
 
 void CreateMiniGame2Res(CResMgr24F *mgr, int a, int b) {
-    CMiniGame2 *p = (CMiniGame2 *)Func24F2E8(0xE50);
-    p->Init1C4540(a, b);
+    CMiniGame2 *p = new CMiniGame2(a, b);
     mgr->Func24F5C0(p, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", Init1C4540__10CMiniGame2ii);
+INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", __10CMiniGame2ii);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4710);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4810);
+int CMiniGame2::Pick() {
+    s32 k = 0;
+    s32 r;
+    if (mD6C != 1) {
+        do {
+            k = ((CRandR *)&m_rand)->Range(0, mD6C - 1);
+        } while (k == mD74);
+        mD74 = k;
+    }
+    r = k + mD70;
+    if (r >= m80) {
+        Func235DE0("*** level data and question data not match.\n");
+        r = 0;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C48E8);
 

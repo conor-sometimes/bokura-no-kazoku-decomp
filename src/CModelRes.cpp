@@ -93,6 +93,29 @@ void *Func24A4C0(const char *name);
 extern char *D_002A03D0;
 extern char *D_002A03D8;
 extern void (*D_002B91B0)(void *p);
+
+extern "C" void *func_00248E60(const char *name);
+extern "C" void func_00247110();
+extern "C" s32 func_00247140();
+extern "C" u64 func_0023AA40(s32 h);
+extern "C" s32 func_0023AFB8(u64 v);
+extern "C" s32 func_0023BD80(s32 h);
+extern "C" void func_0023BD60(s32 h, s32 v);
+extern "C" s32 func_00205398(void *data);
+extern "C" s32 func_00201210(void *data, s32 tex);
+extern "C" s32 func_00201628(void *data, s32 tex);
+void Func23B1D0(s32 h);
+void Func110178(s32 k);
+void *LoadModelTex(CModelTex *t, s32 k);
+struct CModelSlot {
+    u8 pad0[0x4];
+    u32 m_flags;              // 0x4
+    s32 m_model;              // 0x8
+    s32 m_tex;                // 0xC
+    void *m_texData;          // 0x10
+    u8 pad14[0x4];
+    s32 m_unk18;              // 0x18
+};
 // @decl-end
 
 CModelRes::CModelRes() {
@@ -151,7 +174,66 @@ void Func110178(s32 k) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CModelRes", func_001102C8);
+s32 LoadModel1102C8(CModelSlot *rec, const char *name, s32 tex, s32 *pA, s32 *pB) {
+    s32 ok = 0;
+    void *texData = 0;
+    s32 hTex = -1;
+    s32 hMdl = -1;
+    void *data;
+    rec->m_model = -1;
+    rec->m_texData = 0;
+    rec->m_tex = -1;
+    data = func_00248E60(name);
+    if (!data) {
+        Func235DE0("*** failed to load XMD file '%s'\n", name);
+        goto end;
+    }
+    func_00247110();
+    if (!(rec->m_flags & 0x10)) {
+        if (tex >= 0) {
+            texData = LoadModelTex((CModelTex *)rec, (s32)data);
+            if (!texData) goto end;
+            hTex = func_0023AFB8((func_0023AA40(tex) & ~(0x3FULL << 32)) | ((u64)(rec->m_unk18 & 0x3F) << 32));
+            if (hTex < 0) {
+                Func235DE0("*** failed to duplicate texture '%s'\n", name);
+                goto end;
+            }
+            func_0023BD60(hTex, func_0023BD80(tex));
+        } else {
+            hTex = func_00205398(data);
+            if (hTex < 0) goto end;
+        }
+    }
+    if (pB) *pB += func_00247140();
+    func_00247110();
+    switch (rec->m_flags & 0xF) {
+    case 0:
+        hMdl = func_00201210(data, hTex);
+        break;
+    case 1:
+        hMdl = func_00201628(data, hTex);
+        break;
+    }
+    if (hMdl < 0) {
+        Func235DE0("*** failed to regist XMD model '%s' (stex=%d)\n", name, tex);
+        goto end;
+    }
+    if (pA) *pA += func_00247140();
+    ok = 1;
+    Func110178(hMdl);
+    rec->m_model = hMdl;
+    hMdl = -1;
+    rec->m_texData = texData;
+    rec->m_tex = hTex;
+    hTex = -1;
+    texData = 0;
+end:
+    if (texData) D_002B91B0(texData);
+    if (hTex >= 0) Func23B1D0(hTex);
+    if (hMdl >= 0) func_001F20F8(hMdl);
+    if (data) D_002B91B0(data);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CModelRes", D_002D31B8);
 INCLUDE_RODATA("asm/nonmatchings/CModelRes", D_002D31C0);
 INCLUDE_RODATA("asm/nonmatchings/CModelRes", D_002D31C8);

@@ -273,3 +273,77 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   first member, not as a base (no vptr store in its ctor). *(bokura)*
 - **Struct copies of 5 bytes, `char` vs `u8`**: a `lbu` in retail where ours has `lb` means the buffer
   or the copied byte is unsigned (CEventMesRes Load: `u8 line[]` made the alnum tests match). *(bokura)*
+## g4
+- **Retail was compiled with `-g`**: GCC leaves calls whose delay slot it cannot fill (the soft-double
+  libcalls after the first, `move $a0,$v0` before a call) to the assembler in `.set reorder` mode; GNU as
+  2.10-ee fills them unless `-g` line labels are in the way. Retail always has `jal; nop` there. With `-g`
+  in CXXFLAGS the whole tree still matches; a bare `return;` after a final void call no longer sibcalls,
+  write `return f();` instead (docs/compiler.md). *(bokura)*
+- **Float literals go through decimal text**: GCC prints `li.s` with 21 digits and gas re-parses it, so
+  `0.1f` assembles to 0x3DCCCCCC and `-0.93f` to 0xBF6E147A; a constant like 0xBF6E147B comes from a
+  folded expression (`0.07f - 1.0f`, a lerp macro `x * (hi - lo) / 100 + lo`). *(bokura)*
+- **Loops not touched by loop.c**: no strength reduction and no invariant hoisting (index recomputed
+  every iteration, `base * 23` inside the loop) point at a loop written with `goto` labels; GCC 2.96
+  only optimizes loops that carry loop notes (0x150EA8 got within one branch this way). *(bokura)*
+- **`&a[i].f` vs `(a + i)->f`, and `(u8 *)p + o` with `s32 o = k * 16 + 4`**: the operand order of the
+  final `addu` follows the expression form; when retail adds the scaled index first and the base
+  last, a local offset variable reproduces it (0x124000, 0x123F40). *(bokura)*
+- **Retail reloads a member pointer after a store through another pointer** (`lw $5, 4($16)` after
+  writing the rect): the source used `m_param->...` each time, not a cached local; with the local
+  the registers also come out swapped (0x121AD0). *(bokura)*
+- **A function that passes a float through `$f12` untouched takes it as a parameter**:
+  CCharaObj::Func114050 only matched once it took the `f32` its callers leave in `$f12`; three
+  signatures gained it (old mangled names in aliases.ld). *(bokura)*
+- **A compiled string loses the padding splat kept after it**: moving `"*** failed to regist XMN"` from
+  a function `.s` into C++ dropped the 12 zero bytes before a 16-byte vector constant; keep it as
+  `extern` + INCLUDE_RODATA (force_not_migration). Do not add `.balign 16`: it raises the object's
+  .rodata alignment and moves the whole piece. *(bokura)*
+- **`bk show` with a match marker**: comparing the instruction words (relocations masked) and printing
+  `!!` on differing lines finds the real differences at once; text comparison of the two disassemblies
+  drowns in syntax noise (numeric vs named registers, hidden nops). *(bokura)*
+## r1 (goal 6b: XMN / rx* middleware after CAppMain)
+- **Short-loop padding counts asm() statements as one insn**: EE-GCC pads loops shorter than 6 insns
+  with nops (R5900 short-loop erratum). A CP0 poll loop written as one multi-line asm() got 3 extra
+  nops; one instruction per asm() (`sync.p` / `mfc0 %0,$12` / `sync.p`) matched (0x1F1610 and the
+  other DI/EI loops). *(bokura)*
+- **Volatile shows in the delay slots**: retail `lw old; bnel; sw (likely slot)` and `sw r; bgezl`
+  where ours filled the slot: the memory-card slot pointers shared with the worker thread are
+  pointer-to-volatile (`extern volatile CRxMcSlot *D_2ED200`); a struct-wide volatile also forced the
+  store order in a plain init function, so only the shared pointers are volatile (0x1ED830, 0x1ED908,
+  0x1ED978). *(bokura)*
+- **Full-address `lui; addiu; lw 0(r)` for a global used once = volatile global** (combine does not
+  fold %lo into a volatile access): the rxThread queue indices and flags (0x1EF0D8, 0x1EF140). *(bokura)*
+- **A run-time `divu` of two constants** (li 0x600; li 6; divu) is an inline helper taking both as
+  parameters; a clear loop whose counter runs 30..0 by 2 is a pointer walk with `i += 2` (0x1F23E8). *(bokura)*
+- **`lui $3` vs `lui $2` after a call/virtual call is the callee's return type** (again): fixed the
+  CAppMain constructor's 6 diffs by making the callees non-void one by one. *(bokura)*
+- **GNU as 2.10 macro bug hit again**: `lw $2, D_X+off($2)` assembled its `lui` as a copy of the lw
+  after an unrelated change earlier in the file; `asm(".p2align 3");` before the function fixed it
+  (0x1F1870). *(bokura)*
+- **bk test masks relocations**: two stores to different globals in swapped order pass `bk test` and
+  only fail in mk.sh (0x1EF5C8, 0x1F0CF8); check relocs with `objdump -dr` when a function writes
+  several globals. *(bokura)*
+- **splat merged three functions** into func_001F0AF0 (glabels D_001F0BB0, func_001F0C08 inside):
+  replace the INCLUDE_ASM by all three C functions; the old glabel names keep linking. *(bokura)*
+- **A function returning a found index that is always -1** (0x1F1088) is a real bug in the original:
+  write it as `return -1` in both places, don't fix it. *(bokura)*
+
+## head (merges, 2026-10-15)
+- Lanes g2 and g4 each found that retail's unfilled delay slots after `.set reorder` calls need
+  `as -g` (one as `-Wa,-g`, one as `-g`, which also changes sibcalls); the C-style units after
+  CAppMain match only without it. The Makefile sets `-Wa,-g` per unit (ASG); bk.py follows the
+  function address. A flag that "keeps the whole tree matching" in one lane can still break code
+  another lane matched meanwhile: rebuild the merged tree before trusting it.
+- Merges: a renamed function breaks other units' INCLUDE_ASM lines and old-name callers.
+  `fixnames.py` (INCLUDE_ASM from symbol_addrs) plus aliases for each undefined func_ fix both.
+## g1 (overnight grind 2026-10-15: CSvmRes, CFaceObj, ISysFlag, CSndWorkReal, mini-games, menus)
+- **Switch jump tables are `.align 4` (16) in .rodata**, so a converted unit with a compiled switch gets a 16-aligned .rodata section. Where retail's piece starts at an 8-aligned address, the first 8 zero bytes were padding after the previous unit: move the yaml piece start up 8 and drop that INCLUDE_RODATA (CUserFlagMgr 0x2D5EE0, CMovieObj 0x2D5D60); the linker pads. *(bokura)*
+- **GNU as 2.10 corrupted a jump table's `lui`** (assembled as a copy of the following `lw` with a HI16 reloc) in CMovieObj; a file-scope `asm(".p2align 3");` before the function fixed it, as in CNameDBMgr. *(bokura)*
+- **Member-function-pointer constants**: `return SaveWith(&CMapSndRes::Save, name);` emits the 8-byte {0, -1, pfn} constant into .rodata and loads it with ldl/ldr, exactly retail's shape; mind the INCLUDE_RODATA order around it. A PMF field call `(m_obj->*m_log)(buf)` matched CUserFlagMgr's log hook. *(bokura)*
+- **Error-print guards are void**: `if (bad) return (void)Func235DE0(fmt, x);` gives the sibcall and leaves a stored constant in `$v0` (with an int return it lands in `$v1`). Fixed 0x1845F8, 0x1829A0, 0x1827E8. *(bokura)*
+- **Int clamps as a nested ternary** (`v < lo ? lo : (v > hi ? hi : v)`) keep retail's branches; if-statements become movz/movn. A range check written as nested ifs keeps two signed compares (`&&`/`||` folds them into one unsigned compare). A constant upper bound becomes `slti hi+1`; retail's `li hi; slt` comes from a variable bound. *(bokura)*
+- **`this + (i * size + off)` helpers** (the CGameEventObj IdPtr trick) also fixed CMiniGame3's entry setters; a value written through `CRand::Rand(n) { return ((Next() << 16) | Next()) % n; }` keeps retail's real `divu` because the divisor is an inline parameter. *(bokura)*
+- **Chained float assignment `a = b = c = d = 1.0f`** gives the "copy of a copy" base registers some retail stores show. *(bokura)*
+- **A callee's return type shows after the call**: `lui $3` (not `$2`) for the next global means the callee returns a value (CUnk237E90::Func237E90, func_0024B298). *(bokura)*
+- **Struct alignment changes inline strcpy**: an 8-aligned destination (`__attribute__((aligned(8)))` on the record) turns the ldl/sdl copy of a literal into ld/sd + lhu/lbu. *(bokura)*
+- **Several "unit text starts late" functions** in my units belong to the next class (CMiniGame2/3 task code in the Res files, CMenuSave code at the end of CMenuSysscr00.cpp): matched in place with their real class names. *(bokura)*

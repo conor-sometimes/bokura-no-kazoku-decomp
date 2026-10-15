@@ -14,7 +14,7 @@ unit. All run on hokkaido from the repo root; scratch files live in `build/bk/` 
   The unit's existing `// @decl-begin ... // @decl-end` block is prepended automatically, so
   a snippet only adds; `tools/bk/bk addm UNIT CLASS 'member;'` adds a member to a class there.
 - `tools/bk/testall.sh NAME...`: test snippets, print non-matches. `tools/bk/bk show SNIP ADDR`:
-  side-by-side diff. `bk perm SNIP ADDR [JOBS] [LIMIT]`: try orders of the lines ending in `//@p`, compiling only
+  side-by-side diff (nop runs shown, `!!` on lines whose words differ, relocations masked). `bk perm SNIP ADDR [JOBS] [LIMIT]`: try orders of the lines ending in `//@p`, compiling only
   that function, JOBS in parallel (default half the cores). Up to LIMIT orders (default 5040, 7 lines)
   it tries them all; beyond that it hill-climbs on swaps (keeps a swap unless the diff count gets
   worse, random restarts) and prints the best order if none matches. Objects are read directly

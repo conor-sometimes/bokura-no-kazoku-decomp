@@ -265,6 +265,12 @@ extern const char D_002D4CD8[];
 
 //@sym strstr 0x28B8E8
 //@sym strcmp 0x28B190
+
+extern "C" int func_0025CAC0(void *snd, s32 h);
+extern "C" void func_002250E8(s32 v);
+extern "C" void func_00227A20();
+extern "C" void func_00226DF8(s32 a, u64 b);
+extern "C" void func_00227AA8();
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00128870);
@@ -441,7 +447,10 @@ int CSndWorkRealY::Play1296F0(const char *name, f32 f) {
 #endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_001296F0);
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129848);
+int CSndWorkReal::Func129848() {
+    if (!m_unkA0 || !m_unkA4 || !m_unkA0->Func25C990(m_unkA4)) return 1;
+    return func_0025CAC0(m_unkA0, m_unkA4);
+}
 
 void CSndWorkReal::StopSound() {
     if (m_unkA0 && m_unkA4) {
@@ -576,7 +585,15 @@ void CSndWorkReal::Func12A0F0() {
 #endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func12A0F0__12CSndWorkReal);
 
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A2F0);
+s32 Func12A2F0() {
+    Func225088();
+    func_002250E8(0);
+    func_00227A20();
+    func_00226DF8(0x47, 0x58002);
+    func_00227AA8();
+    Func2251E8();
+    return Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A340);
 

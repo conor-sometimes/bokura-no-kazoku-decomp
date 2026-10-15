@@ -15,6 +15,10 @@ class CSvmWork : public CValueHolder {
 public:
     CSvmWork() throw();
     int SlotAsInt(s32 i, s32 def);
+    int IsBadSlot(s32 i);
+    int Fatal(const char *fmt, ...);
+    f32 SlotAsFloat(s32 i, f32 def);
+    void SetResultFloat(f32 v);
     void SetResultInt(s32 v);
     void Func12E858();
     void Func130138(const char *s);
@@ -45,6 +49,7 @@ extern char D_002D6240[];
 extern char D_002D6250[];
 extern char D_002D6260[];
 extern char D_002D6450[];
+int Func145738(int name, int flag);
 extern char D_002D6458[];
 extern char D_002D6488[];
 extern "C" void *bsearch(const void *key, const void *base, unsigned int n, unsigned int size, int (*cmp)(const void *, const void *));
@@ -183,10 +188,16 @@ public:
     CSvmWork m_svm;           // 0x634
     u8 pad635[0x2F88 - 0x635];
     CSvmWork m_svm2;          // 0x2F88
-    u8 pad2F89[0x58E0 - 0x2F89];
+    u8 pad2F89[0x58DC - 0x2F89];
+    s32 m_unk58DC;            // 0x58DC
     CUserFlagBuf m_buf58E0;   // 0x58E0
     s32 m_unk58F4;            // 0x58F4
-    u8 pad58F8[0x5910 - 0x58F8];
+    s32 m_unk58F8;            // 0x58F8
+    s32 m_unk58FC;            // 0x58FC
+    s32 m_unk5900;            // 0x5900: current event id
+    s32 m_unk5904;            // 0x5904: current event group
+    s32 m_unk5908;            // 0x5908
+    s32 m_unk590C;            // 0x590C
     u32 m_unk5910;            // 0x5910
     CUserFlagBuf m_buf5914;   // 0x5914
     s32 m_unk5928;            // 0x5928
@@ -202,6 +213,55 @@ extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
 extern CUserFlagMgr *D_002A0D38;
 
 extern "C" unsigned int strlen(const char *s);
+
+extern "C" int func_00142CE8(CUserFlagMgr *m, CSvmWork *w, UserFlagEntry *e, s32 id, s32 a, s32 v);
+
+int InRange(int v, int lo, int hi);
+int OutOfRange(int v, int lo, int hi);
+int Clamp(int v, int lo, int hi);
+int Min(int a, int b);
+int Max(int a, int b);
+int Abs(int x);
+int InRangeF(f32 v, f32 lo, f32 hi);
+int OutOfRangeF(f32 v, f32 lo, f32 hi);
+f32 ClampF(f32 v, f32 lo, f32 hi);
+f32 MinF(f32 a, f32 b);
+f32 MaxF(f32 a, f32 b);
+f32 AbsF(f32 x);
+struct CSvmRand {
+    u32 m_seed;
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Rand(u32 n) { return ((Next() << 16) | Next()) % n; }
+    s32 RangeA(s32 lo, s32 hi) {
+        if (hi < lo) hi = lo;
+        if (hi == lo) return 0;
+        return lo + Rand(hi - lo + 1);
+    }
+    s32 RangeB(s32 lo, s32 hi) {
+        s32 k;
+        hi = hi < lo ? lo : hi;
+        k = 0;
+        if (hi != lo) k = lo + Rand(hi - lo + 1);
+        return k;
+    }
+    s32 RangeC(s32 lo, s32 hi) {
+        s32 k = 0;
+        if (hi < lo) hi = lo;
+        if (hi != lo) k = Rand(hi - lo + 1) + lo;
+        return k;
+    }
+};
+struct CSvmWorkF {
+    u8 pad0[4];
+    CSvmRand m_rand;          // 0x4
+    u8 pad8[0x704 - 8];
+    s32 m_numSlots;           // 0x704
+    u8 pad708[0x291C - 0x708];
+    s32 m_forced;             // 0x291C
+};
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -264,7 +324,6 @@ int CompareUserFlagNames2(const char **a, const char **b) {
     return strcmp(*a, *b);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5ED8);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE8);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EF0);
@@ -638,7 +697,35 @@ prohibit:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func141560__12CUserFlagMgriUii);
+int CUserFlagMgr::Func141560(int a, u32 id, int b) {
+    UserFlagEntry *e = m_entries[id];
+    CSvmWork *w = (CSvmWork *)a;
+    s32 v;
+    switch (e->type) {
+    case 1:
+        if (!w->IsBadSlot(0)) {
+            if (!func_00142CE8(this, w, e, e->m_unk4, 0, w->SlotAsInt(0, 0))) return 0;
+        }
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(e->m_unk4));
+        break;
+    case 2:
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(e->m_unk4) / 4);
+        break;
+    case 3:
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(e->m_unk4) % 4);
+        break;
+    case 4:
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(e->m_unk4) / 4 + 0x19);
+        break;
+    case 5:
+        v = D_002A26E4->Func1091B0(e->m_unk4);
+        if (v >= 0) v = Func145738(D_002A26E4->Func1091B0(e->m_unk4), 1);
+        else v = 0;
+        Func1432E0(w, (UserFlagSvmArg *)e, v);
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func141768__12CUserFlagMgriUii);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6520);
@@ -646,11 +733,233 @@ INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6548);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", jtbl_002D6570);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", jtbl_002D65B0);
 
+#if 0 // DIFF 3 (g1): only the 'already exist' print's argument moves are scheduled differently (a2 before a1 here)
+int CUserFlagMgr::Func141F68(int a, u32 id, int b) {
+    UserFlagEntry *e = m_entries[id];
+    CSvmWork *w = (CSvmWork *)a;
+    s32 n, k, v, c, t;
+    CActRec *act;
+    switch (e->type) {
+    case 0x18:
+    case 0x19:
+    case 0x1B:
+    case 0x1C:
+        n = w->SlotAsInt(0, 0);
+        if ((u32)(n - 1) >= 0xFF) {
+            w->Fatal("*** flag : out of range action ID (%d)\n", n);
+            return 0;
+        }
+        k = n + 0x1062;
+        if (D_002A26E4->Func1091B0(k)) {
+            s32 x = D_002A26E4->Func1091B0(k);
+            Func235DE0("flag : already exist action (%d, %d)\n", n, x);
+            return 0;
+        }
+        act = ((CActDB *)D_002A2988)->Find1DC(n);
+        if (!act) {
+            w->Fatal("*** flag : unknown action ID (%d)\n", n);
+            return 0;
+        }
+        if ((u32)(e->type - 0x18) < 2) {
+            v = w->SlotAsInt(1, act->m20);
+            t = act->m18;
+            c = e->type == 0x18 ? 2 : 4;
+        } else if ((u32)(e->type - 0x1B) < 2) {
+            s32 s = func_00142B38(this, m_unk58DC, 0);
+            s32 r1 = D_002A26E4->GetNamed(0x46, s);
+            s32 r2 = D_002A26E4->GetNamed(0x52, s);
+            switch (r1) {
+            case 1: case 2: case 4: case 5: case 7: case 8: default: v = 12; break;
+            case 6: v = ((CActDB *)D_002A2988)->Find1E8(r2)->m10 * 4; break;
+            case 3: v = 24; break;
+            case 9: v = 16; break;
+            }
+            if (e->type == 0x1B) t = Func145738(s, 1);
+            else t = 0x18;
+            c = 4;
+        } else {
+            return 0;
+        }
+        if (v == 0) v = 0x3FFF;
+        if (m_unk58F4 <= 0) {
+            D_002A26E4->Func108FF0(k, c);
+            D_002A26E4->Func108FF0(n + 0x1162, v);
+            D_002A26E4->Func108FF0(n + 0x1262, 1);
+            D_002A26E4->Func108FF0(n + 0x1362, t);
+        }
+        Func1432E0(w, (UserFlagSvmArg *)e, 1);
+        break;
+    case 0x1A:
+        v = w->SlotAsInt(0, 0);
+        if ((u32)(v - 1) >= 0xFF) {
+            w->Fatal("*** flag : out of range action ID %d\n", v);
+            return 0;
+        }
+        if (e->m_unk4 == 0x1262 && D_002A26E4->Func1091B0(v + 0x1062) < 2) {
+            Func1432E0(w, (UserFlagSvmArg *)e, 0);
+            return 0;
+        }
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(e->m_unk4 + v));
+        break;
+    }
+    return 0;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func141F68__12CUserFlagMgriUii);
 
+#if 0 // DIFF 1 (g1): case 0x1F's bgez is bgezl in retail (the lui in its slot); needs m_unk5900/5904/58FC fields
+int CUserFlagMgr::Func142318(int a, u32 id, int b) {
+    UserFlagEntry *e = m_entries[id];
+    CSvmWork *w = (CSvmWork *)a;
+    s32 ev;
+    switch (e->type) {
+    case 0x1F:
+        ev = m_unk5900;
+        if (ev < 0) {
+        unknown:
+            Func235DE0("*** flag : unknow event id (%d)\n", ev);
+            return 0;
+        }
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(ev + 0x226A));
+        break;
+    case 0x20:
+        ev = m_unk5900;
+        if (ev < 0) goto unknown;
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(m_unk5900 + 0x156A) + D_002A26E4->Func1091B0(m_unk5900 + 0x226A));
+        break;
+    case 0x21: {
+        CEvGp *g = ((CEvGpDB *)D_002A2988)->Find1D0(m_unk5904);
+        s32 i, sum;
+        if (!g) {
+            Func235DE0("*** flag : unknow ev-gp (%d)\n", m_unk5904);
+            return 0;
+        }
+        sum = 0;
+        for (i = 0; i < g->m_num; i++) {
+            sum += D_002A26E4->Func1091B0(g->m_ents[i].m_id + 0x226A);
+            sum += D_002A26E4->Func1091B0(g->m_ents[i].m_id + 0x156A);
+        }
+        Func1432E0(w, (UserFlagSvmArg *)e, sum);
+        break;
+    }
+    case 0x22:
+        Func1432E0(w, (UserFlagSvmArg *)e, m_unk58FC);
+        break;
+    case 0x23: {
+        u32 n = w->SlotAsInt(0, -1);
+        if (n >= 0x200) {
+            Func235DE0("*** flag : out of range eflag (%d)\n", n);
+            return 0;
+        }
+        if (!w->IsBadSlot(1)) func_00142CE8(this, w, e, n + 0x3AAE, 0, w->SlotAsInt(1, 0));
+        Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(w->SlotAsInt(0, -1) + 0x3AAE));
+        break;
+    }
+    }
+    return 0;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func142318__12CUserFlagMgriUii);
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func1425D8__12CUserFlagMgriUii);
+int CUserFlagMgr::Func1425D8(int a, u32 id, int b) {
+    UserFlagEntry *e = m_entries[id];
+    CSvmWork *w = (CSvmWork *)a;
+    switch (e->type) {
+    case 0x26:
+        Func1432E0(w, (UserFlagSvmArg *)e, e->m_unk4);
+        break;
+    case 0x27:
+    {
+        s32 x = w->SlotAsInt(0, 0);
+        s32 y = w->SlotAsInt(1, 0);
+        s32 z = w->SlotAsInt(2, 0);
+        Func1432E0(w, (UserFlagSvmArg *)e, InRange(x, y, z));
+        break;
+    }
+    case 0x28:
+    {
+        s32 x = w->SlotAsInt(0, 0);
+        s32 y = w->SlotAsInt(1, 0);
+        s32 z = w->SlotAsInt(2, 0);
+        Func1432E0(w, (UserFlagSvmArg *)e, OutOfRange(x, y, z));
+        break;
+    }
+    case 0x29:
+    {
+        s32 x = w->SlotAsInt(0, 0);
+        s32 y = w->SlotAsInt(1, 0);
+        s32 z = w->SlotAsInt(2, 0);
+        Func1432E0(w, (UserFlagSvmArg *)e, Clamp(x, y, z));
+        break;
+    }
+    case 0x2B:
+    {
+        s32 x = w->SlotAsInt(0, 0);
+        s32 y = w->SlotAsInt(1, 0);
+        Func1432E0(w, (UserFlagSvmArg *)e, Min(x, y));
+        break;
+    }
+    case 0x2A:
+    {
+        s32 x = w->SlotAsInt(0, 0);
+        s32 y = w->SlotAsInt(1, 0);
+        Func1432E0(w, (UserFlagSvmArg *)e, Max(x, y));
+        break;
+    }
+    case 0x2C:
+        Func1432E0(w, (UserFlagSvmArg *)e, Abs(w->SlotAsInt(0, 0)));
+        break;
+    case 0x2D:
+    {
+        f32 fx = w->SlotAsFloat(0, 0.0f);
+        f32 fy = w->SlotAsFloat(1, 0.0f);
+        f32 fz = w->SlotAsFloat(2, 0.0f);
+        Func1432E0(w, (UserFlagSvmArg *)e, InRangeF(fx, fy, fz));
+        break;
+    }
+    case 0x2E:
+    {
+        f32 fx = w->SlotAsFloat(0, 0.0f);
+        f32 fy = w->SlotAsFloat(1, 0.0f);
+        f32 fz = w->SlotAsFloat(2, 0.0f);
+        Func1432E0(w, (UserFlagSvmArg *)e, OutOfRangeF(fx, fy, fz));
+        break;
+    }
+    case 0x2F:
+    {
+        f32 fx = w->SlotAsFloat(0, 0.0f);
+        f32 fy = w->SlotAsFloat(1, 0.0f);
+        f32 fz = w->SlotAsFloat(2, 0.0f);
+        w->SetResultFloat(ClampF(fx, fy, fz));
+        break;
+    }
+    case 0x31:
+    {
+        f32 fx = w->SlotAsFloat(0, 0.0f);
+        f32 fy = w->SlotAsFloat(1, 0.0f);
+        w->SetResultFloat(MinF(fx, fy));
+        break;
+    }
+    case 0x30:
+    {
+        f32 fx = w->SlotAsFloat(0, 0.0f);
+        f32 fy = w->SlotAsFloat(1, 0.0f);
+        w->SetResultFloat(MaxF(fx, fy));
+        break;
+    }
+    case 0x32:
+        w->SetResultFloat(AbsF(w->SlotAsFloat(0, 0.0f)));
+        break;
+    case 0x33: {
+        CSvmWorkF *f = (CSvmWorkF *)a;
+        s32 n = f->m_numSlots - 1;
+        s32 r = f->m_forced >= 0 ? f->m_forced : f->m_rand.RangeA(0, n);
+        w->SetResultInt(w->SlotAsInt(r, 0));
+        break;
+    }
+    }
+    return 0;
+}
 
 int CUserFlagMgr::CheckId(int id, int a2) {
     int i;

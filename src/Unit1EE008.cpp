@@ -30,16 +30,16 @@ struct CRxCrcHeader {
 extern s32 D_002A5C90;
 extern u16 D_2ED228[256];
 extern "C" s32 func_001EDA30(...);
-extern "C" s32 func_001EDB70(...);
-extern "C" s32 func_001EDC18(...);
+extern "C" s32 func_001EDC18(const char *dir, s32 b);
+extern "C" s32 func_001EDB70(const char *a, s32 b, s32 c, void *d);
+extern "C" s32 func_001EDE80(s32 fd, const void *buf, s32 n);
+extern "C" s32 func_001EE940(const char *path);
+extern "C" s32 func_001EE4F8(const char *name, const u8 *buf, s32 size, s32 block);
 extern "C" s32 func_001EDC90(...);
-extern "C" s32 func_001EDE80(...);
 extern "C" s32 func_001EDEE8(...);
 extern "C" s32 func_001EDF78(...);
-extern "C" s32 func_001EE318(...);
-extern "C" s32 func_001EE4F8(...);
+extern "C" s32 func_001EE318(const char *name, u8 *buf, s32 block);
 extern "C" s32 func_001EE668(...);
-extern "C" s32 func_001EE940(...);
 inline void RxCrcInit() {
     for (u32 i = 0; i < 0xFF; i++) {
         u32 c = i << 8;

@@ -105,8 +105,22 @@ extern "C" void func_0024B7B8(const char *p, char *dir, char *name);
 extern "C" unsigned int strlen(const char *s);
 char *Func24A4C0(const char *name);
 int Func235DE0(const char *fmt, ...);
-
-//@sym LoadFaceSets__FP8CFaceSetPv 0x10E7A8
+struct CFaceTex {
+    void *m_data;             // 0x0
+    s32 m_psm;                // 0x4
+    s16 m_w;                  // 0x8
+    s16 m_h;                  // 0xA
+};
+struct CFaceCache {
+    void *m_data;             // 0x0
+};
+extern char D_002D2DE0[];
+extern "C" void *func_00248E60(const char *name);
+extern "C" void func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 e, s32 f, s32 g, s32 *h);
+void Blit32(u32 *dst, u32 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
+void Blit8(u8 *dst, u8 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
+void Blit16(u16 *dst, u16 *src, s32 stride, s32 x, s32 y, s32 w, s32 h);
+s32 FaceTexSize(s32 psm, s32 w, s32 h);
 // @decl-end
 
 CFaceRes::CFaceRes() {
@@ -142,11 +156,93 @@ INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DC8);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DD0);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DD8);
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2DE0);
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010E8D0);
+s32 FaceTexSize(s32 psm, s32 w, s32 h) {
+    s32 bpp;
+    switch (psm) {
+    case 0:
+        bpp = 32;
+        break;
+    case 1:
+        bpp = 24;
+        break;
+    case 2:
+    case 10:
+        bpp = 16;
+        break;
+    case 19:
+    case 27:
+        bpp = 8;
+        break;
+    case 20:
+    case 36:
+    case 44:
+        bpp = 4;
+        break;
+    default:
+        Func235DE0(D_002D2DE0, psm);
+        bpp = 0;
+        break;
+    }
+    return w * h * bpp >> 3;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFaceRes", func_0010E970);
-INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2EE0);
-INCLUDE_RODATA("asm/nonmatchings/CFaceRes", jtbl_002D2F00);
+int LoadFaceTex(CFaceTex *tex, CFacePart *part, char *name, CFaceCache *cache) {
+    s32 data, psm, stride, height;
+    s32 w, h, x, y, size;
+    tex->m_data = 0;
+    tex->m_psm = 0;
+    tex->m_w = 0;
+    tex->m_h = 0;
+    int ok = 0;
+    if (!cache->m_data || strcmp(name, part->m_name)) {
+        if (cache->m_data) D_002B91B0(cache->m_data);
+        strcpy(name, part->m_name);
+        if (!(cache->m_data = func_00248E60(name))) goto out;
+    }
+    func_00253048(cache->m_data, &data, &psm, &stride, &height, 0, 0, 0, 0);
+    x = part->m2C;
+    y = part->m2E;
+    w = part->m30;
+    if (w < 0) w = stride;
+    h = part->m32;
+    if (h < 0) h = height;
+    if (w & 7) Func235DE0("!!! invalid width (fname=%s, width=%d)\n", name, w);
+    size = FaceTexSize(psm, w, h);
+    if (size <= 0 || !(tex->m_data = Func245D00(size))) {
+        Func235DE0("*** failed to load '%s'\n", name);
+        goto out;
+    }
+    switch (psm) {
+    case 0:
+        Blit32((u32 *)tex->m_data, (u32 *)data, stride, x, y, w, h);
+        break;
+    case 1:
+        Blit8((u8 *)tex->m_data, (u8 *)data, stride * 3, x, y, w * 3, h);
+        break;
+    case 2:
+    case 10:
+        Blit16((u16 *)tex->m_data, (u16 *)data, stride, x, y, w, h);
+        break;
+    case 19:
+    case 27:
+        Blit8((u8 *)tex->m_data, (u8 *)data, stride, x, y, w, h);
+        break;
+    case 20:
+    case 36:
+    case 44:
+        Blit8((u8 *)tex->m_data, (u8 *)data, stride / 2, x, y, w / 2, h);
+        break;
+    default:
+        Func235DE0(D_002D2DE0, psm);
+        break;
+    }
+    ok = 1;
+    tex->m_psm = psm;
+    tex->m_w = w;
+    tex->m_h = h;
+out:
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CFaceRes", D_002D2FB8);
 
 CFacePart *FindFacePart(CFaceSet *sets, s32 nsets, s32 last, CFacePart *key) {
@@ -230,7 +326,7 @@ int LoadFaceRes(CFaceRes *res, const char *path) {
     func_0022DCE0();
     if (strstr(path, D_002A03B8)) {
         if (!func_00249070(path)) {
-            Func235DE0(D_002D2EE0, path);
+            Func235DE0("*** failed to load '%s'\n", path);
         } else {
             func_0024B650(path, 0, buf, 0);
             const char *ext = D_002A03BC;
@@ -244,7 +340,7 @@ int LoadFaceRes(CFaceRes *res, const char *path) {
         func_0022DC90(buf);
         char *text = Func24A4C0(name);
         if (!text) {
-            Func235DE0(D_002D2EE0, path);
+            Func235DE0("*** failed to load '%s'\n", path);
         } else {
             ok = res->Load(text);
         }

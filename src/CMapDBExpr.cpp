@@ -8,16 +8,23 @@ extern const char D_002DA210[];
 
 // CMapDBExpr derives from CExpr (0x24D168, library side): vtable ~CExpr only, vptr at 0x1C
 // after its fields.
+class CExpr;
+typedef int (CExpr::*CExprAccessFn)(const char *name, void *p);
 class CExpr {
 public:
     CExpr();
     virtual ~CExpr();
     int Func24DB98(s32 a, const char *s, s32 b);
+    void Func24D9C8(CExpr *obj, CExprAccessFn set, CExprAccessFn get);
 
     u8 pad0[0x1C];
 };
+// Pointers to Set172D00 / Lookup172DD0 (vtable index 3 / 4, vptr at 0x1C), still in the asm
+// .rodata piece of this unit.
+extern const CExprAccessFn D_002DA200, D_002DA208;
 class CUnk29A558 {
 public:
+    CUnk29A558();
     void Func29A558(s32 v);
 };
 // Vtable 0x2C1650: ~CMapDBExpr (key method), Set172D00, Lookup172DD0. m_unk20 is a
@@ -118,7 +125,9 @@ const char *Func24A570(const char *s, char *out, const char *sep, const char *ws
 extern char D_002DA280[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", __10CMapDBExpr);
+CMapDBExpr::CMapDBExpr() {
+    Func24D9C8(this, D_002DA200, D_002DA208);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", _$_10CMapDBExpr);
 

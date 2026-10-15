@@ -110,7 +110,6 @@ func_00108EA0 = 0x00108EA0; /* SetStr__9CFlagWorkiPCc (CNameDBMgr.cpp) */
 /* merge vt1+vt2 (2026-10-14): old names still called across lanes */
 func_001109D8 = 0x001109D8; /* Release__9CModelRes (CModelAccResMgr.cpp) */
 /* Constructors in other lanes' units, called from lane vt3's C++ (2026-10-14) */
-__8CSvmWork = 0x0012E608; /* func_0012E608 */
 func_001AC488 = 0x001AC488; /* __13CMenuSysscr07 (CMenuSysscr08) */
 Func17DF38__26CMenuLoadMemorialSub17DC50 = 0x0017DF38; /* = __16CMenuTutorSelect (CMenuLoadMemorial) */
 Init191338__17CMenuReviewResult = 0x00191338; /* = __17CMenuReviewSelect (CMenuReviewResult) */
@@ -200,3 +199,25 @@ func_00185AA0 = 0x00185AA0; /* old name still called from another unit (interim 
 func_00289118 = 0x00289118; /* old name still called from another unit (interim merge 3) */
 func_0011BD00 = 0x0011BD00; /* __10CMapEffRes (CMapRes), lane g1 */
 func_001829E8 = 0x001829E8; /* Func1829E8__27CMenuTutorSelectedSub182108i (CMenuMemorial, CMenuSave), lane g1 */
+func_0011ADD0 = 0x0011ADD0; /* __7CMapObj (CSceneSet allocates 0x40 bytes and calls the constructor) */
+/* EE soft-double libcalls named (lane g4, 2026-10-15): old names for extern "C" callers */
+func_00284B98 = 0x00284B98; /* fptodp */
+func_00285180 = 0x00285180; /* dpdiv */
+func_002852C0 = 0x002852C0; /* dpcmp */
+func_00285498 = 0x00285498; /* dptofp */
+func_001153E8 = 0x001153E8; /* Func1153E8__9CCharaObj (CGameResort calls the old name) */
+func_001A40C8 = 0x001A40C8; /* = Func1A40C8__11CStatusItem */
+D_2FDA14 = 0x002FDA14;
+D_2FDA28 = 0x002FDA28;
+D_30E144 = 0x0030E144;
+D_30E148 = 0x0030E148;
+func_0010F348 = 0x0010F348; /* old name still called from another unit (merge interim 4) */
+func_00110DC8 = 0x00110DC8; /* old name still called from another unit (merge interim 4) */
+func_00112710 = 0x00112710; /* old name still called from another unit (merge interim 4) */
+func_00115278 = 0x00115278; /* old name still called from another unit (merge interim 4) */
+func_00119230 = 0x00119230; /* old name still called from another unit (merge interim 4) */
+func_00127E98 = 0x00127E98; /* old name still called from another unit (merge interim 4) */
+func_001A0A98 = 0x001A0A98; /* old name still called from another unit (merge interim 4) */
+func_001B5FE0 = 0x001B5FE0; /* old name still called from another unit (merge interim 4) */
+Func135A28__15CEventObj135A28 = 0x00135A28; /* Update135A28__9CEventObj (g2) */
+__10CUnk29A558 = 0x0029A478; /* func_0029A478, TArray ctor in CMapDBExpr ctor (g2) */

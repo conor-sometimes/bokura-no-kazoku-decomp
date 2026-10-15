@@ -2,6 +2,7 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 struct CSvmRand {
+    CSvmRand() { m_seed = 1; }
     u32 m_seed;
     u32 Next() {
         m_seed = m_seed * 0x19660D + 1;
@@ -61,6 +62,7 @@ public:
 
 class CSvmWorkSub5A4 {
 public:
+    CSvmWorkSub5A4() { m4 = -1; m2 = 0; m0 = 0; }
     void Init() { m4 = -1; m2 = 0; m0 = 0; }
     s16 m0;                   // 0x0
     s16 m2;                   // 0x2
@@ -77,6 +79,8 @@ public:
 typedef int (CSvmHost::*CSvmCallback)(CSvmWork *w, int a, int b);
 class CSvmWork {
 public:
+    CSvmWork();
+    virtual ~CSvmWork();
     int Callback130048(int a, int b);
     f32 SlotAsFloat(s32 i, f32 def);
     void Restore12FF48();
@@ -120,10 +124,12 @@ public:
     CSvmWorkSub5A4 m_unk8;    // 0x8
     CSvmHost *m_host;         // 0x50
     CSvmCallback m_cb;        // 0x54
-    u8 pad5C[0xC];
+    s32 m_unk5C;              // 0x5C
+    u8 m_unk60[0x8];          // 0x60
     s32 m_trace;              // 0x68
     s32 m_unk6C;              // 0x6C
-    char m_msg[0x404];        // 0x70
+    char m_msg[0x400];        // 0x70
+    s32 m_unk470;             // 0x470
     s32 *m_bases;             // 0x474
     s32 *m_vars;              // 0x478
     s32 m_unk47C;             // 0x47C
@@ -143,7 +149,8 @@ public:
     s32 m_unk708[32];         // 0x708
     CValue m_slots[32];       // 0x788
     CValue m_result;          // 0x2808
-    u8 pad290C[0x8];
+    s32 m_unk290C;            // 0x290C
+    s32 m_unk2910;            // 0x2910
     s32 m_unk2914;            // 0x2914
     s32 m_unk2918;            // 0x2918
     s32 m_randInt;            // 0x291C
@@ -153,7 +160,8 @@ public:
     s32 m_listMax;            // 0x292C
     s32 m_listNum;            // 0x2930
     s32 m_unk2934;            // 0x2934
-    u8 m_unk2938[1];          // 0x2938
+    u8 m_unk2938[0x18];       // 0x2938 (a TArray; its inline ctor/dtor are library code)
+    // vptr 0x2950
 };
 
 extern char D_002D5418[];
@@ -192,10 +200,40 @@ inline s32 RandRange(CSvmRand *rnd, s32 lo, s32 hi) {
     if (lo == hi) return lo;
     return ((rnd->Next() << 16) | rnd->Next()) % (u32)(hi - lo + 1) + lo;
 }
+
+extern "C" void func_00297668(void *arr);
 // @decl-end
 
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_0012E608);
+CSvmWork::CSvmWork() {
+    s32 i;
+    func_00297668(m_unk2938);
+    m_data = 0;
+    m_trace = 0;
+    m_unk470 = 0;
+    m_host = 0;
+    memset(&m_cb, 0, sizeof(m_cb));
+    m_unk5C = 0;
+    memset(m_unk60, 0, 8);
+    m_bases = (s32 *)Func245D00(0xC);
+    m_vars = (s32 *)Func245D00(0xC);
+    for (i = 0; i < 3; i++) {
+        m_bases[i] = (s32)Func245D00(D_002A0BF0[i]);
+        m_vars[i] = 0;
+    }
+    m_unk290C = 1;
+    m_randInt = -1;
+    m_randFloat = -1.0f;
+    m_buf = 0;
+    m_unk2910 = 0;
+    m_debug = 0;
+    m_list = 0;
+    m_listMax = 0;
+    m_listNum = 0;
+    m_unk2934 = 0;
+    Func2976E8(m_unk2938, 0);
+    Func12E858();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_0012E768);
 

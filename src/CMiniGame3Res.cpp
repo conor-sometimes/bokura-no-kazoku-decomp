@@ -2,6 +2,7 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "CList.h"
+#include "CProcess.h"
 class CLayoutRes {
 public:
     CLayoutRes();
@@ -50,6 +51,7 @@ public:
 };
 void *operator new(unsigned int n);
 struct CRand {
+    CRand() { m_seed = 1; }
     u32 m_seed;
     u32 Next() {
         m_seed = m_seed * 0x19660D + 1;
@@ -61,9 +63,30 @@ struct CMiniGame3Text {
     u8 pad0[0x40];
     void *m_text;             // 0x40
 };
+// Member objects of the task (layout objects and a sound handle; library / CLayoutObj code).
+extern "C" void func_001B9D40(void *p);
+extern "C" void *func_001BD188(void *p);
+extern "C" void func_0025C230(void *p);
+struct CMgLayout {
+    CMgLayout() { func_001B9D40(this); }
+    u8 pad[0x170];
+};
+struct CMgLayout2 {
+    CMgLayout2() { func_001BD188(this); }
+    u8 pad[0x210];
+};
+struct CMgSnd {
+    CMgSnd() { func_0025C230(this); }
+    u8 pad[0x74];
+};
+u32 Func251B88();
 // The mini-game 3 task (vtable _vt$10CMiniGame3, a CProcess with its vptr at 4); 0xF70 bytes.
-class CMiniGame3 {
+class CMiniGame3 : public CProcess {
 public:
+    CMiniGame3(int a, int b) throw();
+    virtual ~CMiniGame3();
+    virtual void Update();
+    virtual void Draw();
     // &m_ent[i].m20 and &m_ent[i], computed as this + (i * 0x30 + offset) as retail does.
     CMiniGame3Anim *Anim(u32 i) {
         u32 o = i * 0x30 + 0xC50;
@@ -73,7 +96,6 @@ public:
         u32 o = i * 0x30 + 0xC30;
         return (CMiniGame3Ent *)((u8 *)this + o);
     }
-    void Init1C9D70(int a, int b);
     int LoadLevel();
     int LoadConf();
     void Set3(u32 i);
@@ -82,12 +104,22 @@ public:
     void Set1(u32 i);
     void Set4(u32 i, f32 t);
     void Layout(f32 t);
+    void Shuffle();
 
-    u8 pad0[0x30];
+    u8 pad18[0x2C - 0x18];
+    s32 m2C;                  // 0x2C
     s32 m30;                  // 0x30
-    u8 pad34[0xB30 - 0x34];
+    CStateMachine m_sm;       // 0x34
+    u8 pad7C[0x4];
+    CMgLayout m_lay0;         // 0x80
+    CMgLayout m_lay1;         // 0x1F0
+    CMgLayout m_lay2;         // 0x360
+    CMgLayout m_lay3;         // 0x4D0
+    CMgLayout m_lay4;         // 0x640
+    CMgLayout m_lay5;         // 0x7B0
+    CMgLayout2 m_lay6;        // 0x920
     CRand m_rand;             // 0xB30
-    u8 padB34[0xBA8 - 0xB34];
+    CMgSnd m_snd;             // 0xB34
     s32 mBA8[16];             // 0xBA8: CONF values, mBA8[0] the animation length
     u8 padBE8[0xBF0 - 0xBE8];
     f32 mBF0, mBF4, mBF8, mBFC; // 0xBF0
@@ -95,8 +127,10 @@ public:
     CMiniGame3Ent m_ent[16];  // 0xC30
     s32 mF30[3];              // 0xF30
     s32 mF3C[3];              // 0xF3C
-    u8 padF48[0x4];
+    s32 mF48;                 // 0xF48
     f32 mF4C;                 // 0xF4C
+    s32 mF50, mF54, mF58, mF5C, mF60, mF64, mF68; // 0xF50
+    u8 padF6C[0x4];
 };
 void CreateMiniGame3Res(CResMgr24F *mgr, int a, int b);
 
@@ -136,12 +170,29 @@ void CMiniGame3Res::Release() {
 }
 
 void CreateMiniGame3Res(CResMgr24F *mgr, int a, int b) {
-    CMiniGame3 *p = (CMiniGame3 *)Func24F2E8(0xF70);
-    p->Init1C9D70(a, b);
+    CMiniGame3 *p = new CMiniGame3(a, b);
     mgr->Func24F5C0(p, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame3Res", Init1C9D70__10CMiniGame3ii);
+CMiniGame3::CMiniGame3(int a, int b) {
+    if (!D_002A5A00) Func235DE0("*** not found MINI-GAME resource\n");
+    m_rand.m_seed = Func251B88();
+    m2C = a;
+    m30 = b;
+    mF68 = 0;
+    mF30[0] = 0;
+    mF30[1] = 0;
+    mF3C[1] = 0;
+    mF3C[2] = 0;
+    mF4C = 0;
+    mF50 = 0;
+    mF54 = 0;
+    mF58 = 0;
+    mF5C = 0;
+    mF48 = -1;
+    mF60 = 0;
+    mF64 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame3Res", func_001C9E90);
 

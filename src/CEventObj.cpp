@@ -309,6 +309,11 @@ public:
     s32 m_unk0;               // 0x0
 };
 extern CTaskMgr390 *D_0029F390;
+
+//@sym Update135A28__9CEventObj 0x135A28
+
+//@sym Wait133B90__9CEventObjP7CEvWait 0x133B90
+//@sym Clear132998__9CEventObj 0x132998
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
@@ -355,7 +360,22 @@ void CEventObj::Func132B78() {
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", Func132BB8__9CEventObjP10CEventItem);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Func132D30__9CEventObj);
+void CEventObj::Func132D30() {
+    if (!m0) return;
+    for (s32 i = 0; i < m_F9B4.Func297F98(); i++) {
+        if (*m_F9B4.Func297FA0(i)) ((CResCache *)D_002A0BE4)->Func250840(m_F9B4.Func297FA0(i));
+    }
+    m_F9B4.Func297F78(0);
+    m_F9D0.Func13E888();
+    m_svm[1].Unload12E968();
+    m_svm[2].Unload12E968();
+    m_svm[3].Unload12E968();
+    m_svm[4].Unload12E968();
+    m_svm[5].Unload12E968();
+    m_svm[0].Unload12E968();
+    Clear132998();
+    m0 = 0;
+}
 
 int CEventObj::SetScene(int a, CSceneSet *s) {
     ClearScene();
@@ -381,10 +401,10 @@ void CEventObj::Func132EC0() {
     }
 }
 
-// Call132F40 (0x132F40): `if (m_FD18 && m_FD1C) return (m_FD18->*m_FD1C)(a, b, c); return 1;`
-// matches except that retail leaves the virtual path's `b` delay slot empty (plus an alignment
-// nop) where ours fills it with the dsra32.
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Call132F40__9CEventObjiii);
+int CEventObj::Call132F40(int a, int b, int c) {
+    if (m_FD18 && m_FD1C) return (m_FD18->*m_FD1C)(a, b, c);
+    return 1;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5670);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5678);
@@ -507,9 +527,9 @@ void InitResMgrs135558() {
     D_002A0BE4->Init(-1, -1);
 }
 
-// Call1355E0 (0x1355E0): `if (m_FD48 && m_FD4C) (m_FD48->*m_FD4C)(a, b);`, same delay-slot
-// difference as Call132F40.
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Call1355E0__9CEventObjii);
+void CEventObj::Call1355E0(int a, int b) {
+    if (m_FD48 && m_FD4C) (m_FD48->*m_FD4C)(a, b);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135690);
 
@@ -531,7 +551,21 @@ int CEventObj::SkipTime(int lo, int hi, int v) {
     return v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Func135A28__15CEventObj135A28);
+void CEventObj::Update135A28() {
+    if (!m0 || !m4 || !m8) return;
+    CSvmWork *w0 = &m_svm[0];
+    m_FC60 = D_0029F390->V8();
+    func_0012EF68(&m_svm[5]);
+    func_0012EF68(&m_svm[4]);
+    func_0012EF68(&m_svm[3]);
+    func_0012EF68(&m_svm[2]);
+    func_0012EF68(&m_svm[1]);
+    func_0012EF68(w0);
+    for (s32 i = 0; i < m_logNum; i++) {
+        if (--m_logTime[(m_logPos - i + 9) % 9] <= 0 && i == m_logNum - 1) m_logNum = i;
+    }
+    if (m_FB48 && w0->m47C && !m_FC04) m_FC00++;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135BE0);
 

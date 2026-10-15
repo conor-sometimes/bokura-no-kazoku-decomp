@@ -1,6 +1,6 @@
 # Compiler
 
-**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, assembled with `as -g` (`-Wa,-g`).**
+**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, assembled with `as -g` (`-Wa,-g`); the C-style units from CAppMain on (0x1E91B8-0x245648) without `as -g`.**
 
 `-fno-exceptions` added 2026-10-14 (vtables lane 1): with exceptions on, a constructor that
 builds a member or base with a constructor gets an EH cleanup region (`__rethrow`,

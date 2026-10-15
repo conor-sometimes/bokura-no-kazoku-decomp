@@ -311,7 +311,11 @@ struct CMapEffBreathNode {
 };
 struct CMapEffBreathPart {
     CMapEffBreathPart *m_next; // 0x0
-    u8 pad4[0x3C];
+    u8 pad4[0xC];
+    CVec4 m10;                // 0x10
+    f32 m20, m24, m28, m2C;   // 0x20
+    f32 m30, m34;             // 0x30
+    u8 pad38[0x8];
 };
 class CMapEffBreathWork : public CMapEffWork {
 public:
@@ -322,6 +326,7 @@ public:
     void Func125BA8(s32 v);
     void Func125C38();
     void Func126068();
+    void Func125DB8(CMapEffBreathNode *n, s32 v);
 
     CMapEffParam *m_param;    // 0x4
     s32 m_unk8;               // 0x8
@@ -453,8 +458,9 @@ struct CMapEffRand {
         return (m_seed >> 12) & 0xFFFF;
     }
     u32 Next32() {
-        u32 a = Next() << 16;
-        return a | Next();
+        u32 r = Next() << 16;
+        r |= Next();
+        return r;
     }
     f32 Range(f32 lo, f32 hi) {
         return (f32)(s32)(Next32() & 0xFFFF) / 65535.0f * (hi - lo) + lo;
@@ -503,6 +509,24 @@ inline s32 ListIndexOf(CListTag *head, void *x) {
         i++;
     }
     return -1;
+}
+
+struct CMapEffBreathRes {
+    u8 pad0[0x20];
+    char m_name[0x10];        // 0x20
+};
+struct CMapEffBreathObj {
+    u8 pad0[0x14];
+    CMapEffBreathRes *m_res;  // 0x14
+    u8 pad18[0x154];
+    s32 m_flags;              // 0x16C
+};
+extern const char *D_002A08B0[];
+extern "C" int strncmp(const char *a, const char *b, unsigned int n);
+inline s32 RandInt(CMapEffRand *r, s32 lo, s32 hi) {
+    if (hi < lo) hi = lo;
+    if (lo == hi) return lo;
+    return r->Next32() % (hi - lo + 1) + lo;
 }
 // @decl-end
 
@@ -885,7 +909,18 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123670);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001236C8);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123850__19CMapEffAquariumWorkii);
+void CMapEffAquariumWork::Func123850(s32 i, s32 k) {
+    if ((u32)i < 8 && (u32)k < 16) {
+        CMapEffRand *r = (CMapEffRand *)&m_seed;
+        CMapEffAquariumSlot *s = &m_slots[i];
+        CMapEffAquariumKey *key = &s->m_keys[k];
+        f32 a = s->m_unk11C;
+        key->x = s->m_unk100.x + r->Range(-a, a);
+        key->m_time = s->m_unk100.y + r->Range(-a / 5.0f, a / 5.0f);
+        key->z = s->m_unk100.z + r->Range(-a, a);
+        key->w = s->m_unk100.w;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1239E8__19CMapEffAquariumWorki);
 
@@ -1032,7 +1067,30 @@ void CMapEffBreathWork::Func1259C8(s32 v) {
     Func126068();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125A18__17CMapEffBreathWorki);
+void CMapEffBreathWork::Func125A18(s32 v) {
+    CListTag *c;
+    for (c = ListFirst((CListTag *)(v + 8)); c; c = ListNext(c)) {
+        CMapEffBreathNode *n;
+        for (n = (CMapEffBreathNode *)m_unkCC; n; n = n->m_next) {
+            if ((CListTag *)n->m_unk4 == c) break;
+        }
+        if (n) continue;
+        const char *name = ((CMapEffBreathObj *)c)->m_res->m_name;
+        s32 i;
+        for (i = 0; D_002A08B0[i]; i++) {
+            if (strncmp(D_002A08B0[i], name, 7) == 0) break;
+        }
+        if (D_002A08B0[i]) continue;
+        CMapEffBreathNode *f = m_freeNodes;
+        if (f) {
+            m_freeNodes = f->m_next;
+            f->m_unk4 = (s32)c;
+            f->m_unk8 = ((CMapEffRand *)&m_unk8)->Next32() % 0xB5;
+            f->m_next = (CMapEffBreathNode *)m_unkCC;
+            m_unkCC = (s32)f;
+        }
+    }
+}
 
 void CMapEffBreathWork::Func125BA8(s32 v) {
     CMapEffBreathNode **pp = (CMapEffBreathNode **)&m_unkCC;
@@ -1048,9 +1106,19 @@ void CMapEffBreathWork::Func125BA8(s32 v) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125C38__17CMapEffBreathWork);
+void CMapEffBreathWork::Func125C38() {
+    CMapEffBreathNode *n;
+    for (n = (CMapEffBreathNode *)m_unkCC; n; n = n->m_next) {
+        CMapEffBreathObj *o = (CMapEffBreathObj *)n->m_unk4;
+        if (o->m_flags & 0x80) continue;
+        if (n->m_unk8-- >= 0) continue;
+        CMapEffRand *r = (CMapEffRand *)&m_unk8;
+        Func125DB8(n, RandInt(r, (s32)m_param->m_unk4 * 30 / 100, (s32)m_param->m_unk4 * 60 / 100 + 1));
+        n->m_unk8 = RandInt(r, 0xA0, 0xB4);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00125DB8);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func125DB8__17CMapEffBreathWorkP17CMapEffBreathNodei);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func126068__17CMapEffBreathWork);
 

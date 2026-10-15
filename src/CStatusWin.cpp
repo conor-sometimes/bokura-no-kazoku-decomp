@@ -38,6 +38,9 @@ public:
 
 class CStatusItem {
 public:
+    void Func1A1B38();
+    int Func1A1AA0();
+    void Fade(s32 mode, s32 total);
     void Func1A3378();
     void SetText(s32 i, const char *s);
     int GetUnk10(f32 *x, f32 *y, s32 i);
@@ -339,6 +342,8 @@ public:
 const char *Func24ADE0(const char *p, char *buf, int n);
 extern const char D_002DE040[], D_002DE070[], D_002DE088[];
 extern void (*D_002B91B0)(void *p);
+
+//@sym Func19FE18__10CStatusWin 0x19FE18
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -696,7 +701,7 @@ void CStatusWin::Draw19FC30() {
     Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019FE18);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func19FE18__10CStatusWin);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A00B0);
 
@@ -746,7 +751,30 @@ f32 CStatusWin::GetItemUnk34_2() {
     return m_item ? m_item->m_unk34 : 0.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A03E8);
+void CStatusWin::Update1A03E8() {
+    s32 n = D_002A26E4->Func1091B0(0x27);
+    s32 done = 0;
+loop:
+    if (!(!done && !((m_sm.m_flags >> 7) & 1))) goto out;
+    switch (m_sm.m_state) {
+    case -1: {
+        s32 i;
+        for (i = 0; i < 0x18; i++) m_item->SetUnkF0(i, 0);
+        m_item->SetUnkF0((m_state * 6 + n) * 2 - 2, 1);
+        m_item->SetUnkF0((m_state * 6 + n) * 2 - 1, 1);
+    }
+    case -0x14F:
+        Func19FE18();
+        m_sm.m_state = -0x14F;
+        done = 1;
+        goto loop;
+    case -0x153:
+        done = 1;
+        goto loop;
+    }
+out:
+    m_item->Func1A40C8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A0510);
 
@@ -840,11 +868,46 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A1040);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A1418);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A18B0);
+void CStatusItem::Fade(s32 mode, s32 total) {
+    CStatusEntry *e;
+    if (m_unk30 >= 0 && m_unk30 <= total) {
+        f32 f;
+        if (mode == 0) f = (f32)m_unk30 / (f32)total;
+        else f = 1.0f - (f32)m_unk30 / (f32)total;
+        if (mode != 1 || !(m_unk34 < f)) m_unk34 = f;
+        for (s32 i = 0; i < m_count; i++) {
+            e = &m_entries[i];
+            e->m_unkD8 = 1;
+            e->m_cur[0].w = f * e->m_col[0].w;
+            e->m_cur[1].w = f * e->m_col[1].w;
+            e->m_cur[2].w = f * e->m_col[2].w;
+            e->m_cur[3].w = f * e->m_col[3].w;
+        }
+    } else if (m_unk30 > total) {
+        if (mode == 0) {
+            m_state = 2;
+            for (s32 i = 0; i < m_count; i++) {
+                e = &m_entries[i];
+                e->m_unkD8 = 1;
+            }
+        } else {
+            m_state = 0;
+            for (s32 i = 0; i < m_count; i++) {
+                e = &m_entries[i];
+                Func270C50(&e->m_cur[0], &e->m_col[0]);
+                Func270C50(&e->m_cur[1], &e->m_col[1]);
+                Func270C50(&e->m_cur[2], &e->m_col[2]);
+                Func270C50(&e->m_cur[3], &e->m_col[3]);
+                e->m_unkD8 = 0;
+            }
+        }
+    }
+    m_unk30++;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A1AA0);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A1AA0__11CStatusItem);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A1B38);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A1B38__11CStatusItem);
 
 // The (empty) constructor: new[] in CStatusWinSub1A0A10::LoadTable calls it.
 CStatusWinSub1A1BF0::CStatusWinSub1A1BF0() {
@@ -1041,7 +1104,7 @@ void CStatusWinSub1A40B8::SetUnk80(f32 x, f32 y) {
     m_unk84 = y;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_001A40C8);
+INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A40C8__11CStatusItem);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A4298__10CUnk1A4298);
 

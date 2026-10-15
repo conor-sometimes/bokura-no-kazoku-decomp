@@ -98,7 +98,7 @@ extern "C" s32 func_00272F20(u16 a, void (*fn)(), s32 c);
 extern "C" void func_001F13A0();
 extern "C" s32 func_00273030(s32 a, s32 b);
 extern "C" void func_00272FE0();
-extern "C" s32 func_001F0AC8(s32 th);
+extern "C" void func_001F0AC8(s32 th);
 extern "C" void func_001F1610();
 
 extern "C" s32 func_0023E9E8(s32 x);
@@ -145,6 +145,18 @@ extern const char D_002E2280[];
 extern s32 D_002A5CD0;
 extern "C" s32 func_001F1D58(s32 th);
 extern "C" s32 func_001F1D78();
+
+extern s32 D_002A5CA0, D_002A5CBC;
+extern s32 D_2FDA14, D_2FDA28;
+extern u8 D_30DD00[], D_2FDD00[];
+extern "C" void func_0023E868();
+extern "C" s32 func_002730A0(s32 th, void *st);
+extern "C" void D_001F0BB0();
+extern "C" void func_001F0AF0();
+extern "C" s32 func_001F0A48(s32 max, s32 init);
+extern "C" s32 func_00272F30(s32 id);
+extern "C" s32 func_0023E8F0();
+struct CRxThStatus { s32 m_status; void *m_func; void *m_stack; s32 m_stackSize; void *m_gp; s32 m_initPrio; s32 m_curPrio; s32 pad[5]; };
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F0518", func_001F0518);
@@ -233,10 +245,10 @@ extern "C" s32 func_001F0A70(void (*fn)(void *), void *stack, s32 size, s32 prio
     return th;
 }
 
-extern "C" s32 func_001F0AC8(s32 th)
+extern "C" void func_001F0AC8(s32 th)
 {
     func_00272FF0(th);
-    return func_00272FB0(th);
+    return (void)func_00272FB0(th);
 }
 
 // func_001F0AF0 is three functions in retail (the split did not see 0x1F0BB0 and 0x1F0C08).
@@ -290,9 +302,64 @@ extern "C" s32 func_001F0C60(s32 a, s32 b, s32 c, s32 d)
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit1F0518", func_001F0CF8);
+extern "C" void func_001F0CF8()
+{
+    CRxThStatus st;
+    s32 i;
+    if (++D_002A5CA0 != 1) return;
+    func_0023E868();
+    D_2FDA20 = 0;
+    for (i = 0; i < 8; i++) D_2FDA30[i].m_id = -1;
+    for (i = 0; i < 8; i++) D_2FDCC0[i] = 0;
+    D_2FDA24 = 0;
+    D_2FDA28 = 0;
+    D_2FDA0C = func_00273090();
+    func_002730A0(D_2FDA0C, &st);
+    D_002A5CA4 = st.m_curPrio;
+    D_2FDA00 = func_001F0A48(1, 0);
+    D_2FDA04 = func_001F0A48(0x10000, 0);
+    D_2FDA08 = func_001F0A48(0x10000, 0);
+    D_002A5CA8 = 0;
+    D_002A5CAC = 0;
+    D_2FDA14 = func_001F0A70((void (*)(void *))D_001F0BB0, D_30DD00, 0x400, D_002A5CA4 + D_002A5CC0);
+    D_2FDA10 = func_001F0A70((void (*)(void *))func_001F0AF0, D_2FDD00, 0x10000, D_002A5CA4 + D_002A5CBC);
+    func_00273110(D_2FDA10);
+    D_002A5CB0 = 0;
+    D_2FDA18 = -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit1F0518", func_001F0EB0);
+extern "C" void func_001F0EB0()
+{
+    if (D_002A5CA0 <= 0) return;
+    if (--D_002A5CA0 != 0) return;
+    EeSyncL();
+    u32 old = EeGetStatus();
+    u32 n = old & ~1;
+    do {
+        EeSetStatus(n);
+    } while (EeGetStatus() != n);
+    if (D_2FDA18 >= 0) {
+        func_00272F30(D_2FDA18);
+        D_2FDA18 = -1;
+    }
+    D_2FDA24 = 0;
+    for (s32 i = 0; i < 8; i++) {
+        if (D_2FDA30[i].m_id >= 0) {
+            func_001F0AC8(D_2FDA30[i].m_id);
+            D_2FDA30[i].m_id = -1;
+        }
+    }
+    EeSyncL();
+    do {
+        EeSetStatus(old);
+    } while (EeGetStatus() != old);
+    func_001F0AC8(D_2FDA10);
+    func_001F0AC8(D_2FDA14);
+    func_002731B0(D_2FDA08);
+    func_002731B0(D_2FDA04);
+    func_002731B0(D_2FDA00);
+    return (void)func_0023E8F0();
+}
 
 extern "C" void func_001F1028(s32 arg)
 {
@@ -443,6 +510,8 @@ extern "C" s32 func_001F1850(s32 i)
     return D_2FDA30[i].m_unk8;
 }
 
+// GNU as 2.10 assembled the lui of this function's %hi/%lo pair as a copy of the following lw without it.
+asm(".p2align 3");
 extern "C" s32 func_001F1870(s32 i)
 {
     if (i < 0) return 0;

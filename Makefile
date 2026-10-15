@@ -19,7 +19,11 @@ ASFLAGS  := -EL -march=r5900 -mabi=eabi -no-pad-sections -G 0 -Iinclude
 # Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 -fno-strict-aliasing -fno-exceptions, as -g (docs/compiler.md). The driver runs
 # cc1plus and its own GNU as 2.10-ee, which also assembles the INCLUDE_ASM'd functions.
 EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
-CXXFLAGS := -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude -Wa,-g
+# as -g only for the C++ units: the C-style units from CAppMain on (scripts/text_units.py) match
+# only without it, so they were built differently (docs/compiler.md).
+ASG      := -Wa,-g
+build/src/CAppMain.cpp.o build/src/Unit%.cpp.o: ASG :=
+CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
 

@@ -97,7 +97,17 @@ void GetPhotoName16DFA8(char *dst, s32 a, s32 b, s32 c);
 
 INCLUDE_ASM("asm/nonmatchings/CPhotoEventObj", func_0016CF98);
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoEventObj", func_0016D2D8);
+s32 CPhotoEventObj2::GetName16D2D8(s32 k, char *buf, s32 d) {
+    switch (k) {
+    case 1:
+        GetPhotoName16DFA8(buf, m_unkFD08, m_unkFD0C, d);
+        return 1;
+    case 0:
+        Func16DEE8(buf, m_unkFD08, m_unkFD0C);
+        break;
+    }
+    return D_002A28D8->GetName(k, buf, d);
+}
 
 int CPhotoEventObj::Func16D3A0() {
     return 0;

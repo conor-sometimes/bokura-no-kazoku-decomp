@@ -120,7 +120,20 @@ public:
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CDemoMain", __9CDemoMaini);
+CDemoMain::CDemoMain(s32 k) {
+    m_entry = &D_0029F2A0[k % 4];
+    D_002A26E4->Func108700();
+    D_0029F390->SetUnk18(0);
+    D_0029F394->Set70(0xB);
+    CTaskTag8 *tag = &m_tag;
+    tag->m_unk4 = -1;
+    tag->m_unk2 = 0;
+    tag->m_unk0 = 0;
+    tag->m_unk4 = m_entry->m_unk0;
+    m_flag = D_002A26E0->Func1091B0(0);
+    D_002A26E0->Func108FF0(0, 0);
+    return;
+}
 
 CDemoMain::~CDemoMain() {
     D_002A26E0->Func108FF0(0, m_flag);

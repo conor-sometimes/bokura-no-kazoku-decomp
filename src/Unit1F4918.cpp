@@ -31,7 +31,20 @@ struct CXmnRend {
     u8 pad1C[0x1C];
     s32 m_unk38;              // 0x38
     CXmnSurf *m_surf;         // 0x3C
-    u8 pad40[0x38];
+    s32 m_unk40;              // 0x40
+    u8 *m_unk44;              // 0x44
+    u8 *m_cur;                // 0x48
+    u8 *m_unk4C;              // 0x4C
+    u8 *m_unk50;              // 0x50
+    u8 *m_start;              // 0x54
+    s32 m_unk58;              // 0x58
+    s32 m_unk5C;              // 0x5C
+    s32 m_unk60;              // 0x60
+    s32 m_unk64;              // 0x64
+    s32 m_unk68;              // 0x68
+    s32 m_unk6C;              // 0x6C
+    s32 m_unk70;              // 0x70
+    s32 m_unk74;              // 0x74
     s32 m_count;              // 0x78
     CXmnPktEnt *m_ents;       // 0x7C
     s32 m_open;               // 0x80

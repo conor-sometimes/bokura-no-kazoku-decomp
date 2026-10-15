@@ -3,7 +3,7 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 class CSceneSetItemA {
 public:
-    u8 m_used;                // 0x0
+    s8 m_used;                // 0x0 (first char of the resource name)
     u8 pad1[0x1F];
     char m_name[0x20];        // 0x20
     s32 m_unk40;              // 0x40
@@ -16,7 +16,7 @@ class CSceneSetItemB {
 public:
 
 
-    u8 m_used;                // 0x0
+    s8 m_used;                // 0x0
     u8 pad1[0x1F];
     s32 m_unk20;              // 0x20
     s32 m_unk24;              // 0x24
@@ -56,6 +56,8 @@ extern "C" void func_00128E78(void *snd, s32 v);
 // Vtable _vt$9CSceneSet (asm; its piece also holds the two TArray vtables): vptr at 0x3C.
 class CSceneSet {
 public:
+    CSceneSetItemA *SetMap12C8D0(s32 id, const char *res, const char *name, s32 a, s32 b, s32 c, f32 vol);
+    CSceneSetItemB *Func12CD30(s32 id, const char *name);
     CSceneSet();
     virtual ~CSceneSet();
     int SetSnd(CSndWorkReal *snd);
@@ -91,9 +93,19 @@ public:
     void ReleaseDiff();
     void Func113898();
     void Release113758();
+    void Func113860(s32 v);
+    void SetPart24Unk18(s32 v);
+    void SetUnk150(s32 v);
 
     u8 pad0[0xC];
 };
+// CCharaObj past its vptr (0x370 bytes; constructor 0x112FE0 in the CCharaObj unit).
+struct CCharaObjBody {
+    u8 pad0[0x1C8];
+    s32 m_unk1C8;             // 0x1C8
+};
+extern "C" void func_00112FE0(void *p);
+void *operator new(unsigned int n);
 class CResCache {
 public:
     void Func250840(void *item);
@@ -103,14 +115,29 @@ extern "C" void func_00128F10(void *snd, s32 v);
 //@sym FindA__9CSceneSeti 0x12CC60
 //@sym FindB__9CSceneSeti 0x12D070
 
+class CMapObjSub11B070;
 class CMapObj {
 public:
     virtual ~CMapObj();
     void Func11AF60();
+    void Init11AF00(CMapObjSub11B070 *d);
     u8 pad0[0x30];
 };
 extern CResCache *D_002A0BE8;
 extern CResCache *D_002A0BEC;
+
+class IResMgrS2 : public CResCache {
+public:
+    u8 pad0[0x13B];
+    virtual ~IResMgrS2();
+    virtual void V1();
+    virtual void *FindRes(const char *name);
+};
+extern CResCache *D_002A0BE8;
+extern CResCache *D_002A0BEC;
+extern "C" void func_00250828(CResCache *c, const char *name);
+extern "C" void func_00129020(CSndWorkReal *s, const char *name, s32 c, s32 a, s32 b, f32 vol);
+extern "C" void func_0011ADD0(void *p);
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4E10);
@@ -190,7 +217,42 @@ void CSceneSet::ReleaseSnd() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C8D0);
+CSceneSetItemA *CSceneSet::SetMap12C8D0(s32 id, const char *res, const char *name, s32 a, s32 b, s32 c, f32 vol) {
+    char buf[256];
+    if (id < 0 || func_00296568(&m_arr) - 1 < id) return 0;
+    if (!((IResMgrS2 *)D_002A0BE8)->FindRes(res)) return 0;
+    CSceneSetItemA *p = func_00296698(&m_arr, id);
+    if (name[0] == 0) {
+        strcpy(buf, p->m_name);
+        c = p->m_unk48;
+        name = buf;
+        if (m_unk38 == 0) func_00250828(D_002A0BEC, buf);
+    } else if (strcmp(name, p->m_name) == 0 && c == 0) {
+        strcpy(buf, p->m_name);
+        c = p->m_unk48;
+        name = buf;
+    } else {
+        c = m_unk34++;
+    }
+    if (a < 0) {
+        a = p->m_unk40;
+        b = p->m_unk44;
+    }
+    if (m_unk30) func_00129020(m_unk30, name, c, a, b, vol);
+    if (p->m_used) Func12CB00(id);
+    strcpy((char *)p, res);
+    strcpy(p->m_name, name);
+    p->m_unk40 = a;
+    p->m_unk48 = c;
+    p->m_unk44 = b;
+    p->m_unk4C = (s32)((IResMgrS2 *)D_002A0BE8)->FindRes(res);
+    CMapObj *o = (CMapObj *)operator new(0x40);
+    func_0011ADD0(o);
+    p->m_unk50 = (s32)o;
+    o->Init11AF00((CMapObjSub11B070 *)p->m_unk4C);
+    if (m_unk30) func_00128E78(m_unk30, p->m_unk50);
+    return p;
+}
 
 void CSceneSet::Func12CB00(s32 id) {
     CSceneSetItemA *p = FindA(id);
