@@ -74,6 +74,16 @@ extern const char D_002E7598[];
 extern const char D_002E75C0[];
 extern const char D_002E75D0[];
 extern const char D_002E7578[];
+
+extern "C" s16 func_0020F620(void);
+extern "C" s16 func_0020F630(void);
+struct CAt3Prm { u8 pad0[4]; s8 m_volL; s8 m_volR; };
+struct CAt3St { u8 pad0[0x19]; u8 m_level; u8 pad1A[2]; u8 m_flags; u8 pad1D; u8 m_pause; u8 m_ready; s16 m_volL; s16 m_volR; f32 m_pitch; };
+void Func259BA0(u32 i, s32 v);
+void Func259E90(u32 i, f32 v);
+s32 Func259F18(u32 i);
+s32 Func259C28(u32 i);
+void Func259300();
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002571C0);
@@ -90,7 +100,26 @@ INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257DC8);
 
 void Func257E28() { return Func2583B8(); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257E40);
+void Func257E40() {
+    for (CAt3Node *n = D_002BA1E0; n; n = n->m_next) {
+        CAt3St *s = (CAt3St *)n->mC;
+        s32 fl = s->m_flags;
+        CAt3Prm *p = (CAt3Prm *)n->m8;
+        if (fl & 1) Func259BA0(n->m_id, s->m_pause);
+        if (fl & 4) {
+            s32 l = p->m_volL * s->m_volL >> 7;
+            s32 r = p->m_volR * s->m_volR >> 7;
+            l = l * func_0020F620() >> 7;
+            r = r * func_0020F630() >> 7;
+            Func259D20(n->m_id, l, r);
+        }
+        if (fl & 8) Func259E90(n->m_id, s->m_pitch);
+        s->m_flags = 0;
+        s->m_level = Func259C28(n->m_id);
+        s->m_ready = Func259F18(n->m_id);
+    }
+    return Func259300();
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257F40);
 

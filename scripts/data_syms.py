@@ -44,6 +44,10 @@ def main():
                 defs.add(m.group(1) or m.group(2))
                 continue
             refs.update(re.findall(r"\b((?:D|jtbl)_[0-9A-F]{6,8})\b", line.split("*/")[-1]))
+    # C++ references too (lane L2: the typeinfo functions pass RTTI names that live in converted
+    # units' .rodata, and once matched no asm mentions them any more)
+    for p in glob.glob("src/**/*.cpp", recursive=True):
+        refs.update(re.findall(r"\b((?:D|jtbl)_[0-9A-F]{6,8})\b", open(p).read()))
     for name in sorted(refs - defs):
         a = int(name.split("_")[-1], 16)
         if any(lo <= a < hi for lo, hi in ranges):

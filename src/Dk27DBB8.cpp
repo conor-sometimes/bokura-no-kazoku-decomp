@@ -111,11 +111,3 @@ INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FAF8);
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FB60);
 
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FBC8);
-
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FC30);
-
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FEC0);
-
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027FF98);
-
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_00280070);

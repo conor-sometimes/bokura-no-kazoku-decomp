@@ -84,7 +84,7 @@ struct CStatusHueTable {
     u8 pad0[0xC];
     f32 m_vals[0xFD];         // 0xC
 };
-struct CStatusVec4 { f32 x, y, z, w; };
+struct CVec4 { f32 x, y, z, w; };
 class CStatusBaseSub19B8C8 {
 public:
     void Init();
@@ -95,6 +95,7 @@ public:
     f32 GetHue(s32 a, s32 b);
     void SetUnk18(u32 v);
     void Reset19B938();
+    void SetUnk18b(u32 v);
 
     s32 m_unk0;               // 0x0
     CStatusHueTable *m_unk4;  // 0x4
@@ -107,14 +108,15 @@ public:
     f32 m_unk20;              // 0x20
     f32 m_unk24;              // 0x24
     u8 pad28[0x8];
-    CStatusVec4 m_unk30[4];   // 0x30
-    CStatusVec4 m_unk70[4];   // 0x70
+    CVec4 m_unk30[4];   // 0x30
+    CVec4 m_unk70[4];   // 0x70
     s32 m_unkB0;              // 0xB0
     s32 m_unkB4;              // 0xB4
     s32 m_unkB8;              // 0xB8
     u8 padBC[0x4];
     s32 m_unkC0;              // 0xC0
-    u8 padC4[0x8];
+    f32 m_unkC4;              // 0xC4
+    s32 m_unkC8;              // 0xC8
     s32 m_unkCC;              // 0xCC
 };
 
@@ -155,7 +157,7 @@ public:
 extern CChrBodyWin *D_002A4308;
 extern void (*D_002B91B0)(void *p);
 extern char D_002DDCE8[], D_002DDAE8[], D_002DDD10[], D_002DDB18[], D_002DDAB8[], D_002DDD30[], D_002DDD50[];
-void Func270C50(CStatusVec4 *dst, CStatusVec4 *src);
+void Func270C50(CVec4 *dst, const CVec4 *src);
 CStatusBaseSub19B8C8 *NewStatusSub19B8C8();
 int IsBodyAlphaZero();
 
@@ -299,7 +301,36 @@ CStatusBaseSub19B8C8::~CStatusBaseSub19B8C8() {
     D_002A53D4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B938);
+void CStatusBaseSub19B8C8::Reset19B938() {
+    s32 i;
+    f32 z = 0.0f;
+    m_unk8 = 0;
+    m_unk10 = z;
+    m_unkC = z;
+    m_unkB0 = 100;
+    m_unkB4 = 100;
+    m_unkB8 = 100;
+    m_unkC0 = 0x10;
+    m_unk30[0].x = z;
+    m_unk30[0].y = z;
+    m_unk30[0].z = z;
+    m_unk30[1].x = z;
+    m_unk30[1].y = z;
+    m_unk30[1].z = z;
+    m_unk30[2].x = z;
+    m_unk30[2].y = z;
+    m_unk30[2].z = z;
+    m_unk30[3].x = z;
+    m_unk30[3].y = z;
+    m_unk30[3].z = z;
+    for (i = 0; i < 4; i++) Func270C50(&m_unk70[i], &m_unk30[i]);
+    m_unkCC = 0;
+    m_unk20 = 0;
+    m_unk24 = 0;
+    m_unk1C = 0;
+    m_unk14 = 0;
+    m_unk18 = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019BA00);
 

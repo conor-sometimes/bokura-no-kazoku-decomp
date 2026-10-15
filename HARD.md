@@ -61790,3 +61790,66 @@ functions listed in r5.tsv.
   Update 0x100770 (434), CMenuAsksavequit 0x193358 (644), CChrBodyWin.cpp 0x1895F8 (766, CMenuChildStatus event
   switch), CGameSeasonPrev 0x156E80 (398), 0x156120 (462), Draw 0x1587A8 (494), Update 0x153710 (2698), CGameMain
   Update 0x152090 (1146), CMiniGame1 Draw 0x1C3960 (488) and Update 0x1BDBE8 (5982).
+## d2
+dklib units Dk252208..Dk25E340 are level 1 (no per-unit .rodata/vtable piece; their literals live in ro_tail), so
+functions with a compiled switch jump table (jtbl_) and key methods cannot be matched until the
+data is split.
+- Dk252208 switch (jump table, needs .rodata): 0x2539A0 (pixel mode -> bits), 0x253B00, 0x254730.
+- Dk252208 key methods (unit not convertible): 0x252B58 `_$_11CBoneDupMap` (only slot), 0x253BE0 CShareTex slot 1,
+  0x2541E8 `_$_7CMemTex`.
+- 0x252C08 Func252C08 (find bone by name, 46 insns): ours 44. Retail returns `i` through a separate
+  `b exit; move v0,i` block followed by an aligned label (barrier), ours folds it into `beqz v0,exit; move v0,s1`;
+  also base/offset operand order of `D_002A5D0C + id*0x34`. Tried for/goto found/continue/inline FindName.
+- 0x252CC0 Func252CC0 (bone pair table): down to DIFF 12, only `p` (out walker) and `j` swap $17/$18. Best C:
+  `if (!ra || !(rb = &D_002A5D0C[b])) { Func235DE0(D_002E6B18, a, b); return 0; }` ... `if (out) { p->m_a = i;
+  p->m_b = j; } p++; cnt++;` (inner `for (j...) if (!strcmp) break; if (j == lb->m_num) continue;`).
+- 0x253358 Func253358 (BMP info header): DIFF 2, `bnel` where retail has `bne` at the two size tests
+  (`if (bi->m_size == 0x28) {...} else if (== 0xC) {...} else { Func235DE0(fmt, bi->m_size); return 0; }`).
+- 0x253530 / 0x2537E8 / 0x2538A0 (BMP palette/loader): retail puts the address-taken parameter's stack slot
+  above the locals (allocated first: `sw a0,0x40(sp)` after fh at 0 and bi at 0x10) and rematerialises its
+  address at each call; our compile allocates the slot last (sp+0) and, for a local copy, caches the address in an
+  s-register. Code otherwise matches (2537E8 DIFF 5 with `CBmpInfo bi; CBmpFile fh;`).
+- 0x2536C8 Func2536C8 (BMP pixels, bottom-up copy): DIFF 26, register allocation only (w/h/bpp in $7/$3/$4,
+  ours v1/a0/a2).
+- Dk254AA8 key methods: 0x2556A8 CFontTextRes::Load (slot 1), 0x255B20 CFontBankRes::Regist (slot 2; slots 0-1
+  are inline), 0x255EE8 CFontVCodeRes::Load (slot 1).
+- 0x2550E0 Func2550E0 (clip a segment to [lo,hi] in x, then swap x/y of both ends): 71 vs 72 insns; the second
+  three-way if/else (`Func254FD0(o1, in, lo)` / `(o1, in, hi)` / `Func270C50(o1, &in[1])`) is cross-jumped
+  differently (retail shares one `jal Func254FD0` after setting a1/f12 in each arm).
+- 0x257DC8 Func257DC8 (AT3 node free-list init, `return Func258200();`): DIFF 16-18, retail keeps the full address
+  of D_002BA1E4 in $2 (`lui; addiu; sw $0,0($2)` ... `sw $4,0($2)`) where ours uses %lo stores; tried `**fl`
+  pointer, volatile alias, store order.
+- 0x258110 Func258110 (unlink AT3 node by id, `Func259858(id, b)` with b passed through): DIFF 8, same full-address
+  D_002BA1E4 ($18) plus s-register order.
+- 0x258200 Func258200 (AT3 init + 0x801-entry Blackman-windowed sinc table at D_418780): DIFF ~1033. Retail divides
+  by 2048 with `div.s` (GCC folds `/ 2048.0f` into a multiply; `f32 n = 2048.0f; ... / n` gives the div.s), PI is
+  0x40490FDA (`3.1415926f`), the first scale is a multiply by 1/512. Remaining: FP register allocation
+  (x and the window argument share $f20 in retail) and a 1-insn length difference.
+- 0x257F40 Func257F40 (AT3 open: header lookup, then Func259340 (memory) or Func259600 (file) by
+  func_0020E338 type, then push node): 119 vs 116 insns; retail keeps the second path buffer (sp+0x120) in the
+  same s-register as the result `r` and uses one s-register less.
+- 0x25A098 `__7CSndMgr` (ctor): DIFF 6. Members CSndWork x3 via explicit `func_0025C230(&m_w..)`; retail loads
+  0x80 into $3 and -1 into $4 and stores 0x1C, 0x30, 0x24, 0x2C; ours swaps the two constant registers and the
+  order of those four stores (bk perm over all 14 stores: no order fixes it).
+- Dk25C438 unit-list finders 0x25C4B0, 0x25C510, 0x25C990 (`Func25C990__8CSndWorki`), 0x25C9F0, 0x25CA58: loop over
+  the CSndWork unit list (`p = item(m2C); p; p = item(p->next)` with item(n) = n->m_head ? 0 : n, match on m14 == id
+  && !m1D). Retail is 24-27 insns: the first item test is done with branches (`bnez; li 0; b; move`) and the
+  loop has a pre-test; ours is 15-17 (movn + jump into the test). Tried guards, while/do, First inlines, break.
+  0x25CDC0 (which calls them) matched.
+- 0x25D1A0 CSndWork::Func25D1A0 (call unit slot 1 on each unit, next fetched before the call): DIFF 18, register
+  allocation/scheduling only (`while (p) { u = p; p = item(p->next); u->Apply(prm); }`).
+- 0x25CAC0, 0x25CEE8: same unit-list finder shape as 0x25C4B0 (see above).
+- 0x25D008 Func25D008 (mark units for stop or delete them, via Func25C810): 48 vs 52 insns; retail keeps a separate
+  iterator ($18), current ($16) and next ($17) and re-tests the pointer before `delete`; tried iterator variables.
+- 0x260690 Func260690 (stream buffer setup: mode -> channels/rate/size, memset 0x68CA, sibcall func_00262B18):
+  DIFF ~37 at best (`ch=2, md=0x12, n=0x60` defaults with `case 1/2/3/4/default` switch); retail's decision tree
+  presets case-3 values before testing 3/4 and loads x->m_buf after the switch without keeping x.
+- 0x25C098 func_0025C098 (CSndUnit base constructor, written as an extern "C" init function): DIFF 2, retail stores
+  m0 = 0 before the vptr (0xC); ours stores the vptr first in every statement order (bk perm), also with an inline
+  link-init helper. Remaining stores fixed with order `m54, m5C, m60, m58, m64`.
+- 0x25F7B8 Func25F7B8 (CSndUnitStr init: BGM name lookup, stream info, manager defaults): DIFF 30, only the
+  `p`/`a` registers are swapped ($17/$16) once `a` and `b` are reused as in retail (`a = GetId(a); if (0x10000 < b)
+  { b = func_0020E698(a, name); ...}`); a member-function version gives the same.
+- 0x25A738 CSndMgr::Func25A738 (find entry i or, for type-3 groups, its sub-entry by name): 61 vs 64 insns; retail
+  orders the tests `m2C < 0`, `< 3` (strcmp), `== 3` (loop over `e[1].m_name`, which never advances: a bug in the
+  original) with three separate return blocks; ours merges them.

@@ -6,11 +6,28 @@ extern "C" s32 func_0027BD20(void);
 extern "C" s32 func_0027BD78(void);
 extern s32 D_41A800;
 extern volatile u32 D_41A804;
+
+extern volatile s32 D_002BBC18;
+extern s32 D_002BBC1C;
+extern s32 D_002BBBF4;
+extern s32 D_002BBBE8;
+extern s32 D_002BBBE0;
+extern s32 D_002BBBD4;
+extern "C" s32 func_002731D0(s32);
+#define V(x) (*(volatile s32 *)&(x))
 // @decl-end
 
 extern "C" s32 func_00262D28(s32 x) { register u32 gp asm("$28"); s32 old, r; if (func_00263870(1)) return 0; r = func_0027BD20(); old = D_41A800; D_41A800 = x; D_41A804 = gp; if (r) func_0027BD78(); return old; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk262D28", func_00262D90);
+extern "C" void func_00262D90(s32 *p) {
+    D_002BBC18 = *p;
+    V(D_002BBC1C) = D_002BBC18;
+    if (D_002BBC18 == 11) { D_002BBC18 = 0; V(D_002BBBF4) = 0; return; }
+    func_002731D0(V(D_002BBBE8));
+    if (V(D_002BBBD4) && V(D_41A800)) func_002731D0(V(D_002BBBE0));
+    else V(D_002BBBF4) = 0;
+    D_002BBC18 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk262D28", func_00262E30);
 

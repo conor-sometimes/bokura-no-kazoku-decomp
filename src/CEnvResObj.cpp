@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -8,16 +9,23 @@ public:
     s32 m_unk0;               // 0x0
     CHeapObj() { m_unk0 = 0; }
 };
-// Resource cache entry: a self-linked list node, then the vptr at 0xC (as CResObj in CMapResObj.cpp).
-class CResObj : public CHeapObj {
+// Resource cache entry: the CListTag list node (CList.h; m_unk0 = its head flag), then the
+// vptr at 0xC. Its destructor is inline here (retail inlines the unlink into ~CEnvResObj);
+// #pragma interface at the top keeps this unit from emitting the vtables (they stay in asm).
+class CListTag : public CHeapObj {
 public:
-    CResObj() { m_prev = this; m_next = this; }
-    virtual ~CResObj();
+    CListTag() { m_prev = this; m_next = this; }
+    virtual ~CListTag() {
+        m_next->m_prev = m_prev;
+        m_prev->m_next = m_next;
+        m_prev = this;
+        m_next = this;
+    }
 
-    CResObj *m_next;          // 0x4
-    CResObj *m_prev;          // 0x8
+    CListTag *m_next;         // 0x4
+    CListTag *m_prev;         // 0x8
 };
-class CEnvResObj : public CResObj {
+class CEnvResObj : public CListTag {
 public:
     CEnvResObj();
     static CEnvResObj *Create();
@@ -109,7 +117,9 @@ CEnvResObj::CEnvResObj() {
     m_unk14 = -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEnvResObj", func_0012D910);
+CEnvResObj::~CEnvResObj() {
+    Release();
+}
 
 s32 CEnvResObj::Load(const char *name) {
     u8 buf[0x100];

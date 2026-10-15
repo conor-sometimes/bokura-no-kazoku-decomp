@@ -160,6 +160,7 @@ func_001A4060 = 0x001A4060; /* = GetUnkEC__11CStatusItemi (CMenuCommon) */
 func_00168DC8 = 0x00168DC8; /* = __10CInterfRes (CGameResort) */
 Func1A0CF0__10CStatusWinPCc = 0x001A0CF0; /* = Find__19CStatusWinSub1A0A10PCc (D_002A5408 is a CStatusWinSub1A0A10) */
 func_001A3DC8 = 0x001A3DC8; /* = SetUnkF0__11CStatusItemii */
+func_001A3AF8 = 0x001A3AF8; /* = SetUnk60__11CStatusItemiff (CMenuSysscr27) */
 func_0012D1C8 = 0x0012D1C8; /* = NewCharaResObj__Fv (ICharaResMgr) */
 Func1A3740__14CMenuRecordWiniPCc = 0x001A3740; /* = SetText__11CStatusItemiPCc */
 /* bss words the C code names but no asm references by symbol (r1) */
@@ -335,3 +336,74 @@ D_38EFE4 = 0x0038EFE4;
 D_388F2C = 0x00388F2C;
 D_38EFA8 = 0x0038EFA8;
 D_38EFAC = 0x0038EFAC;
+func_0019B938 = 0x0019B938; /* = Reset19B938__20CStatusBaseSub19B8C8 (CMenuMgr) */
+func_0025A060 = 0x0025A060; /* old name still called from another unit (lane d2) */
+func_0025C438 = 0x0025C438; /* old name still called from another unit (lane d2) */
+func_0025C488 = 0x0025C488; /* old name still called from another unit (lane d2) */
+func_0025CEA0 = 0x0025CEA0; /* old name still called from another unit (lane d2) */
+func_0025C910 = 0x0025C910; /* old name still called from another unit (lane d2) */
+func_0025CE30 = 0x0025CE30; /* old name still called from another unit (lane d2) */
+D_41A818 = 0x0041A818;
+D_41C860 = 0x0041C860; /* .bss word before D_41C868 (libkernel thread-op queue semaphore), unnamed by spimdisasm (lane d4) */
+D_420400 = 0x00420400; /* .bss word holding the gp value interrupt handlers run with (libkernel), unnamed by spimdisasm (lane d4) */
+D_41D194 = 0x0041D194; /* .bss word before D_41D198 (libkernel), unnamed by spimdisasm (lane d4) */
+/* lane L3: RTTI names (.rodata) used by the C typeinfo functions in src/Lib29*.cpp */
+D_002D51F0 = 0x002D51F0;
+D_002D5660 = 0x002D5660;
+D_002D5EC8 = 0x002D5EC8;
+D_002D8C98 = 0x002D8C98;
+D_002D8E90 = 0x002D8E90;
+D_002D8F08 = 0x002D8F08;
+D_002D98E8 = 0x002D98E8;
+D_002D9AC0 = 0x002D9AC0;
+D_002DA038 = 0x002DA038;
+D_002DA048 = 0x002DA048;
+D_002DA430 = 0x002DA430;
+D_002DA478 = 0x002DA478;
+D_002DA520 = 0x002DA520;
+D_002DA598 = 0x002DA598;
+D_002DA638 = 0x002DA638;
+D_002DA798 = 0x002DA798;
+D_002DAA98 = 0x002DAA98;
+D_002DAB20 = 0x002DAB20;
+D_002DAD88 = 0x002DAD88;
+D_002DB540 = 0x002DB540;
+D_002DB5D0 = 0x002DB5D0;
+D_002DBAB0 = 0x002DBAB0;
+D_002DBB18 = 0x002DBB18;
+D_002DBBA8 = 0x002DBBA8;
+D_002DBC68 = 0x002DBC68;
+D_002DBD20 = 0x002DBD20;
+D_002DBDA8 = 0x002DBDA8;
+D_002DBE28 = 0x002DBE28;
+D_002DBE68 = 0x002DBE68;
+D_002DD7C8 = 0x002DD7C8;
+D_002DF0E8 = 0x002DF0E8;
+D_002DF180 = 0x002DF180;
+D_002DF1F8 = 0x002DF1F8;
+D_002DF2D0 = 0x002DF2D0;
+D_002DF358 = 0x002DF358;
+D_002DF398 = 0x002DF398;
+D_002DF3E8 = 0x002DF3E8;
+D_002DF468 = 0x002DF468;
+D_002DF4E8 = 0x002DF4E8;
+D_002DF528 = 0x002DF528;
+D_002DF578 = 0x002DF578;
+D_002DF5F8 = 0x002DF5F8;
+D_002DF678 = 0x002DF678;
+D_002DF6B0 = 0x002DF6B0;
+D_002DF700 = 0x002DF700;
+D_002DF780 = 0x002DF780;
+D_002DF800 = 0x002DF800;
+D_002DF8B0 = 0x002DF8B0;
+D_002DF930 = 0x002DF930;
+D_002DF970 = 0x002DF970;
+D_002DFB60 = 0x002DFB60;
+D_002DFCA8 = 0x002DFCA8;
+D_002DFD90 = 0x002DFD90;
+D_002DFDA0 = 0x002DFDA0;
+D_002E0BD8 = 0x002E0BD8;
+D_002E0D40 = 0x002E0D40;
+func_001B6570 = 0x001B6570; /* old name still called from another unit (merge interim 8) */
+func_0025DBB8 = 0x0025DBB8; /* old name still called from another unit (merge interim 8) */
+func_00280260 = 0x00280260; /* old name still called from another unit (merge interim 8) */

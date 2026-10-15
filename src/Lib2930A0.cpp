@@ -1,20 +1,121 @@
 #include "common.h"
 
+// @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CTask.h"
+extern "C" void CTask_dtor(CTask *, s32) asm("_$_5CTask");
+extern "C" void func_00286BC0(void *, const char *, void *);
+extern "C" void func_00286BE0(void *, const char *);
+extern "C" char D_002D1860[];
+extern "C" char D_002D1900[];
+extern "C" char D_002D1A38[];
+extern "C" char D_002D1B28[];
+extern "C" char D_002D1BB8[];
+extern "C" char D_002D1CA0[];
+extern "C" char D_002D1EE8[];
+extern "C" char D_002D1EF8[];
+extern "C" char D_002D1F08[];
+extern "C" char D_002D1F18[];
+extern "C" char D_002D1FE8[];
+extern "C" char D_002D1FF8[];
+extern "C" char D_002D2028[];
+extern "C" char D_002D2D28[];
+extern "C" char D_002D2D48[];
+extern "C" char D_002D2D58[];
+extern "C" char D_002D2D70[];
+extern "C" char D_002D2D80[];
+extern "C" char D_002D2D90[];
+extern "C" char D_002D2DB0[];
+extern "C" char D_002D3020[];
+extern "C" u8 D_2EB700[];
+extern "C" u8 D_2EB708[];
+extern "C" u8 D_2EB710[];
+extern "C" u8 D_2EB718[];
+extern "C" u8 D_2EB720[];
+extern "C" u8 D_2EB8B8[];
+extern "C" u8 D_2EB900[];
+extern "C" u8 D_4245A0[];
+extern "C" u8 D_4245B0[];
+extern "C" u8 D_4245C0[];
+extern "C" u8 D_4245D0[];
+extern "C" u8 D_4245E0[];
+extern "C" u8 D_4245F0[];
+extern "C" u8 D_424600[];
+extern "C" u8 D_424610[];
+extern "C" u8 D_424620[];
+extern "C" u8 D_424630[];
+extern "C" u8 D_424640[];
+extern "C" u8 D_424650[];
+extern "C" u8 D_424660[];
+extern "C" u8 D_424670[];
+extern "C" u8 D_424680[];
+extern "C" u8 D_424690[];
+extern "C" u8 D_4246A0[];
+extern "C" u8 D_424E70[];
+extern "C" void *__tf5CList(void);
+extern "C" void *__tf5CTask(void);
+extern "C" void *__tf7IPadMgr(void);
+extern "C" void *__tf8CListTag(void);
+extern "C" void *__tf8CProcess(void);
+extern "C" void *__tf8IFadeMgr(void);
+extern "C" void *__tf8ISnapMgr(void);
+extern "C" void *__tf9CFontWork(void);
+extern "C" void *func_00293B28(void);
+extern "C" void *func_00293B68(void);
+extern u8 IFadeMgr_vt[] asm("_vt$8IFadeMgr");
+extern u8 IPadMgr_vt[] asm("_vt$7IPadMgr");
+extern u8 ISnapMgr_vt[] asm("_vt$8ISnapMgr");
+// @decl-end
+
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002930A0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf9CBootMain);
+extern "C" void *__tf9CBootMain(void) {
+    if (*(s32 *)D_4245A0 == 0) {
+        __tf8CProcess();
+        func_00286BC0(D_4245A0, D_002D1860, D_424E70);
+    }
+    return D_4245A0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf9CLogoMain);
+extern "C" void *__tf9CLogoMain(void) {
+    if (*(s32 *)D_4245B0 == 0) {
+        __tf8CProcess();
+        func_00286BC0(D_4245B0, D_002D1900, D_424E70);
+    }
+    return D_4245B0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf10CTitleMain);
+extern "C" void *__tf10CTitleMain(void) {
+    if (*(s32 *)D_4245C0 == 0) {
+        __tf8CProcess();
+        func_00286BC0(D_4245C0, D_002D1A38, D_424E70);
+    }
+    return D_4245C0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293208);
+extern "C" s32 func_00293208(u8 *p) { return *(s32 *)(p + 0x7C8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf9CDemoMain);
+extern "C" void *__tf9CDemoMain(void) {
+    if (*(s32 *)D_4245D0 == 0) {
+        __tf8CProcess();
+        func_00286BC0(D_4245D0, D_002D1B28, D_424E70);
+    }
+    return D_4245D0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf11CEndingMain);
+extern "C" void *__tf11CEndingMain(void) {
+    if (*(s32 *)D_4245E0 == 0) {
+        __tf8CProcess();
+        func_00286BC0(D_4245E0, D_002D1BB8, D_424E70);
+    }
+    return D_4245E0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf9CFlagWork);
+extern "C" void *__tf9CFlagWork(void) {
+    if (*(s32 *)D_2EB700 == 0) {
+        func_00286BE0(D_2EB700, D_002D1CA0);
+    }
+    return D_2EB700;
+}
 
 extern "C" void func_002932F0(void) {
 }
@@ -22,61 +123,143 @@ extern "C" void func_002932F0(void) {
 extern "C" void func_002932F8(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293300);
+// IPadMgr[0]
+// IPadMgr::~IPadMgr() (linkonce, deleting): the interface's implicit destructor
+extern "C" void IPadMgr_dtor(CTask *p, s32 flags) asm("_$_7IPadMgr");
+extern "C" void IPadMgr_dtor(CTask *p, s32 flags) {
+    *(void **)((u8 *)p + 4) = IPadMgr_vt;
+    CTask_dtor(p, 0);
+    if (flags & 1) return (void)CTask::operator delete(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf7IPadMgr);
+extern "C" void *__tf7IPadMgr(void) {
+    if (*(s32 *)D_424600 == 0) {
+        __tf5CTask();
+        func_00286BC0(D_424600, D_002D1EE8, D_2EB8B8);
+    }
+    return D_424600;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf7CPadMgr);
+extern "C" void *__tf7CPadMgr(void) {
+    if (*(s32 *)D_4245F0 == 0) {
+        __tf7IPadMgr();
+        func_00286BC0(D_4245F0, D_002D1EF8, D_424600);
+    }
+    return D_4245F0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293408);
+// CPadMgr[7]
+extern "C" s32 func_00293408(u8 *p) { return *(s32 *)(p + 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293410);
+// CPadMgr[8]
+extern "C" s32 func_00293410(u8 *p) { return *(s32 *)(p + 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293418);
+// CPadMgr[10]
+extern "C" s32 func_00293418(u8 *p) { return *(s32 *)(p + 0x10); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293420);
+// CPadMgr[9]
+extern "C" s32 func_00293420(u8 *p) { return *(s32 *)(p + 0x14); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293428);
+// CPadMgr[12]
+extern "C" s32 func_00293428(u8 *p) { return *(s32 *)(p + 0x18); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293430);
+// IFadeMgr[0]
+// IFadeMgr::~IFadeMgr() (linkonce, deleting): the interface's implicit destructor
+extern "C" void IFadeMgr_dtor(CTask *p, s32 flags) asm("_$_8IFadeMgr");
+extern "C" void IFadeMgr_dtor(CTask *p, s32 flags) {
+    *(void **)((u8 *)p + 4) = IFadeMgr_vt;
+    CTask_dtor(p, 0);
+    if (flags & 1) return (void)CTask::operator delete(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8IFadeMgr);
+extern "C" void *__tf8IFadeMgr(void) {
+    if (*(s32 *)D_424610 == 0) {
+        __tf5CTask();
+        func_00286BC0(D_424610, D_002D1F08, D_2EB8B8);
+    }
+    return D_424610;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8CFadeMgr);
+extern "C" void *__tf8CFadeMgr(void) {
+    if (*(s32 *)D_424620 == 0) {
+        __tf8IFadeMgr();
+        func_00286BC0(D_424620, D_002D1F18, D_424610);
+    }
+    return D_424620;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293538);
+// CFadeMgr[8]
+extern "C" s32 func_00293538(u8 *p) { return *(s32 *)(p + 0x4C); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293540);
+// CFadeMgr[9]
+extern "C" s32 func_00293540(u8 *p) { return *(s32 *)(p + 0x48) != 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293550);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293590);
+// CFadeMgr[11]
+extern "C" s32 func_00293590(u8 *p) { return *(s32 *)(p + 0x48); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293598);
+// CFadeMgr[12]
+extern "C" void func_00293598(u8 *p, s32 v) { *(s32 *)(p + 0x50) = v; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002935A0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002935B8);
+// ISnapMgr[0]
+// ISnapMgr::~ISnapMgr() (linkonce, deleting): the interface's implicit destructor
+extern "C" void ISnapMgr_dtor(CTask *p, s32 flags) asm("_$_8ISnapMgr");
+extern "C" void ISnapMgr_dtor(CTask *p, s32 flags) {
+    *(void **)((u8 *)p + 4) = ISnapMgr_vt;
+    CTask_dtor(p, 0);
+    if (flags & 1) return (void)CTask::operator delete(p);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8ISnapMgr);
+extern "C" void *__tf8ISnapMgr(void) {
+    if (*(s32 *)D_424630 == 0) {
+        __tf5CTask();
+        func_00286BC0(D_424630, D_002D1FE8, D_2EB8B8);
+    }
+    return D_424630;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8CSnapMgr);
+extern "C" void *__tf8CSnapMgr(void) {
+    if (*(s32 *)D_424640 == 0) {
+        __tf8ISnapMgr();
+        func_00286BC0(D_424640, D_002D1FF8, D_424630);
+    }
+    return D_424640;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936C0);
+// CSnapMgr[8]
+extern "C" s32 func_002936C0(u8 *p) { return *(s32 *)(p + 0x24); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936C8);
+// CSnapMgr[9]
+extern "C" s32 func_002936C8(u8 *p) { return *(s32 *)(p + 0x20); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936D0);
+// CSnapMgr[10]
+extern "C" s32 func_002936D0(u8 *p) { return *(s32 *)(p + 0x8); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936D8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936E8);
+// CSnapMgr[12]
+extern "C" void func_002936E8(u8 *p) { *(s32 *)(p + 0x2C) = 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002936F0);
+// CSnapMgr[13]
+extern "C" void func_002936F0(u8 *p, s32 v) { *(s32 *)(p + 0x34) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf10CEFontWork);
+extern "C" void *__tf10CEFontWork(void) {
+    if (*(s32 *)D_424650 == 0) {
+        __tf9CFontWork();
+        func_00286BC0(D_424650, D_002D2028, D_2EB900);
+    }
+    return D_424650;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8CListTag);
+extern "C" void *__tf8CListTag(void) {
+    if (*(s32 *)D_2EB708 == 0) {
+        func_00286BE0(D_2EB708, D_002D2D28);
+    }
+    return D_2EB708;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293788);
 
@@ -86,37 +269,76 @@ INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293840);
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002938F0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf10CCacheInfo);
+extern "C" void *__tf10CCacheInfo(void) {
+    if (*(s32 *)D_424670 == 0) {
+        func_00293B68();
+        func_00286BC0(D_424670, D_002D2D48, D_424690);
+    }
+    return D_424670;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002939A0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tft5TList1Z10CCacheInfo);
+extern "C" void *__tft5TList1Z10CCacheInfo(void) {
+    if (*(s32 *)D_4246A0 == 0) {
+        __tf5CList();
+        func_00286BC0(D_4246A0, D_002D2D58, D_424660);
+    }
+    return D_4246A0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf12CTexCacheMgr);
+extern "C" void *__tf12CTexCacheMgr(void) {
+    if (*(s32 *)D_424680 == 0) {
+        func_00293B28();
+        func_00286BC0(D_424680, D_002D2D70, D_2EB710);
+    }
+    return D_424680;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293AF0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293B28);
+extern "C" void *func_00293B28(void) {
+    if (*(s32 *)D_2EB710 == 0) {
+        func_00286BE0(D_2EB710, D_002D2D80);
+    }
+    return D_2EB710;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293B68);
+extern "C" void *func_00293B68(void) {
+    if (*(s32 *)D_424690 == 0) {
+        __tf8CListTag();
+        func_00286BC0(D_424690, D_002D2D90, D_2EB708);
+    }
+    return D_424690;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8CFaceObj);
+extern "C" void *__tf8CFaceObj(void) {
+    if (*(s32 *)D_2EB718 == 0) {
+        func_00286BE0(D_2EB718, D_002D2DB0);
+    }
+    return D_2EB718;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293BF8);
+extern "C" s32 func_00293BF8(u8 *p) { return *(s32 *)(p + 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C00);
+extern "C" s32 func_00293C00(u8 *p) { return *(s32 *)(p + 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C08);
+extern "C" s32 func_00293C08(u8 *p) { return *(s32 *)(p + 0x10); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C10);
+extern "C" void func_00293C10(u8 *p, s32 v) { *(s32 *)(p + 0x14) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C18);
+extern "C" s32 func_00293C18(u8 *p) { return *(s32 *)(p + 0x14); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C20);
+extern "C" void func_00293C20(u8 *p, s32 v) { *(s32 *)(p + 0x18) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C28);
+extern "C" s32 func_00293C28(u8 *p) { return *(s32 *)(p + 0x18); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", __tf8CFaceRes);
+extern "C" void *__tf8CFaceRes(void) {
+    if (*(s32 *)D_2EB720 == 0) {
+        func_00286BE0(D_2EB720, D_002D3020);
+    }
+    return D_2EB720;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293C70);
 

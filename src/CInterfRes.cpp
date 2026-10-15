@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -49,7 +50,28 @@ extern CInterfMgr *D_002A3568;
 int GetFontTable(u32 i);
 extern "C" void func_0025C438(int tbl, CFont25C230 *f);
 void Func23B1D0(s32 h);
-#include "CList.h"
+// CListTag as in CList.h, but with the destructor inline (retail inlines it into
+// ~CInterfRes). The vtables stay in the asm data: #pragma interface at the top keeps
+// this unit from emitting them.
+class CListTag {
+public:
+    CListTag() {
+        m_isHead = 0;
+        m_next = this;
+        m_prev = this;
+    }
+    virtual ~CListTag() {
+        m_prev->m_next = m_next;
+        m_next->m_prev = m_prev;
+        m_next = this;
+        m_prev = this;
+    }
+
+    s32 m_isHead;             // 0x0
+    CListTag *m_prev;         // 0x4
+    CListTag *m_next;         // 0x8
+    // vptr 0xC
+};
 // Vtable _vt$10CInterfRes: destructor, Load, Release. Key method: the destructor (0x168DF0,
 // merged unit: stays asm).
 class CInterfRes : public CListTag {
@@ -79,7 +101,10 @@ CInterfRes::CInterfRes() {
     m_handles = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CInterfRes", func_00168DF0);
+CInterfRes::~CInterfRes() {
+    Release();
+    D_002A3540 = 0;
+}
 
 s32 CInterfRes::Load(const char *path) {
     u8 buf[0x100];

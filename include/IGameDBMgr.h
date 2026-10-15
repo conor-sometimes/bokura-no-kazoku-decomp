@@ -75,7 +75,7 @@ public:
     virtual const char *GetName248(u32 a, s32 b);               // [49] 0x14EBF0
     virtual s32 Func14EC50(s32 key, s32 idx);                   // [50] 0x14EC50
     virtual s32 Func14ECD0(s32 key, s32 idx);                   // [51] 0x14ECD0
-    virtual s32 Func14EE18();                                   // [52] 0x14EE18
+    virtual s32 Func14EE18(s32 name);                                 // [52] 0x14EE18
     virtual s32 Func14F2A0(s32 name);                                   // [53] 0x14F2A0
     virtual s32 Func14F380(s32 name, s32 type);                                   // [54] 0x14F380
     virtual int TestBits14F478(s32 id);                         // [55] 0x14F478

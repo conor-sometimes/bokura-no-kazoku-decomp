@@ -70,6 +70,7 @@ public:
 class CBoneDupMap : public CCharaObjSub48 {
 public:
     CBoneDupMap();
+    virtual void KeyStub();   // never defined: the retail key method is the destructor, this keeps the vtable out of the object
     virtual ~CBoneDupMap();
 };
 s32 Func252C08(s32 id, const char *name);
@@ -202,7 +203,7 @@ CBoneDupMap::CBoneDupMap() {
     m_unk8 = -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk252208", func_00252B58);
+CBoneDupMap::~CBoneDupMap() { Func252BB8(); }
 
 void CCharaObjSub48::Func252BB8() {
     if (m_unk0) D_002B91B0(m_unk0);

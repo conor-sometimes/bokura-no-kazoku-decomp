@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -8,16 +9,27 @@ public:
 };
 class CResCache {
 public:
+    ~CResCache();
     void Init250208(void (*f)(), s32 a, s32 b, s32 c);
     void *Find250B08(s32 id);
     void Func250368();
+
+    u8 pad0[0x13C];
 };
-class CMapResMgr : public CResCache {
+// The vtables live in the CMapResObj data (asm); #pragma interface at the top keeps this
+// unit from emitting them.
+class IMapResMgr : public CResCache {
 public:
+    virtual ~IMapResMgr() {}
+};
+class CMapResMgr : public IMapResMgr {
+public:
+    virtual ~CMapResMgr();
     void Func12D848(s32 size, s32 n);
     s32 *FindRes(s32 id);
     void CallFunc250368();
 };
+extern CMapResMgr *D_002A0BE8;
 
 //@sym __10CEnvResObj 0x12D8E8
 //@sym __nw__8CHeapObjUi 0x245D20
@@ -36,7 +48,9 @@ public:
 void Func12D550();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/IMapResMgr", func_0012D7A0);
+CMapResMgr::~CMapResMgr() {
+    D_002A0BE8 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/IMapResMgr", func_0012D818);
 

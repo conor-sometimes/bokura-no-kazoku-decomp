@@ -10,7 +10,7 @@ CC=R+'/tools/compilers/ee-gcc2.96/bin/ee-gcc'
 SDKCC=R+'/tools/compilers/'+os.environ.get('BK_SDK','ee-gcc2.9-991111')+'/bin/ee-gcc'
 SDK_RANGES=[(0x262D28,0x26CFB0)]
 # Sony SDK libraries (Makefile SDKC_OBJS): C through 2.9's cc1, assembled by the 2.96 GNU as (-B)
-SDKC_RANGES=[(0x26CFB0,0x2779D8)]
+SDKC_RANGES=[(0x26CFB0,0x27FC30)]
 SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
 OD='mips-ps2-decompals-objdump'
 ctx=json.load(open(W+'/ctx.json'))
@@ -56,11 +56,12 @@ def compile_(decl,funcs,out,tag='t'):
     cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
     cc,base=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions']
     if funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs):  # Makefile SDK_OBJS
-        cc,base=SDKCC,['-O2','-G0','-fno-exceptions']
+        cc,base=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS]
+    sdk=funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs)
     sdkc=funcs and all(any(lo<=a<hi for lo,hi in SDKC_RANGES) for a,b in funcs)
     if sdkc:  # Makefile SDKC_OBJS
-        cc,base=SDKCC,['-x','c','-O2','-G0','-B'+SDKAS]
-    asg=['-Wa,-g'] if not sdkc and any(a<0x1E91B8 or a>=0x245648 for a,b in funcs) else []  # Makefile ASG
+        cc,base=R+'/tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc',['-x','c','-O2','-G0','-B'+SDKAS]
+    asg=['-Wa,-g'] if not sdkc and not sdk and any(a<0x1E91B8 or a>=0x245648 for a,b in funcs) else []  # Makefile ASG
     r=subprocess.run([cc]+base+['-I'+R+'/include','-Wa,-I'+R+'/include']+asg+['-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)

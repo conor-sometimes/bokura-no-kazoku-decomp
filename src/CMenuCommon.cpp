@@ -11,7 +11,7 @@ public:
     void Func1A3378();
     void Func1A3628();
     void Start();
-
+    void Func1A40C8();
 
     u8 pad0[0x20];
     s32 m_state;              // 0x20
@@ -47,6 +47,7 @@ public:
     void Func18DF88();
     s32 GetUnk8();
     s32 GetItemState();
+    void Update18E100();
 
     CStatusItem *m_item;  // 0x0
     u8 pad4[0x4];
@@ -55,6 +56,8 @@ public:
     s32 m_count;              // 0x10
     u8 pad14[0x8];
     s32 m_unk1C;              // 0x1C
+    u8 pad20[0x8];
+    f32 m_unk28;              // 0x28
 };
 
 //@sym Update18D8B8__20CMenuCommonSub18E0E0 0x18D8B8
@@ -62,6 +65,7 @@ public:
 class CMenuMgrSub1B6418 {
 public:
     void Move1B6488(f32 x, f32 y);
+    void SetUnk4C(f32 v);
 };
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern char D_002DB9D0[];
@@ -287,6 +291,30 @@ class CStatusWinSub1A40B8 {
 public:
     void SetUnk80(f32 x, f32 y);
 };
+
+extern CFlagWork *D_002A4B60;
+extern "C" void func_001B6570(CMenuMgrSub1B6418 *p);
+inline f32 FracVu0(f32 x) {
+    f32 r;
+    asm volatile(
+        ".set noreorder\n"
+        "mfc1 $2, %1\n"
+        "qmtc2.ni $2, $vf2\n"
+        "vftoi0.x $vf3, $vf2\n"
+        "vmulaw.x ACC, $vf2, $vf0w\n"
+        "vaddw.x $vf2, $vf0, $vf0w\n"
+        "vitof0.x $vf3, $vf3\n"
+        "bgez $2, 1f\n"
+        "nop\n"
+        "vmadda.x ACC, $vf2, $vf2\n"
+        "1:\n"
+        "vmsubw.x $vf2, $vf3, $vf0w\n"
+        "qmfc2.ni $8, $vf2\n"
+        "mtc1 $8, %0\n"
+        ".set reorder\n"
+        : "=f"(r) : "f"(x) : "$2", "$8");
+    return r;
+}
 // @decl-end
 
 CMenuCommon::CMenuCommon() {
@@ -648,7 +676,15 @@ s32 CMenuCommonSub18E0E0::GetItemState() {
     return m_item ? m_item->m_state : -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E100);
+void CMenuCommonSub18E0E0::Update18E100() {
+    if (!m_item) return;
+    m_item->Func1A40C8();
+    D_002A5538->SetUnk4C(m_item->m_unk34);
+    func_001B6570(D_002A5538);
+    m_unk28 += (f32)D_002A4B60->Func1091B0(0x51) / 1000.0f;
+    if (m_unk28 > 0.5f) m_unk28 = 0;
+    m_unk28 = FracVu0(m_unk28);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018E1E0);
 

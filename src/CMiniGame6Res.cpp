@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -70,23 +71,92 @@ struct CMiniGame6Sprite {
         m_a = a;
     }
 };
+extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
+extern char D_002E1998[], D_002E19B0[];
+int Func235DE0(const char *fmt, ...);
+// Byte queue (ring buffer) inside the board at 0x9EC.
+struct CMg6Queue {
+    u8 pad0[0x8];
+    u8 *m_buf;                // 0x8
+    s32 m_wr;                 // 0xC
+    s32 m_rd;                 // 0x10
+    s32 m_size;               // 0x14
+    s32 m_count;              // 0x18
+    s32 Peek(void *dst, s32 n) {
+        s32 rd, done, k;
+        if (m_count <= 0) {
+            Func235DE0(D_002E1998);
+            return 0;
+        }
+        rd = m_rd;
+        done = 0;
+        do {
+            k = n - done;
+            if (!(k < m_size - rd)) k = m_size - rd;
+            if (dst) memcpy((u8 *)dst + done, m_buf + rd, k);
+            rd = (rd + k) % m_size;
+            done += k;
+        } while (done < n);
+        return 1;
+    }
+    void Pop(void *dst, s32 n) {
+        if (Peek(dst, n)) {
+            m_rd = (m_rd + n) % m_size;
+            m_count -= n;
+        }
+    }
+    s32 Write(const void *src, s32 n) {
+        s32 wr, done, k;
+        if (m_size - m_count <= 0) {
+            Func235DE0(D_002E19B0);
+            return 0;
+        }
+        wr = m_wr;
+        done = 0;
+        do {
+            k = m_size - wr;
+            if (n - done < k) k = n - done;
+            memcpy(m_buf + wr, (const u8 *)src + done, k);
+            wr = (wr + k) % m_size;
+            done += k;
+        } while (done < n);
+        return 1;
+    }
+    void Push(const void *src, s32 n) {
+        if (Write(src, n)) {
+            m_wr = (m_wr + n) % m_size;
+            m_count += n;
+        }
+    }
+};
 class CMiniGame6Board {
 public:
     s32 CheckLine(s32 *out);
     s32 FindFree(s32 row, s32 v);
     void SetPos(f32 v);
     void SetAlpha(f32 v);
-    f32 Wrap(f32 v);
+    static f32 Wrap(f32 v);
     s32 GetCell(s32 row, s32 col);
+    void UpdateReel(s32 k);
+    s32 Score();
     u8 pad0[0x100];
     CMiniGame6Sprite m_spr[6]; // 0x100
     f32 m_unk9A0;             // 0x9A0
     f32 m_unk9A4;             // 0x9A4
-    u8 pad9A8[0xA14 - 0x9A8];
+    u8 pad9A8[0x9EC - 0x9A8];
+    CMg6Queue m_queue;        // 0x9EC
+    s32 m_unkA08;             // 0xA08
+    u8 padA0C[0x8];
     s32 m_unkA14;             // 0xA14
     s32 m_cells[3][20];       // 0xA18
-    u8 padB08[0xC];
-    f32 m_unkB14[8];          // 0xB14
+    s32 m_state[3];           // 0xB08
+    f32 m_unkB14[3];          // 0xB14 (reel position)
+    f32 m_speed[3];           // 0xB20
+    s32 m_want[3];            // 0xB2C
+    s32 m_target[3];          // 0xB38
+    s32 m_row[3];             // 0xB44
+    f32 m_acc[3];             // 0xB50
+    f32 m_lim[3];             // 0xB5C
 };
 
 extern "C" void func_002491A8(char *buf, const char *name, const char *a, const char *b, const char *c);
@@ -136,7 +206,27 @@ void *Alloc1E7E58(s32 size);
 void CallMiniGame6Hook();
 void Func1E9168(void *a);
 
-#include "CList.h"
+// CListTag as in CList.h, but with the destructor inline (retail inlines the unlink into
+// ~CMiniGame6Res); #pragma interface at the top keeps the vtables in the asm data.
+class CListTag {
+public:
+    CListTag() {
+        m_isHead = 0;
+        m_next = this;
+        m_prev = this;
+    }
+    virtual ~CListTag() {
+        m_prev->m_next = m_next;
+        m_next->m_prev = m_prev;
+        m_next = this;
+        m_prev = this;
+    }
+
+    s32 m_isHead;             // 0x0
+    CListTag *m_prev;         // 0x4
+    CListTag *m_next;         // 0x8
+    // vptr 0xC
+};
 class CLayoutRes {
 public:
     CLayoutRes();
@@ -186,7 +276,9 @@ CMiniGame6Res *CreateMiniGame6Res() {
     return new CMiniGame6Res;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3440);
+CMiniGame6Res::~CMiniGame6Res() {
+    ((CMiniGame6ResObj *)this)->Release1E35A8();
+}
 
 int CMiniGame6ResLoader::Load1E34E8(const char *name) {
     char buf[256];

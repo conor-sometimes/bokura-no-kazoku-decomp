@@ -159,6 +159,7 @@ public:
 class CFlagWork {
 public:
     int Func1091B0(s32 id);
+    void Func108FF0(s32 id, s32 v);
 };
 extern CFlagWork *D_002A26E4;
 // Vtable 0x2C0CC8 still asm. Release is declared first and never defined (it is the inline slot 0
@@ -175,6 +176,7 @@ public:
     s32 Func148238(CGameDBRec34 *out, const char *text);
     s32 Func1485E8(CGameDBRec34 *out, char *name, s32 idx, s32 k, s32 k8);
     virtual void Release();
+    s32 Func14EE18(s32 name);
     s32 Func14BD00(s32 a, s32 b, s32 *out, s32 max);
     void Func14FF30();
     s32 Func14CF78(s32 name);
@@ -182,6 +184,7 @@ public:
     s32 Func150680();
     s32 Func14F550(s32 name, s32 kind, s32 bit);
     s32 Func14F760(s32 name, s32 kind);
+    s32 Func14FA08(s32 v, s32 flag);
     s32 Func14F830(s32 name, s32 kind, s32 bit);
     s32 Func14C048(s32 *ids, s32 *flags, s32 name);
     s32 Func14E660(s32 id, s32 a, s32 b);
@@ -859,7 +862,18 @@ s32 CGameDBMgr::Func148238(CGameDBRec34 *out, const char *text) {
     return total;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_00148400);
+char *func_00148400(char *s) {
+    while (*s) {
+        s8 c = *(u8 *)s;
+        if (c >= 0) {
+            if (c == 0x5C && s[1] == 0) return s;
+            s++;
+        } else {
+            s += 2;
+        }
+    }
+    return 0;
+}
 
 const char *func_00148450(const char *s, char *buf, s32 n) {
 char *p;
@@ -1590,7 +1604,17 @@ const char *CGameDBMgr::Func14CA38(s32 name) {
     return r->m_names[n];
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014CAF0);
+int CGameDBMgr::Func14CAF0(s32 id, s32 mask) {
+    s32 k = Func14BB28(id);
+    s32 i;
+    CGameDBBits *b = &m_bits[k];
+    if (k < 0) return 0;
+    for (i = 0; i < 7; i++) {
+        if (!((mask >> i) & 1)) continue;
+        if ((b->m_bits[i] >> ((ICurFlag *)D_002A26E4)->GetNamed(D_002A2D50[i], id)) & 1) return 1;
+    }
+    return 0;
+}
 
 int CompareGameDBIds(const s32 *a, const s32 *b) {
     return *a - *b;

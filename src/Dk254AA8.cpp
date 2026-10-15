@@ -22,6 +22,7 @@ public:
 };
 class CFontTextRes : public IFontTextRes {
 public:
+    virtual void Release();                                  // [0] override, never defined: keeps the vtable out of this object
     CFontTextRes();
     virtual s32 Load(const char *name, s32 page);            // [1] 0x2556A8 key
     virtual void Clear(s32 page);                            // [2] 0x255978
@@ -41,6 +42,7 @@ public:
 };
 class CFontBankRes : public IFontBankRes {
 public:
+    virtual s32 GetUnk4();                                   // [1] override, never defined: keeps the vtable out of this object
     CFontBankRes();
     virtual s32 Regist(u32 id, void *a, void *b);            // [2] 0x255B20 key
     virtual s32 Load(s32 id, const char *a, const char *b);  // [3] 0x255C10
@@ -64,6 +66,7 @@ public:
 };
 class CFontVCodeRes : public IFontVCodeRes {
 public:
+    virtual void Release();                                  // [0] override, never defined: keeps the vtable out of this object
     CFontVCodeRes();
     virtual s32 Load(const char *name);                      // [1] 0x255EE8 key
     virtual void Free();                                     // [2] 0x2560C8
@@ -140,6 +143,15 @@ typedef __builtin_va_list va_list;
 extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
 void Func254FD0(CVec4 *out, CVec4 *k, f32 t);
 void Func255010(f32 *d, f32 *s);
+
+extern void *(*D_002B91A4)(u32 n);
+extern const char D_002E71E0[];
+extern const char D_002E7200[];
+extern const char D_002E7100[];
+void *Func24A4C0(const char *name);
+extern "C" s32 func_0024AD80(char *d, s32 c);
+extern "C" char *func_0024AD10(char *p, char *buf, s32 a, s32 n);
+char *Func24A570(const char *s, char *tok, const char *a, const char *b);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00254AA8);
@@ -300,7 +312,38 @@ CFontVCodeRes::~CFontVCodeRes() {
     D_002BA1D8 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00255EE8);
+s32 CFontVCodeRes::Load(const char *name) {
+    s32 ok = 0;
+    Free();
+    char *data = (char *)Func24A4C0(name);
+    if (!data) {
+        Func235DE0(D_002E71E0, name);
+    } else {
+        m_num = func_0024AD80(data, 1);
+        m_codes = (CVCode *)D_002B91A4(m_num * 4);
+        s32 i = 0;
+        char *p = data;
+        m_min = -1;
+        m_max = -1;
+        for (; i < m_num; i++) {
+            char line[0x100];
+            u8 tok[0x100];
+            p = func_0024AD10(p, line, 1, 0x100);
+            char *q = Func24A570(line, (char *)tok, D_002E7100, D_002E7100);
+            s32 from = (tok[0] << 8) | tok[1];
+            Func24A570(q, (char *)tok, D_002E7100, D_002E7100);
+            s32 to = (tok[0] << 8) | tok[1];
+            m_codes[i].m_from = from;
+            m_codes[i].m_to = to;
+            if (m_min < 0 || from < m_min) m_min = from;
+            if (m_max < 0 || m_max < to) m_max = to;
+        }
+        Func235DE0(D_002E7200, name);
+        ok = 1;
+    }
+    if (data) D_002B91B0(data);
+    return ok;
+}
 
 void CFontVCodeRes::Free() {
     if (m_codes) {

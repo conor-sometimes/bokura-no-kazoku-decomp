@@ -39,7 +39,7 @@ struct MpegSys {
     u8 padD0[0xE4 - 0xD0];
     s32 mE4;                    // 0xE4
     s32 mE8;                    // 0xE8
-    u8 padEC[0xF0 - 0xEC];
+    s32 mEC;                    // 0xEC
     u32 mF0;                    // 0xF0
     s32 mF4;                    // 0xF4
     s32 mF8;                    // 0xF8
@@ -52,9 +52,22 @@ struct MpegSys {
     s32 m130;                   // 0x130
     u8 pad134[0x138 - 0x134];
     s32 m138;                   // 0x138
-    u8 pad13C[0x18C - 0x13C];
+    s32 m13C;                   // 0x13C: horizontal size
+    s32 m140;                   // 0x140: vertical size
+    s32 m144;                   // 0x144
+    s32 m148;                   // 0x148
+    s32 m14C;                   // 0x14C: bit rate
+    s32 m150;                   // 0x150: vbv buffer size
+    s32 m154;                   // 0x154: progressive sequence
+    s32 m158;                   // 0x158: chroma format
+    s32 m15C;                   // 0x15C
+    s32 m160;                   // 0x160
+    s32 m164;                   // 0x164
+    u8 pad168[0x18C - 0x168];
     s32 m18C;                   // 0x18C
-    u8 pad190[0x1D0 - 0x190];
+    u8 pad190[0x1C8 - 0x190];
+    s32 m1C8;                   // 0x1C8
+    u8 pad1CC[0x1D0 - 0x1CC];
     struct { MpegBuf *m0; MpegBuf *m4; u8 pad8[8]; } m1D0[3];   // 0x1D0
     u8 pad200[0x5A8 - 0x200];
     u32 m5A8;                   // 0x5A8
@@ -66,7 +79,9 @@ struct MpegSys {
     s32 m828;                   // 0x828
     u8 pad82C[0x830 - 0x82C];
     s32 m830;                   // 0x830
-    u8 pad834[0x860 - 0x834];
+    u8 pad834[0x858 - 0x834];
+    s32 m858;                   // 0x858
+    s32 m85C;                   // 0x85C
     s32 m860;                   // 0x860
     u8 pad864[0x870 - 0x864];
     SceMpeg *m870;              // 0x870: the handle that owns this state

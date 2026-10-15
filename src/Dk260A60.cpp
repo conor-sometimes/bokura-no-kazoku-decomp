@@ -3,6 +3,13 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 struct Bits { u8 pad[0x6800]; u8 *m6800; u8 pad6804[0x68C8 - 0x6804]; s32 m68C8; };
 extern "C" s32 func_002613E8(s32, Bits *);
+
+extern "C" s32 strcmp(const char *, const char *);
+extern const char D_002E8FD0[];
+extern const char D_002E8FD8[];
+extern const char D_002E8FE0[];
+extern const char D_002E8FE8[];
+extern const char D_002E8FF0[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00260A60);
@@ -45,6 +52,12 @@ INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262B18);
 
 extern "C" s32 func_00262BE0(s32 a) { return a & 0xF; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262BE8);
+extern "C" s32 func_00262BE8(const char *s) {
+    if (!strcmp(s, D_002E8FD0)) return 1;
+    if (!strcmp(s, D_002E8FD8)) return 2;
+    if (!strcmp(s, D_002E8FE0)) return 4;
+    if (!strcmp(s, D_002E8FE8)) return 8;
+    return strcmp(s, D_002E8FF0) ? 0 : 0x12;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262CA0);

@@ -606,3 +606,27 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **A store run's emission order**: GCC 2.96 emitted the last of a run of independent field stores
   right after the first; putting the store retail emits second at the end of the source run matched
   0x24FA88 at once. *(bokura)*
+## d2
+- **dklib units are level 1** (no own .rodata/vtable piece): any C++ that needs a jump table (switch with 4+
+  dense cases) or a key method can't be matched yet; everything else works with the vtables in asm. *(bokura)*
+- **Packet allocation in dklib is an inline with a count**: `inline u32 *PktAlloc(s32 n) { u32 *p = PKT; PKT = p + n;
+  return p; }` gives retail's `li $5,4; addu` (the 4 kept in a register); r4's `PUT(v)` inline doesn't. *(bokura)*
+- **Unaligned 64-bit struct arguments**: an 8-byte name passed by value in one register (`ldl/ldr` straight into
+  `$a1`) matched as `((const struct { u64 v __attribute__((packed)); } *)D_x)->v`; a `char[8]` struct by value is
+  copied through the stack. *(bokura)*
+- **Parameters reused as locals show up in register choice**: when retail keeps a result in the register of a dead
+  parameter (`a = vcall(a, ...)`, `b = func(a, name)`), write the assignment to the parameter; a fresh local gets
+  another s-register (0x25AE80, 0x25AF70). *(bokura)*
+- **A redundant null check kept by retail came from an inline**: `inline void FreeIf(void *p) { if (p) free(p); }`
+  keeps the second test GCC drops when written inline in the function (0x25AE80). *(bokura)*
+- **Callee "constructors" written as C functions still return a value**: `lui $3` (not `$2`) right after the call
+  means the callee is non-void (GCC 2.x ctors return this); declare it `void *` and leave out the return in its
+  own body (0x25E290, 0x25ED28). *(bokura)*
+- **Sub-object init via an inline constructor**: stores through `this+0x68` as a base pointer (`addiu $2,$16,0x68;
+  sw $4,4($2)`) came from `new (&u->m68) CSub;` with an inline ctor (placement new); plain field stores use the
+  object register. *(bokura)*
+- **Division by a constant that GCC didn't turn into a multiply** (`div.s` by 2048.0) came from a local
+  `f32 n = 2048.0f;` (folding happens at tree level, the local is only propagated later). *(bokura)*
+- **Accessors over an array of 0xD9B0-byte slots**: `if (i < 8) { CAt3 *a = &D[i]; if (a->m_active) return a; }`
+  produced retail's `la $3, D($3)` ($at expansion) where `D[i].m_active` folded `D+8` first; error-printing
+  accessors were one inline `GetAt3(i, fn)` with nested ifs. *(bokura)*

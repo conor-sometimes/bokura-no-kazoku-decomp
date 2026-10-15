@@ -78,6 +78,7 @@ int Func2250C0();
 void Func225240(int v);
 class CMenuMgrSub1B6418 {
 public:
+    void SetUnk4C(f32 v);
     void SetUnk0And20(f32 x, f32 y);
     void Move1B6488(f32 x, f32 y);
     void SetUnkE0(s32 v);
@@ -90,7 +91,13 @@ public:
     void GetMappedUnkC0(f32 *x, f32 *y, s32 n);
     int Select(s32 n);
     void SetMappedColor(s32 n, const CVec4 *v);
-    u8 pad0[0x38];
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+    u8 pad24[0x10];
+    f32 m_unk34;              // 0x34
     s32 m_mapCount;           // 0x38
 };
 extern const char D_002DF0B8[];
@@ -103,6 +110,7 @@ public:
     void Func1A7308(s32 n);
     void Func1A7130();
     void Func1A71F0();
+    void Update1A73B0();
 
     CStateMachine m_sm;       // 0x0
     CUnk1A4298 *m_unk48;      // 0x48
@@ -128,7 +136,7 @@ public:
     virtual void F4();
     virtual void F5();
     virtual void F6();
-    virtual void F7();
+    virtual void F7(u32 *a, u32 *b, u32 *c);
     virtual void F8();
     virtual void F9();
     virtual void F10();

@@ -6,7 +6,7 @@ INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280170);
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280178);
 
-INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280260);
+INCLUDE_ASM("asm/nonmatchings/Dk280098", fmod);
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280278);
 

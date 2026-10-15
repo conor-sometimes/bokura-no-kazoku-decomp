@@ -202,6 +202,10 @@ inline s32 RandRange(CSvmRand *rnd, s32 lo, s32 hi) {
 }
 
 extern "C" void func_00297668(void *arr);
+
+//@sym fptodp 0x284B98
+//@sym dptofp 0x285498
+//@sym fmod 0x280260
 // @decl-end
 
 
@@ -350,7 +354,13 @@ int CSvmWork::IsVarZero(u32 i) {
     return m_vars[i] < 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_0012ECE0);
+void CSvmWork::Jump12ECE0(s32 k, s32 push) {
+if (k == 0) return;
+    if (k < 0 || m_data->m_numLabels - 1 < k) { Fatal(D_002D5268, k, m_data->m_numLabels); return; }
+    if (push) CallFunc12E9D8(2, m_unk480 - m_data->m_codeBase);
+    m_unk480 = m_data->m_codeBase + m_data->m_labels[k];
+    Trace(D_002D52A0, k, m_data->m_labels[k]);
+}
 
 void CSvmWork::Trace(const char *fmt, ...) {
     if (m_trace) {
@@ -654,9 +664,13 @@ void OpIntRand130718(CValue *a, CValue *b, CSvmWork *w) {
     a->SetInt(r);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_00130830);
+void OpFloatOr130830(CValue *a, CValue *b) {
+a->SetFloat((u32)(a->AsFloat() != 0.0f || b->AsFloat() != 0.0f));
+}
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_001308C8);
+void OpFloatAnd1308C8(CValue *a, CValue *b) {
+a->SetFloat((u32)(a->AsFloat() != 0.0f && b->AsFloat() != 0.0f));
+}
 
 void OpFloatEq130958(CValue *a, CValue *b) {
     a->SetFloat(a->AsFloat() == b->AsFloat() ? 1.0f : 0.0f);
@@ -693,7 +707,10 @@ void OpFloatDiv130C18(CValue *a, CValue *b) {
     a->SetFloat(a->AsFloat() / b->AsFloat());
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_00130CB0);
+void OpFloatMod130CB0(CValue *a, CValue *b) {
+if (b->AsFloat() == 0.0f) return (void)Func235DE0(D_002D53D0);
+    a->SetFloat(fmod(a->AsFloat(), b->AsFloat()));
+}
 
 void OpFloatMulPct130D70(CValue *a, CValue *b) {
     a->SetFloat(a->AsFloat() * b->AsFloat() / 100.0f);
