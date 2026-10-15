@@ -46,7 +46,7 @@ public:
     int GetUnk10(f32 *x, f32 *y, s32 i);
     void Func1A40C8();
     int Func1A38D0(s32 i);
-    int GetPos(f32 *x, f32 *y, s32 i);
+    void GetPos(f32 *x, f32 *y, s32 i);
     void Func1A3628();
     void SetUnk34(f32 v);
     void Start();
@@ -331,10 +331,60 @@ void Func238158(void *p, int v);
 void Func225088();
 int Func2250C0();
 void Func225240(int v);
+// The status window base (CStatusBase.cpp): fields up to 0x58, then its vptr (7 pure slots).
 class CStatusBase {
 public:
     f32 GetItemUnk34();
+    virtual void V0() = 0;
+    virtual void V1() = 0;
+    virtual void V2() = 0;
+    virtual void V3() = 0;
+    virtual void V4() = 0;
+    virtual void V5() = 0;
+    virtual void V6() = 0;
+
+    CStateMachine m_sm;       // 0x0
+    CStatusItem *m_item;      // 0x48
+    s32 m_state;              // 0x4C
+    u32 m_unk50;              // 0x50
+    s32 m_unk54;              // 0x54
+    // vptr 0x58
 };
+class CMenuLoadMemorialSub179568 {
+public:
+    void SetUnk64(u32 i, f32 v);
+    void SetUnk60(f32 v);
+};
+class CMenuLoadMemorialSub178778 {
+public:
+    void SetUnk64(u32 i, f32 v);
+    void SetUnk60(f32 v);
+};
+// The class of _vt$10CStatusWin (vptr 0x58, constructor 0x19CD98). Named CStatusWinV here because
+// "CStatusWin" in this file is the vtable-less window class of the methods from 0x19F200 on.
+// The destructor (slot 7, key method, not defined yet) is declared first so it stays the key
+// method; the override order does not change the slots.
+class CStatusWinV : public CStatusBase {
+public:
+    virtual ~CStatusWinV();
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+
+    CMenuLoadMemorialSub179568 *m_unk5C; // 0x5C
+    CMenuLoadMemorialSub178778 *m_unk60; // 0x60
+    u8 pad64[0x200 - 0x64];
+    f32 m_unk200;             // 0x200
+    f32 m_unk204;             // 0x204
+};
+extern "C" void func_0019C428(void *p);
+extern "C" void func_001795F8(void *p);
+extern "C" void func_001789B8(void *p);
+extern void *D_002A53D4;
 
 //@sym Load1A1CF0__19CStatusWinSub1A1BF0PCcPc 0x1A1CF0
 //@sym __19CStatusWinSub1A1BF0 0x1A1BE8
@@ -344,6 +394,10 @@ extern const char D_002DE040[], D_002DE070[], D_002DE088[];
 extern void (*D_002B91B0)(void *p);
 
 //@sym Func19FE18__10CStatusWin 0x19FE18
+
+extern "C" int func_00179198(void *p);
+extern "C" int func_0017A370(void *p);
+extern "C" int func_0019C730(void *p, f32 x, f32 y, f32 a);
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -395,7 +449,9 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D0A8);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D138);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D570);
+void CStatusWinV::V0() {
+    V1();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D5A0);
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDE30);
@@ -408,9 +464,40 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DBA0);
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DD48);
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DDC0);
+void CStatusWinV::V5() {
+    s32 i;
+    func_0019C428(D_002A53D4);
+    if (m_unk5C) func_001795F8(m_unk5C);
+    if (m_unk60) func_001789B8(m_unk60);
+    if (m_state != 3) {
+        for (i = 0; i < 5; i++) m_unk60->SetUnk64(i, m_item->m_unk34);
+        for (i = 0; i < 8; i++) m_unk5C->SetUnk64(i, m_item->m_unk34);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019DE80);
+void CStatusWinV::V6() {
+    f32 x, y;
+    u8 *p = (u8 *)Func237570(0x40);
+    Func237A88(p, 4);
+    Func238158(Func237C30(p + 0x30), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(((CUnk1A4298 *)m_item)->Func1A4298());
+    D_002A5530->Reset1B4D28();
+    D_002A5530->SetUnk30(1.0f, 1.0f, 0.0f, 0.0f);
+    D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, m_item->m_unk34);
+    m_unk60->SetUnk60(m_item->m_unk34);
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_00179198(m_unk60));
+    m_unk5C->SetUnk60(m_item->m_unk34);
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_0017A370(m_unk5C));
+    D_002A5530->Reset1B4D28();
+    m_item->GetPos(&x, &y, 0xB);
+    {
+        f32 a = m_item->m_unk34;
+        ((CUnk237E90 *)(p + 0x20))->Func237E90(func_0019C730(D_002A53D4, x + m_unk200, y + m_unk204, a));
+    }
+    Func225088();
+    Func225240((int)p);
+    Func2250C0();
+}
 
 void CStatusWin::Func19E008() {
     s32 i;
@@ -1019,8 +1106,8 @@ void CStatusItem::GetMappedUnkC0(f32 *x, f32 *y, s32 n) {
     *y = e->m_unkC0[1];
 }
 
-int CStatusItem::GetPos(f32 *x, f32 *y, s32 i) {
-    if (i < 0 || m_count - 1 < i) return Func235DE0(D_002DE788, this, i);
+void CStatusItem::GetPos(f32 *x, f32 *y, s32 i) {
+    if (i < 0 || m_count - 1 < i) return (void)Func235DE0(D_002DE788, this, i);
     CStatusEntry *e = &m_entries[i];
     *x = e->m_pos[0];
     *y = e->m_pos[1];

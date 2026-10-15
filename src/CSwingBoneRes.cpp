@@ -6,6 +6,7 @@ int Func111960(CSwingBone *p, void *data);
 void *Func245D00(int size);
 class CSwingBoneRes2 {
 public:
+    s32 LoadFile(const char *name);
     int Load(void *data);
     void Func111CF8();
     CSwingBone *Find(int id);
@@ -25,6 +26,16 @@ public:
 };
 
 extern void (*D_002B91B0)(void *p);
+
+struct CSwingAxisDef {
+    s32 m_axes;               // 0x0
+    char m_name[0x10];        // 0x4
+    f32 m_scale;              // 0x14
+};
+const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
+char *Func24A570(const char *p, char *dst, const char *s1, const char *s2);
+extern "C" char *func_0024A778(char *p, f32 *v, f32 def, const char *s1, const char *s2);
+extern char D_002D33A0[], D_002D33A8[];
 // @decl-end
 
 CSwingBoneRes::CSwingBoneRes() {
@@ -36,7 +47,26 @@ CSwingBoneRes::~CSwingBoneRes() {
     ((CSwingBoneRes2 *)this)->Func111CF8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSwingBoneRes", func_001117C0);
+s32 Func1117C0(CSwingAxisDef *defs, const char *p) {
+    char line[0x100];
+    char axes[0x100];
+    s32 n;
+    for (n = 0; p = Func24AFE8(p, line, 1, 0x100), *p || line[0]; n++) {
+        if (defs) {
+            char *q = Func24A570(line, defs[n].m_name, D_002D33A0, D_002D33A8);
+            char *s;
+            q = Func24A570(q, axes, D_002D33A0, D_002D33A8);
+            defs[n].m_axes = 7;
+            for (s = axes; *s; s++) {
+                if (*s == 'x') defs[n].m_axes &= ~1;
+                if (*s == 'y') defs[n].m_axes &= ~2;
+                if (*s == 'z') defs[n].m_axes &= ~4;
+            }
+            func_0024A778(q, &defs[n].m_scale, 1.0f, D_002D33A0, D_002D33A8);
+        }
+    }
+    return n;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CSwingBoneRes", D_002D33A0);
 INCLUDE_RODATA("asm/nonmatchings/CSwingBoneRes", D_002D33A8);

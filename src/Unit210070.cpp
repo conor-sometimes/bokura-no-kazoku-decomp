@@ -354,7 +354,27 @@ found:
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00210958);
+extern "C" void func_00210958(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+    Mark *n;
+    Mark10 *m;
+    MemStrm *s = D_331E58.m;
+    for (i = 0; i < 64; i++, s++) s->used = 0;
+    D_331E58.free18 = 0;
+    n = D_331E58.n18;
+    for (j = 0; j < 256; j++, n++) {
+        n->next = D_331E58.free18;
+        D_331E58.free18 = n;
+    }
+    D_331E58.free10 = 0;
+    m = D_331E58.n10;
+    for (k = 0; k < 256; k++, m++) {
+        m->next = D_331E58.free10;
+        D_331E58.free10 = m;
+    }
+}
 
 extern "C" void func_002109F0(void) {
     s32 i;

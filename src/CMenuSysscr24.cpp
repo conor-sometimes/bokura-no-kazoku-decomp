@@ -10,7 +10,7 @@ public:
     virtual s32 Func1A4FE0();
     virtual s32 Func29B570();
     virtual s32 Func29B578();
-    virtual s32 Func1A5048();
+    virtual s32 Func1A5048(char *buf);
     virtual s32 Func1A50C8();
     virtual s32 Func1A64D0();
     virtual s32 Func1A4F78();

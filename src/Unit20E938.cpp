@@ -236,7 +236,64 @@ found:
     return (char *)t + s->off[j];
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20E938", func_0020F0D8);
+extern "C" s32 func_0020F0D8(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
+    u8 *p = func_0020EBF8(a, b);
+    Fmt *fm;
+    Strm *s;
+    s32 k;
+    if (p == 0 || (fm = &D_32F300.fmt[p[0]])->m4 == 0) {
+        if (func_00211428() & 1) Func235DE0(D_002E3440, a, b);
+        goto fail;
+    }
+    s = D_32F300.free;
+    if (s == 0) {
+        if (func_00211428() & 1) Func235DE0(D_002E3478);
+        goto fail;
+    }
+    s->ops = (StrmOps *)&fm->ops;
+    s->m8 = a;
+    s->mC = b;
+    s->m10 = 0;
+    s->m14 = 0;
+    s->m1A = 0;
+    s->m1B = j;
+    s->m1C = 0x26;
+    s->m1D = 0;
+    s->m1E = 0;
+    s->m1F = 0;
+    s->m20 = 0x80;
+    s->m22 = 0x80;
+    s->m24 = 1.0f;
+    s->m28 = 1.0f;
+    s->m2C = c;
+    s->m50 = 0;
+    s->m34 = d;
+    s->m38 = e;
+    s->m3C = f;
+    s->m40 = g;
+    s->m44 = h;
+    s->m48 = i;
+    s->m54 = 0;
+    s->m58 = 0;
+    s->m4C = -1;
+    s->m30 = 0;
+    for (k = 0; k < 16; k++) {
+        s->m5C[k] = 0x80;
+        s->m7C[k] = 0x80;
+    }
+    s->m4C = s->ops->open(s);
+    if (s->m4C < 0) {
+        if (func_00211428() & 1) Func235DE0(D_002E3498, a, b);
+        goto fail;
+    }
+    D_32F300.free = s->next;
+    s->next = D_32F300.active;
+    D_32F300.active = s;
+    s->m19 = 1;
+    return s->m18;
+fail:
+    return -1;
+}
 
 extern "C" s32 func_0020F308(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i) {
     return func_0020F0D8(a, b, 0, c, d, e, f, g, h, i);

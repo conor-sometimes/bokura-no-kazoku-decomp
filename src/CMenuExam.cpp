@@ -148,6 +148,8 @@ public:
     s32 Draw17B4D8(s32 k);
 };
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
+
+extern char D_002DAEB8[];
 // @decl-end
 
 CMenuExam::CMenuExam() {
@@ -275,7 +277,26 @@ void Func185F18(char *dst, s32 k, s32 flag) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_00185FD8);
+s32 Func185FD8(s32 k) {
+    s32 v = D_002A5358->Func1091B0(k + 0x2E);
+    s32 a = D_002A5358->Func1091B0(k + 0x34);
+    s32 b = D_002A26E4->Func1091B0(k + 0xE8);
+    s32 c = D_002A26E4->Func1091B0(k + 0xF4);
+    if ((u32)v < 4) return 0;
+    if ((u32)(v - 4) < 3) return 1;
+    if ((u32)(v - 7) < 6) return 2;
+    if ((u32)(v - 13) < 3) return 3;
+    if ((u32)(v - 16) < 3) return 4;
+    if (a == 9 && b == 1 && c > 0) return 8;
+    if (a == 9 && b == 1 && c == 0) return 7;
+    if (a == 9 && b == 0 && c == 0) return 6;
+    if (a != 9 && b == 0 && c == 0) return 5;
+    if (a != 9 && b == 0 && c > 0) return 9;
+    if (a != 9 && b == 1 && c > 0) return 10;
+    if (a == 9 && b == 0 && c > 0) return 11;
+    Func235DE0(D_002DAEB8, v, a, b, c);
+    return 0;
+}
 
 void Func186198(char *dst, s32 a, s32 b) {
     CTextBuf buf;

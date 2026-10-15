@@ -177,6 +177,55 @@ public:
     u8 padA0[0xA8];
     s32 m_mute;               // 0x148
 };
+
+struct CGsTexInfo {
+    u64 tbp : 14;
+    u64 tbw : 6;
+    u64 pad20 : 12;
+    u64 psm : 6;
+    u64 pad38 : 26;
+};
+class CMenuAsksavequitTex {
+public:
+    int Draw193FE0();
+    void Draw194140(f32 x, f32 y, f32 s);
+
+    u64 m_tex;                // 0x0
+    u64 m_clut;               // 0x8
+    u8 pad10[0x4];
+    s32 m14;                  // 0x14
+    s32 m18;                  // 0x18
+    s32 m1C;                  // 0x1C
+    s32 m20;                  // 0x20
+    s32 m24;                  // 0x24
+    u8 pad28[0x4];
+    s32 m2C;                  // 0x2C
+    s32 m30;                  // 0x30
+};
+void Func225088();
+int Func2250C0();
+void Func2251E8();
+void Func227DC8(long a, s32 b, s32 c);
+extern "C" void func_00227BF0(u64 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+#define GS_SET_TEX0(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+#define GS_SET_CLAMP(wms, wmt, minu, maxu, minv, maxv) \
+    ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
+     ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+
+struct CAqSprPkt {
+    s32 u0, v0, u1, v1;
+    s32 x0, y0, x1, y1;
+    s32 r, g, b, a;
+};
+inline void PutRGBA2(CAqSprPkt *p) { func_00226DF8(1, (u64)p->r | ((u64)p->g << 8) | ((u64)p->b << 16) | ((u64)p->a << 24)); }
+inline void PutXYZ2(s32 x, s32 y) { func_00226DF8(5, (u64)x | ((u64)y << 16)); }
+inline void PutUV2(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
 // @decl-end
 
 CMenuAsksavequit::CMenuAsksavequit() {
@@ -274,9 +323,46 @@ u64 CMenuAsksavequitSub193FC0::SwapUnk8(u64 v) {
     return old;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00193FE0);
+int CMenuAsksavequitTex::Draw193FE0() {
+    Func225088();
+    if (m2C > 0) {
+        Func227DC8(m_clut, m2C * m30, m24);
+    }
+    m_tex = (m_tex & ~((u64)0x3F << 32)) | ((u64)(m18 & 0x3F) << 32);
+    func_00227BF0(m_tex, 0, 0, m1C, m20, m14);
+    func_00227A20();
+    func_00226DF8(0x14, 0x60);
+    func_00226DF8(6, GS_SET_TEX0(m_tex & 0x3FFF, (m_tex >> 14) & 0x3F, (m_tex >> 32) & 0x3F, 10, 10, 1, 0, m_clut & 0x3FFF, (m_clut >> 32) & 0x3F, 0, 0, 1));
+    func_00226DF8(8, GS_SET_CLAMP(2, 2, 0, m1C - 1, 0, m20 - 1));
+    func_00227AA8();
+    Func2251E8();
+    return Func2250C0();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", func_00194140);
+void CMenuAsksavequitTex::Draw194140(f32 x, f32 y, f32 s) {
+    CAqSprPkt pkt;
+    Func225088();
+    func_00227A20();
+    pkt.a = (s32)(s * 128.0f);
+    pkt.u0 = 0;
+    pkt.v0 = 0;
+    pkt.u1 = m1C << 4;
+    pkt.v1 = m20 << 4;
+    pkt.x0 = (s32)(x * 16.0f) + 0x6C00;
+    pkt.y0 = (s32)(y * 16.0f) + 0x7200;
+    pkt.x1 = pkt.x0 + pkt.u1;
+    pkt.y1 = pkt.y0 + pkt.v1;
+    pkt.b = pkt.g = pkt.r = 0x80;
+    func_00226DF8(0, 0x156);
+    PutRGBA2(&pkt);
+    PutUV2(pkt.u0, pkt.v0);
+    PutXYZ2(pkt.x0, pkt.y0);
+    PutUV2(pkt.u1, pkt.v1);
+    PutXYZ2(pkt.x1, pkt.y1);
+    func_00227AA8();
+    Func2251E8();
+    Func2250C0();
+}
 
 CMenuRecord *CMenuRecord::Create() {
     CMenuRecord *p = (CMenuRecord *)operator new(0x158);

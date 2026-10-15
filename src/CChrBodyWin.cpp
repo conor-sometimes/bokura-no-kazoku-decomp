@@ -70,7 +70,9 @@ public:
     void *m_unk68;            // 0x68
     CStatusBaseSub19AE68* m_unk6C; // 0x6C
     void *m_unk70;            // 0x70
-    u8 pad74[0x124];
+    u8 pad74[0x114];
+    u64 m_unk188;             // 0x188
+    u64 m_unk190;             // 0x190
     CChrBodyEntry m_ent[6];   // 0x198
     s32 m_unk360;             // 0x360
     s32 m_unk364;             // 0x364
@@ -153,6 +155,38 @@ void Func225088();
 int Func2250C0();
 
 extern CFlagWork *D_002A4B60;
+
+struct CChrBodySub {
+    void *m0;
+    s32 m4, m8, mC, m10, m14, m18, m1C, m20;
+};
+void Func2251E8();
+void Func227DC8(long a, s32 b, s32 c);
+extern "C" void func_00227BF0(u64 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+#define GS_SET_TEX0(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+#define GS_SET_CLAMP(wms, wmt, minu, maxu, minv, maxv) \
+    ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
+     ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+
+class CMenuRecordWin {
+public:
+    void Func1A39A8(f32 *a, s32 *b, s32 k);
+};
+struct CChrSprPkt {
+    s32 u0, v0, u1, v1;
+    s32 x0, y0, x1, y1;
+    s32 r, g, b, a;
+};
+extern "C" void func_001866D0(s32 *xy, f32 x, f32 y, f32 w, f32 h);
+inline void PutRGBA(CChrSprPkt *p) { func_00226DF8(1, (u64)p->r | ((u64)p->g << 8) | ((u64)p->b << 16) | ((u64)p->a << 24)); }
+inline void PutXYZ(s32 x, s32 y) { func_00226DF8(5, (u64)x | ((u64)y << 16)); }
+inline void PutUV(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DAFD0);
@@ -246,9 +280,69 @@ INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187A68__11CChrBodyWinPciii);
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187D68__11CChrBodyWiniii);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187ED0__11CChrBodyWini);
+int CChrBodyWin::Func187ED0(s32 k) {
+    CChrBodySub *e;
+    if (k == 1 && m_ent[m_unk37C].m28) {
+        e = (CChrBodySub *)&m_ent[m_unk37C].m28;
+    } else {
+        if (k != 0) return 0;
+        e = (CChrBodySub *)&m_ent[m_unk37C].m4;
+    }
+    if (e->m1C > 0) {
+        Func227DC8(m_unk190, e->m1C * e->m20, e->m14);
+    }
+    m_unk188 = (m_unk188 & ~((u64)0x3F << 32)) | ((u64)(e->m8 & 0x3F) << 32);
+    func_00227BF0(m_unk188, 0, 0, e->mC, e->m10, e->m4);
+    func_00227A20();
+    func_00226DF8(0x14, 0x60);
+    func_00226DF8(6, GS_SET_TEX0(m_unk188 & 0x3FFF, (m_unk188 >> 14) & 0x3F, (m_unk188 >> 32) & 0x3F, 10, 10, 1, 0, m_unk190 & 0x3FFF, (m_unk190 >> 32) & 0x3F, 0, 0, 1));
+    func_00226DF8(8, GS_SET_CLAMP(2, 2, 0, e->mC - 1, 0, e->m10 - 1));
+    func_00227AA8();
+    Func2251E8();
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func188098__11CChrBodyWinffff);
+void CChrBodyWin::Func188098(f32 x, f32 y, f32 s, f32 t) {
+    CChrSprPkt pkt;
+    f32 o0;
+    f32 c0;
+    f32 o1;
+    f32 c1;
+    ((CMenuRecordWin *)m_unk388)->Func1A39A8(&o0, (s32 *)&c0, 0);
+    ((CMenuRecordWin *)m_unk388)->Func1A39A8(&o1, (s32 *)&c1, 1);
+    pkt.a = (s32)(s * 128.0f);
+    func_00227A20();
+    pkt.u0 = 8;
+    pkt.v0 = 8;
+    pkt.u1 = 0xC08;
+    pkt.v1 = 0xB08;
+    x -= (t * 192.0f - 192.0f) * 0.5f;
+    y -= (t * 176.0f - 176.0f) * 0.5f;
+    f32 w = m_unk378 * 192.0f * t;
+    f32 h = m_unk378 * 176.0f * t;
+    func_001866D0(&pkt.x0, x - o0 + o1, y - o0 + o1, w + (o0 + o0), h + (o0 + o0));
+    pkt.r = pkt.g = pkt.b = (s32)c1;
+    func_00226DF8(0, 0x46);
+    PutRGBA(&pkt);
+    PutXYZ(pkt.x0, pkt.y0);
+    PutXYZ(pkt.x1, pkt.y1);
+    func_001866D0(&pkt.x0, x - o0, y - o0, w + (o0 + o0), h + (o0 + o0));
+    pkt.r = pkt.g = pkt.b = (s32)c0;
+    func_00226DF8(0, 0x46);
+    PutRGBA(&pkt);
+    PutXYZ(pkt.x0, pkt.y0);
+    PutXYZ(pkt.x1, pkt.y1);
+    func_001866D0(&pkt.x0, x, y, w, h);
+    pkt.r = pkt.g = pkt.b = 0x80;
+    func_00226DF8(0, 0x156);
+    PutRGBA(&pkt);
+    PutUV(pkt.u0, pkt.v0);
+    PutXYZ(pkt.x0, pkt.y0);
+    PutUV(pkt.u1, pkt.v1);
+    PutXYZ(pkt.x1, pkt.y1);
+    func_00227AA8();
+    Func2251E8();
+}
 
 void CChrBodyWin::Init1883D0() {
     D_002A4308 = this;

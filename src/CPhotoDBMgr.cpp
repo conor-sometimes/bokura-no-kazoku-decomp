@@ -12,8 +12,8 @@ public:
     virtual int Func29A2E8() = 0;
     virtual int Func29A320() = 0;
     virtual int Func171448(char *out, s32 id, s32 idx) = 0;
-    virtual int Func171510() = 0;
-    virtual int Func171838() = 0;
+    virtual int Func171510(char *out, s32 day, s32 idx, s32 id) = 0;
+    virtual int Func171838(s32 day) = 0;
 };
 // Vtable 0x2C1510: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
 // Func1705C0, not the destructor (slot 9). Slots 3-5 are inline too.
@@ -27,8 +27,8 @@ public:
     virtual int Func29A2E8();
     virtual int Func29A320();
     virtual int Func171448(char *out, s32 id, s32 idx);
-    virtual int Func171510();
-    virtual int Func171838();
+    virtual int Func171510(char *out, s32 day, s32 idx, s32 id);
+    virtual int Func171838(s32 day);
     virtual ~CPhotoDBMgr();
     void Clear();
 
@@ -175,7 +175,7 @@ public:
     virtual void V3();
     virtual void V4();
     virtual void V5();
-    virtual void V6();
+    virtual s32 V6();
     virtual void V7();
     virtual void V8();
     virtual void V9();
@@ -356,7 +356,23 @@ CPhotoRec *CPhotoDBMgrSub1714C8::Find(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171510);
 
-INCLUDE_ASM("asm/nonmatchings/CPhotoDBMgr", func_00171838);
+int CPhotoDBMgr::Func171838(s32 day) {
+    s32 best;
+    s32 d;
+    if (day < 0) day = D_002A26E4->V6();
+    best = 0;
+    for (d = 0; d <= day; d++) {
+        s32 cnt = 0;
+        s32 i;
+        for (i = 0; i < m_unk1C; i++) {
+            char buf[0x50];
+            s32 id = ((CPhotoRec *)m_unk18)[i].m_id;
+            if (Func171510(buf, d, 0, id) && buf[0] && Func171510(buf, d, 1, id) && buf[0]) cnt++;
+        }
+        if (best <= cnt) best = cnt;
+    }
+    return best;
+}
 
 extern "C" CPhotoNameRec *func_00171980(void *tbl, s32 n, s32 id) {
     return (CPhotoNameRec *)FindLatest((CPhotoDayRec10 *)tbl, n, id);

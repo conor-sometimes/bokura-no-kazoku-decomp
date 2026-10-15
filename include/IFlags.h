@@ -53,7 +53,7 @@ public:
     virtual s32 V17(s32 a);
     virtual int Get145008(s32 base, int name, u32 k);
     virtual s32 V19(s32 a);
-    virtual s32 V20(s32 a);
+    virtual void Add145160(s32 id, s32 v);
     virtual void MoveMoney(s32 v);
     virtual void Func108FF0Cur(s32 id, s32 v);
     virtual int Func1091B0Cur(s32 id);

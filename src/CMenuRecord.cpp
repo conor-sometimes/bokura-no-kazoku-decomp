@@ -1,6 +1,7 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+class CMenuRecordWin;
 #include "CMenuProcess.h"
 #include "CBgWork.h"
 class CMenuAsksavequitObj {
@@ -21,7 +22,8 @@ public:
     s32 m_unk68;              // 0x68
     s32 m_unk6C;              // 0x6C
     s32 m_unk70;              // 0x70
-    u8 pad74[0x8];
+    CMenuRecordWin *m_unk74;  // 0x74
+    CMenuRecordWin *m_unk78;  // 0x78
     s32 m_unk7C;              // 0x7C
     s32 m_unk80;              // 0x80
     s32 m_unk84;              // 0x84
@@ -88,13 +90,14 @@ public:
     s32 m_unkC;               // 0xC
     u8 pad10[0x28];
     u32 m_unk38;              // 0x38
-    u8 pad3C[0x4];
+    s32 m_unk3C;              // 0x3C
     s32 m_unk40;              // 0x40
     s32 m_unk44;              // 0x44
 };
 
 class CMenuRecordList : public CCommandBase {
 public:
+    int Draw197AE0();
     int Draw1976A0();
     int Draw1972E8();
     int Draw1974F8();
@@ -134,6 +137,7 @@ extern CFlagWork *D_002A5358;
 extern "C" void func_00196938(CMenuRecordList *p, s32 i, s32 a, s32 b, s32 c, s32 d, s32 e);
 class CMenuMgrSub1B5BF8 {
 public:
+    void SetUnk0(f32 a, f32 b);
     void Reset();
     void SetUnk30(s32 v);
     void SetUnk10(f32 a, f32 b, f32 c);
@@ -156,6 +160,8 @@ int Func238158(void *p, int v);
 void Func225240(int v);
 class CMenuMgrSub1B4768 {
 public:
+    void SetUnk50(s32 v);
+    void SetUnk30(f32 a, f32 b, f32 c, f32 d);
     s32 GetEntry0(s32 i);
     void Reset1B4D28();
     void SetUnk4C(f32 v);
@@ -182,6 +188,41 @@ public:
     s32 Draw17B4D8(s32 k);
 };
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
+
+extern "C" int func_001A0510(void *p);
+extern "C" int func_0018A1F0(void *p);
+extern "C" int func_0017D3B0(void *p);
+extern "C" int func_001B66E8(void *p);
+class CStatusWin {
+public:
+    f32 GetItemUnk34_2();
+};
+class CMenuMgrSub1B6418 {
+public:
+    void SetUnk4C(f32 v);
+};
+extern CMenuMgrSub1B6418 *D_002A5538;
+class CMenuLoadMemorialSub17A8D8b {
+public:
+    int Draw17B1A8();
+};
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+};
+#include "CTask.h"
+class CPhotoDraw : public CTask {
+public:
+    virtual void V7();
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual int DrawPhoto(s32 id, u32 color, f32 x, f32 y, f32 w, f32 h);
+};
+extern CPhotoDraw *D_002A3680;
 // @decl-end
 
 CMenuRecord::CMenuRecord() {
@@ -489,7 +530,92 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD780);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD790);
 INCLUDE_RODATA("asm/nonmatchings/CMenuRecord", D_002DD7A0);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", Draw__11CMenuRecord);
+s32 CMenuRecord::Draw() {
+    f32 x, y;
+    f32 w, h;
+    f32 dx, dy;
+    if (m_unk80 == 0) {
+        Func225088();
+        Func2250C0();
+    } else {
+        u8 *pp = Func237570(0x50);
+        Func237A88(pp, 5);
+        CUnk237E90 *q1 = (CUnk237E90 *)(pp + 0x10);
+        Func238158(Func237C30(pp + 0x40), 1);
+        q1->Func237E90(func_001A0510((void *)m_unk64));
+        switch (m_unk80) {
+        case 1:
+            q1->Func237E90(((CUnk1A4298 *)m_unk6C)->Func1A4298());
+            q1->Func237E90(func_0018A1F0((void *)m_unk68));
+            D_002A5538->SetUnk4C(((CStatusWin *)m_unk64)->GetItemUnk34_2());
+            q1->Func237E90(((CMenuLoadMemorialSub17A8D8b *)m_unk7C)->Draw17B1A8());
+            break;
+        case 2:
+            q1->Func237E90(((CUnk1A4298 *)m_unk6C)->Func1A4298());
+            q1->Func237E90(func_0018A1F0((void *)m_unk68));
+            q1->Func237E90(func_0017D3B0((void *)m_unk70));
+            break;
+        case 3: {
+            s32 i;
+            if (m_unk148) {
+                func_001A3DC8(m_unk74, 2, 0);
+                func_001A3DC8(m_unk74, 3, 0);
+                func_001A3DC8(m_unk74, 4, 1);
+                func_001A3DC8(m_unk74, 5, 1);
+            } else {
+                func_001A3DC8(m_unk74, 2, 1);
+                func_001A3DC8(m_unk74, 3, 1);
+                func_001A3DC8(m_unk74, 4, 0);
+                func_001A3DC8(m_unk74, 5, 0);
+            }
+            CUnk237E90 *q2 = (CUnk237E90 *)(pp + 0x20);
+            q1->Func237E90(((CUnk1A4298 *)m_unk74)->Func1A4298());
+            D_002A5530->SetUnk50(0);
+            q2->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x28)));
+            D_002A5530->SetUnk30(1.0f, 1.0f, 0.0f, 0.0f);
+            D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, ((CMenuRecordWinF2 *)m_unk74)->m_unk34);
+            m_unk74->Func1A39A8(&x, (s32 *)&y, 9);
+            m_unk74->Func1A39A8(&dx, (s32 *)&dy, 10);
+            for (i = 0; i < 0x24; i++) {
+                D_002A5530->SetUnk20(x, y, 0.0f);
+                if (i == m_unk144) {
+                    q2->Func237E90(func_001B50B0(D_002A5530, 0x27));
+                } else if (i < m_unk9C) {
+                    q2->Func237E90(func_001B50B0(D_002A5530, 0x28));
+                } else {
+                    q2->Func237E90(func_001B50B0(D_002A5530, 0x26));
+                }
+                x += dx;
+            }
+            if (m_unk134 >= 0 && *(f32 *)&m_unk13C < 1.0f) {
+                m_unk78->Func1A39A8(&x, (s32 *)&y, 1);
+                m_unk78->Func1A3B58(&w, (s32 *)&h, 0);
+                q2->Func237E90(D_002A3680->DrawPhoto(m_unk134, 0x9A9A9A80, x, y, w, h));
+            }
+            if (m_unk138 >= 0 && 0.0f < *(f32 *)&m_unk13C) {
+                m_unk78->Func1A39A8(&x, (s32 *)&y, 1);
+                m_unk78->Func1A3B58(&w, (s32 *)&h, 0);
+                q2->Func237E90(D_002A3680->DrawPhoto(m_unk138, (s32)(*(f32 *)&m_unk13C * 128.0f) | 0x9A9A9A00, x, y, w, h));
+                q1->Func237E90(((CUnk1A4298 *)m_unk78)->Func1A4298());
+            }
+            if (m_unk140) {
+                q2->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(m_unk150 + 0x49)));
+                D_002A5530->SetUnk20(544.0f, 280.0f, 0.0f);
+                D_002A5530->SetUnk4C(*(f32 *)&m_unk154);
+                q2->Func237E90(func_001B50B0(D_002A5530, m_unk150 + 0x49));
+            }
+            D_002A5538->SetUnk4C(((CMenuRecordWinF2 *)m_unk74)->m_unk34);
+            break;
+        }
+        }
+        if (m_unk80 != 3 || m_unk148 == 0) {
+            ((CUnk237E90 *)(pp + 0x30))->Func237E90(func_001B66E8(D_002A5538));
+        }
+        Func225088();
+        Func225240((s32)pp);
+        Func2250C0();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00196938);
 

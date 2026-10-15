@@ -221,3 +221,27 @@ func_001A0A98 = 0x001A0A98; /* old name still called from another unit (merge in
 func_001B5FE0 = 0x001B5FE0; /* old name still called from another unit (merge interim 4) */
 Func135A28__15CEventObj135A28 = 0x00135A28; /* Update135A28__9CEventObj (g2) */
 __10CUnk29A558 = 0x0029A478; /* func_0029A478, TArray ctor in CMapDBExpr ctor (g2) */
+func_001A72D8 = 0x001A72D8; /* = __14CMenuSub1A7658P10CUnk1A4298 (CMenuContinue) */
+/* r4: raw .bss words used by Unit221008 (VU1 packet helpers) */
+D_33DCFC = 0x0033DCFC;
+D_33DD0C = 0x0033DD0C;
+D_33DD20 = 0x0033DD20;
+D_33DD24 = 0x0033DD24;
+D_33DD2C = 0x0033DD2C;
+func_00179198 = 0x00179198; /* old name still called from another unit (merge interim 5) */
+/* .bss words lane r3 references by name (no asm symbol) */
+D_33D704 = 0x0033D704;
+D_33D6F0 = 0x0033D6F0;
+D_33D6F4 = 0x0033D6F4;
+D_33D990 = 0x0033D990;
+D_33D994 = 0x0033D994;
+D_33D998 = 0x0033D998;
+D_33D9A4 = 0x0033D9A4;
+D_33D9AC = 0x0033D9AC;
+D_33D9BC = 0x0033D9BC;
+D_33DB80 = 0x0033DB80;
+D_33DB84 = 0x0033DB84;
+D_33D9A0 = 0x0033D9A0;
+D_33DCF0 = 0x0033DCF0;
+D_33DCE4 = 0x0033DCE4;
+D_33DCE8 = 0x0033DCE8;

@@ -13,10 +13,28 @@ public:
     u8 m_data[0xC];
 };
 
+// A link from a layout element to another element of its entry (by name).
+struct CLayoutLink {
+    CLayoutLink *m_next;      // 0x0
+    u8 pad4[0x8];
+    const char *m_name;       // 0xC
+    struct CLayoutElem *m_target; // 0x10
+};
+// Layout element (0xA0 bytes).
+struct CLayoutElem {
+    const char *m_name;       // 0x0
+    u32 m_flags;              // 0x4
+    const char *m_ref;        // 0x8
+    void *m_part;             // 0xC
+    class CLayoutEntry *m_entry; // 0x10
+    CLayoutLink *m_links;     // 0x14
+    u8 pad18[0x88];
+};
 class CLayoutEntry {
 public:
     const char *m_name;       // 0x0
-    u8 pad4[0x8];
+    CLayoutElem *m_elems;     // 0x4
+    s32 m_numElems;           // 0x8
 };
 
 class CLayoutPart {
@@ -26,6 +44,7 @@ public:
 
 class CLayoutResSub1B8748 : public CPushBuf {
 public:
+    s32 Parse1B8890(s32 data);
     s32 LoadClut(class CLayoutTex *t, CPushBuf *b);
     s32 LoadTex(class CLayoutTex *t, CPushBuf *b);
     s32 Load(const char *dir);
@@ -76,7 +95,6 @@ extern void *D_002A5988;
 extern "C" s32 func_0024A4A0(void *p);
 extern "C" void func_00248C30(void *p);
 extern "C" void func_00248C70(void *p);
-extern "C" s32 func_001B8890(void *p, s32 data);
 
 #include "libc.h"
 class CLayoutTex {
@@ -97,6 +115,10 @@ extern "C" s32 func_00248DC0(void *p);
 extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
 extern "C" void func_0023C048(s32 a, s32 b, s32 c);
 s32 Func235DE0(const char *fmt, ...);
+
+extern char *D_002A598C;
+extern "C" s32 func_0024B040(const char *p, s32 k);
+extern "C" s32 func_001B8CB0(void *p, s32 data, const char *name, CLayoutEntry *e);
 // @decl-end
 
 CLayoutRes::CLayoutRes() {
@@ -128,7 +150,7 @@ s32 CLayoutResSub1B8748::Load(const char *dir) {
     if (m_unkC) {
         func_00248C30(this);
         pushed = 1;
-        if (func_001B8890(this, m_unkC)) {
+        if (Parse1B8890(m_unkC)) {
             ok = Init() != 0;
         }
     }
@@ -151,7 +173,51 @@ s32 CountTokens(const char *p) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B8890);
+s32 CLayoutResSub1B8748::Parse1B8890(s32 data) {
+    s32 i;
+    const char *p = Func24AF10((void *)data, D_002A598C);
+    if (*p) {
+        m_count = func_0024B040(p, 1);
+        m_entries = (CLayoutEntry *)Func248CC8(m_count * 12, 1, 1);
+        for (i = 0; i < m_count; i++) {
+            CLayoutEntry *e = &m_entries[i];
+            p = Func24AFE8(p, func_00248DA8(this), 1, 0x100);
+            e->m_name = (const char *)func_00248DC0(this);
+            if (!func_001B8CB0(this, data, e->m_name, e)) return 0;
+        }
+    }
+    for (i = 0; i < m_count; i++) {
+        CLayoutEntry *e = &m_entries[i];
+        for (s32 j = 0; j < e->m_numElems; j++) {
+            CLayoutElem *x = &e->m_elems[j];
+            if (x->m_flags & 0xF) continue;
+            for (s32 k = 0; k < m_count; k++) {
+                if (k == i) continue;
+                if (strcmp(m_entries[k].m_name, x->m_ref) == 0) {
+                    x->m_flags = (x->m_flags & ~0xF) | 7;
+                    x->m_entry = &m_entries[k];
+                    break;
+                }
+            }
+        }
+    }
+    for (i = 0; i < m_count; i++) {
+        CLayoutEntry *e = &m_entries[i];
+        for (s32 j = 0; j < e->m_numElems; j++) {
+            CLayoutElem *x = &e->m_elems[j];
+            CLayoutLink *l;
+            for (l = x->m_links; l; l = l->m_next) {
+                for (s32 k = 0; k < e->m_numElems; k++) {
+                    if (strcmp(e->m_elems[k].m_name, l->m_name) == 0) {
+                        l->m_target = &e->m_elems[k];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
 
 s32 FindLayoutName(const char **tbl, const char *name, s32 def) {
     s32 i;
@@ -297,7 +363,37 @@ s32 CLayoutResSub1B8748::Init() {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", Func1B96F0__19CLayoutResSub1B8748Pv);
+s32 CLayoutResSub1B8748::Func1B96F0(void *p) {
+    CLayoutPart *parts = (CLayoutPart *)p;
+    s32 n = 0;
+    s32 i, j, k;
+    for (i = 0; i < m_count; i++) {
+        CLayoutEntry *e = &m_entries[i];
+        for (j = 0; j < e->m_numElems; j++) {
+            CLayoutElem *x = &e->m_elems[j];
+            for (k = 0; k < j; k++) {
+                if (strcmp(e->m_elems[k].m_ref, x->m_ref) == 0) {
+                    x->m_part = e->m_elems[k].m_part;
+                    break;
+                }
+            }
+            if (k < j) continue;
+            switch (x->m_flags & 0xF) {
+            case 3:
+                x->m_part = &parts[n];
+                if (parts) LoadTex((CLayoutTex *)&parts[n], (CPushBuf *)x->m_ref);
+                n++;
+                break;
+            case 4:
+                x->m_part = &parts[n];
+                if (parts) LoadClut((CLayoutTex *)&parts[n], (CPushBuf *)x->m_ref);
+                n++;
+                break;
+            }
+        }
+    }
+    return n;
+}
 
 void *CLayoutResSub1B8748::CopyFrom(CPushBuf *b) {
     s32 n = b->Func248EB0();

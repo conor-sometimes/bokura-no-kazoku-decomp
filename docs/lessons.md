@@ -274,11 +274,11 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Struct copies of 5 bytes, `char` vs `u8`**: a `lbu` in retail where ours has `lb` means the buffer
   or the copied byte is unsigned (CEventMesRes Load: `u8 line[]` made the alnum tests match). *(bokura)*
 ## g4
-- **Retail was compiled with `-g`**: GCC leaves calls whose delay slot it cannot fill (the soft-double
-  libcalls after the first, `move $a0,$v0` before a call) to the assembler in `.set reorder` mode; GNU as
-  2.10-ee fills them unless `-g` line labels are in the way. Retail always has `jal; nop` there. With `-g`
-  in CXXFLAGS the whole tree still matches; a bare `return;` after a final void call no longer sibcalls,
-  write `return f();` instead (docs/compiler.md). *(bokura)*
+- **Retail's assembler ran with `-g` (`-Wa,-g`)**: GCC leaves calls whose delay slot it cannot fill
+  (the soft-double libcalls after the first, `move $a0,$v0` before a call) to the assembler in
+  `.set reorder` mode; GNU as 2.10-ee swaps the previous instruction into the slot unless `-g` is on.
+  Retail always has `jal; nop` there. Found by lanes g2 and g4; main uses `-Wa,-g` (cc `-g` also works
+  but stops the bare `return;` sibcall trick). *(bokura)*
 - **Float literals go through decimal text**: GCC prints `li.s` with 21 digits and gas re-parses it, so
   `0.1f` assembles to 0x3DCCCCCC and `-0.93f` to 0xBF6E147A; a constant like 0xBF6E147B comes from a
   folded expression (`0.07f - 1.0f`, a lerp macro `x * (hi - lo) / 100 + lo`). *(bokura)*
@@ -347,3 +347,70 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **A callee's return type shows after the call**: `lui $3` (not `$2`) for the next global means the callee returns a value (CUnk237E90::Func237E90, func_0024B298). *(bokura)*
 - **Struct alignment changes inline strcpy**: an 8-aligned destination (`__attribute__((aligned(8)))` on the record) turns the ldl/sdl copy of a literal into ld/sd + lhu/lbu. *(bokura)*
 - **Several "unit text starts late" functions** in my units belong to the next class (CMiniGame2/3 task code in the Res files, CMenuSave code at the end of CMenuSysscr00.cpp): matched in place with their real class names. *(bokura)*
+## 2026-10-15: g3 (overnight grind: menu draws, CTitleMain and CMenuSysscr27 to level 3)
+- **Key methods in merged units without a vptr store** (CCommandIncDec::Update): write them as plain members of a non-virtual class in the TU; the asm vtable links to the mangled name.
+- **A class whose retail destructor is inline**: the real key method is the next virtual (CMiniGame4Res::Load). Declaring the destructor non-inline (and never defining it) makes it the key method in this TU, so Load can be defined without emitting the vtable.
+- **Inline strcpy of a short literal while the unit's .rodata is asm**: `struct CStr6 { char c[6]; }; extern CStr6 D_X; *(CStr6 *)dst = D_X;` gives the same lwl/lwr/lb/sb (or lbu/sb) copy (0x16DEE8, 0x169340, 0x1693B0).
+- **`strcpy(buf + strlen(buf), "lit")` as calls**: written directly GCC inlines the copy; an inline helper `StrAdd(d, s) { strcpy(d + strlen(d), s); }` keeps the strlen/strcpy calls (0x10FFE8).
+- **Float constants are truncated by the compiler**: 0x3F599999 / 0x3F4CCCCC are just `0.85f` / `0.8f`; writing the exact value (0.84999996f) gives one ulp less.
+- **Clamps that keep retail's branches**: `n = n < 0 ? 0 : (n > 16 ? 16 : n);` (0x196B50, 0x110178) where if/else-if if-converts to movz.
+- **Members with constructors vs explicit calls**: CSceneSet's constructor only matched with real member objects (`CDkArr m_arr;` with the TArray constructor named in aliases.ld); explicit `func_X(&m)` calls schedule the vptr store differently.
+- **A later store through a sub-object pointer**: `CInterfTimer *t = &m_timer; t->Reset(); t->m_unk4 = m_unkC4;` stores through the timer register as retail does (0x169340, 0x169450).
+- **`bk show` hides the two nops the assembler puts before div.s**: not a diff.
+- **Separate loop counters**: several loops sharing one `s32 i` got different registers from retail; `for (s32 i = 0; ...)` per loop matched (0x1789B8, 0x1795F8).
+- **Out-parameter float pairs are scalars**: `f32 x, y; f(&x, (s32 *)&y, k)` packs them 4-aligned like retail; `f32 v[2]` or a struct gets a 16-aligned slot (0x197950).
+- **`case 0: break;`** in a two-case switch gives retail's `slti`/`bnel` default test when the decision tree has it (0x1789B8, 0x1795F8), but not where retail tests only 1 and 2 (0x1787E8).
+- **`t->s[i]` vs `t[i + 1]`**: indexing a struct's array member puts the pointer first in the `addu` (retail order); `t[i + 1]` on a `char **` puts the index first (0x186198).
+- **A temp for a call argument read from memory** moves its load before the constant float args (0x1974F8: `f32 w = m_win->m_unk34; SetUnk40(1.0f, 1.0f, 1.0f, w);`).
+- **Re-writing `(T *)(p + 0x10)` at each use instead of a local** matched where the local got its own saved register (0x17B4D8).
+- **Menu state machines (state.h)**: a `goto loop` loop (`loop: if (done) goto out; if ((flags >> 7) & 1) goto out; switch (m_sm.m_state) {...}`) keeps the `done` flag in a register like retail; a `for`/`while` lets GCC thread `done = 1` straight to the exit. Each yield written as `m_state = X; done = 1; goto loop;` gets cross-jumped into retail's shared `li a0,1; b loop; sw $2,4(this)` tail. The busy test needs `u32 fl = flags; if ((fl >> 7) & 1)` (srl/andi, no extra andi 0xffff). 0x1AC200 got from DIFF 1100 to 30 this way; what is left is the placement of the last wait's "then" block (retail has it before the test).
+- **A struct's array member vs a separate local pointer**: using `p->m_name` at each use instead of `char *pname = p->m_name;` put the pointer in retail's register order (0x12C8D0); same for `(T *)(p + 0x10)` (0x17B4D8).
+- **Hidden extra arguments**: a call that sets f12 = 0.0f before `jal CallFunc114050__9CCharaObji` means the callee also takes a float; add an alias with the full signature (`CallFunc114050__9CCharaObjif`) in config/aliases.ld instead of renaming.
+- **`new X` of a class whose vptr follows a base's fields** (CCharaObj, vptr 0xC): declaring extra fields after the vptr moves the vptr (GCC puts it after all of the introducing class's own fields); allocate with `operator new(size)` and call the constructor through an extern "C" alias, and read later fields through a separate view struct.
+- **Constant multipliers kept as `mult` with a register operand** (0x16E960 `k * 0xF1`): retail did not strength-reduce one of them while ours turns it into shifts; not solved (an inline helper changes the whole schedule).
+## r3
+2026-10-15, lane r3 (rxsnd/rxsndstr/rxsndut C units, Unit20E938..Unit215A38).
+2026-10-15, lane r3 (rxsnd/rxsndstr/rxsndut C units and the GS packet units, Unit20E938..Unit21F250).
+
+- **rxsnd request functions are protothreads**: a header {u8 flags; u8 depth; u16 lc; u16 stack[]}
+  at +0x1C, `switch (lc)` with `__LINE__` case labels (0x476, 0x4C5, ...), `flags & 0x80` aborts.
+  The wait macro is a loop: `while (cond) { lc = LINE; goto yield; case LINE:; }` (GCC rotates it, so
+  the store/yield block sits before the test). Two macro flavours exist in one unit: some functions
+  store `lc` in each wait block (`li; b; sh`), others set a local and share one `h->m2 = _nlc` at the
+  yield label (`b; li` + common `sh`). Read the lc before the flags test. *(bokura)*
+- **Calls that are never sibcalls**: rxsnd dispatchers (`switch (type) { case 0: A(h); break; case 1:
+  B(h); break; }`) end in `jal` + `b epilogue`; GCC 2.96 makes those `break` calls sibcalls unless the
+  switch sits in a loop (`do { switch ... } while (0)`, i.e. a macro), since expand_call refuses tail
+  calls inside loops. *(bokura)*
+- **`if (p) { for (; p; p = p->next) ... }`**: a redundant guard before a list loop gives retail's
+  duplicated test layout (0x210BD8, 0x211260, the free-list drains). *(bokura)*
+- **`MIN`/`CLAMPZ` macros that call a function twice**: retail calls `func(x)` 2-4 times inside
+  nested `?:` (0x210498, 0x210C58); write the macro, not a temporary. *(bokura)*
+- **Parameter registers that stay live**: a callee getting `fn(s->m18, a)` with `a` passed through
+  keeps `$5` busy, which moves the other temporaries (0x20FE20: fn in $7, mask in $6). *(bokura)*
+- **EE short-loop nops count asm statements**: inline-asm loops (mtc0/mfc0 status spins) only match
+  with one `asm volatile` per instruction; one multi-line asm statement counts as one insn and gets
+  extra nop padding. *(bokura)*
+- **Same-unit splat stubs fix the prototype**: `extern "C" void func_X(void) {}` bodies in the unit
+  (empty functions) clash with a snippet declaring `func_X(void *)`; bk test passes, the build fails.
+  Declare them as `(void)` and call through a cast. *(bokura)*
+- **Store order of init functions**: GCC 2.96 emits some stores of a run of constant field
+  stores earlier than written. The source order that matched was the struct's natural field order
+  with the `-1`/odd-valued stores last and the protothread header as `m0 = 0; m2 = 0; m1 = 6;`
+  (0x216FA0, 0x217678, 0x213C98, 0x214180, 0x214610); bk perm (7-8 lines) finds these quickly, and
+  for longer runs try inserting the early-emitted stores near the end of the natural order (0x214F70,
+  0x216230). Hill-climbing perm from the natural order solved a 27-store init (0x20F0D8) that
+  never converged from the as-disassembled order. *(bokura)*
+- **Loads hoisted above stores to a stack array**: a store to a local array whose address escaped
+  does not block loads through an argument pointer (different base), but does block loads through a
+  pointer loaded from memory; the reload pattern tells you the statement order (0x215A68). *(bokura)*
+- **Temporary before advancing a list pointer**: `do { f = w->m9; w = w->parent; v |= f; } while (w);`
+  matched where `v |= w->m9; w = w->parent;` swapped the `or` operands (0x2159D8 and 4 clones). *(bokura)*
+- **Separate variable for a drain loop**: reusing the insertion loop's pointer variable for the
+  free-list drain changed every temp register (0x210E70, 0x211078). *(bokura)*
+- **One counter per loop in pool-init functions**: free-list init functions with two or three
+  loops matched only with a separate counter variable per loop (0x219AA0, 0x210958); sharing `i`
+  shifted every register. *(bokura)*
+- **GNU as 2.10 corrupted a `lui` again** (0x220FB8, `lw $2, %lo(D)($2)` after `lui $2, %hi(D)`):
+  bk test passed, the full build did not; `asm(".p2align 3");` before the function fixed it. Always
+  check mk.sh before committing a batch. *(bokura)*

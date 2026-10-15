@@ -110,9 +110,29 @@ public:
     s32 m_unk8BC;             // 0x8BC
     s32 m_unk8C0;             // 0x8C0
 };
+
+#include "CList.h"
+class CLayoutRes {
+public:
+    CLayoutRes();
+    virtual ~CLayoutRes();
+    u8 pad0[0x20];
+};
+class CMiniGame1Res : public CListTag {
+public:
+    CMiniGame1Res() {}
+    virtual ~CMiniGame1Res();
+    virtual s32 Load();
+    virtual void Release();
+
+    CLayoutRes m_lay10;       // 0x10
+    CLayoutRes m_lay34;       // 0x34
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame1Res", func_001BD6A8);
+CMiniGame1Res *NewMiniGame1Res() {
+    return new CMiniGame1Res;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame1Res", func_001BD700);
 

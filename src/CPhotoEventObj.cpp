@@ -91,7 +91,7 @@ public:
     virtual s32 GetName(s32 k, char *buf, s32 d);
 };
 extern CUnk2A28D8 *D_002A28D8;
-void Func16DEE8(char *buf, s32 a, s32 b);
+void GetAlbumName16DEE8(char *buf, s32 a, s32 b);
 void GetPhotoName16DFA8(char *dst, s32 a, s32 b, s32 c);
 // @decl-end
 
@@ -103,7 +103,7 @@ s32 CPhotoEventObj2::GetName16D2D8(s32 k, char *buf, s32 d) {
         GetPhotoName16DFA8(buf, m_unkFD08, m_unkFD0C, d);
         return 1;
     case 0:
-        Func16DEE8(buf, m_unkFD08, m_unkFD0C);
+        GetAlbumName16DEE8(buf, m_unkFD08, m_unkFD0C);
         break;
     }
     return D_002A28D8->GetName(k, buf, d);

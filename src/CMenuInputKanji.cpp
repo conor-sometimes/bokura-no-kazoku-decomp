@@ -97,16 +97,19 @@ extern const char D_002DF0B8[];
 extern "C" int func_001B66E8(void *p);
 class CMenuSub1A7658 {
 public:
+    CMenuSub1A7658(CUnk1A4298 *item);
     int Func1A7658();
     void Func1A7038();
     void Func1A7308(s32 n);
     void Func1A7130();
     void Func1A71F0();
 
-    u8 pad0[0x48];
+    CStateMachine m_sm;       // 0x0
     CUnk1A4298 *m_unk48;      // 0x48
-    u8 pad4C[0x4];
+    s32 m_unk4C;              // 0x4C
     s32 m_unk50;              // 0x50
+    s32 m_unk54;              // 0x54
+    s32 m_unk58;              // 0x58
 };
 
 extern void (*D_002B91B0)(void *p);
@@ -311,7 +314,13 @@ void CMenuSub1A7658::Func1A71F0() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A72D8);
+CMenuSub1A7658::CMenuSub1A7658(CUnk1A4298 *item) {
+    m_unk48 = item;
+    m_unk4C = 0;
+    m_unk50 = 0;
+    m_unk54 = 0;
+    m_unk58 = -1;
+}
 
 void CMenuInputKanji::SetUnk4C(s32 v) {
     m_bg.m_unk0 = v;

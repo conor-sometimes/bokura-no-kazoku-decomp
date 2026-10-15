@@ -26,7 +26,7 @@ public:
     virtual void Release();                                     // [0] 0x2998B8
     virtual void SetUnk10(s32 v);                               // [1] 0x2998F0
     virtual s32 GetUnk10();                                     // [2] 0x2998F8
-    virtual s32 Func147130();                                   // [3] 0x147130
+    virtual s32 Func147130(const char *path);                   // [3] 0x147130
     virtual void Init();                                        // [4] 0x14BAF8
     virtual s32 GetUnk1C();                                     // [5] 0x299900
     virtual s32 FindType2();                                    // [6] 0x14BB90

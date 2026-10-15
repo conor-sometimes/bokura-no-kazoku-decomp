@@ -6,7 +6,31 @@
 class CMenuSub1A7658 {
 public:
     int Func1A7658();
+    void Func1A7308(s32 n);
+
+    u8 pad0[0x54];
+    s32 m_unk54;              // 0x54
+    s32 m_unk58;              // 0x58
 };
+// The kana/selection window object (CMenuInputKanji.cpp); same object as CMenuSub1A7658.
+class CMenuInputKanji {
+public:
+    void SetUnk4C(s32 v);
+};
+// The window item (CStatusWin.cpp).
+class CStatusItem {
+public:
+    void Func1A3378();
+    void SetUnkF0(s32 i, s32 v);
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+extern "C" void func_001A72D8(void *p, CStatusItem *item);
+extern "C" void func_001A73B0(void *p);
+void *operator new(unsigned int n);
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuContinue.
 class CMenuContinue : public CMenuProcess {
@@ -17,7 +41,7 @@ public:
     virtual s32 Draw();
 
     CMenuSub1A7658 *m_unk58;  // 0x58
-    u8 pad5C[0x4];
+    CStatusItem *m_unk5C;     // 0x5C
 };
 
 //@sym __builtin_new 0x245648

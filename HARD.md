@@ -247,9 +247,12 @@ Lane g3 (goal 6b overnight grind). Snippets that came close are in the notes bel
 ## g4
 - **Soft-double libcalls: solved by `-g`** (docs/compiler.md): CCharaObj 0x1153E8 and CMapAttr 0x118448
   matched; worth retrying CSvmWork 0x130CB0 (fmod) and the other double-using entries above.
-- **LCG `(Next() << 16 | Next()) & 0xFFFF`**: retail keeps the dead high draw (`srl; sll; or; andi`), ours folds it
-  (same as CSvmWork 0x130E78). Blocks CMapEffObjRes 0x1236C8 and 0x123850 (CMapEffAquariumWork key init; C in
-  build/bk/snips/s_me2h.snip). Tried `(u16)`, `% 65536`, a u16 local.
+- **LCG `(Next() << 16 | Next()) & 0xFFFF`: solved** by building the value in one variable set twice
+  (`u32 r = Next() << 16; r |= Next(); return r;`): combine cannot use the nonzero bits of a pseudo with
+  two sets, so the dead high draw survives as in retail. CMapEffObjRes 0x123850 matched; worth retrying
+  CSvmWork 0x130E78 / 0x1702E0. Still open here: 0x1236C8 (DIFF 33 after perm: retail hoists `i * 16`
+  above the range check), 0x1239E8, 0x125DB8 (retail does not hoist the float constants out of the loop;
+  with a `goto` loop it does not either, but the loop entry differs), 0x1266B0 (register choice, s_me9).
 - **CCharaObj 0x113368** (`Func113368`, name lookup): retail loop keeps `j*4 + t` per iteration (no strength
   reduction, 3 saved regs) and tests `count > 0` then jumps into the loop test; ours strength-reduces the name
   pointer (4 saved regs). Tried for/while/do, index forms, inline member Find.
@@ -264,7 +267,7 @@ Lane g3 (goal 6b overnight grind). Snippets that came close are in the notes bel
 - **CMapEffObjRes 0x126860** (CMapEffSwingWork anim time advance, same shape as 0x124460): DIFF 24, address
   computation order (`&d->m_times[i]` before the entry lookup in retail).
 - **LCG `& 0xFFFF` family also blocks** CMapEffObjRes 0x125DB8, 0x1266B0 (`(f32)(Rand32() & 0xFFFF) / 65535`).
-- **CMapEffObjRes 0x11F2A8 / 0x122808** (with `-g` now): only the double constant differs: retail loads
+- **CMapEffObjRes 0x11F2A8 / 0x122808** (with `-Wa,-g` now): only the double constant differs: retail loads
   59.94 with `lui $at; ld $5, %lo(D_002D4750)($at)`, the `li.d` macro, i.e. a C literal `59.94` whose
   8 bytes gas put in the unit's .rodata. Needs the unit's .rodata from the object (merged unit
   CMapEffObjRes/CMapEffObj, not converted). C in build/bk/snips/s_me1h.snip.
@@ -333,3 +336,66 @@ below are kept in the lane's notes; each line says what still differs.
 - **CSvmRes CValue setters** (update with `as -g`): the unfilled delay slots now match; what is left is the tail call: ours sibcalls sprintf/strcpy at the end of the switch (whatever the case order, `break` or `return`), retail keeps `jal` + epilogue.
 - **CSndWorkReal 0x128E78** (SetChara): perm of the fade-reset stores (with m_unkA8) best DIFF 4; field at 0x18 of the chara, not m_name.
 - **CUserFlagMgr 0x141F68 / 0x1425D8 / 0x141768 / 0x1409A8 / 0x13F948**: switch dispatchers now possible (jump tables work after the .rodata piece fix), not written yet; 0x142318's best C is in the source (DIFF 1).
+- Solved this round from older entries: CCharaRes 0x112030, 0x1120A0, 0x112B60 (lane 2 round 2).
+  CMotionRes 0x110DC8 (lane 2 round 2).
+## r3
+Lane r3 (2026-10-15, rxsnd C units Unit20E938..Unit21F250).
+- 0x20E938 (Unit20E938, 48 insns, find a bank entry name with strcmp): DIFF 1. Best
+  `if ((e = func_0020E758(id)) == 0 || (t = func_0020E798(id, k)) == 0) return 0;` then
+  `for (i = 0; i < t[1]; i++) { char *s = e->m18 + t[2 + i]; if (!strcmp(s + 8, name)) return i; } return -1;`:
+  ours `beqzl s3` (likely) where retail has `beqz $19` with `daddu $2,$0,$0` in the delay slot.
+- 0x20F530 (Unit20E938, 20 insns, `return slot->m19` after testing `m19 & 1`): the same reload
+  problem as r2's 0x20B0B8: retail tests the u8-inline result and re-loads the byte for the return;
+  `s`-pointer form CSEs the load (returns the tested register), index form gives other address
+  registers (DIFF 19), volatile gives the reload but no delay-slot fill (DIFF 2). The same getter
+  pattern for other fields (m30, m50, m8, mC, m1F) matched with `Strm *s; if (i < 64 && Used(s = &D.e[i]))
+  goto found; return 0; found: return s->mXX;`.
+- 0x20F9E8, 0x20FAC8 (Unit20E938, 29 insns, call `s->ops->f14/f1C(s->m4C)` if set, else -1/0):
+  retail lays out `bnez fn -> call; b epilogue; li -1` (return-default block between the test and
+  the call, the i<64 failure jumps to it, the Used() failure goes straight to the epilogue).
+  Tried goto found, if/else, return-variable and nested forms: DIFF 23 or +1 insn.
+- 0x210B88, 0x210DF8, 0x210E38, 0x211300 (Unit210070, 14-18 insns, `MemStrm *m = &D_331E58.m[i];
+  if (i < 64 && m->used) ...`): retail schedules `sll` before `sltiu` and puts the compare result in
+  $4 (i's register), ours does the `sltiu` first (DIFF 4-9). 0x210B18 and 0x210BD8 with the same
+  prologue match.
+- 0x210C58 (Unit210070, 104 insns, memory stream advance with marker callbacks): DIFF 1, one
+  branch: retail `bnel $2,$0` (likely) with `daddu $5,$18` in the delay slot in the inlined
+  `CLAMPZ(MIN(n, func_00210BD8(i)))`, ours `bnez` + same delay slot. Four macro spellings tried.
+- 0x212D40, 0x213238 (Unit212790, 11/18 insns, `p = func_00213348(i); return p ? p->m2 : -1` and
+  `if (p) return (p->mA & 1) && (p->mA & 2)`): retail copies the returned pointer to $3 and builds the
+  result in $2; ours keeps p in $2 (DIFF 5, +1 insn). The same shape with a pointer result
+  (0x212D10, 0x213388 with a result variable) matched.
+- 0x215270, 0x2155F8, 0x215628 (Unit214938, 11-12 insns, `p = func(); return p ? p->m2 : -1` /
+  `if (p) return p->bit`): same as 0x212D40: retail copies the returned pointer to $3 first. Calling
+  through an int-returning cast did not change it.
+- 0x215328 (Unit214938, 68 insns, collect child ids through alloca'd buffers): DIFF 15, only the
+  prologue: retail sets `cnt = 0` in the delay slot after the first call, ours hoists it into the
+  prologue (same registers otherwise). do-while / while / if-wrapped forms tried.
+- 0x216548 (Unit215A38, 132 insns, type-0 player update protothread): structure matches
+  (`PTV_WAIT_WHILE(0x501, ...)`, `restart:` label, `case 0x53E:` before the flag updates, 0x546
+  stop yield); DIFF 55 left from two things: retail materialises `e->mD = 0x3F` with its own `li`
+  instead of reusing the `flags = 0x3F` register, and the `flags & N` tests use plain `beqz` where ours
+  use `beqzl`. u8/s32 flags and moving `flags = 0x3F` before the call tried. 0x2168A8 and 0x216C08 are
+  the same function for player types 1/2.
+- 0x219818, 0x219880, 0x2198E8 (Unit217F50, 25-26 insns, dispatch `D_002A67E8[p->m2](p, 0, n)` for
+  two record types): retail keeps the 0 result in $2 from right after the lookup call and returns the
+  table call's result directly; ours adds a copy (+1-2 insns) in every result-variable, switch and
+  early-return form tried.
+- 0x218AD0, 0x218B70 (Unit217F50, 40 insns, compute a listener-relative vector then call
+  func_002186B0): DIFF 17, saved-register assignment only (retail gives a/b the first s-regs, ours
+  gives them to the three stack-passed pointer/count args).
+- 0x21A510 (Unit219970, 52 insns, find the SPU area containing an address): structure matches,
+  DIFF 21 from the zone/link/base temporaries landing in different $4-$6 registers; declaration
+  order and scoping variants tried.
+- 0x21C7C8, 0x21C838, 0x21C978, 0x21C9E8, 0x21CC30, 0x21CCB0 (Unit21BEC0, 27-34 insns, GS packet
+  writers with a call between two `*D_002B94E4++ = v` puts): DIFF 10-15, all in the second put:
+  retail loads the value (`D_33D6F0 + n | 0x14000000`) before the packet pointer and gets $4/$3, ours
+  loads the pointer first. Pointer-first and value-first macros, an inline `PutP(u32 **, v)` and
+  open-coded temporaries tried; the same puts without a call in between (0x21CDF8, 0x21D010...) match.
+- 0x21FD58 (Unit21F250, 60 insns, GS packet chunk header: `k = n > 0x35 ? n / 3 : n; r = min(k,
+  0x35)`): retail keeps 0x35 in a register and builds the min with `movz` into a separate result;
+  DIFF 22 at best (`lim` variable, ternary and if forms). 0x21D3E0 (Unit21BEC0) is the same function.
+- 0x21E860 (Unit21D820, 24 insns, open a GIF packet: two puts, remember both pointers): DIFF 6, the
+  four constant registers ($6-$9) come out in a different order; store-order permutations tried.
+- 0x21BCC0 (Unit219970, 13 insns, `r = 0; if (i < 2) r = D_002B6818[i].m0;`): retail copies `i` to
+  $5 and puts the `sltiu` result in $4 (same family as 0x210DF8); DIFF 13.
