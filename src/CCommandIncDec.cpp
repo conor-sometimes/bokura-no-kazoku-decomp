@@ -48,12 +48,12 @@ extern "C" void func_001995F0(CCommandIncDec *p);
 extern "C" void func_00199BC0(CCommandIncDec *p);
 extern "C" void func_001A40C8(void *p);
 extern "C" int func_001972E8(CCommandIncDec *p);
-extern "C" int func_001974F8(CCommandIncDec *p);
 extern "C" int func_001976A0(CCommandIncDec *p);
 // CMenuRecord.cpp: the same object (its text sits in that file).
 class CMenuRecordList {
 public:
     int Func197FA8();
+    int Draw1974F8();
 };
 extern "C" int func_0019A480(CCommandIncDec *p);
 extern "C" int func_001B5E18(void *p);
@@ -82,7 +82,7 @@ s32 CCommandIncDec::Draw() {
     CUnk237E90 *b = (CUnk237E90 *)(p + 0x40);
     a->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x21)));
     a->Func237E90(func_001972E8(this));
-    if (NumRows() >= 2) a->Func237E90(func_001974F8(this));
+    if (NumRows() >= 2) a->Func237E90(((CMenuRecordList *)this)->Draw1974F8());
     a->Func237E90(D_002A3AF8->Func17B4A0());
     a->Func237E90(func_001976A0(this));
     b->Func237E90(func_001B5E18(D_002A5534));

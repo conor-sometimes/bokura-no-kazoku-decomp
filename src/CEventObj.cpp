@@ -21,7 +21,8 @@ public:
     void Func297F78(int n);
     int Func297F98();
     char *Func297FA0(int i);
-    u8 pad[0x1C];
+    u8 pad[0x18];
+    s32 m18;                  // 0x18
 };
 class CSceneSet {
 public:
@@ -33,6 +34,8 @@ public:
 class CMovieObj {
 public:
     int Func13EDC8();
+    void Func13E888();
+    u8 pad0[0x178];
 };
 class CUnk237E90 {
 public:
@@ -107,6 +110,28 @@ struct CEventItem {
     u8 pad2C[0x1C];
     char m_name[0x20];        // 0x48
 };
+#include "CProcess.h"
+class CSvmData;
+class CSvmWork {
+public:
+    void Func12E858();
+    void Unload12E968();
+    int Load12E910(CSvmData *data);
+    void CopyFrom(CSvmWork *o);
+    u8 pad0[0x47C];
+    s32 m47C;                 // 0x47C
+    s32 m480;                 // 0x480
+    u8 pad484[0x2954 - 0x484];
+};
+extern "C" void func_0012EF68(CSvmWork *w);
+struct CEvWait {
+    void Clear() { m18 = 0; m10 = 0; mC = 0; }
+    u8 pad0[0xC];
+    s32 mC;                   // 0xC
+    s32 m10;                  // 0x10
+    u8 pad14[0x4];
+    s32 m18;                  // 0x18
+};
 class CEventObj {
 public:
     void ClearScene();
@@ -136,40 +161,185 @@ public:
     void Release1354C0();
     int SkipTime(int lo, int hi, int v);
 
-    u8 pad0[0x4];
+    void Clear132998();
+    void Init135138(s32 a, s32 v);
+    int Wait133B90(CEvWait *w);
+    s32 GetSe13AF08(const char *name);
+    void Update135A28();
+
+    s32 m0;                   // 0x0
     s32 m4;                   // 0x4
     CSceneSet *m8;            // 0x8
-    u8 padC[0xF9B4 - 0xC];
+    CSvmWork m_svm[6];        // 0xC
+    u8 padF804[0x48];
+    CStateMachine m_sm[5];    // 0xF84C
     CDkArray m_F9B4;          // 0xF9B4
     CMovieObj m_F9D0;         // 0xF9D0
-    u8 padF9D1[0xFBDC - 0xF9D1];
+    s32 m_FB48;               // 0xFB48
+    s32 m_FB4C[4];            // 0xFB4C
+    u8 m_FB5C[0x80];          // 0xFB5C
     char m_FBDC[0x20];        // 0xFBDC
     CEventObjUnk *m_FBFC;     // 0xFBFC
-    u8 padFC00[0xFC7C - 0xFC00];
-    s32 m_FC7C;               // 0xFC7C
-    u8 padFC80[0xFC98 - 0xFC80];
-    s32 m_FC98;               // 0xFC98
-    u8 padFC9C[0xFCB4 - 0xFC9C];
-    s32 m_FCB4;               // 0xFCB4
-    u8 padFCB8[0xFD00 - 0xFCB8];
+    s32 m_FC00;               // 0xFC00
+    s32 m_FC04;               // 0xFC04
+    u8 padFC08[0xC];
+    s32 m_FC14;               // 0xFC14
+    s32 m_FC18;               // 0xFC18
+    s32 m_FC1C;               // 0xFC1C
+    s32 m_FC20;               // 0xFC20
+    s32 m_FC24;               // 0xFC24
+    u8 padFC28[0x20];
+    s32 m_FC48;               // 0xFC48
+    s32 m_FC4C;               // 0xFC4C
+    u8 padFC50[0x4];
+    s32 m_FC54;               // 0xFC54
+    s32 m_FC58;               // 0xFC58
+    u8 padFC5C[0x4];
+    s32 m_FC60;               // 0xFC60
+    CEvWait m_FC64;           // 0xFC64
+    CEvWait m_FC80;           // 0xFC80
+    CEvWait m_FC9C;           // 0xFC9C
+    CStateMachine m_FCB8;     // 0xFCB8
     s32 m_FD00;               // 0xFD00
-    u8 padFD04[0x14];
+    s32 m_FD04;               // 0xFD04
+    u8 m_FD08[0x10];          // 0xFD08
     CEvHost *m_FD18;          // 0xFD18
     CEvCallback3 m_FD1C;      // 0xFD1C
     u8 padFD24[0x24];
     CEvHost *m_FD48;          // 0xFD48
     CEvCallback2 m_FD4C;      // 0xFD4C
+    char m_log[9][0x20];      // 0xFD54
+    s32 m_logLevel[9];        // 0xFE74
+    s32 m_logTime[9];         // 0xFE98
+    s32 m_logNum;             // 0xFEBC
+    s32 m_logPos;             // 0xFEC0
+    u8 padFEC4[0x8];
 };
 int IsNotDefault(const char *s);
 int CheckItemTag(CEventItem *p, const char *s);
 int AnyResLoading();
+class CResCache {
+public:
+    void Func250840(void *p);
+};
+extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
+extern char D_002D56E0[], D_002D56E8[];
+inline void SmReset(CStateMachine *s) { s->m_state = -1; s->m_depth = 0; s->m_flags = 0; }
+class CSndDrvEv {
+public:
+    virtual void Vf0();
+    virtual void Vf1();
+    virtual void Vf2();
+    virtual void Vf3();
+    virtual void Vf4();
+    virtual void Vf5();
+    virtual void Vf6();
+    virtual void Vf7();
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void Vf11();
+    virtual void Vf12();
+    virtual void Vf13();
+    virtual void Vf14();
+    virtual void Vf15();
+    virtual void Vf16();
+    virtual void Vf17();
+    virtual void Vf18();
+    virtual s32 Find19(s32 kind);
+    virtual void Vf20();
+    virtual void Vf21();
+    virtual void Vf22();
+    virtual void Vf23();
+    virtual void Vf24();
+    virtual void Vf25();
+    virtual void Vf26();
+    virtual void Vf27();
+    virtual void Vf28();
+    virtual void Vf29();
+    virtual void Vf30();
+    virtual void Vf31();
+    virtual void Vf32();
+    virtual void Vf33();
+    virtual void Vf34();
+    virtual void Vf35();
+    virtual void Vf36();
+    virtual void Vf37();
+    virtual void Vf38();
+    virtual s32 *Find39(const char *name);
+};
+extern CSndDrvEv *D_002BA248;
+extern "C" s32 func_0020E698(s32 h, char *a, char *b);
+extern char D_002D5A80[], D_002D5A90[];
+#include "CList.h"
+inline s32 ListCount(CListTag *head) {
+    s32 n = 0;
+    for (CListTag *p = head->m_next; (p = p->m_isHead ? 0 : p) != 0; p = p->m_next) n++;
+    return n;
+}
+inline s32 ListCount2(CListTag *head) {
+    s32 n = 0;
+    CListTag *p = head->m_next;
+    while ((p = p->m_isHead ? 0 : p) != 0) {
+        p = p->m_next;
+        n++;
+    }
+    return n;
+}
+inline s32 ListCount3(u8 *mgr) {
+    s32 n = 0;
+    CListTag *p = ((CListTag *)(mgr + 0x1C))->m_next;
+    while ((p = p->m_isHead ? 0 : p) != 0) {
+        p = p->m_next;
+        n++;
+    }
+    return n;
+}
+class CTaskMgr390 {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual s32 V8();
+    s32 m_unk0;               // 0x0
+};
+extern CTaskMgr390 *D_0029F390;
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001327F8);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132998);
+void CEventObj::Clear132998() {
+    m_FB48 = 0;
+    m_FC00 = 0;
+    m_FC64.Clear();
+    m_FC80.Clear();
+    m_FC9C.Clear();
+    SmReset(&m_FCB8);
+    m_FD00 = -1;
+    m_FD04 = 0;
+    memset(m_FB4C, 0, sizeof(m_FB4C));
+    memset(m_FB5C, 0, sizeof(m_FB5C));
+    memset(m_FD08, 0, sizeof(m_FD08));
+    m_logPos = 0;
+    m_FC58 = 0;
+    m_logNum = 0;
+    m_FC14 = 0;
+    m_FC18 = 0;
+    m_FC1C = 1;
+    m_FC60 = 0;
+    m_FC20 = 0;
+    m_FC48 = 0;
+    m_FC4C = 0;
+    m_FC54 = 0;
+    m_FC24 = 1;
+}
 
 int CEventObj::SetItem(CEventItem *p) {
     if (!p) return 0;
@@ -235,7 +405,7 @@ INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00133660);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001338E8);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00133B90);
+INCLUDE_ASM("asm/nonmatchings/CEventObj", Wait133B90__9CEventObjP7CEvWait);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00134100);
 
@@ -252,11 +422,17 @@ int CEventObj::IsSpecial(int id) {
 }
 
 int CEventObj::IsBusy() {
-    if (m_FCB4 > 0 || m_FC98 > 0 || m_FC7C > 0) return 1;
+    if (m_FC9C.m18 > 0 || m_FC80.m18 > 0 || m_FC64.m18 > 0) return 1;
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Func134B80__9CEventObj);
+int CEventObj::Func134B80() {
+    if ((m_FD00 = Wait133B90(&m_FC9C)) < 0 && (m_FD00 = Wait133B90(&m_FC80)) < 0 && (m_FD00 = Wait133B90(&m_FC64)) < 0) return 0;
+    CStateMachine *sm = &m_FCB8;
+    SmReset(sm);
+    sm->m_state = m_FD00;
+    return 1;
+}
 
 int CEventObj::Run134C40(int x) {
     if (m_FD00 < 0) {
@@ -280,7 +456,23 @@ INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00134D28);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00135138);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Func1352C0__9CEventObjiPCcPv);
+void CEventObj::Func1352C0(int level, const char *fmt, va_list ap) {
+    char buf[0x400];
+    vsprintf(buf, fmt, ap);
+    switch (level) {
+    case 1:
+        Func235DE0("*** %s\n", buf);
+        break;
+    case 0:
+        Func235DE0("(i) %s\n", buf);
+        break;
+    }
+    m_logPos = (m_logPos + 1) % 9;
+    m_logNum = m_logNum + 1 < 10 ? m_logNum + 1 : 9;
+    strncpy(m_log[m_logPos], buf, 0x20);
+    m_logLevel[m_logPos] = level;
+    m_logTime[m_logPos] = 300;
+}
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56F0);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56F8);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5700);
@@ -424,7 +616,27 @@ INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013AA80);
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013AC58);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013AF08);
+s32 CEventObj::GetSe13AF08(const char *name) {
+    char buf[0x100];
+    if (strncmp(name, D_002D5A78, 4) == 0) {
+        strcpy(buf, name + 4);
+        s32 h = D_002BA248->Find19(6);
+        if (h < 0) {
+            Log1353F0(D_002D5A80, buf);
+            return 0;
+        }
+        s32 r = func_0020E698(h, buf, buf);
+        if (r >= 0) return r | 0x8060000;
+        Log1353F0(D_002D5A90, buf);
+        return 0;
+    }
+    s32 *p = D_002BA248->Find39(name);
+    if (!p) {
+        Log1353F0(D_002D5A90, name);
+        return 0;
+    }
+    return *p;
+}
 
 int CheckItemTag(CEventItem *p, const char *s) {
     if (!p) return 0;

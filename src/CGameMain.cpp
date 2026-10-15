@@ -5,6 +5,7 @@ int Func145738(s32 a, s32 b);
 class CGameMain {
 public:
     void CallFunc151120(s32 a, s32 b);
+    s32 Func151028(s32 i, s32 j, s32 k);
     void Func151120(s32 a, s32 b, s32 c, s32 d, s32 e);
     int Func153220();
 
@@ -32,32 +33,31 @@ extern IResMgr *D_002A0BE4;
 extern IResMgr *D_002A0BE8;
 extern IResMgr *D_002A0BEC;
 
-// The current-flag object (vtable 0x2C0900, vptr at 0x1C); only the calls are needed here.
-class CCurFlag {
-public:
-    virtual void V0();
-    virtual void V1();
-    virtual void V2();
-    virtual void V3();
-    virtual void V4();
-    virtual void V5();
-    virtual void V6();
-    virtual void V7();
-    virtual void SetNamed(int id, int k, int v);
-    virtual int GetNamed(int id, int k);
-
-    u8 pad0[0x1C];
-};
-extern CCurFlag *D_002A26E4;
+#include "CFlagWork.h"
 int Func151970(int k);
 
-class CFlagWork108700 {
-public:
-    void Func108700();
-};
-extern CFlagWork108700 *D_002A4638[6];
+extern CFlagWork *D_002A4638[6];
 class CEventObj135A28 { public: void Func135A28(); };
-class CGameMainSub129D90 { public: void Func129D90(); };
+class CMapEffTarget;
+class CMapEffObj {
+public:
+    void DrawAll(s32 a, CMapEffTarget *t);
+};
+struct CGameMainSub154 {
+    u8 pad0[0x4];
+    CMapEffObj *m4;           // 0x4
+};
+class CGameMainSub129D90 {
+public:
+    void Func129D90();
+    void Set2C(s32 v) { m2C = v; }
+    void DrawEff(u8 *buf) { m4->m4->DrawAll((s32)this, (CMapEffTarget *)buf); }
+
+    u8 pad0[0x4];
+    CGameMainSub154 *m4;      // 0x4
+    u8 pad8[0x24];
+    s32 m2C;                  // 0x2C
+};
 class CResMgr24F {
 public:
     void Func24F5C0(void *res, int v);
@@ -85,18 +85,42 @@ class CGameMain2 {
 public:
     void Update1531D8();
     void Draw153228();
+    void Draw1532A8();
+    void Func150D98();
+    s32 Func150EA8(s32 k);
     u8 pad0[0x13C];
     s32 m13C;                 // 0x13C
-    u8 pad140[0x10];
+    s32 m140;                 // 0x140
+    u8 pad144[0xC];
     CGameMainSub129D90 m150;  // 0x150
-    u8 pad151[0x11F];
+    u8 pad180[0xF0];
     u8 *m270;                 // 0x270
     CEventObj135A28 *m274;    // 0x274
-    u8 pad278[0x250];
+    u8 pad278[0x4];
+    s32 m27C[138];            // 0x27C
+    s32 m4A4;                 // 0x4A4
+    u8 pad4A8[0x20];
     s32 m4C8;                 // 0x4C8
 };
 void ResetAllFlags();
 void CreateGameMainRes(CResMgr24F *mgr, int a);
+
+struct CGameMainFlagDef {
+    s32 m0;
+    u8 pad4[0x4];
+    s32 m8;
+    u8 padC[0x18];
+    s32 m24;
+};
+extern CGameMainFlagDef D_002A2DB0[];
+extern s32 D_002A3170[];
+int Func1456A8(int name);
+struct CUnk2A5BC0b {
+    u8 pad0[0x80];
+    CUnk237E90 m80;
+};
+extern "C" void func_00135BE0(CEventObj135A28 *p, u8 *buf);
+extern "C" void func_0012B180(CGameMainSub129D90 *p, u8 *buf);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150A70);
@@ -126,7 +150,17 @@ INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8A00);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8A08);
 INCLUDE_RODATA("asm/nonmatchings/CGameMain", D_002D8A10);
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150D98);
+void CGameMain2::Func150D98() {
+    s32 i;
+    m4A4 = D_002A26E4->Func1091B0(0x27);
+    for (i = 0; i < m4A4; i++) {
+        s32 j;
+        for (j = 0; D_002A2DB0[j].m0 >= 0; j++) {
+            m27C[i * 23 + D_002A2DB0[j].m8] = D_002A26E4->Func1091B0(D_002A2DB0[j].m0 + i);
+        }
+    }
+    D_002A26E4->Vf145A28(-1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150EA8);
 
@@ -139,7 +173,19 @@ void ResetAllFlags() {
     for (i = 0; i < 6; i++) D_002A4638[i]->Func108700();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00151028);
+s32 CGameMain::Func151028(s32 i, s32 j, s32 k) {
+    s32 base = Func1456A8(k);
+    if (base < 0) {
+        return 0;
+    }
+    s32 n;
+    for (n = 0; D_002A3170[n] >= 0; n++) {
+        if (D_002A4638[i]->Func1091B0(D_002A3170[n] + base) != D_002A4638[j]->Func1091B0(D_002A3170[n] + base)) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 void CGameMain::CallFunc151120(s32 a, s32 b) {
     Func151120(a, b, 0, 1, 0);
@@ -152,7 +198,7 @@ INCLUDE_ASM("asm/nonmatchings/CGameMain", func_001513D0);
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00151658);
 
 int Func151970(int k) {
-    CCurFlag *f = D_002A26E4;
+    ICurFlag *f = D_002A26E4;
     if (f->GetNamed(0x28, k) == 0x12 || D_002A26E4->GetNamed(0x28, k) == 0x13) return 0;
     return 1;
 }

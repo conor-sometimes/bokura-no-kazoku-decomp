@@ -56,16 +56,17 @@ public:
 
 class CStatusBaseSub19AE68 {
 public:
+    void Init19AC20(s32 kind);
     void Set(s32 v);
     s32 GetUnk18();
     void Func19AE78();
     void Func19AEC0();
     void Func19ADD0(s32 c);
 
-    s32 m_unk0;               // 0x0
-    u8 pad4[0x4];
+    s32 m_unk0;               // 0x0 (the CStatusItem)
+    s32 m_unk4;               // 0x4
     s32 m_unk8;               // 0x8
-    s32 m_unkC;               // 0xC
+    f32 m_unkC;               // 0xC
     s32 m_unk10;              // 0x10
     s32 m_unk14;              // 0x14
     s32 m_unk18;              // 0x18

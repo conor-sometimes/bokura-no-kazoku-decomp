@@ -13,7 +13,9 @@ public:
     virtual s32 Update() = 0;
     virtual s32 Draw() = 0;
 
-    u8 pad0[0x4E8];
+    u8 pad0[0x4D4];
+    s32 m_cursor;             // 0x4D4
+    u8 pad4D8[0x10];
     // vptr 0x4E8
 };
 

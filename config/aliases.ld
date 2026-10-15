@@ -187,3 +187,16 @@ D_316990 = 0x00316990;
 D_316992 = 0x00316992;
 func_0010D8F8 = 0x0010D8F8; /* old name still called from another unit (interim merge 2) */
 func_00110868 = 0x00110868; /* old name still called from another unit (interim merge 2) */
+func_001864A8 = 0x001864A8; /* Func1864A8__FPc (CCommandBase calls the old name) */
+func_001795F8 = 0x001795F8; /* Update1795F8__26CMenuLoadMemorialSub179568 (CMenuCommon calls the old name) */
+func_001789B8 = 0x001789B8; /* Update1789B8__26CMenuLoadMemorialSub178778 (CMenuCommon calls the old name) */
+_$_11CFont25C230 = 0x0025C2C0; /* func_0025C2C0 (font object dtor, library) */
+func_001A8E28 = 0x001A8E28; /* __13CMenuSysscr27 (CMenuSysscr31 calls the old name) */
+func_00150D98 = 0x00150D98; /* Func150D98__10CGameMain2 (CGameResort calls the old name) */
+func_0018B880 = 0x0018B880; /* = Func18B880__25CMenuChildStatusSub18B9E0Pcii */
+D_2FDA0C = 0x002FDA0C;
+func_001E91B8 = 0x001E91B8; /* __8CAppMain, called by old name from CMiniGame6Res (r1) */
+func_00185AA0 = 0x00185AA0; /* old name still called from another unit (interim merge 3) */
+func_00289118 = 0x00289118; /* old name still called from another unit (interim merge 3) */
+func_0011BD00 = 0x0011BD00; /* __10CMapEffRes (CMapRes), lane g1 */
+func_001829E8 = 0x001829E8; /* Func1829E8__27CMenuTutorSelectedSub182108i (CMenuMemorial, CMenuSave), lane g1 */

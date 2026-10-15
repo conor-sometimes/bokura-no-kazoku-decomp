@@ -1,12 +1,20 @@
 # Compiler
 
-**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing -fno-exceptions`.**
+**Sony EE-GCC 2.96 (`gcc version 2.96-ee-001003-1`), C++, `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, assembled with `as -g` (`-Wa,-g`).**
 
 `-fno-exceptions` added 2026-10-14 (vtables lane 1): with exceptions on, a constructor that
 builds a member or base with a constructor gets an EH cleanup region (`__rethrow`,
 `terminate__Fv`), and a constructor ending in a call keeps `jal` + `jr` where retail has the
 sibcall (`j Clear` in CResNameMgr's 0x145BD0). With the flag, both match, and the whole tree
 still matches. The `X() throw();` declarations added earlier for `new X` are no longer needed.
+
+`-Wa,-g` added 2026-10-15 (lane g2): retail was assembled without the assembler's own delay-slot
+filling. When GCC leaves a branch or call in `.set reorder` mode (it could not fill the slot itself,
+e.g. after a macro such as `la $4,0xCEB0($16)` or `sw $2,0xFC60($16)` for offsets >= 0x8000, or a
+`cvt.s.w` before a `b`), our GNU as 2.10 moved the previous instruction into the slot; retail has a
+`nop` there. `as -g` turns that reordering off (so does the driver's `-g`, but that also changes the
+objects). The whole tree still matches with it, and it fixed CMenuMgr 0x1B5FE0. GAS parses `-O1` as
+`-O2` here (`-O00` would also work).
 
 `-fno-strict-aliasing` added 2026-10-14: functions that store through one type and load through
 another (0x121A78, 0x1253D0, 0x1087F8), or re-read a global after a store, only match with it,

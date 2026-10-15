@@ -19,10 +19,12 @@ class CFlagRange {
 public:
     s16 m_lo;                 // 0x0
     s16 m_hi;                 // 0x2
-    s32 m_unk4;               // 0x4
+    const char *m_unk4;       // 0x4
     u8 m_type;                // 0x8
-    u8 pad9[3];
+    u8 pad9;
+    s16 m_unkA;               // 0xA
     s32 m_unkC;               // 0xC
+    int Has(s32 i) { return i >= m_lo && i <= m_hi; }
 };
 
 // Flag definition (4 bytes): offset into the data, type in the low nibble, size.
@@ -66,7 +68,7 @@ public:
     virtual ~CFlagWork();
     virtual void Notify1(s32 id);
     virtual void Notify2(s32 id);
-    void Func108448(s32 a, s32 b);
+    int Func108448(s32 a, s32 b);
     s32 Load(u8 *buf);
     void SetStr(s32 id, const char *s);
     void Func108FF0(s32 id, s32 v);
@@ -75,7 +77,15 @@ public:
     void Func10ACF0();
     void CallFunc10ACF0();
     void Reset();
-    s32 Func108700();
+    void Func108700();
+    int Func108AA8(char *buf);
+    int Func108C30(char *text);
+    int Func108E10(const char *name);
+    int Func108E38(const char *name);
+    int Func1092B0(int (CFlagWork::*fn)(char *), const char *name);
+    int Func109410(int (CFlagWork::*fn)(char *), const char *name);
+    void Func109108(s32 id, s32 delta);
+    void Func109248(s32 id, s32 lo, s32 hi);
     s32 CopyData(CFlagWork *o);
     s32 CopyFrom(CFlagWork *o);
     s32 Save(u8 *buf);
@@ -136,6 +146,22 @@ struct CFlagLimit {
     s32 m_max;
 };
 extern CFlagLimit D_0029F2F0[];
+inline int FlagInRange(CFlagRange *r, s32 i) { return i >= r->m_lo && i <= r->m_hi; }
+extern "C" void *func_0024A3D8(s32 n);
+extern "C" s32 func_002301B0(const char *name, char *buf, s32 n);
+extern "C" s32 func_0024B818(char **buf, const char *fmt, ...);
+extern char D_002D1C68[], D_002D1C70[], D_002D1C80[];
+class CHeapObj {
+public:
+    static void *operator new(unsigned int n);
+};
+const char *Func24A570(const char *s, char *out, const char *sep, const char *ws);
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 k, s32 n);
+extern "C" int func_00289118(const char *s);
+#include "libc.h"
+s32 MaxRangeHi(CFlagRange *r, s32 n);
+extern s32 D_0029F2E8[];
+inline void FlagDefSize(CFlagDef *dd, CFlagRange *r) { dd->m_size = r->m_unkA > 0 ? (u8)r->m_unkA : *(u8 *)&D_0029F2E8[r->m_type & 0xF]; }
 // @decl-end
 
 CFlagWork::CFlagWork(s32 a, s32 b) {
@@ -273,18 +299,42 @@ s32 CFlagWork::Load(u8 *buf) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108AA8);
+int CFlagWork::Func108AA8(char *buf) {
+    s32 len = func_0024B818(&buf, "# flag work text data\n\n");
+    for (s32 r = 0; r < m_numRanges; r++) {
+        CFlagRange *rg = &m_ranges[r];
+        len += func_0024B818(&buf, "%s=", rg->m_unk4);
+        s32 lo = rg->m_lo;
+        s32 n = rg->m_hi - lo + 1;
+        s32 type = rg->m_type & 0xF;
+        for (s32 j = 0; j < n; j++) {
+            switch (type) {
+            case 0:
+                len += func_0024B818(&buf, "%d", Func1091B0(lo + j));
+                break;
+            case 1:
+                len += func_0024B818(&buf, "%s", GetStr(lo + j));
+                break;
+            }
+            if (j < n - 1) len += func_0024B818(&buf, D_002D1C68);
+        }
+        len += func_0024B818(&buf, D_002D1C70);
+    }
+    return len;
+}
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C68);
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C70);
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108C30);
+INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108C30__9CFlagWorkPc);
 INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C80);
 
-INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C88);
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00108E10);
+int CFlagWork::Func108E10(const char *name) {
+    return Func1092B0(&CFlagWork::Func108AA8, name);
+}
 
-INCLUDE_RODATA("asm/nonmatchings/CFlagWork", D_002D1C90);
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108E38__9CFlagWorkPCc);
+int CFlagWork::Func108E38(const char *name) {
+    return Func109410(&CFlagWork::Func108C30, name);
+}
 
 s32 CFlagWork::GetType(s32 id) {
     if (id < 0 || id > m_numDefs - 1) {
@@ -322,7 +372,9 @@ void CFlagWork::SetStr(s32 id, const char *s) {
 
 INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func108FF0__9CFlagWorkii);
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func109108__9CFlagWorkii);
+void CFlagWork::Func109108(s32 id, s32 delta) {
+    Func108FF0(id, Func1091B0(id) + delta);
+}
 
 const char *CFlagWork::GetStr(s32 id) {
     if (id < 0 || id > m_numDefs - 1) {
@@ -337,11 +389,31 @@ const char *CFlagWork::GetStr(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func1091B0__9CFlagWorki);
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func109248__9CFlagWorkiii);
+void CFlagWork::Func109248(s32 id, s32 lo, s32 hi) {
+    s32 v = Func1091B0(id);
+    s32 m = v < hi ? v : hi;
+    Func108FF0(id, m < lo ? lo : m);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_001092B0);
+int CFlagWork::Func1092B0(int (CFlagWork::*fn)(char *), const char *name) {
+    int ok = 0;
+    char *buf = 0;
+    s32 n = (this->*fn)(0);
+    if (n >= 0) {
+        buf = (char *)func_0024A3D8(n);
+        if (buf && (this->*fn)(buf) == n) ok = func_002301B0(name, buf, n) == n;
+    }
+    if (buf) D_002B91B0(buf);
+    return ok;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00109410);
+int CFlagWork::Func109410(int (CFlagWork::*fn)(char *), const char *name) {
+    int ok = 0;
+    char *text = (char *)Func24A4C0(name);
+    if (text) ok = (this->*fn)(text) != 0;
+    if (text) D_002B91B0(text);
+    return ok;
+}
 
 // Empty; real name and class unknown (a virtual no-op or a stub).
 extern "C" void func_001094E0() {

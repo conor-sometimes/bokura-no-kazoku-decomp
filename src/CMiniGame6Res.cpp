@@ -72,6 +72,8 @@ struct CMiniGame6Sprite {
 };
 class CMiniGame6Board {
 public:
+    s32 CheckLine(s32 *out);
+    s32 FindFree(s32 row, s32 v);
     void SetPos(f32 v);
     void SetAlpha(f32 v);
     f32 Wrap(f32 v);
@@ -80,7 +82,8 @@ public:
     CMiniGame6Sprite m_spr[6]; // 0x100
     f32 m_unk9A0;             // 0x9A0
     f32 m_unk9A4;             // 0x9A4
-    u8 pad9A8[0xA18 - 0x9A8];
+    u8 pad9A8[0xA14 - 0x9A8];
+    s32 m_unkA14;             // 0xA14
     s32 m_cells[3][20];       // 0xA18
     u8 padB08[0xC];
     f32 m_unkB14[8];          // 0xB14
@@ -151,6 +154,32 @@ public:
     CLayoutRes m_res10;       // 0x10
     CLayoutRes m_res34;       // 0x34
 };
+
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+class CMenuMgrSub1B4768 {
+public:
+    int GetEntry0(int k);
+    int Func1B4ED0(int v);
+    void Reset1B4D28();
+    void SetUnk20(f32 x, f32 y, f32 z);
+    void SetUnk30(f32 x, f32 y, f32 z, f32 w);
+    void SetUnk4C(f32 v);
+};
+// Func1B4ED0 is a CMenuMgr method on the same object (D_002A5530).
+class CMenuMgr {
+public:
+    int Func1B4ED0(int v);
+};
+extern CMenuMgrSub1B4768 *D_002A5530;
+extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, int k);
+struct CMg6Main {
+    u8 pad0[0x90];
+    CUnk237E90 m_unk90;       // 0x90
+};
+extern CMg6Main *D_002A5BC0;
 // @decl-end
 
 CMiniGame6Res *CreateMiniGame6Res() {
@@ -218,9 +247,47 @@ s32 CMiniGame6Board::GetCell(s32 row, s32 col) {
     return m_cells[row][(s32)Wrap(m_unkB14[row] + col)];
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3DC0);
+s32 CMiniGame6Board::CheckLine(s32 *out) {
+    s32 g[3][3];
+    s32 i, j, best, line;
+    *out = -1;
+    line = -1;
+    if (m_unkA14 < 2) return -1;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) g[i][j] = GetCell(i, j);
+    }
+    best = *out;
+    for (i = 0; i < 3; i++) {
+        if (g[0][i] == g[1][i] && (best < 0 || g[0][i] < best)) {
+            *out = g[0][i];
+            best = g[0][i];
+            line = i;
+        }
+    }
+    if (g[1][1] == g[0][0] && (best < 0 || g[1][1] < best)) {
+        *out = g[1][1];
+        line = 2;
+        best = g[1][1];
+    }
+    if (g[1][1] == g[0][2] && (best < 0 || g[1][1] < best)) {
+        *out = g[1][1];
+        best = g[1][1];
+        line = 0;
+    }
+    return best != 4 ? line : -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3F20);
+s32 CMiniGame6Board::FindFree(s32 row, s32 v) {
+    s32 c = (s32)m_unkB14[row];
+    for (;;) {
+        s32 i;
+        for (i = 0; i < 3; i++) {
+            if (m_cells[row][(c + i) % 20] == v) break;
+        }
+        if (i >= 3) return c;
+        c = (c + 19) % 20;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3FF8);
 
@@ -230,7 +297,16 @@ INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E4C70);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E6E80);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E71A0);
+int DrawMg6Sprite(f32 x, f32 y, f32 s, f32 t, f32 a) {
+    f32 px = (x - 320.0f) * s + 320.0f;
+    f32 py = (y - 224.0f) * s + 224.0f;
+    D_002A5BC0->m_unk90.Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x18)));
+    D_002A5530->Reset1B4D28();
+    D_002A5530->SetUnk20(px, py, 0.0f);
+    D_002A5530->SetUnk30(s * t, s * t, 0.0f, 0.0f);
+    D_002A5530->SetUnk4C(a);
+    return D_002A5BC0->m_unk90.Func237E90(func_001B50B0(D_002A5530, 0x18));
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E72D0);
 

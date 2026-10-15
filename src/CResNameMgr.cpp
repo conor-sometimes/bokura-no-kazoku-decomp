@@ -16,7 +16,7 @@ public:
     virtual void Release() = 0;
     virtual int Func145D18(const char *path) = 0;
     virtual void Init() = 0;
-    virtual int Load(int k) = 0;
+    virtual int Load(int k, char *buf, int key) = 0;
     virtual int GetValue(u32 kind, int id) = 0;
 };
 class CResNameMgr : public IResNameMgr {
@@ -25,13 +25,16 @@ public:
     virtual void Release();
     virtual int Func145D18(const char *path);
     virtual void Init();
-    virtual int Load(int k);
+    virtual int Load(int k, char *buf, int key);
     virtual int GetValue(u32 kind, int id);
     virtual ~CResNameMgr();
     void Clear();
     void Init146F60();
-    int Func146658(int k);
-    int Func146DE8(int k);
+    int Func146658(int k, char *buf, int key);
+    int Func146DE8(int k, char *buf, int key);
+    int Func1467E0(char *buf, int key, int a, int b);
+    int Func146B58(char *buf, int key, int b);
+    int Func146C08(char *buf, int key, int season);
     int Func145E18();
     int Func146238();
     int Func146410();
@@ -68,6 +71,26 @@ void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
 int Func235DE0(const char *fmt, ...);
+
+//@sym Func1467E0__11CResNameMgrPciii 0x1467E0
+//@sym Func146B58__11CResNameMgrPcii 0x146B58
+extern const char D_002D7C78[], D_002D7C80[];
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
+const char *Func24A570(const char *s, char *buf, const char *a, const char *b);
+extern "C" int func_00289118(const char *s);
+extern "C" void func_0028B520(char *s);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" unsigned int strlen(const char *s);
+int Func1456A8(int v);
+extern s32 D_002A2910[];
+extern const char *D_002A28E0[];
+inline char *StrCat(char *d, const char *s) { strcpy(d + strlen(d), s); return d; }
+struct CResSchoolRec {
+    s32 m_id;                 // 0x0
+    const char *m_names[2];   // 0x4
+};
+
+int Func1456A8(int v);
 // @decl-end
 
 CResNameMgr::CResNameMgr() {
@@ -206,10 +229,10 @@ void CResNameMgr::Init() {
     Clear();
 }
 
-int CResNameMgr::Load(int k) {
+int CResNameMgr::Load(int k, char *buf, int key) {
     switch (k) {
-    case 1: return Func146658(k);
-    case 2: return Func146DE8(k);
+    case 1: return Func146658(k, buf, key);
+    case 2: return Func146DE8(k, buf, key);
     }
     return 1;
 }
@@ -219,15 +242,56 @@ int Season146608(int v) {
     return v / 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func146658__11CResNameMgri);
+int CResNameMgr::Func146658(int k, char *buf, int key) {
+    char tok[0x100];
+    s32 a, b;
+    const char *p = Func24A570(buf, tok, D_002D7C78, D_002D7C80);
+    if (!strcmp(tok, "AG")) {
+        p = func_0024A710(p, &a, 0, D_002D7C78, D_002D7C80);
+        func_0024A710(p, &b, 0, D_002D7C78, D_002D7C80);
+        return Func1467E0(buf, key, a, b);
+    }
+    if (!strcmp(tok, "AC")) {
+        func_0024A710(p, &b, 0, D_002D7C78, D_002D7C80);
+        return Func146B58(buf, key, b);
+    }
+    if (!strcmp(tok, "SC")) {
+        func_0024A710(p, &b, 0, D_002D7C78, D_002D7C80);
+        return Func146C08(buf, key, b);
+    }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", func_001467E0);
+INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func1467E0__11CResNameMgrPciii);
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", func_00146B58);
+int CResNameMgr::Func146B58(char *buf, int key, int b) {
+    s32 idx = Func1456A8(key);
+    s32 v;
+    if (idx < 0) return 0;
+    s32 t;
+    v = D_002A26E4->Func1091B0(idx + 0xD6);
+    if (v == 13) t = 2;
+    else t = v == 14;
+    return Func1467E0(buf, key, t, b);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", func_00146C08);
+INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func146C08__11CResNameMgrPcii);
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func146DE8__11CResNameMgri);
+int CResNameMgr::Func146DE8(int k, char *buf, int key) {
+    s32 idx = Func1456A8(key);
+    s32 kind, r, v;
+    if (idx < 0) return 1;
+    v = func_00289118(buf);
+    if (v == -100) kind = 0;
+    else {
+        kind = 1;
+        if (v != -200) return 1;
+    }
+    r = GetValue(kind, D_002A26E4->Func1091B0(idx + 0xD6));
+    if (r < 0) return 1;
+    sprintf(buf, "%d", r);
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7D60);
 INCLUDE_RODATA("asm/nonmatchings/CResNameMgr", D_002D7D70);
 

@@ -51,7 +51,8 @@ struct MapDBKey {
 };
 struct CMapDBNameRec {
     const char *m_name;
-    u8 pad4[0x20];
+    const char *m_strs[4];    // 0x4
+    s32 m_vals[4];            // 0x14
 };
 // Interface without fields (its RTTI name only): the vptr is at 0.
 class IMapDBMgr {
@@ -62,12 +63,16 @@ public:
     virtual int Func29AC20() = 0;
     virtual int Func29AC28() = 0;
     virtual CMapDBNameRec *FindByName(const char *name) = 0;
-    virtual int Func173828() = 0;
+    virtual int Func173828(const char *name, s32 idx, char *outName, s32 *outAbs, s32 *outSign) = 0;
     virtual MapDBKey *Find173940(const char *name) = 0;
     virtual int Func173980(const char *a, const char *b) = 0;
 };
 // Vtable 0x2C15F0: slot 0 is an inline `delete this` (emitted elsewhere), so the key method is
 // Func173050, not the destructor (slot 9). Slots 3 and 4 are inline too.
+struct CMapDBPair {
+    s32 m0;
+    s32 m4;
+};
 class CMapDBMgr : public IMapDBMgr {
 public:
     CMapDBMgr();
@@ -77,12 +82,13 @@ public:
     virtual int Func29AC20();
     virtual int Func29AC28();
     virtual CMapDBNameRec *FindByName(const char *name);
-    virtual int Func173828();
+    virtual int Func173828(const char *name, s32 idx, char *outName, s32 *outAbs, s32 *outSign);
     virtual MapDBKey *Find173940(const char *name);
     virtual int Func173980(const char *a, const char *b);
     virtual ~CMapDBMgr();
     void Clear();
     static CMapDBMgr *Create();
+    s32 Parse173648(const char *p, CMapDBPair *out);
 
     CPushBuf m_buf;           // 0x4
     CMapDBExpr m_expr;        // 0x10
@@ -104,6 +110,12 @@ extern "C" void func_0024BAF0(void *out, s32 v);
 void Func24B600(char *dst, const char *src, s32 n);
 extern "C" void func_0029A518(void *arr, CExprEntry *e);
 extern "C" s32 func_0024BC88(void *src);
+#include "CFlagWork.h"
+extern "C" char *func_00248DA8(CPushBuf *b);
+extern "C" s32 func_00248DC0(CPushBuf *b);
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 k, s32 n);
+const char *Func24A570(const char *s, char *out, const char *sep, const char *ws);
+extern char D_002DA280[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", __10CMapDBExpr);
@@ -199,7 +211,20 @@ CMapDBNameRec *CMapDBMgr::FindByName(const char *name) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173828);
+int CMapDBMgr::Func173828(const char *name, s32 idx, char *outName, s32 *outAbs, s32 *outSign) {
+    if (idx < 0) idx = D_002A26E4->Vf2991B0();
+    CMapDBNameRec *r = FindByName(name);
+    if (!r) return 0;
+    const char *s = r->m_strs[idx];
+    if (!s || !*s) return 0;
+    if (outName) strcpy(outName, s);
+    if (outAbs) {
+        s32 v = r->m_vals[idx];
+        *outAbs = v < 0 ? -v : v;
+    }
+    if (outSign) *outSign = r->m_vals[idx] < 0 ? -1 : 1;
+    return 1;
+}
 
 MapDBKey *CMapDBMgr::Find173940(const char *name) {
     MapDBKey key;

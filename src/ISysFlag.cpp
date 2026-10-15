@@ -41,6 +41,8 @@ extern CFlagRange D_002A2820[];
 extern char D_002D7940[];
 extern char D_002D79C8[];
 int Func145738(int name, int flag);
+
+extern char D_002D79F0[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00143A90);
@@ -268,7 +270,18 @@ s32 CCurFlag::Get145118() {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00145160);
+void CCurFlag::Add145160(s32 id, s32 v) {
+    if (id < 0x22) {
+        if (id >= 0x1F) {
+            Func109108(id, v);
+            goto done;
+        }
+    }
+    Func235DE0(D_002D79F0, id);
+done:
+    Func109108(0x1C, v);
+    Func109248(0x1C, 0, 9999);
+}
 
 void CCurFlag::MoveMoney(s32 v) {
     Func109108(0x1C, -v);

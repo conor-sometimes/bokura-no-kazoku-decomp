@@ -148,6 +148,7 @@ public:
     void ProcState6();
     void SetVolume1B4578(s32 a, f32 v);
     void Start1B4418(u32 id, s32 arg);
+    int Load1B4050(const char *dir);
 
     u8 pad4[0x48];
     s32 m_unk4C;              // 0x4C
@@ -224,6 +225,7 @@ public:
     int Load1B5C88(const char *name);
     void Release1B5D40();
     int Draw1B5F78(f32 x, f32 y, s8 c);
+    int DrawString1B5FE0(f32 x, f32 y, const char *s);
     void Func1B5788(f32 x, f32 y, s8 c);
     void Init();
     void CallReset();
@@ -341,6 +343,7 @@ public:
     s32 GetUnkC(u32 i);
     s32 Calc1B7118(u32 i);
     void Func1B72E0(u32 i);
+    void Save1B7188(u32 i);
     void SetUnk34(u32 i, s32 v);
     s32 GetUnk34(u32 i);
     int AllSet1B73E8();
@@ -353,7 +356,7 @@ public:
     s32 m_unk8;               // 0x8
     s32 m_unkC[10];           // 0xC
     s32 m_unk34[10];          // 0x34
-    u8 pad5C[0x8];
+    u8 m_date[0x8];           // 0x5C
     void *m_unk64;            // 0x64
 };
 
@@ -517,6 +520,32 @@ public:
 extern CDbgText2BA0B0 *D_002BA0B0;
 extern char D_002DFF10[], D_002E09C0[];
 extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" void func_002491A8(void *f, const char *dir, void *a, void *b, void *c);
+extern "C" int func_00249248(void *f);
+extern "C" void func_00249348();
+extern "C" void func_00249428(void *a, void *b);
+extern void *D_002A5520;
+extern void *D_002A5524;
+extern char D_002DFE18[], D_002DFE30[], D_002DFE40[], D_002DFE50[], D_002DFE60[], D_002DFE70[], D_002DFE80[], D_002DFE90[];
+extern "C" void func_001A0A98(void *w, const char *name);
+extern "C" int func_001B4820(CMenuMgrSub1B4768 *p, const char *name);
+extern "C" int func_0019BA00(void *p, const char *name);
+extern "C" int func_001884F0(void *p, const char *name);
+class CSeMgr1D0 {
+public:
+    virtual void V0();
+    virtual s32 Load(const char *name, s32 k);
+};
+extern CSeMgr1D0 *D_002BA1D0;
+extern "C" s32 func_001EDC18(const char *dir, s32 k);
+extern "C" s32 func_001EDF78(const char *dir, s32 k);
+extern "C" s32 func_001EDEE8(const char *dir, s32 k);
+extern "C" s32 func_001EE4F8(const char *name, s32 a, s32 b, s32 c);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern char D_002E0610[], D_002E0618[], D_002E0630[], D_002E0640[], D_002E0658[], D_002E0668[], D_002E0678[], D_002E0690[], D_002E06B0[];
+extern u8 D_002A55C0[];
+int BcdToInt(int v);
+extern char D_002E04C0[], D_002E04E8[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", __8CMenuMgr);
@@ -538,7 +567,26 @@ void CMenuMgr::Init1B3FC8() {
     func_001884B0(D_002A4308);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B4050);
+int CMenuMgr::Load1B4050(const char *dir) {
+    u8 f[0x100];
+    Slot3();
+    func_002491A8(f, dir, D_002A551C, D_002A5520, D_002A5524);
+    if (func_00249248(f)) {
+        ((int (*)(const char *, ...))Func235DE0)(D_002DFE18, f);
+        func_001A0A98(D_002A5408, D_002DFE30);
+        D_002A5538->AllReady1B6350();
+        D_002A5538->SetUnkDC(0);
+        D_002A5534->Load1B5C88(D_002DFE40);
+        func_001B4820(D_002A5530, D_002DFE50);
+        func_0019BA00(D_002A53D4, D_002DFE60);
+        func_001884F0(D_002A4308, D_002DFE70);
+        D_002A4B60->Func108E38(D_002DFE80);
+        D_002BA1D0->Load(D_002DFE90, 1);
+    }
+    func_00249348();
+    func_00249428(D_002A551C, D_002A5528);
+    return 1;
+}
 
 void CMenuMgr::Release1B41B8() {
     func_002494B0(D_002A551C, D_002A5528);
@@ -867,7 +915,26 @@ int CMenuMgrSub1B5BF8::Draw1B5F78(f32 x, f32 y, s8 c) {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B5FE0);
+int CMenuMgrSub1B5BF8::DrawString1B5FE0(f32 x, f32 y, const char *s) {
+    f32 w = (f32)strlen(s) * (m_unk0 * 11.0f);
+    switch (m_unk34) {
+    case 0:
+        break;
+    case 1:
+        x -= w * 0.5f;
+        break;
+    case 2:
+        x -= w;
+        break;
+    }
+    Func225088();
+    while (*s) {
+        Func1B5788(x, y, *s++);
+        x += (f32)(s32)(m_unk0 * 11.0f);
+    }
+    Func2251E8();
+    return Func2250C0();
+}
 
 CMenuMgrSub1B6418 *CMenuMgrSub1B6418::Create() {
     CMenuMgrSub1B6418 *p = (CMenuMgrSub1B6418 *)operator new(0xF0);
@@ -1104,7 +1171,22 @@ s32 CMenuMgrSub1B6BA8::Calc1B7118(u32 i) {
     return m_unkC[(s32)i / 3] + m_unk8 * ((s32)i % 3);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B7188);
+void CMenuMgrSub1B6BA8::Save1B7188(u32 i) {
+    if (i >= 30) {
+        Func235DE0(D_002E04C0, i);
+        return;
+    }
+    s32 q = (s32)i / 3;
+    s32 r = (s32)i % 3;
+    Func235DE0(D_002E04E8, i, q, r);
+    D_002A26E4->Func108FF0(2, BcdToInt(m_date[7]));
+    D_002A26E4->Func108FF0(3, BcdToInt(m_date[6]));
+    D_002A26E4->Func108FF0(4, BcdToInt(m_date[5]));
+    D_002A26E4->Func108FF0(5, BcdToInt(m_date[3]));
+    D_002A26E4->Func108FF0(6, BcdToInt(m_date[2]));
+    D_002A26E4->Func108FF0(7, BcdToInt(m_date[1]));
+    D_002A26E4->Save((u8 *)(m_unkC[q] + m_unk8 * r));
+}
 
 void CMenuMgrSub1B6BA8::Func1B72E0(u32 i) {
     if (i >= 30) {

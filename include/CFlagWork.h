@@ -20,6 +20,7 @@ public:
     void Func109108(s32 id, s32 delta);
     void Func109248(s32 id, s32 lo, s32 hi);
     void SetStr(s32 id, const char *s);
+    const char *GetStr(s32 id);
 
     u8 pad0[0x18];
     s32 m_unk18;              // 0x18

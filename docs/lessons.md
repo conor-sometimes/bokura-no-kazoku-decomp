@@ -245,3 +245,31 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Callee arity from pass-through registers**: a wrapper that leaves $a1/$a2 untouched before a
   `j` passes extra arguments; when a later function calls it with more args, widen the
   extern "C" prototype (func_0020E470, func_0020E808). *(bokura)*
+## g2
+
+- **GNU as swaps a macro's last instruction into a call's delay slot; retail's assembler didn't**: when
+  GCC leaves a `jal` in `.set reorder` mode right after a macro (`la $4,0xCEB0($16)`,
+  `sw $2,0xFC60($16)`: offsets >= 0x8000), our as 2.10 moves the last instruction of the expansion
+  into the slot, retail keeps the pair before the call and a `nop` in the slot. Blocks big-object
+  code (CEventObj, CDemoMain ctor, the pointer-to-member handlers). `-Wa,-O0/1` doesn't help. *(bokura)*
+- **Branch-likely vs branch is decided by the code after the branch**: several `bnezl`/`blezl` vs
+  `bnez`/`blez` DIFF-1s went away once the code *after* the loop or test had retail's shape (an early
+  `return 0` instead of an if-block around the tail, CGameSchedule 0x15E2F8). Fix the rest first. *(bokura)*
+- **Loops with no loop notes**: a list-draining loop only matched written with `goto` (no `while`):
+  loop.c otherwise hoists `this+0xBC` out of the body and adds a zero-init (CGameSchedule 0x159C50). *(bokura)*
+- **Pointer-to-member constants come from the compiler**: `Func1092B0(&CFlagWork::Func108AA8, name)`
+  emits the 8-byte `{0, -1, pfn}` constant in .rodata and loads it with `ldl/ldr`; delete the
+  INCLUDE_RODATA of the constant (old HARD 0x108E10/0x108E38). *(bokura)*
+- **A void-declared callee used as a value**: when one unit's declaration of Func235DE0 is void but a
+  function needs the int-returning call shape (`lui $3` after the call), call it through
+  `((int (*)(const char *, ...))Func235DE0)(...)`; the call stays a direct `jal`. *(bokura)*
+- **Value-returning virtual slots show in their own call**: `lw v1,0(obj); addiu v1,slot; lw v0,4(v1); jalr v0`
+  (v1 for the slot address) means that slot returns a value; void slots use v0/v1 the other way. *(bokura)*
+- **Literal or extern**: in a level-2/3 unit, a string that dataconv lists as "in asm/.../func.s" must
+  become a C++ literal when the function is matched (the label disappears), one listed as INCLUDE_RODATA
+  stays an extern. A literal shared with an INCLUDE_ASM'd function can't move. *(bokura)*
+- **The 0x170-byte CLayoutObj is 16-byte aligned**: vptr at 0x164 after its fields, size rounded up to
+  0x170 (`__attribute__((aligned(16)))` on the class); the hourglass object (0x1BD188) holds one as its
+  first member, not as a base (no vptr store in its ctor). *(bokura)*
+- **Struct copies of 5 bytes, `char` vs `u8`**: a `lbu` in retail where ours has `lb` means the buffer
+  or the copied byte is unsigned (CEventMesRes Load: `u8 line[]` made the alnum tests match). *(bokura)*

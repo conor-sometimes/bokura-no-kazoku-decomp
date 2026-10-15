@@ -87,11 +87,13 @@ public:
     s32 m_timer;              // 0x8
     u8 padC[0x34];
     s32 m_unk40;              // 0x40
-    u8 pad44[0x4];
+    s32 m_unk44;              // 0x44
 };
 
 class CMenuRecordList : public CCommandBase {
 public:
+    int Draw1974F8();
+    void Draw197950();
     void Func196E90(s32 flag);
     void Func196B50();
     void Func196C70(s32 i);
@@ -137,6 +139,33 @@ extern CMenuMgrSub1B5BF8 *D_002A5534;
 struct CMenuRecordWinF { u8 pad0[0x34]; f32 m_unk34; };
 
 extern "C" void func_001A3DC8(CMenuRecordWin *w, s32 i, s32 v);
+
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+u8 *Func237570(int n);
+void Func237A88(void *p, int v);
+void *Func237C30(void *p);
+int Func238158(void *p, int v);
+void Func225240(int v);
+class CMenuMgrSub1B4768 {
+public:
+    s32 GetEntry0(s32 i);
+    void Reset1B4D28();
+    void SetUnk4C(f32 v);
+    void SetUnk20(f32 a, f32 b, f32 c);
+    void SetUnk40(f32 a, f32 b, f32 c, f32 d);
+    void SetUnk58(u32 v);
+};
+class CMenuMgr {
+public:
+    int Func1B4ED0(int v);
+};
+extern CMenuMgrSub1B4768 *D_002A5530;
+extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
+struct CVec2f { f32 x, y; };
+struct CMenuRecordWinF2 { u8 pad0[0x34]; f32 m_unk34; };
 // @decl-end
 
 CMenuRecord::CMenuRecord() {
@@ -611,11 +640,53 @@ void CMenuRecordList::GetRange2(s32 *a, s32 *b) {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_001972E8);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_001974F8);
+int CMenuRecordList::Draw1974F8() {
+    f32 v[2];
+    u8 *pp = Func237570(0x30);
+    Func237A88(pp, 3);
+    CUnk237E90 *q = (CUnk237E90 *)(pp + 0x10);
+    Func238158(Func237C30(pp + 0x20), 1);
+    q->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x29)));
+    D_002A5530->Reset1B4D28();
+    f32 w = ((CMenuRecordWinF2 *)m_win)->m_unk34;
+    D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, w);
+    m_win->Func1A39A8(&v[0], (s32 *)&v[1], 0x2E);
+    D_002A5530->SetUnk20(v[0] + m_ofsX, v[1] + m_ofsY, 0.0f);
+    q->Func237E90(func_001B50B0(D_002A5530, 0x29));
+    m_win->Func1A39A8(&v[0], (s32 *)&v[1], 0x2F);
+    D_002A5530->SetUnk20(v[0] + m_ofsX, v[1] + m_ofsY, 0.0f);
+    D_002A5530->SetUnk58(2);
+    q->Func237E90(func_001B50B0(D_002A5530, 0x29));
+    D_002A5530->SetUnk58(0);
+    Func225088();
+    Func225240((s32)pp);
+    Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_001976A0);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00197950);
+void CMenuRecordList::Draw197950() {
+    s32 a, b;
+    f32 px, py;
+    f32 bx, by;
+    s32 i;
+    u8 *pp = Func237570(0x30);
+    Func237A88(pp, 3);
+    Func238158(Func237C30(pp + 0x20), 1);
+    D_002A5530->Reset1B4D28();
+    D_002A5530->SetUnk4C(((CMenuRecordWinF2 *)m_win)->m_unk34);
+    m_win->Func1A39A8(&bx, (s32 *)&by, 0x4F);
+    GetRange2(&a, &b);
+    for (i = a; i < a + b; i++) {
+        if (!m_items[i].m_unk44) continue;
+        m_win->Func1A39A8(&px, (s32 *)&py, PageRow(i) + 0x45);
+        D_002A5530->SetUnk20(px + bx + m_ofsX, py + by + m_ofsY, 0.0f);
+        ((CUnk237E90 *)(pp + 0x10))->Func237E90(func_001B50B0(D_002A5530, 0x2F));
+    }
+    Func225088();
+    Func225240((s32)pp);
+    Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00197AE0);
 

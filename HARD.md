@@ -181,3 +181,30 @@ several with VU0 macro code / vcallms); 0x204500 0x204548 0x204BC8 0x204CC0 0x20
 0x209F50 0x20A098 (Unit208128); 0x20AA60 0x20AD90 0x20B160 0x20B448 0x20B5A0 0x20BA88 0x20BDF0
 0x20C338 (Unit20A410); 0x20CC08 0x20CDF0 0x20D2B8 0x20D780 0x20DA30 0x20DB78 0x20DC98 0x20DFD8
 (Unit20CBF0).
+## g2
+Goal 6b overnight lane g2 (2026-10-15). Each entry says what still differs; the best C for the near misses is in a comment next to the INCLUDE_ASM line.
+- **CMiniGame5Res 0x1DEF58** (CMiniGame5 ctor, snippet in g2 notes): DIFF 2, `li $5,-1` scheduled before `addiu $2,this,0x30` (CStateMachine member init); tried CStateMachine/CMiniGameTimer orders, CRand ctor vs body.
+- **CMiniGame5Res 0x1DF2F0** (quest picker): DIFF 2, the cumulative-weight pick loop: retail `beqz` + `addiu i` in the delay slot, ours `beqzl`; tried for/while/goto/continue/j-temp variants.
+- **CMiniGame5Res 0x1DEA78 / 0x1DF0F8**: key methods (CMiniGame5Res dtor inlines ~CListTag; CMiniGame5 dtor); need level 3 and CListTag's linkonce vtable kept out of the piece.
+- **CEFontWork 0x10C798** (InitEFont): DIFF 1, `bnezl` vs retail `bnez` + `lui` in the slot at the `if (!D_002BA248)` early return; tried return forms, int return, if/else.
+- **CEFontWork 0x10C710**: switch whose jump table (jtbl_002D2B40) sits in the next unit's .rodata (text boundary); needs the function moved to its real unit.
+- **CEventMesRes 0x13DBF8** (ParseItem, DIFF 34) and **0x13DA10** (Load, size +3): register numbering/scheduling; second loop's `it->m_ids[i] = ...` address computed after the call in retail, buffer pointer copied to a fresh register; Load's alnum test layout.
+- **CEventMesRes 0x13DE70 / 0x13DEB0 / 0x13D958**: CEventMesMgr ctor/dtor and CEventMesRes dtor inline TList/CList/CListTag ctors/dtors; inlining them would emit linkonce vtables (_vt$5CList, _vt$8CListTag) into this unit's piece.
+- **CFaceRes 0x10E5E0** (ParseFaceParts, DIFF 15): retail interleaves the eight `lhu`/`sh` pairs (load, store, load, store), ours hoists all loads; tried array/struct locals, s16 pointer, inline setter.
+- **CFaceRes 0x10E7A8** (LoadFaceSets, DIFF 3): `move s1,s3` (s = sets) placed before the hoisted `lui`s in retail; tried for-init, declaration orders.
+- **CGameSchedule 0x159F80**: DIFF 1, `bnel` vs retail `bne` + `ld $16` in the slot at `if (m88 == 1)`.
+- **CGameSchedule 0x159E18** (Next, size -9): first ScheduleUnit() is branchy (`bnez`/`b` + `move a1`) in retail, movz in ours; layout of the remove block; tried goto/for/while forms.
+- **CGameSchedule 0x15F1B0** (size -2): register numbering (n in $20 vs ours $21) and a loop-alignment nop; returns 0 or Func15F9E0's value.
+- **CGameSchedule 0x15F780** (DIFF ~72): register allocation of the nested slot-merge loops (k/n/b/p/j in s3/s4/s5/s6/s2 in retail); tried pointer and index forms of the D_002A3480 walk.
+- **CGameSchedule 0x15D620** (DIFF 15 after perm of the field stores): ours computes `&D_002A26E4` (lui/addiu s3) before the `if (!rec)` branch, retail inside the found path; also s1/s3 save order. Tried if/else and single-exit forms.
+- **CEventObj 0x132D30** (size -3): retail leaves the delay slot empty after calls whose argument is `this + large offset` (`ori/addu` pair before `jal`, then `nop`), ours puts the `addu` in the slot (same as the CDemoMain ctor note).
+- **CEventObj 0x135138** (DIFF 12): s4/s5 swapped between `&m_svm[3]` and `&m_svm[5]`; tried pointer locals in all orders and partial locals.
+- **CEventObj 0x132BB8** (DIFF 5): only the list-count loop's registers (retail mgr in a0, count in a1; ours v1/a0); tried inline counters, goto loop, mgr local.
+- **Cross-cutting, GAS delay-slot swap (blocks CEventObj 0x135A28, 0x132D30 and probably the pmf handlers 0x132F40-family and the CDemoMain ctor)**: when GCC leaves a call in `.set reorder` mode after a macro instruction (`la $4,0xCEB0($16)`, `sw $2,0xFC60($16)`: offsets >= 0x8000), our GNU as 2.10 swaps the macro's last instruction into the `jal` delay slot; retail has the pair before the `jal` and a `nop` in the slot. `-Wa,-O0/-O1` does not change it. Needs an assembler-side fix (e.g. a post-pass or a patched as).
+- **CFlagWork 0x108C30** (text loader, DIFF ~73): block layout of the matched-range branch (retail puts the per-value loop body before the found-block init and jumps to the test) and `text` first held in s0; tried break/flag and goto forms. **0x108700**: s0/s1 swapped (this vs the cached range); tried scope/inline-range variants.
+- **CFlagWork 0x108448** (setup, size -2): close; remaining: d->m_size stored through a copy of d (`move a1,s0`) and reloaded for `size +=`, prologue scheduling of `defs = 0` / `Reset()`. Snippet in g2 notes (goto notfound form).
+- **CMenuMgr 0x1B76D0** (DIFF 1): `bltzl` vs retail `bltz` after the save-data write of `m174` (delay slot `lui v0` from the exit block); tried void/int print, nested-if and goto forms. **0x1B4ED0 / 0x1B5E18**: GS register packets built from a 64-bit bitfield struct in a0 (needs the struct layout).
+- **CMapRes 0x11A7C0** (DIFF 29): p/s register swap (s0/s1) and the `s = sets` copy placement; **0x119E08** (sorted insert into two item lists, size -10): loop shapes (first comparison against the cached key, later ones reload it->m40).
+- **CMapDBExpr 0x173648** (DIFF 6): `s = line` lands in the first `bnez` delay slot in retail (ours first in the body, with the `this` reload in the slot).
+- **CGameResort 0x166F80** (DIFF 11): copies the shared literal D_002D9940 "-100" (also used by INCLUDE_ASM'd 0x166D40) into a stack buffer as lw+lbu; ours memcpy gives lb and different scheduling. Probably `strcpy(buf, "-100")` with the literal merged with 0x166D40's: do both together.
+- Solved this round from older entries: 0x109108, 0x109248 (CFlagWork), 0x159790 (CGameSeasonPost), 0x1B7188 (CMenuMgr), the pointer-to-member constants 0x108E10/0x108E38.

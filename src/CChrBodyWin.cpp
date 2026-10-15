@@ -32,6 +32,16 @@ public:
     void Set189348(s32 a, s32 b);
     void SetChar(s32 c);
     int GetFlag187610(s32 id, s32 k);
+    int GetFlag187680(s32 id, s32 k);
+    int GetLevel1878F8(s32 id, s32 k);
+    void Func188778(f32 *a, f32 *b, f32 *c, f32 *d);
+    int Func188F30(f32 x, f32 y);
+    int Func1889F8();
+    int Func187ED0(s32 k);
+    void Func188CD8();
+    void Func188098(f32 x, f32 y, f32 s, f32 t);
+    int Func187D68(s32 i, s32 f, s32 k);
+    void Func187A68(char *buf, s32 i, s32 f, s32 k);
     void Open(s32 i);
     int CallFunc1091B0(s32 id);
     void CallFunc188BA8();
@@ -100,7 +110,7 @@ public:
 #include "libc.h"
 void *operator new(unsigned int n);
 int Func235DE0(const char *fmt, ...);
-extern CFlagWork *D_002A4638;
+extern CFlagWork *D_002A4638[6];
 extern CFlagWork *D_002A5358;
 extern CChrBodyWin *D_002A4308;
 extern void (*D_002B91B0)(void *p);
@@ -127,6 +137,18 @@ CChrBodyWin *NewChrBodyWin();
 CChrBodyWinSub18A410 *NewChrBodyWinSub18A410();
 
 inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+
+extern char D_002DB358[], D_002DB3B0[];
+extern const char *D_002A430C;
+extern s32 D_002A4310;
+extern s32 D_002A4314;
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+void Func225088();
+int Func2250C0();
+
+extern CFlagWork *D_002A4B60;
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DAFD0);
@@ -162,19 +184,53 @@ CChrBodyWin *NewChrBodyWin() {
 int CChrBodyWin::GetFlag187610(s32 id, s32 k) {
     if (m_unk380) {
         if (k == 1) return D_002A464C->Func1091B0(id + 0xB4);
-        return D_002A4638->Func1091B0(id + 0xB4);
+        return D_002A4638[0]->Func1091B0(id + 0xB4);
     }
     return D_002A5358->Func1091B0(id + 0xA0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187680);
+int CChrBodyWin::GetFlag187680(s32 id, s32 k) {
+    if (m_unk380) {
+        if (k == 1) {
+            if (D_002A4638[5]->Func1091B0(id + 0xC0) == 0) return -1;
+            return D_002A4638[5]->Func1091B0(id + 0xC6);
+        }
+        if (D_002A4638[0]->Func1091B0(id + 0xC0) == 0) return -1;
+        return D_002A4638[0]->Func1091B0(id + 0xC6);
+    }
+    if (D_002A5358->Func1091B0(id + 0xAC) != 0) {
+        return D_002A5358->Func1091B0(id + 0xB2);
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187758);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001878F8);
+int CChrBodyWin::GetLevel1878F8(s32 id, s32 k) {
+    int a;
+    int b;
+    if (m_unk380) {
+        if (k == 1) {
+            a = D_002A4638[5]->Func1091B0(id + 6);
+            b = D_002A4638[5]->Func1091B0(id + 0xC);
+        } else {
+            a = D_002A4638[0]->Func1091B0(id + 6);
+            b = D_002A4638[0]->Func1091B0(id + 0xC);
+        }
+    } else {
+        a = D_002A5358->Func1091B0(id + 0x2E);
+        b = D_002A5358->Func1091B0(id + 0x34);
+    }
+    if (a == 0) return 0;
+    if (a >= 1 && a <= 6) return 1;
+    if (a >= 7 && a <= 12) return 2;
+    if (a >= 13 && a <= 15) return 3;
+    if (a >= 16 && a <= 18) return 4;
+    return b == 9 ? 6 : 5;
+}
 
 int CChrBodyWin::GetFlag187A00(s32 id) {
-    if (m_unk380) return D_002A4638->Func1091B0(id + 0xAE);
+    if (m_unk380) return D_002A4638[0]->Func1091B0(id + 0xAE);
     return D_002A5358->Func1091B0(id + 0x9A);
 }
 
@@ -182,13 +238,13 @@ int CChrBodyWin::CallFunc1091B0(s32 id) {
     return D_002A464C->Func1091B0(id + 0xAE);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187A68);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187A68__11CChrBodyWinPciii);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187D68);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187D68__11CChrBodyWiniii);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00187ED0);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func187ED0__11CChrBodyWini);
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188098);
+INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func188098__11CChrBodyWinffff);
 
 void CChrBodyWin::Init1883D0() {
     D_002A4308 = this;
@@ -246,7 +302,19 @@ void CChrBodyWinSub188748::SetUnk388(s32 v) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", Func188778__11CChrBodyWinPfN31);
+inline s32 TblGet(CChrBodyWin *w, s32 l, s32 f) { return ((s32 (*)[14])w)[l][f - 1]; }
+void CChrBodyWin::Func188778(f32 *a, f32 *b, f32 *c, f32 *d) {
+    if (m_unk380) {
+        *(s32 *)a = TblGet(this, GetLevel1878F8(m_unk37C, 0), GetFlag187A00(m_unk37C));
+        *(s32 *)b = TblGet(this, GetLevel1878F8(m_unk37C, 1), CallFunc1091B0(m_unk37C));
+        *c = m_unk394;
+        *d = m_unk398;
+    } else {
+        s32 v = TblGet(this, GetLevel1878F8(m_unk37C, 0), GetFlag187A00(m_unk37C));
+        *(s32 *)a = *(s32 *)b = v;
+        *c = *d = m_unk394;
+    }
+}
 
 int CChrBodyWin::Check1888B8() {
     int a = GetFlag187A00(m_unk37C);
@@ -283,7 +351,34 @@ void CChrBodyWinSub188748::SetUnk378(f32 v) {
     m_unk378 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_001889F8);
+int CChrBodyWin::Func1889F8() {
+    char buf0[0x100];
+    char buf1[0x100];
+    char buf2[0x100];
+    int ok = 0;
+    Func2491A8(buf0, 0, (s32)D_002A430C, D_002A4310, D_002A4314);
+    if (Func249248(buf0)) {
+        s32 i;
+        for (i = 0; i < 6; i++) {
+            if (m_ent[i].m4 || m_ent[i].m28) {
+                Func235DE0(D_002DB358, i);
+                continue;
+            }
+            if (m_ent[i].m0) {
+                s32 f = GetFlag187A00(i);
+                if (Func187D68(i, f, 0) && m_unk380) {
+                    s32 g = CallFunc1091B0(i);
+                    Func187A68(buf1, i, f, 0);
+                    Func187A68(buf2, i, g, 1);
+                    if (strcmp(buf1, buf2)) Func187D68(i, g, 1);
+                }
+            }
+        }
+        ok = 1;
+    }
+    Func249348();
+    return ok;
+}
 
 void CChrBodyWin::Func188BA8() {
     int i;
@@ -311,9 +406,58 @@ void CChrBodyWin::SetUnk384(f32 v) {
     m_unk384 = Clamp01(v);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188CD8);
+void CChrBodyWin::Func188CD8() {
+    if (m_ent[m_unk37C].m28 == 0) {
+        m_unk384 = 0.0f;
+        m_unk38C = 1.0f;
+        m_unk394 = 1.0f;
+        m_unk390 = 0.0f;
+        m_unk398 = 0.0f;
+    } else {
+        f32 a = D_002A4B60->Func1091B0(0x6A) / 100.0f;
+        f32 b = D_002A4B60->Func1091B0(0x6B) / 100.0f;
+        f32 c = D_002A4B60->Func1091B0(0x6C) / 100.0f;
+        f32 d = D_002A4B60->Func1091B0(0x6D) / 100.0f;
+        f32 t = m_unk384;
+        if (0.0f <= t && t < a) {
+            m_unk398 = 0.0f;
+            m_unk394 = 1.0f;
+            m_unk390 = 0.0f;
+            m_unk38C = 1.0f - (1.0f - c) * (t / a);
+        } else if (a <= t && t < b) {
+            m_unk38C = 0.0f;
+            m_unk398 = 1.0f;
+            m_unk394 = 0.0f;
+            m_unk390 = c + (d - c) * (t - a) / (b - a);
+        } else if (b <= t && t <= 1.0f) {
+            m_unk38C = 0.0f;
+            m_unk394 = 0.0f;
+            m_unk398 = 1.0f;
+            m_unk390 = d - (d - 1.0f) * (t - b) / (1.0f - b);
+        }
+    }
+    if (m_unk374 != 1.0f) {
+        if (m_unk384 == 0.0f) {
+            m_unk398 = 0.0f;
+            m_unk394 = m_unk374;
+        } else {
+            m_unk398 = m_unk374;
+            m_unk394 = 0.0f;
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00188F30);
+int CChrBodyWin::Func188F30(f32 x, f32 y) {
+    if (m_ent[m_unk37C].m0 == 0) {
+        Func235DE0(D_002DB3B0, m_unk37C);
+        Func225088();
+        return Func2250C0();
+    }
+    Func225088();
+    if (Func187ED0(1)) Func188098(x, y, m_unk398, m_unk390);
+    if (Func187ED0(0)) Func188098(x, y, m_unk394, m_unk38C);
+    return Func2250C0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189018);
 

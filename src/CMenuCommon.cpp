@@ -229,6 +229,7 @@ struct CMenuChildStatusRec {
 extern void (*D_002B91B0)(void *p);
 class CMenuChildStatusSub18B9E0 {
 public:
+    int Func18B880(char *out, s32 id, s32 n);
     int Load18BEE8();
     ~CMenuChildStatusSub18B9E0();
     u8 pad0[0x4];
@@ -247,6 +248,11 @@ extern "C" void func_0018B880(void *p, char *buf, s32 v, s32 k);
 extern "C" int func_001869C8(CMenuChildStatusRec *r, char *buf);
 
 inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.0f ? v : 1.0f); }
+
+extern char D_002DB600[], D_002DB608[], D_002DB610[], D_002DB618[];
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 a, s32 n);
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
+extern "C" const char *func_0024A6B0(const char *p, char *out, const char *a, const char *s1, const char *s2);
 // @decl-end
 
 CMenuCommon::CMenuCommon() {
@@ -284,7 +290,28 @@ s32 CMenuCommon::Draw() {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuCommon", func_0018B880);
+int CMenuChildStatusSub18B9E0::Func18B880(char *out, s32 id, s32 n) {
+    char line[0x400];
+    s32 v;
+    const char *p;
+    if (!m_unk10) return 0;
+    p = (const char *)m_unk10;
+    do {
+        const char *q;
+        p = func_0024AD10(p, line, 1, 0x400);
+        q = func_0024A710(line, &v, 0, D_002DB600, D_002DB608);
+        if (v == id) {
+            s32 i = 0;
+            do {
+                q = func_0024A6B0(q, out, D_002DB610, D_002DB600, D_002DB608);
+                i++;
+            } while (i < n);
+            return 1;
+        }
+    } while (*p);
+    Func235DE0(D_002DB618, id, n);
+    return 0;
+}
 
 void CMenuCommonSub18B990::Clear() {
     m_unk0 = 0;

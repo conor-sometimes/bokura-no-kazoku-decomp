@@ -212,7 +212,7 @@ segments:
       # Vtables (.gnu.linkonce.d._vt$*), one piece per unit in link order: scripts/data_units.py, docs/units.md
       - {start: 0x1C0A40, type: .data, name: CBootMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0A98, type: .data, name: CLogoMain, linker_section: .gnu.linkonce.d.*}
-      - [0x1C0AF0, data, vt_CTitleMain]
+      - {start: 0x1C0AF0, type: .data, name: CTitleMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0B48, type: .data, name: CDemoMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0BA0, type: .data, name: CEndingMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0BF8, type: .data, name: CFlagWork, linker_section: .gnu.linkonce.d.*}
@@ -294,7 +294,7 @@ segments:
       - [0x1C2B38, data, vt_CMenuInputKanji]
       - {start: 0x1C2B80, type: .data, name: CMenuSysscr32, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2BA8, type: .data, name: CMenuSysscr31, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2BD0, data, vt_CMenuSysscr27]
+      - {start: 0x1C2BD0, type: .data, name: CMenuSysscr27, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2BF8, type: .data, name: CMenuSysscr26, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2C20, type: .data, name: CMenuSysscr25, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2C48, type: .data, name: CMenuSysscr24, linker_section: .gnu.linkonce.d.*}
@@ -413,7 +413,7 @@ segments:
       - [0x1DEED0, .rodata, CMenuInputKanji]
       - [0x1DFEB8, .rodata, CMenuSysscr32]
       - [0x1E00F8, .rodata, CMenuSysscr31]
-      - [0x1E0190, rodata, ro_CMenuSysscr27]
+      - [0x1E0190, .rodata, CMenuSysscr27]
       - [0x1E0208, .rodata, CMenuSysscr26]
       - [0x1E02E0, .rodata, CMenuSysscr25]
       - [0x1E0368, .rodata, CMenuSysscr24]

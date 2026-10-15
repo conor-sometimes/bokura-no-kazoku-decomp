@@ -10,9 +10,19 @@ public:
 extern "C" s32 func_00295110(void *p);
 extern "C" void **func_00295170(void *p, s32 i);
 extern "C" void func_00295188(void *p, s32 v);
+
+extern "C" void *func_00295090(void *list);
+class CMapEffRes {
+public:
+    CMapEffRes();
+    virtual ~CMapEffRes();
+    u8 m_list[0x18];
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffRes", func_0011BD00);
+CMapEffRes::CMapEffRes() {
+    func_00295090(m_list);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffRes", func_0011BD20);
 

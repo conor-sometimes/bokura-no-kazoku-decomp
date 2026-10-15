@@ -26,7 +26,7 @@ public:
     virtual void FindType2();
     virtual s32 FindType8();
     virtual s32 Collect14BC20(s32 *out, s32 max);
-    virtual void Vf14BD00();
+    virtual s32 Vf14BD00(s32 a, s32 b, s32 *out, s32 max);
     virtual s32 Vf14C048(s32 *ids, s32 *vals, s32 k);
     virtual s32 Vf14C2B0(s32 *ids, s32 *vals, s32 k);
     virtual s32 Vf14C490(s32 *ids, s32 *vals, s32 k);
@@ -55,7 +55,7 @@ public:
     virtual void GetCharaD30();
     virtual void GetCharaD34();
     virtual void GetCharaD38();
-    virtual void Find1D0();
+    virtual void *Find1D0(s32 id);
     virtual void *Find1DC(int id);
     virtual CGameDBRec *Find1E8(s32 id);
     virtual CGameDBRec *Find200(s32 id);
@@ -89,9 +89,9 @@ public:
     virtual void Vf299948();
     virtual void Vf14FA08();
     virtual void GetTbl250();
-    virtual void GetNum240();
-    virtual void Get240();
-    virtual void Vf14FBB0();
+    virtual s32 GetNum240(s32 id);
+    virtual void *Get240(s32 id, s32 j);
+    virtual s32 Vf14FBB0(s32 i);
     virtual void Vf14FCC8();
     virtual s32 Vf14FE60(s32 v);
     virtual void Vf14FF30();

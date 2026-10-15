@@ -197,6 +197,7 @@ public:
     void SetPlaying(s32 on, s32 dur);
     CSndEntry *Func1292E0(const char *name, s32 v);
     void Stop129AE0(const char *name, s32 t);
+    void Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan);
     void StartAll();
     void Func1295E8();
     int Func129848();
@@ -415,6 +416,29 @@ s32 IsSndPrefixed(const char *s) {
     return strstr(s, D_002A0BB0) == s;
 }
 
+#if 0 // DIFF 2 (g1): retail stores m_unkA4 before the printf format lui, ours after
+int CSndWorkRealY::Play1296F0(const char *name, f32 f) {
+    s32 h;
+    CSndWork2 *snd;
+    if (!IsSndPrefixed(name)) return 0;
+    if (IsUnkA4Set()) return 0;
+    h = Func129CC8(name);
+    if (!h) return 0;
+    snd = GetVolume(name);
+    if (!snd) return 0;
+    if (!snd->Func25C990(h)) {
+        ((CSndDrvC *)D_002BA248)->V5(5, 0x40000);
+        snd->Func25C648(h, 0);
+        func_0025CDC0(snd, h, f);
+        func_0025C910(snd, h, 1, 0);
+        ((CSndDrvC *)D_002BA248)->V5(4, 0x40000);
+        m_unkA0 = snd;
+        m_unkA4 = h;
+        Func235DE0("SND Resv %s : %X\n", name, h);
+    }
+    return 0;
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_001296F0);
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129848);
@@ -427,6 +451,29 @@ void CSndWorkReal::StopSound() {
     m_unkA4 = 0;
 }
 
+#if 0 // DIFF 3 (g1): arg moves around the m_unkA4/m_unkA0 clears scheduled differently
+void CSndWorkReal::Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan) {
+    CSndWork *snd = (CSndWork *)GetVolume(name);
+    s32 h;
+    if (!snd) return;
+    h = Func129CC8(name);
+    Func235DE0("SND Play %s : %X,%X\n", name, m_unkA4, h);
+    if (h == m_unkA4 && func_0025CA58(snd, h)) {
+        m_unkA0 = 0;
+        m_unkA4 = 0;
+        func_0025C910(snd, h, 0, 0);
+    } else {
+        StopSound();
+        ((CSndDrvC *)D_002BA248)->V5(5, 0x40000);
+        snd->Func25C648(h, 0);
+        func_0025CDC0(snd, h, f);
+        ((CSndDrvC *)D_002BA248)->V5(4, 0x40000);
+    }
+    func_0025CC18(snd, h, 0, 0);
+    func_0025CC18(snd, h, a, b);
+    return snd->Func25CB90(h, func_0010CDD0(0x80, pan), func_0010CE40(0x80, pan));
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129900);
 
 void CSndWorkReal::Stop129AE0(const char *name, s32 t) {
@@ -505,6 +552,28 @@ void CSndWorkReal::UpdateCharas() {
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func129EB0__12CSndWorkReal);
 
+#if 0 // DIFF 1 (g1): retail bnez, ours bnezl at the final m_unk90 >= m_unk94 test; CSndObj18::SetVol(f) inline sets m34, m3E, m3C
+void CSndWorkReal::Func12A0F0() {
+    m_fade6C.Update();
+    ((CSndObj18B *)m_unk20)->SetVol(m_unk98 * m_fade6C.m_cur);
+    if (m_fade58.m_t < m_fade58.m_dur) {
+        m_fade58.m_t++;
+        m_fade58.m_cur = m_fade58.m_from + (m_fade58.m_to - m_fade58.m_from) * (f32)m_fade58.m_t / (f32)m_fade58.m_dur;
+        ((CSndObj18B *)m_unk18)->SetVol(m_fade58.m_cur);
+    }
+    if (m_unk90 < m_unk94) {
+        f32 f;
+        CSndEntry *e;
+        m_unk90++;
+        f = (f32)m_unk90 / (f32)m_unk94;
+        for (e = m_entries; e; e = e->m_next) {
+            e->m_unk2C = (s32)(e->m_unk30 + (e->m_unk34 - e->m_unk30) * f);
+            if (e->m_unk28) ((CSndWork *)e->m_snd)->SetVol(e->m_unk28, e->m_unk2C * e->m_unk38);
+        }
+        if (m_unk90 >= m_unk94) Func1295E8();
+    }
+}
+#endif
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func12A0F0__12CSndWorkReal);
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_0012A2F0);

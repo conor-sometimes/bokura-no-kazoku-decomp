@@ -25,6 +25,27 @@ public:
 
 void *operator new(unsigned int n);
 CMenuSysscr00 *NewCMenuSysscr00();
+
+class CMenuTutorSelectedSub182108 {
+public:
+    void Func1829E8(s32 v);
+    void GetCursorPos(f32 *x, f32 *y);
+};
+class CMenuMgrSub1B6418 {
+public:
+    void Move1B6488(f32 x, f32 y);
+};
+extern CMenuMgrSub1B6418 *D_002A5538;
+// The CMenuSave screen (0x7DC0 bytes, created by NewCMenuSysscr00); its code starts here.
+class CMenuSave {
+public:
+    void Func1AE7A8();
+    u8 pad0[0x64];
+    s32 m64;                  // 0x64
+    u8 pad68[0x58];
+    u8 m_tutor[0x7C00];       // 0xC0: CMenuTutorSelectedSub182108
+};
+//@sym Func1829E8__27CMenuTutorSelectedSub182108i 0x1829E8
 // @decl-end
 
 CMenuSysscr00::CMenuSysscr00() {
@@ -47,4 +68,10 @@ CMenuSysscr00 *NewCMenuSysscr00() {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuSysscr00", func_001AE7A8);
+void CMenuSave::Func1AE7A8() {
+    f32 x, y;
+    CMenuTutorSelectedSub182108 *t = (CMenuTutorSelectedSub182108 *)m_tutor;
+    t->Func1829E8(m64);
+    t->GetCursorPos(&x, &y);
+    D_002A5538->Move1B6488(x, y);
+}

@@ -46,13 +46,15 @@ public:
     int Func1671D8();
     int Func1670A8();
     int Func167268();
+    void Func166B68();
+    void Func166F80(s32 flag);
     u8 pad0[0x78];
     struct CGameResortScene *m_unk78; // 0x78
     u8 pad7C[0x5C0 - 0x7C];
     s32 m_unk5C0;             // 0x5C0
     u8 pad5C4[0x5D4 - 0x5C4];
     s32 m_unk5D4;             // 0x5D4
-    u8 pad5D8[0x4];
+    s32 m_unk5D8;             // 0x5D8
     CGameResortItem m_items[1]; // 0x5DC
 };
 
@@ -66,6 +68,26 @@ struct CGameResortScene {
 };
 extern "C" int func_001153E8(void *p);
 extern "C" int func_00167310(void *p, s32 i, s32 k);
+class CResNameIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual s32 Get(s32 kind, char *buf, s32 id);
+};
+extern CResNameIf *D_002A28D8;
+s32 Func145738(s32 a, s32 b);
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" void func_00250828(void *p, const char *name);
+extern "C" int func_00289118(const char *s);
+extern const s32 D_002D9940[];
+class CCharaObj {
+public:
+    void Func115938(s32 a, s32 b, f32 x, f32 y);
+    u8 pad0[0x74];
+    s32 m74;                  // 0x74
+};
+#include "libc.h"
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameResort", __11CGameResortiiii);
@@ -77,7 +99,26 @@ CGameResort::~CGameResort() {
     D_002A0CE0->Func3(D_002D9930);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166B68);
+void CGameResortObj::Func166B68() {
+    char name[0x100];
+    s32 i;
+    m_unk5D4 = 0;
+    m_unk5D8 = 0;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        if (!D_002A26E4->GetNamed(0x34, i)) continue;
+        if (m_unk5C0 != 0x18 && D_002A26E4->GetNamed(0x28, i) != m_unk5C0) continue;
+        m_unk5D4 |= 1 << i;
+        m_unk5D8++;
+    }
+    CGameResortItem *it = m_items;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); it++, i++) {
+        if (!((m_unk5D4 >> i) & 1)) continue;
+        sprintf(name, "AC,%d", D_002A26E4->Vf2991B0());
+        D_002A28D8->Get(1, name, Func145738(i, 1));
+        func_00250828(D_002A0BE4, name);
+        strcpy((char *)it->data, name);
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9940);
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166D40);

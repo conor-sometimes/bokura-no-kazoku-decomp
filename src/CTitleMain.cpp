@@ -6,25 +6,84 @@ int Func225088();
 int Func2250C0();
 
 extern const char D_002D1988[];
-class CTitleMain {
+#include "CProcess.h"
+// Font/text object (library side, ctor 0x25C230, dtor 0x25C2C0; names in config/aliases.ld).
+class CFont25C230 {
 public:
-    void Func101450();
+    CFont25C230();
+    ~CFont25C230();
+    u8 pad0[0x6C];
+};
+class CMovieObj {
+public:
+    CMovieObj();
+    ~CMovieObj();
+    u8 pad0[0x178];
+};
+class CSndWorkReal {
+public:
+    CSndWorkReal();
+    ~CSndWorkReal();
+    u8 pad0[0xE0];
+};
+class CMapObj {
+public:
+    CMapObj();
+    ~CMapObj();
+    u8 pad0[0x34];
+};
+// Other task managers called through their vtables (CDemoMain.cpp has the same view).
+class CTaskMgrIf : public CTask {
+public:
+    virtual void Vf7();
+    virtual void Vf8();
+    virtual void Vf9();
+    virtual void Vf10();
+    virtual void SetUnk18(s32 v);
+    virtual void Set68(s32 v);
+    virtual void Set70(s32 v);
+};
+extern CTaskMgrIf *D_0029F394;
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CTitleMain.
+class CTitleMain : public CProcess {
+public:
+    CTitleMain();
+    virtual ~CTitleMain();
+    virtual void Update();
+    virtual void Draw();
+    virtual s32 Func7();
+    virtual void ReleaseTextures();
     void Func1056A8();
     void Func101480();
     void Func101368(const char *s, s32 v);
     void CallFunc101368(s32 v);
-    void ReleaseTextures();
-    int Func7();
+    void InitResMgrs();
+    void ReleaseResMgrs();
 
-    u8 pad0[0x74];
+    u8 pad18[0x14];
+    CStateMachine m_sm;       // 0x2C
     CMemTex m_tex74;          // 0x74
     CMemTex m_texA0;          // 0xA0
-    u8 padCC[0x2C];
+    CMemTex m_texCC;          // 0xCC
     CMemTex m_texF8;          // 0xF8
-    u8 pad124[0x228];
+    f32 m_unk124;             // 0x124
+    u8 pad128[0x4];
+    s32 m_unk12C;             // 0x12C
+    u8 pad130[0x18];
+    s32 m_unk148;             // 0x148
+    u8 pad14C[0x8];
+    CFont25C230 m_font;       // 0x154
+    u8 pad1C0[0xC];
+    s32 m_unk1CC;             // 0x1CC
+    CMovieObj m_movie;        // 0x1D0
+    u8 pad348[0x4];
     s32 m_unk34C;             // 0x34C
-    u8 pad350[0x50];
-    char m_name[0x424];       // 0x3A0
+    u8 pad350[0x8];
+    CStateMachine m_sm2;      // 0x358
+    char m_name[0x300];       // 0x3A0
+    CSndWorkReal m_snd;       // 0x6A0
+    CMapObj m_map;            // 0x780
+    u8 pad7B4[0x10];
     s32 m_unk7C4;             // 0x7C4
     s32 m_unk7C8;             // 0x7C8
 };
@@ -89,7 +148,6 @@ public:
     virtual void V32(s32 a, s32 b);
 };
 extern CGsMgr *D_002BA248;
-#include "CProcess.h"
 class CTaskList24F5C0 {
 public:
     s32 Func24F5C0(void *task, s32 pri);
@@ -104,19 +162,47 @@ public:
 #include "CFlagWork.h"
 
 #include "libc.h"
+
+class CGsDev {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual s32 GetCtx();
+};
+extern CGsDev *D_002BA128;
+struct CMemTexInfo {
+    u8 pad0[0x10];
+    s32 m_w;                  // 0x10
+    s32 m_h;                  // 0x14
+};
+struct CVec3 { f32 x, y, z; };
+extern "C" void func_00254AA8(CMemTex *t, s32 ctx, CVec3 *pos, f32 *col, f32 *scl, s32 k);
+int CallFunc225088And2250C0();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CTitleMain", __10CTitleMain);
+CTitleMain::CTitleMain() {
+    m_unk124 = 1.0f;
+    m_unk12C = 0;
+    m_unk148 = 0;
+    m_unk1CC = 0;
+    D_0029F394->Set70(11);
+    InitResMgrs();
+}
 
-INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00101048);
+CTitleMain::~CTitleMain() {
+    ReleaseResMgrs();
+    D_0029F394->Set70(-1);
+    CTitleMain::ReleaseTextures();
+}
 
-void InitResMgrs101140() {
+void CTitleMain::InitResMgrs() {
     D_002A0BE8->Init(-1, -1);
     D_002A0BEC->CallFunc250368();
     D_002A0BE4->Init(-1, -1);
 }
 
-void ReleaseResMgrs1011C8() {
+void CTitleMain::ReleaseResMgrs() {
     D_002A0BE4->CallFunc250368();
     D_002A0BEC->V5();
     D_002A0BE8->CallFunc250368();
@@ -125,7 +211,7 @@ void ReleaseResMgrs1011C8() {
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1910);
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1918);
 INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1920);
-int CTitleMain::Func7() {
+s32 CTitleMain::Func7() {
     if (Func249248((void *)"data/title.xap")) {
         func_00254248(&m_tex74, "title.tm2");
         func_00254248(&m_texA0, "copyright.tm2");
@@ -167,7 +253,7 @@ int Func101400() {
     return 2;
 }
 
-void CTitleMain::Func101450() {
+void CTitleMain::Update() {
     Func101480();
     Func1056A8();
 }
@@ -189,12 +275,29 @@ int CallFunc225088And2250C0() {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00105BC8);
+void DrawTitleTex(CMemTex *t, f32 x, f32 y, f32 a, f32 s) {
+    CVec3 pos;
+    f32 scl[2];
+    f32 col[4];
+    if (a <= 0.0f) {
+        CallFunc225088And2250C0();
+        return;
+    }
+    pos.x = -(f32)((CMemTexInfo *)t)->m_w * s * 0.5f + x;
+    pos.y = -(f32)((CMemTexInfo *)t)->m_h * s * 0.5f + y;
+    pos.z = 0.0f;
+    scl[0] = s;
+    scl[1] = s;
+    col[0] = 128.0f;
+    col[1] = 128.0f;
+    col[2] = 128.0f;
+    col[3] = a * 128.0f;
+    func_00254AA8(t, D_002BA128->GetCtx(), &pos, col, scl, 0);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CTitleMain", func_00105CB0);
+INCLUDE_ASM("asm/nonmatchings/CTitleMain", Draw__10CTitleMain);
 
 void AddDemoMain(CTaskList24F5C0 *list, s32 k) {
     CDemoMain *p = new CDemoMain(k);
     list->Func24F5C0(p, 0);
 }
-INCLUDE_RODATA("asm/nonmatchings/CTitleMain", D_002D1A38);

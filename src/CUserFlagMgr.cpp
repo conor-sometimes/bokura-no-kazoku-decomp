@@ -59,6 +59,10 @@ const char *Func24AD10(const char *s, char *buf, int a, int n);
 const char *Func24AB90(const char *s, const char *set);
 void Func24ABE0(char *s, const char *set);
 void Func235DE0(const char *fmt, ...);
+class CUserFlagLog {
+public:
+    void Dummy();
+};
 class CUserFlagWriter {
 public:
     CUserFlagWriter() {}
@@ -166,7 +170,8 @@ public:
     int ParsePairs(const char *s, UserFlagStrPair *out);
 
     // vptr 0x0
-    u8 pad4[0xC];
+    CUserFlagLog *m_logObj;   // 0x4: message sink (Print13F740 etc.)
+    void (CUserFlagLog::*m_log)(const char *msg); // 0x8
     UserFlagEntry *m_entries[0x180]; // 0x10
         CPushBuf m_buf;           // 0x610
     s32 m_unk61C;             // 0x61C
@@ -195,6 +200,8 @@ public:
 extern "C" int vsprintf(char *buf, const char *fmt, va_list ap);
 
 extern CUserFlagMgr *D_002A0D38;
+
+extern "C" unsigned int strlen(const char *s);
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -207,7 +214,18 @@ INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F390);
 
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func13F488__12CUserFlagMgri);
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func13F648Vprint__12CUserFlagMgrPCcT1Pv);
+void CUserFlagMgr::Func13F648Vprint(const char *tag, const char *fmt, va_list ap) {
+    char buf[0x100];
+    char msg[0x100];
+    strcpy(buf, tag);
+    vsprintf(msg, fmt, ap);
+    strcpy(buf + strlen(buf), msg);
+    if (m_logObj && m_log) {
+        (m_logObj->*m_log)(buf);
+    } else {
+        Func235DE0(buf);
+    }
+}
 
 void CUserFlagMgr::Print13F740(const char *fmt, ...) {
     va_list ap;

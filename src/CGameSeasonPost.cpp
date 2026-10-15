@@ -105,7 +105,11 @@ s32 CGameSeasonPost::Func159688() {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSeasonPost", Func159790__15CGameSeasonPost);
+s32 CGameSeasonPost::Func159790() {
+    if (!D_002A26E4->Func1091B0(0x1143)) return 0;
+    D_002A26E4->Func108FF0(0x1143, 3);
+    return 1;
+}
 
 void CGameSeasonPost::Draw() {
 }

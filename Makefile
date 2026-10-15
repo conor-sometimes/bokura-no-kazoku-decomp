@@ -16,10 +16,10 @@ PYTHON   := .venv/bin/python
 
 ASFLAGS  := -EL -march=r5900 -mabi=eabi -no-pad-sections -G 0 -Iinclude
 
-# Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 -fno-strict-aliasing -fno-exceptions (docs/compiler.md). The driver runs
+# Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 -fno-strict-aliasing -fno-exceptions, as -g (docs/compiler.md). The driver runs
 # cc1plus and its own GNU as 2.10-ee, which also assembles the INCLUDE_ASM'd functions.
 EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
-CXXFLAGS := -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude
+CXXFLAGS := -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude -Wa,-g
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
 
