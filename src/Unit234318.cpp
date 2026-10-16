@@ -36,7 +36,7 @@ extern "C" void func_001F0910(void);
 extern "C" void func_00236218(void);
 extern "C" s32 func_0028B570(const void *, const char *, u32);
 extern "C" s32 func_00234360(void);
-extern "C" char *func_00234108(const char *);
+extern "C" char *func_00234108(const char *) throw();  // nothrow in retail (same TU?)
 extern "C" void func_002343A8(const char *);
 inline void StrAdd(char *d, const char *s) { strcpy(d + strlen(d), s); }
 
@@ -96,6 +96,28 @@ extern "C" char *func_00233F48(const char *);
 static inline int IsEol(char c) { return c == '\r' || c == '\n'; }
 static inline int IsBlank(char c) { return c == ' ' || c == '\t'; }
 extern "C" const char *func_00235058(char *dst, const char *src);
+
+extern const char D_002E4E80[], D_002E4E90[], D_002E4E98[], D_002E4EA0[], D_002E4EB0[], D_002E4EB8[];
+extern const char D_002E4EC8[], D_002E4ED0[], D_002E4EE0[], D_002E4EE8[], D_002E4EF8[], D_002E4F08[];
+extern const char D_002E4F18[], D_002E4F20[];
+extern const char *D_002B8F00[], *D_002B8F10[], *D_002B8F20[], *D_002B8F40[];
+extern "C" s32 func_00235648(char *out, const char *a, const char *b);
+extern "C" s32 func_002349C8(const char *s, const char **tbl);
+
+extern "C" void func_00233FC8(char *, const char *, s32);
+extern "C" s32 func_00234248(const char *);
+extern "C" s32 func_00233F08(const char *);
+extern "C" void func_00234008(char *, const char *, s32);
+extern "C" s32 func_00234278(const char *);
+extern "C" const char *func_002341C0(const char *);
+extern "C" s32 func_0023EEE8(const char *, s32, const char *);
+extern const char D_002E4D90[], D_002E4D98[], D_002E4DA0[];
+extern "C" void func_0022DC90(const char *dir);
+extern "C" s32 func_00234070(const char *);
+extern "C" void func_00289240(s32) __attribute__((noreturn));
+extern s32 D_002B8EFC;
+extern const char *D_002B9070[], *D_002B9088[], *D_002B90A0[];
+extern const char D_002E4DF8[], D_002E4E10[], D_002E4E20[], D_002E4E40[], D_002E4E48[], D_002E4C80[], D_002E4CC0[], D_002E4E68[];
 // @decl-end
 
 extern "C" void func_00234318(const char **p) {
@@ -124,7 +146,46 @@ extern "C" void func_002343A8(const char *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00234460);
+extern "C" s32 func_00234460(const char *s) {
+    char name[0x100];
+    char args[0x400];
+    char line[0x200];
+    while (*s) {
+        s32 n;
+        s = func_00233F88(s);
+        n = func_00233EC8(s);
+        func_00233FC8(line, s, n);
+        s = func_00233F48(s + n);
+        if (func_00234248(line)) continue;
+        {
+            const char *p = line;
+            s32 k = 0;
+            char *a;
+            const char *ext;
+            name[0] = 0;
+            args[0] = 0;
+            n = func_00233F08(p);
+            func_00234008(name, p, n);
+            p = func_00233F88(p + n);
+            while (*p) {
+                n = func_00233F08(p);
+                func_00233FC8(args + k, p, n);
+                k = k + n + 1;
+                p = func_00233F88(p + n);
+            }
+            a = k > 0 ? args : 0;
+            if (func_00234278(name)) continue;
+            ext = func_002341C0(name);
+            if (!strcmp(D_002E4D90, ext)) {
+                func_002342C8(func_00234108(name));
+                while (!func_0023EEE8(name, k, a));
+            } else if (strcmp(D_002E4D98, ext)) {
+                Func235DE0(D_002E4DA0, name);
+            }
+        }
+    }
+    return 1;
+}
 
 extern "C" s32 func_00234638(char *out, const char *path) {
     char tmp[256];
@@ -150,7 +211,36 @@ extern "C" void func_002346C0(s32 x) {
     D_36D980[1] = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00234718);
+extern "C" void func_00234718(void) {
+    char *buf = D_36D9C0;
+    D_002B8D5C = 0;
+    D_002B8EFC = 0;
+    func_00234318(D_002B9070);
+    if (D_002B8D70[0]) {
+        func_00234318(D_002B9088);
+        if (D_002B8D70[0] == 'a') func_00234318(D_002B90A0);
+    }
+    func_00275748(0);
+    ((s32 (*)(void))func_00279EF0)();
+    if (D_002B8D54 == 1) func_002346C0(0);
+    Func235DE0(D_002E4DF8);
+    func_0022DC90(0);
+    if (D_002B8D54 == 1) {
+        while (!func_00234638(buf, D_002E4E10));
+        while (!func_00234460(buf));
+    } else if (!func_00234638(buf, D_002E4E10) || !func_00234460(buf)) {
+        func_0022DC90(D_002E4E20);
+        if (!func_00234638(buf, D_002E4E40) || !func_00234460(buf)) {
+            func_0022DC90(0);
+            Func235DE0(D_002E4E48);
+            func_00289240(1);
+        }
+    }
+    func_0022DC90(0);
+    if (D_002B8D54 != 1 && func_00234070(D_002E4C80)) func_002346C0(1);
+    if (func_00234070(D_002E4CC0)) D_36D980[2] = 1;
+    return (void)Func235DE0(D_002E4E68);
+}
 
 extern "C" void func_002348F8(s32 i, s32 v) {
     D_36D980[i] = v;
@@ -189,7 +279,36 @@ extern "C" s32 func_002349C8(const char *s, const char **tbl) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00234A38);
+extern "C" void func_00234A38(void) {
+    char buf[32];
+    s32 n, i;
+    D_002B8D58 = 0;
+    n = func_0023ED90(D_002E4E80, D_36D9C0);
+    if (n <= 0) return;
+    D_002B8D58 = 1;
+    D_36D9C0[n] = 0;
+    if (func_00235648(D_002B8D30, D_002E4E90, D_002E4E98)) Func235DE0(D_002E4EA0, D_002B8D30);
+    if (func_00235648(buf, D_002E4E90, D_002E4EB0)) {
+        D_002B8D40 = atoi(buf);
+        Func235DE0(D_002E4EB8, D_002B8D40);
+    }
+    if (func_00235648(buf, D_002E4E90, D_002E4EC8) && (i = func_002349C8(buf, D_002B8F00)) >= 0) {
+        D_002B8D4C = i;
+        Func235DE0(D_002E4ED0, D_002B8F00[i]);
+    }
+    if (func_00235648(buf, D_002E4E90, D_002E4EE0) && (i = func_002349C8(buf, D_002B8F10)) >= 0) {
+        D_002B8D44 = i;
+        Func235DE0(D_002E4EE8, D_002B8F10[i]);
+    }
+    if (func_00235648(buf, D_002E4E90, D_002E4EF8) && (i = func_002349C8(buf, D_002B8F20)) >= 0) {
+        D_002B8D48 = i;
+        Func235DE0(D_002E4F08, D_002B8F20[i]);
+    }
+    if (func_00235648(buf, D_002E4E90, D_002E4F18) && (i = func_002349C8(buf, D_002B8F40)) >= 0) {
+        D_002B8D50 = i;
+        Func235DE0(D_002E4F20, D_002B8F40[i]);
+    }
+}
 
 extern "C" void func_00234C78(void) {
     if (D_002B90A8) return;
@@ -232,7 +351,31 @@ extern "C" char *func_00235120(char *p, const char *name) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00235260);
+extern "C" s32 func_00235260(char *out, const char *a, const char *b, const char *name) {
+    s32 n;
+    char *p;
+    *out = 0;
+    p = func_00234F40(a, b);
+    if (!p) return 0;
+    p = func_00235120(p, name);
+    if (!p) return 0;
+    for (n = 0; *p && !IsEol(*p); out++, p++, n++) {
+        if (*p == '\\' && IsEol(p[1])) {
+        again:
+            p = func_00233F48(p + 1);
+            if (*p == '#') {
+                while (*p && !IsEol(*p)) p++;
+                if (!*p) goto end;
+                goto again;
+            }
+            if (*p != ' ' && *p != '\t') goto end;
+        }
+        *out = *p;
+    }
+end:
+    *out = 0;
+    return n;
+}
 
 extern "C" s32 func_002353E0(char *p) {
     s32 n = 0;

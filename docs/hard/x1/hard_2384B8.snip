@@ -7,10 +7,12 @@ inline void PQ4(u32 a, u32 b, u32 c, u32 d) {
     q[2] = c;
     q[3] = d;
 }
+#define BITK(x, sh, m, k) (((((u64)(x)) >> ((sh) - (k))) & ((u64)(m) << (k))) >> (k))
+#define LOWB(x, n) (((u64)(x) << (64 - (n))) >> (64 - (n)))
 //@func 0x2384B8
 extern "C" s32 func_002384B8(u64 dst, s32 dx, s32 dy, s32 w, s32 h, u64 src, s32 sx, s32 sy, s32 dir) {
-    s64 bb = (src & 0x3FFF) | (((src >> 14) & 0x3F) << 16) | (((src >> 32) & 0x3F) << 24)
-           | ((dst & 0x3FFF) << 32) | (((dst >> 14) & 0x3F) << 48) | (((dst >> 32) & 0x3F) << 56);
+    s64 bb = LOWB(src, 14) | (BITK(src, 14, 0x3F, 14) << 16) | (BITK(src, 32, 0x3F, 12) << 24)
+           | (LOWB(dst, 14) << 32) | (BITK(dst, 14, 0x3F, 13) << 48) | (BITK(dst, 32, 0x3F, 11) << 56);
     s64 pos = (s64)sx | ((s64)sy << 16) | ((s64)dx << 32) | ((s64)dy << 48) | ((s64)dir << 59);
     s64 reg = (s64)w | ((s64)h << 32);
     PQ4(0x8005, 0x10000000, 0xE, 0);

@@ -61,6 +61,41 @@ void Func25E030(void *p);
 void Func25E3B0(CSndUnitH *u, s32 x);
 void Func25EE28(CSndUnitH *u, s32 x);
 void Func25FA18(CSndUnitStrH *u, s32 x);
+
+struct CSndPrm {
+    s8 m0, m1, m2, m3, m4, m5;
+    s16 m6, m8, mA;
+    f32 mC[2];
+    f32 m14, m18, m1C;
+    s16 m20, m22, m24;
+    u8 pad26[2];
+    s32 m28, m2C;
+    s16 m30, m32;
+    u8 m34, m35;
+    u8 pad36[0xA];
+};
+void Func25BDD0(CSndPrm *d, const CSndPrm *s);
+void Func25C010(CSndPrm *p);
+void Func25BE98(CSndPrm *d, const CSndPrm *s);
+extern "C" void func_0020A348(s32 h, s32 a, s32 b);
+extern "C" void func_0020A4A8(s32 h, s32 a, s32 b);
+extern "C" void func_0020A5F8(s32 h, f32 v);
+class CSndUnitTgV {
+public:
+    s32 f0, f4, f8;
+    virtual void V0();
+    virtual void V1();
+    virtual void Apply(CSndPrm *p);
+};
+
+extern "C" void func_0020F370(s32 h, s32 a, s32 b);
+extern "C" void func_0020F640(s32 h, s32 a, s32 b);
+extern "C" void func_0020F708(s32 h, f32 v);
+
+extern "C" void func_002095D0(s32 h, s32 a, s32 b);
+extern "C" void func_00209928(s32 h, s32 a, s32 b);
+extern "C" void func_00209A78(s32 h, f32 v);
+extern "C" void func_00209B20(s32 h, f32 v);
 // @decl-end
 
 extern "C" void func_0025E340(CSndLinkB *u, s32 chrg) {
@@ -79,7 +114,25 @@ void Func25E3B0(CSndUnitH *u, s32 x) {
     u->m20 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025E438);
+extern "C" void func_0025E438(u8 *u, const CSndPrm *src) {
+    CSndPrm prm;
+    s32 vol[2];
+    s32 i;
+    Func25BDD0(&prm, src);
+    Func25C010((CSndPrm *)(u + 0x1C));
+    Func25BE98(&prm, (CSndPrm *)(u + 0x1C));
+    ((CSndUnitTgV *)u)->Apply(&prm);
+    if (prm.m0 == 0) return;
+    vol[0] = ((prm.m8 * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    vol[1] = ((prm.mA * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    for (i = 0; i < *(s32 *)(u + 0x58); i++) {
+        s32 *h = (s32 *)(u + 0x5C);
+        func_0020A348(h[i], prm.m2, prm.m3);
+        func_0020A4A8(h[i], (*(s32 *)(u + 0x58) == 1 || i == 0) ? vol[0] : 0, (*(s32 *)(u + 0x58) == 1 || i == 1) ? vol[1] : 0);
+        func_0020A5F8(h[i], prm.mC[i]);
+    }
+    *(u8 *)(u + 0x1C) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025E590);
 
@@ -123,7 +176,26 @@ void Func25EE28(CSndUnitH *u, s32 x) {
     u->m20 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025EEB0);
+extern "C" void func_0025EEB0(u8 *u, const CSndPrm *src) {
+    CSndPrm prm;
+    s32 vol[2];
+    s32 i;
+    Func25BDD0(&prm, src);
+    Func25C010((CSndPrm *)(u + 0x1C));
+    Func25BE98(&prm, (CSndPrm *)(u + 0x1C));
+    ((CSndUnitTgV *)u)->Apply(&prm);
+    if (prm.m0 == 0) return;
+    vol[0] = ((prm.m8 * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    vol[1] = ((prm.mA * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    for (i = 0; i < *(s32 *)(u + 0x58); i++) {
+        s32 *h = (s32 *)(u + 0x5C);
+        func_002095D0(h[i], prm.m2, prm.m3);
+        func_00209928(h[i], (*(s32 *)(u + 0x58) == 1 || i == 0) ? vol[0] : 0, (*(s32 *)(u + 0x58) == 1 || i == 1) ? vol[1] : 0);
+        func_00209A78(h[i], prm.mC[i]);
+        func_00209B20(h[i], (&prm.m14)[i]);
+    }
+    *(u8 *)(u + 0x1C) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025F028);
 
@@ -197,7 +269,25 @@ s32 Func25FB70() {
 
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025FBC8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025FD30);
+extern "C" void func_0025FD30(u8 *u, const CSndPrm *src) {
+    CSndPrm prm;
+    s32 vol[2];
+    s32 i;
+    Func25BDD0(&prm, src);
+    Func25C010((CSndPrm *)(u + 0x1C));
+    Func25BE98(&prm, (CSndPrm *)(u + 0x1C));
+    ((CSndUnitTgV *)u)->Apply(&prm);
+    if (prm.m0 == 0) return;
+    vol[0] = ((prm.m8 * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    vol[1] = ((prm.mA * prm.m6 * prm.m20) >> 14) * prm.m30 >> 7;
+    for (i = 0; i < *(s32 *)(u + 0x58); i++) {
+        s32 *h = (s32 *)(u + 0x5C);
+        func_0020F370(h[i], prm.m2, prm.m3);
+        func_0020F640(h[i], (*(s32 *)(u + 0x58) == 1 || i == 0) ? vol[0] : 0, (*(s32 *)(u + 0x58) == 1 || i == 1) ? vol[1] : 0);
+        func_0020F708(h[i], prm.mC[i]);
+    }
+    *(u8 *)(u + 0x1C) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025FE88);
 

@@ -89,6 +89,26 @@ extern "C" s32 func_0022E518(s32);
 struct MarkData { u32 pos; u8 m8; u8 m9; u8 mA; u8 mB; s32 mC; s32 (*m10)(s32, void *); s32 m14; };
 struct Mark10Data { u32 pos; u8 m8; u8 m9; u8 mA; u8 mB; s32 mC; };
 extern "C" void func_0020C100(s32);
+
+struct PcmObj { u8 pad0[0x19]; u8 m19; u8 pad1A[2]; u8 m1C; u8 pad1D; u8 m1E; u8 m1F; s16 m20; s16 m22; u8 pad24[0xC]; s32 m30; };
+struct PcmEv { s32 a, b; };
+extern "C" s32 func_0020B0B8(s32 h);
+extern "C" s32 func_0020B828(u32 i, s32 v);
+extern "C" void func_0020B5A0(s32, s32, void *, s32);
+extern "C" void func_0020B160(s32, s32, s32, s32);
+extern "C" void func_0020B448(s32);
+extern "C" void func_0020B8C8(s32, s32, s32);
+extern "C" s32 func_0020B100(u32 i);
+extern "C" s16 func_0020FE00(void);
+extern "C" s16 func_0020FE10(void);
+extern "C" s32 func_00210498(u32 i, s32 n);
+extern "C" s32 func_00210420(u32 i);
+extern "C" void func_00211550(s32 a, s32 b);
+extern "C" s32 func_00210758(u32 i);
+extern "C" void func_002106E8(u32 i, s32 a);
+extern "C" s32 func_002107D0(u32 i);
+extern "C" s32 func_00210670(u32 i);
+typedef s32 (*PcmRead)(u32, PcmEv *, s32, s32);
 // @decl-end
 
 extern "C" s32 func_00210070(s32 type, const char *name, s32 a, s32 b) {
@@ -628,7 +648,41 @@ extern "C" s32 func_00211580(void *a, s32 *p) {
     return func_0020FEC0(a, p[4]);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00211598);
+extern "C" void func_00211598(void) {
+    Pcm *e;
+    for (e = D_334E60.active; e; e = e->next) {
+        PcmObj *o = (PcmObj *)e->m8;
+        s32 st, n;
+        if (o->m1C & 1) func_0020B828(e->m10, o->m1E);
+        if (o->m1C & 4) {
+            s32 l = (o->m20 * ((s16 *)&e->m14)[0]) >> 7;
+            s32 r = (o->m22 * ((s16 *)&e->m14)[1]) >> 7;
+            l = (func_0020FE00() * l) >> 7;
+            r = (func_0020FE10() * r) >> 7;
+            func_0020B8C8(e->m10, l, r);
+        }
+        o->m1C = 0;
+        st = func_0020B0B8(e->m10);
+        if (st & 2) o->m19 |= 2; else o->m19 &= ~2;
+        if (st & 8) o->m19 |= 8; else o->m19 &= ~8;
+        if (st & 4) {
+            o->m19 |= 4;
+            continue;
+        }
+        while ((n = func_00210498(e->mC, func_0020B100(e->m10))) > 0) {
+            s32 cnt = ((PcmRead)func_00210420)(e->mC, 0, 0, n);
+            PcmEv *buf = (PcmEv *)__builtin_alloca(cnt * 8);
+            s32 i;
+            ((PcmRead)func_00210420)(e->mC, buf, cnt, n);
+            for (i = 0; i < cnt; i++) func_0020B5A0(e->m10, buf[i].a, (void *)func_00211550, buf[i].b);
+            func_0020B160(e->m10, func_00210758(e->mC), 0, n);
+            func_002106E8(e->mC, n);
+            if (func_002107D0(e->mC)) func_0020B448(e->m10);
+            if (n > 0) o->m1F = 1;
+        }
+        o->m30 = func_00210670(e->mC);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit210070", func_002117D8);
 

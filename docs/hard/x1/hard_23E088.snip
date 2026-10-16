@@ -1,0 +1,37 @@
+//@decl
+struct Ent16W { s32 m0, m4, m8, mC; };
+typedef void (*TexFreeFn)(s32, s32, s32, s32);
+extern const char D_002E5840[];
+#define BITS(h, sh, m) (((h) & ((u64)(m) << (sh))) >> (sh))
+//@func 0x23E088
+extern "C" s32 func_0023E088(u64 h) {
+    void *ra;
+    asm volatile("move %0, $31" : "=r"(ra));
+    func_0023D130();
+    if (h && func_0023DAC0(h) <= 0) {
+        s32 idx = (s32)BITS(h, 20, 0xFFF);
+        s32 k = (s32)BITS(h, 32, 0x3F);
+        s32 prev, next, t, w, hh, x, nx, ny, k2;
+        D_388F30[idx].m0 = 0;
+        prev = D_388F30[idx].m2;
+        next = D_388F30[idx].m4;
+        D_388F2C++;
+        D_388F30[prev].m4 = next;
+        D_388F30[next].m2 = prev;
+        s16 *hp = &D_388F30[0x1003].m2;
+        t = *hp;
+        D_388F30[t].m4 = idx;
+        D_388F30[idx].m2 = t;
+        D_388F30[idx].m4 = 0x1003;
+        *hp = idx;
+        w = ((Ent16W *)func_0023D3C8(k))->m8;
+        hh = ((Ent16W *)func_0023D3C8(k))->mC;
+        nx = ((s32)BITS(h, 38, 0xFFF) + w - 1) / w;
+        ny = ((s32)BITS(h, 50, 0xFFF) + hh - 1) / hh;
+        w = (s32)(h & 0x3FFF);
+        ((TexFreeFn)D_002B94FC)(w, k, nx, ny);
+        k2 = (s32)BITS(h, 14, 0x3F);
+        if (D_002B9500) func_0023CF18(D_002E5840, nx * ny, w, k2, nx, idx, func_0023D438(k), ra);
+    }
+    return func_0023D190();
+}

@@ -1,0 +1,45 @@
+//@decl
+extern "C" void func_00185BD0(char *out, s32 k, s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g);
+extern char D_002DDF18[];
+extern "C" void *memcpy(void *, const void *, unsigned int);
+//@func 0x19E300
+s32 CStatusWin::Func19E300(char *out, s32 n) {
+    char buf[0x100];
+    s32 a, b, c, d, e, f, g;
+    out[0] = D_002DDF10[0];
+    e = D_002A26E4->Func1091B0(m_unk50 + 0x28);
+    f = D_002A26E4->Func1091B0(0x3B3D);
+    g = D_002A26E4->Func1091B0(0x3B3C);
+    if (m_unk60 == 0) {
+        a = D_002A5358->Func1091B0(m_unk50 + 0x2E);
+        b = D_002A5358->Func1091B0(m_unk50 + 0x34);
+        c = D_002A5358->Func1091B0(m_unk50 + 0x40);
+        d = D_002A5358->Func1091B0(m_unk50 + 0x3A);
+    } else if (m_unk60 == 1) {
+        a = D_002A26E4->Func1091B0(m_unk50 + 0x34);
+        b = D_002A26E4->Func1091B0(m_unk50 + 0x46);
+        c = D_002A26E4->Func1091B0(m_unk50 + 0x52);
+        d = D_002A26E4->Func1091B0(m_unk50 + 0x4C);
+    } else {
+        Func235DE0(D_002DDF18);
+        g = 0;
+        f = 0;
+        d = 0;
+        e = 0;
+        c = 0;
+        b = 0;
+        a = 0;
+    }
+    if (m_unk60 == 0 && m_unk64 < 2 && b >= 2 && b != 7 && d == 0 && m_unk68 != 0) {
+        out[0] = D_002DDF10[0];
+    } else if (m_unk60 == 0 && m_unk64 == 2 && b >= 2 && b != 7 && d == 0 && m_unk68 != 0 && n >= 0) {
+        func_00185BD0(buf, m_unk50, a, b, c, 0, e, f, g);
+        memcpy(out, buf, n * 2);
+        out[n * 2] = 0;
+        if (n * 2 < (s32)strlen(buf)) return 0;
+        return 1;
+    } else {
+        func_00185BD0(out, m_unk50, a, b, c, d, e, f, g);
+    }
+    return 1;
+}

@@ -129,6 +129,26 @@ extern const char D_002D41C0[];
 extern "C" void W2Fill(TArrB *, CMapAttrLightPos *, const CMapAttrLightPos &, s32) asm("func_002949A0");
 extern "C" s32 W2Cnt(TArrB *) throw() asm("func_002943C8");
 extern const char D_002D3B60[];
+
+inline void *operator new(unsigned int, void *p) throw() { return p; }
+struct W2ArrB {
+    s32 m0; void *m4; s32 m8, mC, m10; void *m14;
+    W2ArrB(const W2ArrB &o) asm("func_00294C80");
+};
+struct W2Lt {
+    s32 m0;
+    f32 m10[4] __attribute__((aligned(16)));
+    f32 m20[2];
+    W2ArrB m28;
+    f32 m40; s32 m44;
+    f32 m50[4] __attribute__((aligned(16)));
+    s32 m60;
+    f32 m70[4] __attribute__((aligned(16)));
+    f32 m80; s32 m84;
+    f32 m90[4] __attribute__((aligned(16)));
+    s32 mA0;
+    f32 mB0[4] __attribute__((aligned(16)));
+};
 // @decl-end
 
 extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n) {
@@ -136,7 +156,10 @@ extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n)
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294A98);
+extern "C" void func_00294A98(TArrA *a, CMapAttrLight *p, CMapAttrLight *src)
+{
+    new (p) W2Lt(*(W2Lt *)src);
+}
 
 extern "C" void func_00294C28(TArrA *a, CMapAttrLight *p) {
     func_00294E90(&p->m_pos, 2);

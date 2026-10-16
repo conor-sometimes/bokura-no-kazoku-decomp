@@ -1,0 +1,73 @@
+//@decl
+struct GlyphA { u16 m0; u8 pad2[8]; u8 mA, mB, mC, mD, mE, mF, m10, m11; u8 pad12[6]; };
+struct FontEntA { u8 pad0[0xC]; s32 mC; s32 m10; };
+//@func 0x241398
+extern "C" void func_00241398(void *pv, s32 ve, s32 n, s32 k0, s32 k1, s32 fl, s32 w, s32 h) {
+    FontEntA *p = (FontEntA *)pv;
+    GlyphA *e = (GlyphA *)ve;
+    s32 i;
+    if (w < 0) w = p->mC;
+    if (h < 0) h = p->m10;
+    i = GlyphIdx((Glyph18 *)e, n, k0);
+    for (; i < n; i++) {
+        GlyphA *g = &e[i];
+        s32 c = g->m0;
+        if (c > k1) break;
+        if (c >= k0) {
+            s32 x0 = (s8)g->mC;
+            s32 y0 = (s8)g->mD;
+            s32 x1 = (s8)g->mE;
+            s32 y1 = (s8)g->mF;
+            s32 wd = x1 - x0;
+            s32 ht = y1 - y0;
+            u8 a = g->mC, b = g->mD, cc = g->mE, d = g->mF;
+            s32 t;
+            if (fl & 1) {
+                g->mC = a - x0;
+                g->mE = cc - x0;
+                g->mA = wd;
+            } else if (fl & 2) {
+                g->mA = w;
+                g->mC = g->m10 + (a - x0);
+                g->mE = g->m10 + (cc - x0);
+            } else if (fl & 4) {
+                g->mC = a - x0;
+                g->mE = cc - x0;
+                g->mA = w;
+            } else if (fl & 8) {
+                g->mA = w;
+                t = (w - wd) / 2 - x0;
+                g->mC = a + t;
+                g->mE = cc + t;
+            } else if (fl & 0x10) {
+                g->mA = w;
+                t = w - x1;
+                g->mC = a + t;
+                g->mE = cc + t;
+            }
+            if (fl & 0x20) {
+                g->mD = b - y0;
+                g->mF = d - y0;
+                g->mB = ht;
+            } else if (fl & 2) {
+                g->mB = ht;
+                g->mD = g->m11 + (b - y0);
+                g->mF = g->m11 + (d - y0);
+            } else if (fl & 0x80) {
+                g->mD = b - y0;
+                g->mF = d - y0;
+                g->mB = h;
+            } else if (fl & 0x100) {
+                g->mB = h;
+                t = (h - ht) / 2 - y0;
+                g->mD = b + t;
+                g->mF = d + t;
+            } else if (fl & 0x200) {
+                g->mB = h;
+                t = h - y1;
+                g->mD = b + t;
+                g->mF = d + t;
+            }
+        }
+    }
+}

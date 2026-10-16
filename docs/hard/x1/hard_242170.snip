@@ -1,0 +1,56 @@
+//@decl
+#define BITK(x, sh, m, k) (((((u64)(x)) >> ((sh) - (k))) & ((u64)(m) << (k))) >> (k))
+#define LOWB(x, n) (((u64)(x) << (64 - (n))) >> (64 - (n)))
+#define GS_SET_TEX0B(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+extern u64 *D_38EF80;
+extern s32 D_38EF90;
+extern "C" void func_002375C0(void);
+extern "C" void func_00237408(s32);
+extern "C" u64 func_00240D68(s32);
+extern "C" u64 func_00240DF0(s32);
+//@func 0x242170
+extern "C" void func_00242170(void) {
+    u64 *p;
+    func_002375C0();
+    func_00237408(0x10);
+    p = (u64 *)D_002B94E4;
+    D_38EF84 = p;
+    D_38EFE0 = 1;
+    D_38EF80 = p;
+    D_38EFE4 = 0;
+    if (D_38EF90 >= 0) {
+        u64 tex = func_00240D68(D_38EF90);
+        u64 clut = func_00240DF0(D_38EF90);
+        u64 tpsm = BITK(tex, 32, 0x3F, 32);
+        u64 cpsm = BITK(clut, 32, 0x3F, 31);
+        u64 cbp = LOWB(clut, 14);
+        u64 tbw = BITK(tex, 14, 0x3F, 14);
+        u64 tbp = LOWB(tex, 14);
+        p = D_38EF84;
+        *p = 0x1000000000000001ULL;
+        p++;
+        D_38EF84 = p;
+        p[0] = 0xE;
+        D_38EF84 = p + 1;
+        p[1] = GS_SET_TEX0B(tbp, tbw, tpsm, 10, 10, 1, 0, cbp, cpsm, 0, 0, 1);
+        D_38EF84 = p + 2;
+        p[2] = 6;
+        D_38EF84 = p + 3;
+    }
+    if (D_38EFE0) {
+        s32 *s = D_38EFD0;
+        p = D_38EF84;
+        *p = 0x1000000000000001ULL;
+        p++;
+        D_38EF84 = p;
+        p[0] = 0xE;
+        D_38EF84 = p + 1;
+        p[1] = (u64)s[0] | ((u64)s[1] << 8) | ((u64)s[2] << 16) | ((u64)s[3] << 24);
+        D_38EF84 = p + 2;
+        p[2] = 1;
+        D_38EF84 = p + 3;
+    }
+}

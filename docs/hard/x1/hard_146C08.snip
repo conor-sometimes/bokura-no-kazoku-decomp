@@ -1,0 +1,33 @@
+//@decl
+struct CSchoolName { s32 id; const char *name[2]; };
+extern s32 D_002A2910[];
+extern const char *D_002A28E0[];
+extern "C" void func_0028B520(char *);
+//@func 0x146C08
+int CResNameMgr::Func146C08(char *buf, int key, int season) {
+    CSchoolName *e = 0;
+    s32 idx = Func1456A8(key);
+    if (idx < 0) return 0;
+    if ((u32)(D_002A26E4->Func1091B0(idx + 0x46) - 3) < 3) {
+        s32 v = D_002A26E4->Func1091B0(idx + 0x52);
+        s32 i;
+        for (i = 0; i < m_unk1C; i++) {
+            e = &((CSchoolName *)m_unk18)[i];
+            if (e->id == v) break;
+        }
+        if (i != m_unk1C) {
+            if (*e->name[Season146608(season)]) {
+                s32 j;
+                for (j = 0; D_002A2910[j] >= 0 && D_002A2910[j] != key; j++);
+                strcpy(buf, D_002A28E0[j]);
+                func_0028B520(buf);
+                {
+                    const char *s = e->name[Season146608(season)];
+                    strcpy(buf + strlen(buf), s);
+                }
+                return 1;
+            }
+        }
+    }
+    return Func146B58(buf, key, season);
+}

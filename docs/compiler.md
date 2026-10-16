@@ -62,6 +62,24 @@ pointer hoisted out of the clear loop) only match with strict aliasing; everythi
 matches either way. The sources stay .cpp (C++ with `return;` after a final void call gives the C
 sibcall). Lib290990's tail from 0x292E20 (0x292E20-0x2930A0) is 991111 SDK C and needs its own unit.
 
+Later the same day the C units moved to the C front end (`-x c`, Makefile `LIBC_C_OBJS`: Lib283858,
+Lib2888C0, Lib28AE50, Lib28D8B0, Lib290990; bk.py `LIBC_C_RANGES`). Evidence: libgcc2's __throw and
+__rethrow use `__builtin_dwarf_cfa`/`__builtin_eh_return`, which cc1plus does not know; and several
+newlib/fp-bit functions that were stuck one instruction off as C++ (`bnez` vs `bnezl` after a call:
+dpdiv, lo0bits) match as C. Every already-matched function stayed identical except three whose last
+statement is a call that retail does not turn into a sibcall (__register_frame_info,
+__register_frame_info_table, abort with its noreturn exit): those end in `__asm__("");` after the call.
+Lib285F80 stays C++: it mixes frame.c with tinfo.cc (C++ classes) and fp-bit.
+Dk280098 (newlib libm float functions plus libgcc2's __muldi3 at 0x281B20) joined `LIBC_C_OBJS`
+too (bk.py `LIBC_C_RANGES` 0x280098-0x2828C0): __muldi3 matches only as C (head's upstream match:
+libgcc2.c L_muldi3), and all the already-matched libm functions stayed identical as C with strict
+aliasing.
+
+Dk260A60 (the MPEG audio decoder, 2.96) is assembled without `as -g` too (Makefile ASG, bk.py asg):
+0x262B18 ends with a 24-byte unaligned struct copy, and retail has its last `sdr` in the `jr` delay slot,
+which only gas's own reordering produces (GCC emits the sdl/sdr pair as one insn). All other matched
+Dk260A60 functions are identical either way.
+
 ## Evidence
 
 Each function was written as C++, compiled with each candidate, and compared with the

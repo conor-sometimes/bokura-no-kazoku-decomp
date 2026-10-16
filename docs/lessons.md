@@ -677,3 +677,178 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Varargs on EE** (coordinator): `char *ap = (char *)__builtin_next_arg(last) - (8 - __builtin_args_info(2)) * 8;` (va-mips.h form) matched sprintf/_sprintf_r/fiprintf.
 - **fp-bit**: write the class as an enum with the inline `isnan/isinf/iszero` helpers from fp-bit.c; `a->normal_exp -= 1` vs `--` changes scheduling (dpdiv).
 - **Callee return type**: declaring a void-looking SDK callee as returning a value (or void) flips v0/v1 choices around the call (sceGsResetGraph's GsPutIMR, the sio write loop's DECI2 poll); try both before permuting.
+
+## head (upstream library sources, 2026-10-16)
+- libgcc is GCC's own code: gcc-2.95.2's `config/fp-bit.c` and `libgcc2.c`, compiled unmodified
+  with EE-GCC 2.96 `-x c -O2 -G0`, match retail byte for byte (`dptofp` = `__truncdfsf2`,
+  `__fpcmp_parts_d`, `__muldi3`). libgcc2.c needs a stub tconfig.h (UNITS_PER_WORD 4,
+  LONG_LONG_TYPE_SIZE 64, little-endian, `#include "gansidecl.h"`) plus gcc/include for ansidecl.h.
+  Compile a reference file whole and compare every function against every INCLUDE_ASM'd one of the
+  same size: matches fall out without knowing names.
+- The string functions (strlen, strcmp, strcpy, memcpy, memset) are NOT newlib's portable C: they
+  are Sony's R5900 versions scanning 16 bytes at a time with MMI (lq, psubb, pnor, pcpyld).
+## x1 (overnight grind 2026-10-16: game units, 208-function list)
+- **Same-mask DImode ANDs, solved**: write a shifted field as `((x & ((u64)m << k)) >> k)` (combine
+  turns it into `dsrl; andi`, and the mask never exists as a constant CSE could share) and a low
+  field as `(x << (64 - n)) >> (64 - n)` (becomes `andi`). When the same (shift, mask) pair occurs
+  twice, give the copies different pre-shifts (`BITK(x, sh, m, k)` = `((x >> (sh - k)) & (m << k)) >> k`
+  with a different k each) or combine folds them back into one register. Matched 0x223A90 and made
+  0x21BF50/0x2384B8/0x23E088/0x242170 andi-exact. *(bokura)*
+- **Strength-reduced givs get pseudos (and spill slots) in reverse order of appearance**: two loop
+  pointers spilled to the stack came out in swapped slots until the key load was written before the
+  table-entry pointer (`key = tbl[i]; t = &arr[i]; p = F(data, key);`), 0x14AAD0. Spilled user
+  variables take slots in declaration order (declare `p`, `data`, `i` in retail's slot order). *(bokura)*
+- **Converted units take string literals and jump tables in C**: in CGameDBMgr (level 3) a switch
+  and `Func235DE0("...")` literals land exactly where the function's migrated .rodata was
+  (0x14C048, 0x1490F8, 0x14AAD0). *(bokura)*
+- **`(u64)` callee arguments**: a callee declared `(s32, s32, s32)` that really takes a u64 handle
+  (`ld`/`beq` on the full register) must be redeclared; the caller that passes an s32 still matches
+  (0x23BA10/0x23BD60). *(bokura)*
+- **Shared temporary for an inline-asm read**: `cfc2.ni %0, $vi29` matched only with one function-scope
+  `u32 st` used by every read (macro `VPUSTAT(st)`), not a value-returning inline (sceGsSyncPath
+  0x239E00). *(bokura)*
+- **This toolchain's assembler truncates decimal float literals**: `0.2f` assembles to 0x3E4CCCCC; retail's
+  0x3E4CCCCD needs `0.20000001f` (0x14D7C8). *(bokura)*
+- **`!(a < b)` vs `(a < b) == 0`**: the first gives `xori 1`, the second `sltiu 1` (0x14C048). *(bokura)*
+- **`noreturn` on exit-like callees**: a `nop` before the label after `func_00289240(1)` was the
+  barrier's `.align 3`; declaring the callee `__attribute__((noreturn))` reproduced it (0x234718). *(bokura)*
+- **Void vs value-returning callees again**: `func_0021BC88` declared void fixed the register of the
+  next address (0x21E4A0); calling `func_00279EF0` as returning s32 fixed a `lw v1` (0x234718). *(bokura)*
+- **Return address**: retail's `daddu s6, ra` copy is `asm volatile("move %0, $31" : "=r"(ra))`
+  after the prologue, not `__builtin_return_address(0)` (which reloads the saved slot). *(bokura)*
+- **VLA-free alloca**: a `subu sp, sp, ((n*8+15)>>4)<<4` with a frame pointer and no restore per
+  iteration is `__builtin_alloca(n * 8)` inside the loop (0x211598). *(bokura)*
+- **GNU as lui bug, both ways**: a new function after `func_00239268` made its existing
+  `asm(".p2align 3")` wrong (imgdiff showed `lui` vs `sw` at 0x239274); removing it fixed the build.
+  utest's "rest of unit differs" with a `lw` where retail has `lui` is the same bug and can be a false
+  alarm when mk.sh matches (0x235260). *(bokura)*
+- **bk port compiles the snippet alone**: unit-local callees used by the snippet must be in its
+  `//@decl` block (or port fails with "undeclared"); when port's standalone test disagrees with utest,
+  splice the function in by hand (`build/bk/x1port.py`-style) and trust mk.sh. *(bokura)*
+- **Menu state machines**: 22 of the list were state.h machines (lhu flags; srl 7; switch on negative
+  codes); left in HARD.md as not attempted, none of that shape is matched yet. *(bokura)*
+- **utest relocation addends**: utest ignored in-place REL addends of HI16/LO16 relocations
+  (`D_338390+0x2210` vs retail `D_33A5A0` was flagged); fixed in 22e2648 (LO16 exact, HI16 within
+  +-0x8000). *(bokura)*
+- **Constructor store order "m0 before vptr"**: retail stores members before the vptr when the base
+  class has an inline constructor and the members are real objects with constructors (CBoneDupMap,
+  CPushBuf, CLayoutObj through an asm-label ctor); a hand-written vptr store always schedules first
+  (CCharaObj 0x112FE0, CEventMesRes 0x13D910). *(bokura)*
+- **Arrays of member objects are constructed unrolled**: declare separate members (`m_l0..m_l12`),
+  not an array, when retail calls the constructor once per element (CMiniGame4 0x1D4D10). A member
+  constructor called as returning `void *` changes later register choice (func_0025C230). *(bokura)*
+- **Field order of plain store runs**: after `bk perm` the natural field order usually wins; float
+  `0.0` stores through an FPU register need the `+ 0.0f` expression before the stores (snow/rain
+  effect ctors 0x122440/0x1215B0). *(bokura)*
+- **Loop-variable hoisting and variable reuse**: one pointer variable for several roles and
+  `for (k = 0, tbl = s->mC; ...)` matched the glyph dump 0x1B7510; `(int)` cast of a void-declared
+  printf-like call (PRINTI) fixed its register. *(bokura)*
+- **Cross-jumping control**: putting the duplicated call into an `else` at the end (0x219110) or
+  duplicating the tail per branch (0x1A4D28) chooses whether GCC merges the tails. *(bokura)*
+- **`bk vtest` gives bogus 1000+ diffs here; separate snippets plus `bk utest` are reliable; `bk show`
+  lacks unit context (a unit-context show helper was used instead).** *(bokura)*
+## nm (near misses, 2026-10-16: the branch-likely group)
+- **`bnezl` vs `bnez` after/around calls is nothrow, not source shape**: EE-GCC 2.96 marks every
+  function it has compiled as nothrow (TREE_NOTHROW, even under `-fno-exceptions`), and a call to a
+  nothrow function gets a `REG_EH_REGION 0` note. For a call that may throw, reorg's liveness scan
+  (resource.c) does not see past it, so a register the branch's delay slot sets counts as live on the
+  path through the call and the slot gets the annulled (likely) form. Retail compiled the callees that
+  sit earlier in the same .cpp, so its calls to them were nothrow; ours are INCLUDE_ASM (or in another
+  unit) and may throw. Fix: declare the callee `throw()`. Seven of the eight DIFF-1/2 branch-likely
+  near misses matched this way (0x1513D0, 0x19AEC0, 0x1A40C8, 0x123D88, 0x234460, 0x234718; 0x1A4D28
+  the other way round). The 991111 compiler and C (`-x c`, where every call is nothrow) do not show it,
+  which is why the libgcc functions stuck on `bnez`/`bnezl` matched as C (lane w2). No compiler flag
+  changes it (`-fexceptions`, `-g`, scheduling, `-O1`, gcse, `-fno-reorder-blocks` all tried). *(bokura)*
+- **Where to put the `throw()`**: for an `extern "C"` or free function, a redeclaration with `throw()`
+  right after the callee's INCLUDE_ASM line copies retail exactly (2.96 accepts it; callers above it
+  stay may-throw), e.g. `extern "C" int func_00150EA8(CGameMain *p, s32 i) throw();` in CGameMain.cpp.
+  A member function cannot be redeclared outside its class, so put `throw()` on the in-class
+  declaration (CStatusItem::Func1A1AA0/Func1A1B38, CMapEffAquariumWork::Func1236C8). Once a callee
+  is matched in C, its own definition makes it nothrow; a member declared `throw()` then needs
+  `throw()` on the definition too (the compiler says "throws different exceptions"). *(bokura)*
+- **The reverse (retail `bnel`, ours `bne`) means retail did not see a definition we compile above**:
+  CStatusWinSub1A4A40::Func1A4D28 only matched calling Select/GetMappedUnkC0 through may-throw asm
+  aliases (`extern "C" int SelMT(CStatusItem *, s32) asm("Select__11CStatusItemi");`). So retail
+  compiled it in a different .cpp from CStatusItem (a TU boundary somewhere between 0x1A40C8, which needs
+  CStatusItem's callees nothrow, and 0x1A4D28). Likewise retail's Unit234318 saw func_00234108 (0x234108, our Unit232B78) as nothrow:
+  the boundary at 0x234318 is probably too late. Func235DE0 (the debug printf) is nothrow in
+  CStatusBase but may-throw in Unit226AE8, Unit230578, Unit236130 and Dk2571C0 (declaring it `throw()`
+  everywhere breaks those), so its declaration is per unit. Nothrow-ness is a cheap probe of TU
+  boundaries. *(bokura)*
+- **Diagnosing**: `tools/bk/ushow.py SNIP` (utest's in-unit compile side by side, `!!` on differing
+  words; `BK_EXTRA="-flags"` for experiments, `BK_KEEP=1` keeps the spliced .cpp, `-dd` writes the
+  reorg dump). A one-line `bnez`/`bnezl` diff whose fall-through or target path contains a `jal`:
+  try the callee `throw()` first. *(bokura)*
+- **Old DIFF-1 likely/plain entries unlock as their neighbours get matched**: once a callee earlier in
+  the unit is matched in C, calls to it become nothrow and the delay-slot choice flips. The `#if 0`
+  best attempts of g1 for CUserFlagMgr 0x13F948 and CCommandSelect 0x198E40 matched unchanged (after
+  re-adding the declarations they had lost); CSndWorkReal 0x12A0F0 needed only `throw()` on the
+  INCLUDE_ASM'd Func1295E8 above it. Retry likely/plain HARD entries after nearby ports. *(bokura)*
+- **`(int)f` is fine in game units**: ee-gcc 2.96 (and 991111) emit `cvt.w.s`, encoded 0x46000024 |
+  regs, the same word as retail's `.word 0x46000064`; decompals objdump just prints that encoding as
+  `trunc.w.s`, and splat prints it as a `.word`. The w2 note that a C cast "compiles to trunc.w.s" and
+  needs inline asm misread the disassembly: CSndWorkReal 0x12A0F0 matched with plain `(s32)(v * 128.0f)`
+  casts. *(bokura)*
+- **utest and splat strings**: a function .s that carries its own `.rodata` string (`.asciz` line with an
+  offset/address comment) shifted utest's relocation check by one instruction (false "ours D_x, retail
+  func_y" notes); utest now counts only lines with the full offset/address/word comment. *(bokura)*
+- **C vs C++ front end for C sources (libgcc/newlib)**: compiling the C library units as C++ leaves some
+  functions one instruction off after calls (`bnezl` where retail has `bnez`, dpdiv, lo0bits, pow5mult);
+  as `-x c` they match. As C, a final call becomes a sibcall even to a noreturn function; where retail keeps
+  `jal` (abort's exit, __register_frame_info's unlock), add `__asm__("");` after the call. C++-only
+  builtins aside, cc1plus also lacks `__builtin_dwarf_cfa`/`__builtin_eh_return` (__throw, __rethrow).
+- `n = n > 10 ? 0 : n;` keeps `sltu rC, n` with the constant hoisted into an s-register and a `movn`; `if (n > 10) n = 0;` becomes `sltiu n, 11` + `movz` (SDK 991111, libmpeg extension dispatch 0x26C8E8).
+- A local array/struct initialised from a .rodata table (`W2Tbl t = D_002E98A0;`) gives retail's ldl/ldr copy to the stack.
+- Implicit copy constructors: a run of `lw/sw` + per-array `n=3; do {...} while (--n != -1)` float
+  copy loops (with gaps where 16-byte alignment pads) is g++'s implicit copy ctor. Declare the
+  struct with `__attribute__((aligned(16)))` float arrays and write `new (p) T(*src)` (placement new
+  declared `throw()` gives the `if (p)` test). A member whose copy ctor is an unnamed function can
+  be bound with an asm label on the declaration: `W2ArrB(const W2ArrB &) asm("func_00294C80");`
+  (0x294A98).
+- A `CSndMgr` virtual's failure path placed first (`if (h < 0) { print; } else { ...; return }`)
+  is the block order retail uses; the reversed `if (h >= 0)` form costs ~37 diffs (0x25AC38).
+- Splat symbolized some `lui/addiu` constants as fake data symbols (`%hi(D_FFFFF)` for the
+  0x100000 spin count in 0x264AA8): `bk utest` then reports DIFF 2 (relocation only) on a byte
+  match. Port with a manual splice and trust mk.sh / `cmp -l build/SCPS_150.88 disc/SCPS_150.88`.
+- Loop-invariant `lui` hoisting order follows the order the addresses first appear: a local
+  `b = D_41AB40;` before `v = &D_41C080;` swapped two hoisted hi registers into retail order.
+- `throw()` on an inline ctor's callee (CModelAccSub118168::Init) turned a `beqzl`+slot into
+  `beqz` with the shared `slt` in the slot: EH regions around temporaries block delay-slot fills
+  (0x294438).
+- `if ((id = f()) >= 0) {...}` vs `id = f(); if (id >= 0)`: the separate assignment let gcse
+  propagate `id = -1` into the cleanup path and delete `if (id >= 0) release(id)` entirely; the
+  assignment-in-condition form keeps retail's check (0x25AAD0).
+- Hardware register read-modify-writes between calls (0x26CA10, SDK unit): a non-volatile
+  `*(u32 *)0x10002010` gets its address CSE'd into a saved register across calls; retail's
+  per-statement `lui/lw lo` + `lui $1/sw lo` form is `*(volatile u32 *)0x10002010`, and its
+  `lui/ori` + `lw 0(reg)` form is an inline helper with `volatile u32 *r = (volatile u32 *)0x10002010;`.
+- **SDKC units (Dk26CFB0..Dk27DBB8, `-x c -O2` with ee-gcc 2.9-991111-01) build WITHOUT
+  -fno-strict-aliasing**, so field types steer the scheduler: a load is only hoisted over a store
+  of a different type. sceSifCallRpc (0x2760B0) matched only with the exact field types (packet
+  m14/m1C `void *`, client m24 and packet m34 `int`); a 16-combination type search found it in
+  seconds. Store-order near misses in these units are a type question before they are an order
+  question (bk perm can't fix them).
+- In SDKC units, reading $gp with `asm volatile("move %0, $28" : "=r"(gp))` keeps the following
+  store in place; `register void *gp asm("$28")` lets it float.
+- Upstream sources are on hokkaido (~/Projects/decomps/refsrc: gcc-2.95.2 libgcc2.c, fp-bit.c,
+  frame.c; newlib-1.9.0). __muldi3 (0x281B20) and dptofp (__truncdfsf2, 0x285498) matched straight
+  from them; __muldi3 needed its unit (Dk280098) on the C front end, which kept every already-matched
+  libm function identical.
+- **Upstream newlib/fdlibm sweep** (a small script: compile each upstream file with ee-gcc
+  2.96 `-x c -O2 -G0`, compare every function against the remaining list by word diff and by
+  opcode-sequence similarity): found __sfvwrite, qsort, __ieee754_fmod, __ieee754_acosf,
+  __kernel_rem_pio2f (exact) and malloc_extend_top (Sony builds mallocr.c with MALLOC_ALIGNMENT 16).
+  Port by preprocessing the upstream file (`-E`) and renaming globals to asm-labelled externs of
+  the retail data symbols; static const scalars become `#define`s and static tables become externs of
+  the ROM tables so no new .rodata is emitted. A missing prototype for a later-defined callee
+  (implicit int) was the only thing between kf_rem_pio2 and a match.
+- **`.word 0x46000064 # cvt.w.s` in retail asm is not a blocker**: ee-gcc 2.96 emits that exact
+  encoding for a plain `(int)f` cast; objdump with the R5900 arch prints our copy as `trunc.w.s`, which
+  made it look different in side-by-side diffs. Several HARD entries (mine for 0x25FBC8, and the
+  "~10 other functions" it cited) were wrongly blamed on it.
+- The SDK C++ units (SDK_OBJS, ee-gcc 991111) are built without -fno-strict-aliasing too; the
+  field-type search applies there as well. In 0x2765D0 (sifrpc request reply) only one combination
+  of {server m1C, packet m1C/m20, dma src/dest} types matched; it took 9 compiles.
+- Two saved registers swapped between variables assigned in both arms of an if: the order of the
+  assignments inside one arm decides it (0x25C648: moving `type = e->m8` after a/b/c fixed the
+  type/c swap; declaration order made no difference).

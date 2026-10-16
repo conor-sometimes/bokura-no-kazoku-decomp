@@ -54,6 +54,13 @@ extern const char D_002EA188[];
 
 typedef struct { u32 m0, m4, m8, mC, m10, m14, m18, m1C; } W2IpuSt;
 #define W2REG(a) (*(volatile int *)(a))
+typedef int W2q __attribute__((mode(TI)));
+extern volatile W2q D_002BF170[];
+extern volatile W2q D_002BF1C0[];
+void func_0027E500(int);
+#define W2IPU_CMD (*(volatile u32 *)0x10002000)
+#define W2IPU_CTRL (*(volatile int *)0x10002010)
+#define W2IPU_IN (*(volatile W2q *)0x10007010)
 // @decl-end
 
 int func_0027DBB8(int id) { W2Sema *e = (W2Sema *)(((unsigned int)id >> 8) << 4); int s = func_0027BD20(); if (id < 0 || ((id ^ e->id) & 0xFF)) { if (s) func_0027BD78(); return 0x80008002; } func_0027D088(e->id); e->next = D_423F00; D_423F00 = e; e->id = 0; if (s) func_0027BD78(); return 0; }
@@ -98,7 +105,7 @@ void func_0027E170(int v) { int s = func_0027BD20(); *(volatile unsigned int *)0
 
 void func_0027E1E8(int v) { int s = func_0027BD20(); *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000; *(volatile int *)0x1000B400 = v; *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & ~0x10000; if (s) func_0027BD78(); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027E260);
+void func_0027E260(unsigned int *s) { func_0027E1E8(1); s[0] = *(volatile unsigned int *)0x1000B410; s[1] = *(volatile unsigned int *)0x1000B430; s[2] = *(volatile unsigned int *)0x1000B420; s[3] = *(volatile unsigned int *)0x1000B400; while (*(volatile unsigned int *)0x10002010 & 0xF0) ; func_0027E170(0); s[4] = *(volatile unsigned int *)0x1000B010; s[5] = *(volatile unsigned int *)0x1000B020; s[6] = *(volatile unsigned int *)0x1000B000; s[7] = *(volatile unsigned int *)0x10002020; s[8] = *(volatile unsigned int *)0x10002010; }
 
 void func_0027E348(W2IpuSt *s)
 {
@@ -129,7 +136,44 @@ int func_0027E498(int m) { int r = 0; switch (m) { case 0: while (*(volatile int
 
 void func_0027E500(int v) { int s = func_0027BD20(); *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000; *(volatile int *)0x1000B400 = v; *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & ~0x10000; if (s) func_0027BD78(); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027E578);
+void func_0027E578(void)
+{
+    func_0027E500(1);
+    W2IPU_CTRL = 0x40000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_CMD = 0;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_IN = D_002BF170[0];
+    W2IPU_IN = D_002BF170[1];
+    W2IPU_IN = D_002BF170[2];
+    W2IPU_IN = D_002BF170[3];
+    W2IPU_IN = D_002BF170[4];
+    W2IPU_IN = D_002BF170[4];
+    W2IPU_IN = D_002BF170[4];
+    W2IPU_IN = D_002BF170[4];
+    W2IPU_CMD = 0x50000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_CMD = 0x58000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_IN = D_002BF1C0[0];
+    W2IPU_IN = D_002BF1C0[1];
+    W2IPU_CMD = 0x60000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_CMD = 0x90000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_CTRL = 0x40000000;
+    while (W2IPU_CTRL < 0)
+        ;
+    W2IPU_CMD = 0;
+    while (W2IPU_CTRL < 0)
+        ;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027E7B0);
 
@@ -170,7 +214,19 @@ PadSt *func_0027EDC8(int a, int b) { PadSt *p = D_424190[a][b].m0; int i; func_0
 
 int func_0027EE28(int a, int b) { if (D_424190[a][b].m10 == 0) return 0; return func_0027EDC8(a, b)->m58; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027EE78);
+int func_0027EE78(int a, int b, unsigned char *rdata)
+{
+    PadSt buf;
+    PadSt *p;
+    int st;
+    if (D_424190[a][b].m10 == 0) return 0;
+    st = func_0027BD20();
+    p = &buf;
+    *p = *func_0027EDC8(a, b);
+    memcpy(rdata, p, *(int *)((char *)p + 0x60));
+    if (st == 1) func_0027BD78();
+    return *(int *)((char *)p + 0x60);
+}
 
 int func_0027EFE0(int a, int b) { PadSt *p; if (D_424190[a][b].m10 == 0) return 99; p = func_0027EDC8(a, b); if (p->m70 == 6) { if (p->m71 != 2) return p->m70; return 5; } return p->m70; }
 
@@ -260,7 +316,21 @@ int func_0027F910(int a, int b) { if (D_424190[a][b].m10 == 0) return 0; return 
 
 int func_0027F968(int a, int b) { if (D_424190[a][b].m10 == 0) return 0; return func_0027F800(a, b, 0); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027F9C0);
+int func_0027F9C0(int a, int b, const unsigned char *data)
+{
+    int r;
+    D_424380[1] = a;
+    D_424380[0] = 0xB;
+    D_424380[2] = b;
+    memcpy(&D_424380[3], data, 12);
+    if (func_002760B0(D_424140, 1, 0, D_424380, 0x80, D_424380, 0x80, 0, 0) < 0) return 0;
+    r = D_424380[7];
+    if (r == 1) {
+        func_0027F090(a, b, 2);
+        r = D_424380[7];
+    }
+    return r;
+}
 
 int func_0027FA90(void) { D_424380[0] = 0xC; if (func_002760B0(D_424140, 1, 0, D_424380, 0x80, D_424380, 0x80, 0, 0) < 0) return 0; return D_424380[3]; }
 

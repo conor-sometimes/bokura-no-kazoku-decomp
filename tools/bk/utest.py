@@ -56,7 +56,7 @@ def target_refs(c):
     p = f"{R}/asm/nonmatchings/{c['unit']}/{c['name']}.s"
     refs, i = {}, -1
     for line in open(p):
-        if not re.search(r'/\* \w+ [0-9A-F]{8} ', line):
+        if not re.search(r'/\* \w+ [0-9A-F]{8} [0-9A-F]{8} \*/', line):   # instructions only, not a migrated .asciz
             continue
         i += 1
         m = re.search(r'%(?:hi|lo)\(([A-Za-z_.$][\w.$]*)\)|\bjal\s+([A-Za-z_.$][\w.$]*)', line)

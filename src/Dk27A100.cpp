@@ -88,6 +88,10 @@ extern void *memcpy(void *, const void *, unsigned int);
 typedef struct McBuf2 { int r; int x4; char name[0xFC]; char name2[0xFC]; } McBuf2;
 extern McBuf2 D_420600y asm("D_420600");
 extern int func_00275EE0(void *, unsigned int, int);
+typedef struct { char c[0xFC]; } W2Arg252;
+typedef struct { int id; int arglen; char pad[0xFC]; W2Arg252 args; } W2LoadMod;
+extern W2LoadMod D_420600_lm __asm__("D_420600");
+extern void *memcpy(void *, const void *, unsigned int);
 // @decl-end
 
 int func_0027A100(const char *name, int b)
@@ -176,9 +180,57 @@ int func_0027A5D0(void)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027A608);
+int func_0027A608(int id, int arglen, int vargs, int vres)
+{
+    char *args = (char *)vargs;
+    int *result = (int *)vres;
+    if (func_0027A440() < 0) return 0xFFFF0000;
+    if (func_0027A540()) return 0xFFFEFFFC;
+    D_420600_lm.id = id;
+    if (args) {
+        if (arglen > 0xFC) {
+            D_420600_lm.args = *(W2Arg252 *)args;
+            D_420600_lm.arglen = 0xFC;
+        } else {
+            memcpy(&D_420600_lm.args, args, arglen);
+            D_420600_lm.arglen = arglen;
+        }
+    } else {
+        D_420600_lm.arglen = 0;
+    }
+    if (func_002760B0(D_420800, 6, 0, &D_420600_lm, 0x200, &D_420600_lm, 8, 0, 0) < 0) return 0xFFFEFFFF;
+    {
+        int r = D_420600_lm.id;
+        *result = D_420600_lm.arglen;
+        return r;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027A810);
+int func_0027A810(int id, int arglen, int vargs, int vres)
+{
+    char *args = (char *)vargs;
+    int *result = (int *)vres;
+    if (func_0027A440() < 0) return 0xFFFF0000;
+    if (func_0027A540()) return 0xFFFEFFFC;
+    D_420600_lm.id = id;
+    if (args) {
+        if (arglen > 0xFC) {
+            D_420600_lm.args = *(W2Arg252 *)args;
+            D_420600_lm.arglen = 0xFC;
+        } else {
+            memcpy(&D_420600_lm.args, args, arglen);
+            D_420600_lm.arglen = arglen;
+        }
+    } else {
+        D_420600_lm.arglen = 0;
+    }
+    if (func_002760B0(D_420800, 7, 0, &D_420600_lm, 0x200, &D_420600_lm, 8, 0, 0) < 0) return 0xFFFEFFFF;
+    {
+        int r = D_420600_lm.id;
+        *result = D_420600_lm.arglen;
+        return r;
+    }
+}
 
 int func_0027AA18(int a)
 {
@@ -216,7 +268,34 @@ int func_0027ABD8(int a, int b, int c)
 
 int func_0027ABF8(int a, int b, int c, int d) { return func_0027A608(a, b, c, d); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027AC18);
+int func_0027AC18(int vpath, int arglen, int vargs, int vres, int fno)
+{
+    const char *path = (const char *)vpath;
+    char *args = (char *)vargs;
+    int *result = (int *)vres;
+    if (func_0027A440() < 0) return 0xFFFF0000;
+    if (func_0027A540()) return 0xFFFEFFFC;
+    func_0028B728(D_420600_lm.pad, path, 0xFC);
+    D_420600_lm.pad[0xFB] = 0;
+    if (args) {
+        if (arglen > 0xFC) {
+            D_420600_lm.args = *(W2Arg252 *)args;
+            D_420600_lm.id = 0xFC;
+        } else {
+            memcpy(&D_420600_lm.args, args, arglen);
+            D_420600_lm.id = arglen;
+        }
+    } else {
+        D_420600_lm.args.c[0] = 0;
+        D_420600_lm.id = 0;
+    }
+    if (func_002760B0(D_420800, fno, 0, &D_420600_lm, 0x200, &D_420600_lm, 8, 0, 0) < 0) return 0xFFFEFFFF;
+    {
+        int r = D_420600_lm.id;
+        *result = D_420600_lm.arglen;
+        return r;
+    }
+}
 
 int func_0027AE40(int a, int b, int c)
 {

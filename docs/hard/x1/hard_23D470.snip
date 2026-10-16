@@ -1,0 +1,20 @@
+//@decl
+extern s32 D_002B9C60[];
+//@func 0x23D470
+extern "C" void func_0023D470(s32 base, s32 psm, s32 w, s32 h) {
+    s32 k, m, x, y;
+    for (x = 0; x < 64; x++) {
+        if (base < D_388E28[x] && base >= D_002B9508 && base < D_002B950C) D_388E28[x] = base;
+    }
+    k = func_0023D330(psm);
+    m = D_002B9C60[k];
+    for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+            s32 s = *(s32 *)&D_002B9510[k];
+            s32 row = ((y & ((1 << (5 - s)) - 1)) << s) + (((y >> (5 - s)) * ((w + (1 << s) - 1) >> s)) << 5);
+            s32 idx = (x & ((1 << s) - 1)) + ((x >> s) << 5) + row;
+            s32 page = base + ((idx & ~0x1F) + D_002B95E0[k][idx & 0x1F]);
+            if ((u32)page < 0x4000) D_386E28[page >> 3] &= ~((m & 0xF) << ((page & 7) * 4));
+        }
+    }
+}

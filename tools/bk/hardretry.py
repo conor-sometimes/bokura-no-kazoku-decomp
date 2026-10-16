@@ -40,6 +40,7 @@ def main(argv=None):
     p.add_argument('paths', nargs='*')
     p.add_argument('-j', type=int, default=max(1, (os.cpu_count() or 2) // 2))
     p.add_argument('--port', action='store_true')
+    p.add_argument('--all', action='store_true', help='list every snippet that still differs, closest first')
     a = p.parse_args(argv)
     paths = a.paths or sorted(glob.glob(os.path.join(bk.R, 'docs/hard/**/hard_*.snip'), recursive=True))
     with Pool(a.j) as pool:
@@ -58,6 +59,9 @@ def main(argv=None):
     print(f"{len(paths)} snippets: {len(by.get('match', []))} now match, {len(diffs)} still differ "
           f"(closest: {', '.join(f'{os.path.basename(p)} {d}' for p, d in diffs[:5])}), "
           f"{len(by.get('done', []))} already done, {len(by.get('error', []))} errors")
+    if a.all:
+        for path, d in diffs:
+            print(f'DIFF {d:5d}  {rel(path)}')
     if a.port:
         for path, _ in by.get('match', []):
             try:

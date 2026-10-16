@@ -1,0 +1,45 @@
+extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j);
+extern "C" char *strstr(const char *, const char *);
+extern "C" char *strcpy(char *, const char *);
+extern "C" void *func_00219818(s32 heap, s32 n);
+extern "C" void func_0020E210(s32 h, const char *name);
+extern const char *D_002BA24C;
+extern const char *D_002BA250;
+extern const char D_002E76E8[];
+//@func 0x25B048
+s32 CSndMgr::Func25B048(s32 a, const char *name, s32 heap, void *src, s32 n) {
+    char buf[0x100];
+    s32 fl = 0;
+    void *d = 0;
+    s32 sz = Func25ADD0((CPushBuf *)name, (s32)src, n);
+    if (sz >= 0) {
+        if (heap >= 0) {
+            d = func_00219818(heap, sz);
+            fl = 4;
+            if (!d) { Func235DE0(D_002E76E8, name); return -1; }
+        } else {
+            d = Func245D00(sz);
+            fl = 8;
+            if (!d) { Func235DE0(D_002E76E8, name); return -1; }
+        }
+        if (Func25AD78((CPushBuf *)name, d, src, n) > 0) {
+            s32 id = Func25AC38(a, name, (s32)d);
+            if (id >= 0) {
+                if (strstr(name, D_002BA24C)) {
+                    strcpy(buf, name);
+                    strcpy(strstr(buf, D_002BA24C), D_002BA250);
+                    func_0020E210(Func25A538(id), buf);
+                }
+                ((CSndEnt *)func_0025A838((W2SeTab2 *)this, id, 2))->m30 |= fl;
+                return id;
+            }
+        }
+    }
+err:
+    if (d) {
+        if (fl & 4) func_00219950(d);
+        if (fl & 8) D_002B91B0(d);
+    }
+    Func235DE0(D_002E76E8, name);
+    return -1;
+}

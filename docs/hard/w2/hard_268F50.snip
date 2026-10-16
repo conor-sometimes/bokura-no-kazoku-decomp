@@ -1,0 +1,79 @@
+//@decl
+extern "C" void func_00269658(MpegSys *d, s32 src, s32 sfield, s32 dfield, s32 yoff, s32 h, s32 bx, s32 by, s32 dx, s32 dy, s32 fld, s32 avg);
+extern "C" void func_0026AD28(u8 *d, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy);
+extern const char D_002E96F8[];
+extern const char D_002E9718[];
+extern const char D_002E9738[];
+#define W2I(d, off) (*(s32 *)((u8 *)(d) + (off)))
+//@func 0x268F50
+/* mpeg2decode recon.c form_predictions, Sony IPU variant */
+extern "C" void func_00268F50(MpegSys *d, s32 bx, s32 by, s32 mbtype, s32 mtype, s32 vPMV, s32 vmvfs, s32 vdmv)
+{
+    s32 (*PMV)[2][2] = (s32 (*)[2][2])vPMV;
+    s32 (*mvfs)[2] = (s32 (*)[2])vmvfs;
+    s32 *dmvector = (s32 *)vdmv;
+    s32 DMV[2][2];
+    s32 pred[2][2];
+    s32 currentfield, sel;
+    s32 avg = 0;
+    W2B(d).m12C = 0;
+    if ((mbtype & 8) || W2I(d, 0x168) == 2) {
+        if (d->m18C == 3) {
+            if (mtype == 2 || !(mbtype & 8)) {
+                func_00269658(d, W2I(d, 0x1D0), 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+            } else if (mtype == 1) {
+                func_00269658(d, W2I(d, 0x1D0), mvfs[0][0], 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, 1, 0);
+                func_00269658(d, W2I(d, 0x1D0), mvfs[1][0], 1, 0, 8, bx, by, PMV[1][0][0], PMV[1][0][1] >> 1, 1, 0);
+            } else if (mtype == 3) {
+                func_0026AD28((u8 *)d, DMV, dmvector, PMV[0][0][0], PMV[0][0][1] >> 1);
+                func_00269658(d, W2I(d, 0x1D0), 0, 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, 1, 0);
+                func_00269658(d, W2I(d, 0x1D0), 1, 0, 0, 8, bx, by, DMV[0][0], DMV[0][1], 1, 1);
+                func_00269658(d, W2I(d, 0x1D0), 1, 1, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1] >> 1, 1, 0);
+                func_00269658(d, W2I(d, 0x1D0), 0, 1, 0, 8, bx, by, DMV[1][0], DMV[1][1], 1, 1);
+            } else {
+                ((s32 (*)(MpegSys *, const char *, ...))func_00268368)(d, D_002E96F8, mtype);
+            }
+        } else {
+            currentfield = d->m18C == 2;
+            pred[0][0] = W2I(d, 0x1E0);
+            pred[0][1] = W2I(d, 0x1F0);
+            pred[1][0] = W2I(d, 0x1E4);
+            pred[1][1] = W2I(d, 0x1F4);
+            sel = 0;
+            if (W2I(d, 0x168) == 2 && W2I(d, 0x138)) sel = currentfield != mvfs[0][0];
+            if (mtype == 1 || !(mbtype & 8)) {
+                func_00269658(d, pred[sel][mvfs[0][0]], 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+            } else if (mtype == 2) {
+                func_00269658(d, pred[sel][mvfs[0][0]], 0, 0, 0, 8, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+                sel = 0;
+                if (W2I(d, 0x168) == 2 && W2I(d, 0x138)) sel = currentfield != mvfs[1][0];
+                func_00269658(d, pred[sel][mvfs[1][0]], 0, 0, 8, 8, bx, by, PMV[1][0][0], PMV[1][0][1], 0, 0);
+            } else if (mtype == 3) {
+                sel = W2I(d, 0x138) ? 1 : 0;
+                func_0026AD28((u8 *)d, DMV, dmvector, PMV[0][0][0], PMV[0][0][1]);
+                func_00269658(d, pred[0][currentfield], 0, 0, 0, 16, bx, by, PMV[0][0][0], PMV[0][0][1], 0, 0);
+                func_00269658(d, pred[sel][!currentfield], 0, 0, 0, 16, bx, by, DMV[0][0], DMV[0][1], 0, 1);
+            } else {
+                ((s32 (*)(MpegSys *, const char *, ...))func_00268368)(d, D_002E9718, mtype);
+            }
+        }
+        avg = 1;
+    }
+    if (mbtype & 4) {
+        if (d->m18C == 3) {
+            if (mtype == 2) {
+                func_00269658(d, W2I(d, 0x1D4), 0, 0, 0, 16, bx, by, PMV[0][1][0], PMV[0][1][1], 0, avg);
+            } else {
+                func_00269658(d, W2I(d, 0x1D4), mvfs[0][1], 0, 0, 8, bx, by, PMV[0][1][0], PMV[0][1][1] >> 1, 1, avg);
+                func_00269658(d, W2I(d, 0x1D4), mvfs[1][1], 1, 0, 8, bx, by, PMV[1][1][0], PMV[1][1][1] >> 1, 1, avg);
+            }
+        } else if (mtype == 1) {
+            func_00269658(d, mvfs[0][1] ? W2I(d, 0x1F4) : W2I(d, 0x1E4), 0, 0, 0, 16, bx, by, PMV[0][1][0], PMV[0][1][1], 0, avg);
+        } else if (mtype == 2) {
+            func_00269658(d, mvfs[0][1] ? W2I(d, 0x1F4) : W2I(d, 0x1E4), 0, 0, 0, 8, bx, by, PMV[0][1][0], PMV[0][1][1], 0, avg);
+            func_00269658(d, mvfs[1][1] ? W2I(d, 0x1F4) : W2I(d, 0x1E4), 0, 0, 8, 8, bx, by, PMV[1][1][0], PMV[1][1][1], 0, avg);
+        } else {
+            ((s32 (*)(MpegSys *, const char *, ...))func_00268368)(d, D_002E9738, mtype);
+        }
+    }
+}

@@ -10,6 +10,8 @@ extern f32 D_33D6C0[4];
 extern u64 D_33D6B0[2];
 extern "C" u64 func_0023AA40(s32);
 extern "C" u64 func_0023BCB8(s32, s32);
+#define BITK(x, sh, m, k) (((((u64)(x)) >> ((sh) - (k))) & ((u64)(m) << (k))) >> (k))
+#define LOWB(x, n) (((u64)(x) << (64 - (n))) >> (64 - (n)))
 //@func 0x21BF50
 extern "C" void func_0021BF50(s32 a, s32 b, s32 x, s32 y, s32 w, s32 h) {
     u64 tex, clut;
@@ -19,6 +21,13 @@ extern "C" void func_0021BF50(s32 a, s32 b, s32 x, s32 y, s32 w, s32 h) {
     D_33D6C0[3] = ((f32)h + 0.5f) * (1.0f / 1024.0f);
     tex = func_0023AA40(a);
     clut = func_0023BCB8(a, b);
-    D_33D6B0[0] = GS_SET_TEX0B(tex & 0x3FFF, (tex >> 14) & 0x3F, (tex >> 32) & 0x3F, 10, 10, 1, 0, clut & 0x3FFF, (clut >> 32) & 0x3F, 0, 0, 1);
+    {
+        u64 tpsm = BITK(tex, 32, 0x3F, 32); //@p
+        u64 cpsm = BITK(clut, 32, 0x3F, 31); //@p
+        u64 cbp = LOWB(clut, 14); //@p
+        u64 tbw = BITK(tex, 14, 0x3F, 14); //@p
+        u64 tbp = LOWB(tex, 14); //@p
+        D_33D6B0[0] = GS_SET_TEX0B(tbp, tbw, tpsm, 10, 10, 1, 0, cbp, cpsm, 0, 0, 1);
+    }
     D_33D6B0[1] = GS_SET_CLAMPB(2, 2, x, x + w - 1, y, y + h - 1);
 }

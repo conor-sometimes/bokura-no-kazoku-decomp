@@ -1,0 +1,43 @@
+//@decl
+typedef struct { char pad[0x58]; int m58; char p5C[4]; int m60; char p64[3]; unsigned char m67; char p68[8]; unsigned char m70; unsigned char m71; char p72[0xE]; } W2PadSt;
+extern int D_424280[2][4][8];
+extern const char D_002EA1B0[];
+extern const char D_002EA1E0[];
+//@func 0x27EB28
+int func_0027EB28(int port, int slot, W2PadSt *addr)
+{
+    int *q;
+    int i;
+    W2PadSt *p;
+    if ((unsigned int)addr & 0x3F) {
+        if (D_002BF1F4) func_00274F10(D_002EA1B0, addr);
+        return 0;
+    }
+    if (D_424190[port][slot].m10 == 1) {
+        if (D_002BF1F4) func_00274F10(D_002EA1E0, port, slot);
+        return 0;
+    }
+    p = addr;
+    for (i = 0; i < 2; i++) {
+        p->m58 = 0;
+        p->m70 = 5;
+        p->m71 = 2;
+        p->m67 = 0;
+        memset(p, 0xFF, 0x20);
+        p->m60 = 0;
+        p++;
+    }
+    D_424380[0] = 1;
+    D_424380[1] = port;
+    D_424380[2] = slot;
+    D_424380[4] = (int)addr;
+    if (func_002760B0(D_424140, 1, 0, D_424380, 0x80, D_424380, 0x80, 0, 0) < 0) return 0;
+    q = D_424280[port][slot];
+    D_424190[port][slot].m10 = 1;
+    *(int *)&D_424190[port][slot].pad[0] = D_424380[5];
+    D_424190[port][slot].m0 = (PadSt *)addr;
+    D_424190[port][slot].m4 = q;
+    *q = 0;
+    *(int *)&D_424190[port][slot].pad[4] = 0;
+    return D_424380[3];
+}

@@ -1,5 +1,0 @@
-#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-//@decl
-typedef void (*W2Sig2)(s32);
-//@func 0x28AD50
-extern "C" s32 func_0028AD50(s32 *ptr, u32 sig) { W2Sig2 func; if (sig >= 32) return -1; if (FLD(W2Sig2 *, ptr, 0x1D4) == 0 && func_0028AB88(ptr) != 0) return -1; func = FLD(W2Sig2 *, ptr, 0x1D4)[sig]; if (func == 0) return 1; if (func == (W2Sig2)-1) return 2; if (func == (W2Sig2)1) return 3; FLD(W2Sig2 *, ptr, 0x1D4)[sig] = 0; func(sig); return 0; }

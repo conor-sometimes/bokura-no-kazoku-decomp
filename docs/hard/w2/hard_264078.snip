@@ -1,0 +1,50 @@
+//@decl
+extern SifClient D_41AA50;
+extern s32 D_41AA90;
+extern s32 D_002BBC08;
+extern s32 D_002BBBF0;
+extern s32 D_002BD640[];
+extern const char D_002E9200[];
+extern const char D_002E91C8[];
+extern const char D_002E91E8[];
+extern "C" s32 func_00263E80(s32 mode);
+//@func 0x264078
+extern "C" s32 func_00264078(s32 mode) {
+    s32 i, r, n;
+    if (D_002BBBD0 > 0) func_00274F10(D_002E9200);
+    func_00263088();
+    if (*(volatile s32 *)&D_002BBBF0 != func_002731F0(*(volatile s32 *)&D_002BBBF0)) return mode != 8 ? 6 : -1;
+    func_00275748(0);
+    n = 0;
+    if (D_002BBC08 < 0) {
+        while (1) {
+            if (func_00275EE0(&D_41AA50, 0x8000059C, 0) < 0) {
+                if (D_002BBBD0 > 0) func_00274F10(D_002E91C8);
+                i = 0x100000;
+                while (i--)
+                    ;
+                continue;
+            }
+            if (D_41AA50.m24) break;
+            if (n > 16) {
+                func_002731C0(*(volatile s32 *)&D_002BBBF0);
+                return func_00263E80(mode);
+            }
+            i = 0x100000;
+            while (i--)
+                ;
+            n++;
+        }
+        D_002BBC08 = 0;
+    }
+    D_41AA90 = mode;
+    func_00275698(&D_41AA90, 4);
+    if (func_002760B0(&D_41AA50, 0, 0, &D_41AA90, 4, D_002BD640, 4, 0, 0) < 0) {
+        func_002731C0(*(volatile s32 *)&D_002BBBF0);
+        return mode != 8 ? 6 : -1;
+    }
+    if (D_002BBBD0 > 0) func_00274F10(D_002E91E8);
+    r = *(s32 *)UNCACHED(D_002BD640);
+    func_002731C0(*(volatile s32 *)&D_002BBBF0);
+    return r;
+}

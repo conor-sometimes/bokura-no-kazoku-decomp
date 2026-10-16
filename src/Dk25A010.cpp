@@ -68,10 +68,10 @@ public:
     virtual s32 Func25A628(const char *name, s32 i); // [24]
     virtual s32 Func25A908(s32 a, const char *name, void *d, s32 b, s32 c); // [25]
     virtual s32 Func25AAD0(s32 a, const char *name, void *d, s32 b); // [26]
-    virtual s32 Func25AC38(s32 i);                   // [27]
+    virtual s32 Func25AC38(s32 i, const char *name, s32 c); // [27]
     virtual s32 Func25AE80(s32 a, const char *name, s32 b, s32 c, void *src, s32 n); // [28]
     virtual s32 Func25AF70(s32 a, const char *name, s32 b, void *src, s32 n); // [29]
-    virtual s32 Func25B048(s32 i);                   // [30]
+    virtual s32 Func25B048(s32 a, const char *name, s32 heap, void *src, s32 n); // [30]
     virtual void Func25B230(s32 i);                  // [31]
     virtual void Func25B460(s32 i, s32 b);           // [32]
     virtual void Func25B608();                       // [33]
@@ -88,7 +88,7 @@ public:
     virtual void Func25BB00();                       // [44]
     virtual ~CSndMgr();                              // [45]
     virtual s32 Func25B8C8(char *buf);               // [46]
-    virtual s32 Func25B980(s32 i);                   // [47]
+    virtual s32 Func25B980(const char *p);                  // [47]
     CSndEnt *Func25A478(s32 i);
     CSndEnt *Func25A4D8(s32 i);
     s32 Func25BB30(CSndSaveFn fn, s32 x);
@@ -173,6 +173,43 @@ struct W2SeTab { u8 p0[0x14]; W2SeEnt *m14; s32 m18; };
 struct W2SeHdr2 { u8 p0[8]; s32 m8; s32 mC; };
 struct W2SeEnt2 { W2SeHdr2 *m0; u8 p4[0x24]; s32 m28; u8 p2C[0x10]; };
 struct W2SeTab2 { u8 p0[0x14]; W2SeEnt2 *m14; s32 m18; };
+
+const char *Func24A570(const char *src, char *buf, const char *a, const char *b);
+extern "C" const char *func_0024A710(const char *p, s32 *v, s32 def, const char *s1, const char *s2);
+extern "C" const char *func_0024AD10(const char *p, char *buf, s32 a, s32 n);
+extern const char D_002E7730[];
+extern const char D_002E7738[];
+extern const char D_002E7740[];
+
+extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j);
+extern "C" void func_0024B7B8(const char *p, char *dir, char *name);
+extern "C" s32 func_0020DFD8(s32, s32);
+extern const char D_002E7650[];
+extern const char D_002E7678[];
+
+extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j);
+extern "C" void func_0024B7B8(const char *p, char *dir, char *name);
+extern "C" s32 func_002090E8(void *);
+extern "C" s32 func_00219880(s32, s32);
+extern "C" s32 func_00208B30(s32, void *, s32);
+extern const char D_002E7630[];
+
+extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j);
+extern "C" s32 func_002089E0(void *);
+extern "C" s32 func_00208B00(void *);
+extern "C" s32 func_002198E8(s32, s32);
+extern "C" s32 func_00208260(s32, void *, s32, s32);
+extern "C" void func_002087E8(s32, s32);
+extern const char D_002E7610[];
+
+extern "C" W2SeEnt *func_0025B260(W2SeTab *t, s32 i, s32 j);
+extern "C" s32 func_001F1180(void);
+extern "C" void func_001F15F0(void);
+extern "C" void func_001F1610(void);
+extern "C" void func_002128A8(void);
+struct CSndTree;
+void Func25D270(CSndTree *t, s32 i);
+extern void (*D_002BA258[])(s32, u32);
 // @decl-end
 
 s32 Func25A010(s32 i, s32 v) { return (v / D_002BA218[i]) << 10; }
@@ -324,7 +361,7 @@ s32 CSndMgr::Func25A628(const char *name, s32 i) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025A738);
+INCLUDE_ASM("asm/nonmatchings/Dk25A010", Func25A738__7CSndMgriPCc);
 
 extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j)
 {
@@ -350,11 +387,103 @@ extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025A908);
+s32 CSndMgr::Func25A908(s32 i, const char *name, void *d, s32 b, s32 c) {
+    s32 h1 = 0;
+    s32 id = -1;
+    s32 h2 = 0;
+    CSndEnt *e = Func25A738(i, name);
+    if (e) {
+        e->m38++;
+        return e->m_idx;
+    }
+    e = (CSndEnt *)func_0025A838((W2SeTab2 *)this, i, 0);
+    if (e) {
+        s32 x, y;
+        Func25B460(e->m_idx, 1);
+        x = func_002089E0(d);
+        y = func_00208B00(d);
+        h1 = func_00219880(b, x);
+        if (h1) {
+            h2 = func_002198E8(c, y);
+            if (h2) {
+                if ((id = func_00208260(-1, d, h1, h2)) >= 0) {
+                    func_002087E8(id, 1);
+                    func_0024B7B8(name, 0, e->m_name);
+                    e->m28 = id;
+                    e->m30 = 3;
+                    e->m38 = 1;
+                    e->m2C = 0;
+                    e->m34 = 0;
+                    return e->m_idx;
+                }
+            }
+        }
+    }
+    if (id >= 0) func_00208670(id, 1);
+    if (h1) func_00219970(h1);
+    if (h2) func_00219990(h2);
+    Func235DE0(D_002E7610, name);
+    return -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025AAD0);
+s32 CSndMgr::Func25AAD0(s32 i, const char *name, void *d, s32 b) {
+    s32 h = 0;
+    s32 id = -1;
+    CSndEnt *e = Func25A738(i, name);
+    if (e) {
+        e->m38++;
+        return e->m_idx;
+    }
+    e = (CSndEnt *)func_0025A838((W2SeTab2 *)this, i, 1);
+    if (e) {
+        Func25B460(e->m_idx, 1);
+        h = func_00219880(b, func_002090E8(d));
+        if (h) {
+            if ((id = func_00208B30(-1, d, h)) >= 0) {
+                func_0024B7B8(name, 0, e->m_name);
+                e->m28 = id;
+                e->m30 = 2;
+                e->m2C = 1;
+                e->m38 = 1;
+                e->m34 = 0;
+                return e->m_idx;
+            }
+        }
+    }
+    if (id >= 0) func_00208E48(id, 1);
+    if (h) func_00219970(h);
+    Func235DE0(D_002E7630, name);
+    return -1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025AC38);
+s32 CSndMgr::Func25AC38(s32 i, const char *name, s32 c) {
+    s32 h = -1;
+    CSndEnt *e = Func25A738(i, name);
+    if (e) {
+        e->m38++;
+        return e->m_idx;
+    }
+    e = (CSndEnt *)func_0025A838((W2SeTab2 *)this, i, 2);
+    if (!e) {
+        Func235DE0(D_002E7650, name);
+    } else {
+        Func25B460(e->m_idx, 1);
+        h = func_0020DFD8(0, c);
+        if (h < 0) {
+            Func235DE0(D_002E7678, name);
+        } else {
+            func_0024B7B8(name, 0, e->m_name);
+            e->m28 = h;
+            e->m2C = 2;
+            e->m38 = 1;
+            e->m30 = 0;
+            e->m34 = 0;
+            return e->m_idx;
+        }
+    }
+    if (h >= 0) func_0020E1B8(h);
+    return -1;
+}
 
 s32 Func25AD78(CPushBuf *p, void *dst, void *src, s32 n) {
     if (src && n > 0) {
@@ -446,7 +575,33 @@ void Func25B3F0(s32 a, u32 fl) {
     if (fl & 8) D_002B91B0(p);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025B460);
+void CSndMgr::Func25B460(s32 i, s32 b) {
+    CSndEnt *e;
+    s32 j = 0;
+    while ((e = (CSndEnt *)func_0025B260((W2SeTab *)this, i, j)) != 0) {
+        if (e->m2C >= 0 && e->m28 >= 0 && (b != 0 || --e->m38 <= 0)) {
+            if (e->m34 > 0) {
+                if (func_001F1180() == 1) func_001F15F0();
+                Func25D270((CSndTree *)Func25C220(), e->m_idx);
+                if (func_001F1180() == 1) func_001F1610();
+                while (Func25A600(e->m_idx) > 0) {
+                    if (func_001F1180() == 0) {
+                        Func25BB00();
+                        func_002128A8();
+                    }
+                }
+            }
+            D_002BA258[e->m2C](e->m28, e->m30);
+            e->m_name[0] = 0;
+            e->m28 = -1;
+            e->m2C = -1;
+            e->m30 = 0;
+            e->m38 = 0;
+            e->m34 = 0;
+        }
+        j++;
+    }
+}
 
 void CSndMgr::Func25B608() {
     for (s32 i = 0; i < m_numEnts; i++) {
@@ -502,7 +657,20 @@ s32 CSndMgr::Func25B8C8(char *h) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025B980);
+s32 CSndMgr::Func25B980(const char *p)
+{
+    char line[0x100];
+    char name[0x100];
+    s32 val;
+    s32 i;
+    while ((p = func_0024AD10(p, line, 1, 0x100), *p) || line[0]) {
+        func_0024A710(Func24A570(line, name, D_002E7730, D_002E7738), &val, 0, D_002E7740, D_002E7738);
+        for (i = 0; i < m_numSeqs; i++) {
+            if (!strcmp(m_seqs[i].m_name, name)) m_vals[i] = val;
+        }
+    }
+    return 1;
+}
 
 s32 CSndMgr::Func25BAB0(s32 x) { return Func25BB30(D_002E7748f, x); }
 

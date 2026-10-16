@@ -43,6 +43,16 @@ extern const char D_002E95F8[];
 extern "C" void func_0026D898(MpegSys *, MpegBuf *, s32);
 extern "C" void func_0026D9A8(MpegSys *, MpegBuf *, MpegBuf *, s32);
 extern const char D_002E9588[];
+struct W2MBuf { s32 m0; s32 m4; u8 p8[0x20]; void (*fa[4])(void *); void (*fb[4])(void *); u8 oa[4][0x1C]; u8 ob[4][0x1C]; u8 p128[0x128 - 0x128]; s32 m128; s32 m12C; s32 m130; s32 m134; s32 m138; s32 m13C; };
+struct W2MSys { u8 p0[0x5A8]; W2MBuf buf[2]; u8 p828[0x834 - 0x828]; s32 m834; };
+extern "C" void func_0026A9E8(s32, s32);
+extern "C" void func_0026A988(s32, s32, s32);
+extern const char D_002E9758[];
+struct W2Fb { s32 m0; u8 p4[0xC]; s32 m10; };
+extern const char D_002E96D0[];
+extern "C" void func_00268F50(MpegSys *d, s32 x, s32 y, s32 mbtype, s32 mtype, s32 a, s32 b, s32 c);
+extern "C" void func_0026DB60(MpegSys *d);
+#define W2B(d) (((W2MSys *)(d))->buf[(d)->m828])
 // @decl-end
 
 extern "C" s32 func_00268138(SceMpeg *p) { MpegSys *o = p->sys; s32 r = 0; if (o->m4 && o->m8) { func_002681B0(o); r = 1; p->frameCount = o->m130 - o->mC4; o->m4 = 0; } return r; }
@@ -160,13 +170,60 @@ extern "C" s32 func_00268CD0(SceMpeg *p) { func_0027E348(p->sys->m68); return 1;
 // here would raise this object's alignment and move it).
 asm(".space 8");
 
-INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00268D00);
+extern "C" s32 func_00268D00(MpegSys *d, s32 mb, s32 cnt, s32 mbtype, s32 mtype, s32 a, s32 b, s32 c)
+{
+    s32 intra = mbtype & 1;
+    s32 by = mb / d->m144;
+    s32 bx = mb % d->m144;
+    s32 x = bx << 4;
+    s32 y = by << 4;
+    W2Fb *fb;
+    if (intra) {
+        while ((*(volatile u32 *)0x1000D400 >> 8) & 1)
+            ;
+        W2B(d).m138 = 0;
+    } else {
+        if ((u32)(mtype - 1) >= 3) {
+            ((s32 (*)(MpegSys *, const char *, ...))func_00268368)(d, D_002E96D0, mtype);
+            *(s32 *)((u8 *)d + 0x134) = 1;
+            return 0;
+        }
+        func_00268F50(d, x, y, mbtype, mtype, a, b, c);
+        while ((*(volatile u32 *)0x1000D400 >> 8) & 1)
+            ;
+        func_0026DB60(d);
+        W2B(d).m138 = 1;
+    }
+    if (cnt == 1 && (mbtype & 2)) W2B(d).m134 = cnt;
+    else W2B(d).m134 = 0;
+    W2B(d).m130 = intra;
+    if (d->m18C == 3) {
+        W2B(d).m128 = (*(W2Fb **)((u8 *)d + 0x1D8))->m0 + (bx * (*(W2Fb **)((u8 *)d + 0x1D8))->m10 + by) * 0x180;
+    } else {
+        fb = d->m18C == 2 ? *(W2Fb **)((u8 *)d + 0x1F8) : *(W2Fb **)((u8 *)d + 0x1E8);
+        W2B(d).m128 = fb->m0 + (bx * fb->m10 + by) * 0x180;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00268F50);
 
 INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00269658);
 
-INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00269A78);
+extern "C" void func_00269A78(W2MSys *d, s32 idx)
+{
+    s32 i;
+    if (d->buf[idx].m138) {
+        for (i = 0; i < d->buf[idx].m12C; i++) {
+            d->buf[idx].fa[i](d->buf[idx].oa[i]);
+            d->buf[idx].fb[i](d->buf[idx].ob[i]);
+        }
+    }
+    if (d->buf[idx].m130 && d->buf[idx].m13C) func_002683A0((MpegSys *)d, D_002E9758);
+    if (d->buf[idx].m130) return func_0026A9E8(d->buf[idx].m128, d->buf[idx].m4);
+    if (d->buf[idx].m13C) return func_0026A9E8(d->buf[idx].m128, d->m834);
+    return func_0026A988(d->buf[idx].m128, d->m834, d->buf[idx].m4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00269C98);
 

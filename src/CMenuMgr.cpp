@@ -585,6 +585,10 @@ extern "C" char *strcpy(char *, const char *);
 inline void StrAdd1B7(char *d, const char *s) { strcpy(d + strlen(d), s); }
 
 class CMenuProcV { public: u8 pad[0x54]; virtual ~CMenuProcV(); virtual void Update(); };
+
+struct CGlyphDump { s32 m0; u8 *m4; s32 m8; u8 *mC[10]; };
+extern const char D_002E05C0[], D_002E05D0[], D_002E05D8[], D_002E05E0[], D_002E05F8[];
+#define PRINTI ((int (*)(const char *, ...))Func235DE0)
 // @decl-end
 
 CMenuMgr::CMenuMgr() {
@@ -1338,7 +1342,27 @@ int CMenuMgrSub1B74F8::CallFunc2320F8() {
     return m_unk5C.Func2320F8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B7510);
+extern "C" void func_001B7510(CGlyphDump *s) {
+    u8 *p;
+    u32 i;
+    u32 j;
+    s32 k;
+    u8 **tbl;
+    PRINTI(D_002E05C0, s->m0);
+    p = s->m4;
+    for (i = 0; i < 10; i++) PRINTI(D_002E05D0, p[i]);
+    PRINTI(D_002E05D8);
+    PRINTI(D_002E05E0, s->m8);
+    for (k = 0, tbl = s->mC; k < 30; k++) {
+        s32 q = k / 3;
+        s32 r = k % 3;
+        u8 **e = &tbl[q];
+        PRINTI(D_002E05F8, k, q, r, *e);
+        p = *e + s->m8 * r;
+        for (j = 0; j < 12; j++) PRINTI(D_002E05D0, p[j]);
+        PRINTI(D_002E05D8);
+    }
+}
 
 CUnk2A55B0 *CUnk2A55B0::Create() {
     CUnk2A55B0 *p = (CUnk2A55B0 *)operator new(0x280);

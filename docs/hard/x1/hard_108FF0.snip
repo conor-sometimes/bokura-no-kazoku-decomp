@@ -1,0 +1,21 @@
+//@func 0x108FF0
+void CFlagWork::Func108FF0(s32 id, s32 v) {
+    CFlagDef *d;
+    CFlagLimit *l;
+    if (id < 0 || id > m_numDefs - 1) return;
+    d = &m_defs[id];
+    if (d->m_type & 0xF) return;
+    l = &D_0029F2F0[d->m_size];
+    {
+        s32 t = v;
+        if (!(t < l->m_max)) t = l->m_max;
+        v = t < l->m_min ? l->m_min : t;
+    }
+    memcpy(m_data + d->m_off, &v, d->m_size);
+    if (m_defs[id].m_type & 0x20) {
+        Notify2(id);
+    }
+    if (m_defs[id].m_type & 0x10) {
+        Notify1(id);
+    }
+}

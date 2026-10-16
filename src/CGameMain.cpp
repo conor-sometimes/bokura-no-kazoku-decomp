@@ -237,6 +237,11 @@ struct CGameDBRec5Cv {
     u8 pad28[0x4];
     s32 m2C;                  // 0x2C
 };
+
+#include "CUserFlagMgr.h"
+extern "C" void ResetAllFlags__Fv(void *p);
+extern "C" int func_00150EA8(CGameMain *p, s32 i);
+extern CFlagWork *D_002A5358;
 // @decl-end
 
 CGameMain::CGameMain(s32 k) {
@@ -314,6 +319,8 @@ void CGameMain2::Func150D98() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", func_00150EA8);
+// compiled above in retail: calls to it are nothrow (docs/lessons.md, nm)
+extern "C" int func_00150EA8(CGameMain *p, s32 i) throw();
 
 // Empty; called with `this` from Func1513D0 (and CGameResort).
 void CGameMain::Func150FD8() {
@@ -344,7 +351,38 @@ void CGameMain::CallFunc151120(s32 a, s32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/CGameMain", Func151120__9CGameMainiiiii);
 
-INCLUDE_ASM("asm/nonmatchings/CGameMain", func_001513D0);
+int CGameMain::Func1513D0(s32 slot, s32 name, s32 all) {
+    s32 sel;
+    s32 cnt;
+    s32 i;
+    if (name >= 0) {
+        sel = Func1456A8(name);
+    } else {
+        sel = -1;
+    }
+    ResetAllFlags__Fv(this);
+    cnt = 0;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        s32 changed;
+        if (!all && !func_00150EA8(this, i)) continue;
+        if (sel >= 0 && i != sel) continue;
+        CallFunc151120(0, i);
+        Func151120(slot, i, 0, 0, 0);
+        changed = (D_002A4638[0]->Func1091B0(i + 0x60) ^ D_002A4638[slot]->Func1091B0(i + 0x60)) != 0;
+        D_002A4638[slot]->Func108FF0(i + 0x3C, D_002A4638[0]->Func1091B0(i + 0x3C));
+        D_002A4638[slot]->Func108FF0(i + 0x60, D_002A4638[0]->Func1091B0(i + 0x60));
+        if (changed && Func151028(0, slot, i)) D_002A4638[slot]->Func108FF0(i, 0);
+        if (D_002A0D38->V32(i) || changed) Func151120(4, i, 0, 0, 0);
+        D_002A0D38->V31(i);
+        Func151120(5, i, 0, 0, 0);
+        D_002A5358->Func108FF0(cnt + 4, i);
+        cnt++;
+    }
+    D_002A5358->Func108FF0(cnt + 4, -1);
+    Func150FD8();
+    ((CGameMain2 *)this)->Func150D98();
+    return cnt > 0;
+}
 
 void CGameMain::Func151658() {
     s32 ids[0x100];

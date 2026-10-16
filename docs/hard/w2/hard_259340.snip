@@ -1,0 +1,69 @@
+//@decl
+extern const char D_002E74C8[];
+extern const char D_002E74E8[];
+extern const char D_002E7510[];
+extern const char D_002E7528[];
+extern "C" s32 func_0020AD90(s32 mode, s32 a, s32 b);
+#define W2A(T, off) (*(T *)((u8 *)a + (off)))
+//@func 0x259340
+extern "C" s32 func_00259340(s32 type, s32 a1, s32 end, s32 loop, s32 start, s32 t1, s32 t2, s32 t3)
+{
+    CAt3 *a = 0;
+    s32 h = -1;
+    if ((u32)(type - 1) >= 4) {
+        Func235DE0(D_002E74C8, type);
+    } else if (end < 0) {
+        Func235DE0(D_002E74E8, end);
+    } else if ((a = (CAt3 *)D_002BA210) == 0) {
+        Func235DE0(D_002E7510);
+    } else {
+        D_002BA210 = (CAt3Node *)a->m_next;
+        h = func_0020AD90(D_002BA230[type] == 1 ? 0 : 2, t2, t3);
+        if (h < 0) {
+            Func235DE0(D_002E7528);
+        } else {
+            W2A(void *, 0x48) = (u8 *)a + 0x6930;
+            W2A(void *, 0x50) = (u8 *)a + 0x60;
+            W2A(s32, 0xC) = type;
+            a->m_pitch = 0x1000;
+            W2A(s32, 0x10) = a1;
+            W2A(s32, 0x44) = t1;
+            W2A(s32, 0x4C) = type;
+            W2A(s32, 0x54) = 0;
+            W2A(s32, 0x18) = 0x80;
+            W2A(s32, 0x1C) = 0x80;
+            W2A(s32, 0x34) = start & ~0x3FF;
+            a->m_handle = h;
+            W2A(s32, 0x20) = D_002BA208;
+            W2A(s32, 0x2C) = t1;
+            W2A(s32, 0x38) = start + 0x400;
+            a->m_sndId = -1;
+            W2A(s32, 0x3C) = loop < 0 ? -1 : loop + 0x400;
+            W2A(s32, 0x40) = end + 0x400;
+            a->m_ready = 1;
+            W2A(s32, 0xD978) = 0;
+            W2A(s32, 0xD97C) = 0;
+            W2A(s32, 0x30) = (start & ~0x3FF) / 1024 * D_002BA218[type];
+            W2A(s32, 0xD980) = 0;
+            W2A(s32, 0xD984) = 0;
+            W2A(s32, 0xD988) = 1;
+            a->m_active = 1;
+            W2A(s32, 0xD98C) = 0;
+            W2A(s32, 0xD990) = 0;
+            a->m_paused = 0;
+            a->m_level = 0;
+            a->m_volL = 0x80;
+            a->m_volR = 0x80;
+            a->m_next = (CAt3Node *)D_002BA20C;
+            D_002BA20C = (CAt3Node *)a;
+            return a->m_id;
+        }
+    }
+    if (h >= 0) func_0020AF80(h);
+    if (a) {
+        a->m_active = 0;
+        a->m_next = D_002BA210;
+        D_002BA210 = (CAt3Node *)a;
+    }
+    return -1;
+}

@@ -1,0 +1,41 @@
+//@decl
+extern char D_002DDD70[], D_002DDD90[];
+inline f32 VuFrac(f32 x) {
+    f32 r;
+    asm volatile("mfc1 $2, %1\n\tqmtc2.ni $2, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez $2, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$2", "$8");
+    return r;
+}
+//@func 0x19C278
+void CStatusBaseSub19B8C8::SetHue19C278(u32 v) {
+    f32 h, d;
+    if (m_unkCC == 0) {
+        Func235DE0(D_002DDD70, 0);
+        return;
+    }
+    if (v >= 15) {
+        Func235DE0(D_002DDD90);
+        return;
+    }
+    m_unk18 = v;
+    h = GetHue(m_unk14, v);
+    if (m_unk20 == h) return;
+    m_unk20 = h;
+    m_unk24 = VuFrac(m_unk24);
+    d = h - m_unk24;
+    if (d == 0.0f) {
+        m_unk1C = 0;
+    } else if (-0.5f <= d && d < 0.0f) {
+        m_unk1C = 2;
+    } else if (0.0f <= d && d < 0.5f) {
+        m_unk1C = 1;
+    } else if (0.0f < d) {
+        m_unk1C = 2;
+        m_unk20 += -1.0f;
+    } else {
+        m_unk1C = 1;
+        m_unk20 += 1.0f;
+    }
+    m_unkCC = 2;
+    m_unkC4 = D_002A53DC;
+    m_unkC8 = 0;
+}

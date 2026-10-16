@@ -54,6 +54,7 @@ public:
     void Func25CCB0(s32 id, f32 v);
     void Func25C910(s32 id, s32 v, s32 w);
     void Func25C840(s32 id, s32 a, s32 b);
+    s32 Func25C648(s32 id, s32 fl);
     s32 Func25CF58(s32 id);
     void Func25CE30(s32 id, s32 v);
     void Func25D1A0(struct CSndPrm *p);
@@ -110,6 +111,32 @@ public:
     virtual void V13();
     virtual void *Alloc(s32 n);
     virtual void Free(void *p);
+    virtual void V16();
+    virtual void V17();
+    virtual void V18();
+    virtual void V19();
+    virtual void V20();
+    virtual void V21();
+    virtual void V22();
+    virtual void V23();
+    virtual void V24();
+    virtual void V25();
+    virtual void V26();
+    virtual void V27();
+    virtual void V28();
+    virtual void V29();
+    virtual void V30();
+    virtual void V31();
+    virtual void V32();
+    virtual void V33();
+    virtual void V34();
+    virtual void V35();
+    virtual void V36();
+    virtual void V37();
+    virtual struct W2SndSeqD *Seq(s32 i);  // [38]
+    virtual void V39();
+    virtual void V40();
+    virtual s16 Vol(s32 i);             // [41]
 };
 extern CSndMgrV *D_002BA248;
 extern void (*D_002B91B0)(void *p);
@@ -182,6 +209,8 @@ extern "C" void func_0025D608(void *, void *, s32);
 extern "C" void func_0025C230(void *);
 extern "C" void func_0025C2C0(void *, s32);
 extern "C" u8 D_41A788[];
+struct W2SndSeqD { s32 m0, m4, m8, mC, m10, m14, m18; };
+typedef CSndUnitN *(*W2SndMake)(s32, s32, s32, s32);
 // @decl-end
 
 void CSndWork::Func25C438(CSndUnitN *u) {
@@ -207,7 +236,45 @@ INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025C5D8);
 
 s32 CSndWork::Func25C630(s32 i) { return D_002BA268[i]; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25C648__8CSndWorkii);
+s32 CSndWork::Func25C648(s32 id, s32 fl)
+{
+    s32 type, a, b, c;
+    s16 d;
+    CSndUnitN *u;
+    if (!D_002BA248) return 0;
+    type = (id >> 25) & 7;
+    if ((u32)type >= 5) return 0;
+    if (type == 0) {
+        W2SndSeqD *e = D_002BA248->Seq(id);
+        if (!e) return 0;
+        fl |= e->m18;
+        a = e->mC;
+        b = e->m10;
+        c = e->m14;
+        type = e->m8;
+        d = D_002BA248->Vol(id);
+    } else {
+        a = (id >> 16) & 0xFF;
+        if ((id >> 24) & 1) {
+            c = id & 0xFF;
+            b = (id >> 8) & 0xFF;
+        } else {
+            b = id & 0xFFFF;
+            c = 0;
+        }
+        d = 0x80;
+    }
+    if (!(fl & 2)) Func25C840(id, 0, 0);
+    u = ((W2SndMake)Func25C630(type))(a, b, c, fl);
+    if (!u) return 0;
+    *(s32 *)((u8 *)u + 0x14) = id;
+    *(s32 *)((u8 *)u + 0x18) = a;
+    *(s16 *)((u8 *)u + 0x22) = d;
+    u->m_owner = this;
+    SndUnlink(u);
+    SndInsert(u, (CSndNode *)((u8 *)this + 0x24));
+    return 1;
+}
 
 s32 Func25C810(s32 a, s32 b) {
     if (a) return 0;

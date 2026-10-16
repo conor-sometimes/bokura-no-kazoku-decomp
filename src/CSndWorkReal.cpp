@@ -199,7 +199,7 @@ public:
     void Stop129AE0(const char *name, s32 t);
     void Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan);
     void StartAll();
-    void Func1295E8();
+    void Func1295E8() throw();  // compiled before its callers in retail: nothrow calls (docs/lessons.md, nm)
     int Func129848();
     void StopSound();
     s32 GetVolume(const char *s);
@@ -335,6 +335,13 @@ struct CSndMat { f32 m[4][4]; } __attribute__((aligned(16)));
 struct CSndVec { f32 x, y, z, w; } __attribute__((aligned(16)));
 extern "C" void func_0025DBB8(void *p, CSndMat *m);
 extern "C" void func_00128528(void *a, void *b, void *c, s32 d);
+class CSndObj18B : public CSndObj18 {
+public:
+    void SetVol(f32 v) {
+        m_unk34 = 1;
+        m_unk3C = m_unk3E = (s32)(v * 128.0f);
+    }
+};
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00128870);
@@ -653,7 +660,6 @@ void CSndWorkReal::Func129EB0() {
     }
 }
 
-#if 0 // DIFF 1 (g1): retail bnez, ours bnezl at the final m_unk90 >= m_unk94 test; CSndObj18::SetVol(f) inline sets m34, m3E, m3C
 void CSndWorkReal::Func12A0F0() {
     m_fade6C.Update();
     ((CSndObj18B *)m_unk20)->SetVol(m_unk98 * m_fade6C.m_cur);
@@ -674,8 +680,6 @@ void CSndWorkReal::Func12A0F0() {
         if (m_unk90 >= m_unk94) Func1295E8();
     }
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", Func12A0F0__12CSndWorkReal);
 
 s32 Func12A2F0() {
     Func225088();

@@ -338,7 +338,55 @@ int CResNameMgr::Func146658(int k, char *buf, int key) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CResNameMgr", Func1467E0__11CResNameMgrPciii);
+int CResNameMgr::Func1467E0(char *buf, int key, int a, int b) {
+    CResNameGrp *g = 0;
+    CResNameSub0Cb *r;
+    s32 i, age, s, sea, n;
+    if ((u32)a >= 5) return 0;
+    for (i = 0; i < m_unk14; i++) {
+        g = &((CResNameGrp *)m_unk10)[i];
+        if (g->m0 == key) break;
+    }
+    if (i == m_unk14) return 0;
+    if (key == 0x20) {
+        s = 0;
+        age = D_002A26E4->Func1091B0(0x17) / 4 + 0x19;
+        if (a == 2) a = 0;
+    } else if (key == 0x21) {
+        age = D_002A26E4->Func1091B0(0x17) / 4 + 0x19;
+        s = D_002A26E4->Func1091B0(0x26) != 0;
+        if (a == 2) a = 0;
+    } else {
+        i = Func1456A8(key);
+        if (i >= 0) {
+            age = D_002A26E4->Func1091B0(i + 0x34);
+            if (D_002A26E4->Func1091B0(i + 0x3A) == 1) s = D_002A26E4->Func1091B0(i + 0xEE) != 0;
+            else s = 0;
+            if ((u32)(a - 1) < 2) s = 0;
+            if (s && key != 0x16 && D_002A26E4->Vf2991B0() <= 0) {
+                Func235DE0("not preg season (%d)\n", key);
+                s = 0;
+            }
+        } else {
+            return 0;
+        }
+    }
+    for (i = 0; i < g->m14 - 1; i++)
+        if (age < g->m10[i + 1].m0) break;
+    r = &g->m10[i];
+    sea = Season146608(b);
+    for (i = 0; i < g->mC; i++) {
+        CResNameSub0C *e = &g->m8[i];
+        if (e->m0 == a && e->m4 == sea && e->m8 == s) break;
+    }
+    if (i == g->mC) Func235DE0("*** not found model attr (%d, %d, %d)\n", a, sea, s);
+    strcpy(buf, (const char *)g->m4);
+    {
+        const char *t = (const char *)r->m4[i];
+        strcpy(buf + strlen(buf), t);
+    }
+    return 1;
+}
 
 int CResNameMgr::Func146B58(char *buf, int key, int b) {
     s32 idx = Func1456A8(key);

@@ -1,0 +1,34 @@
+//@decl
+#include "CUserFlagMgr.h"
+const char *Func24AF10(void *p, const char *key);
+const char *Func24AFE8(const char *s, char *buf, s32 k, s32 size);
+const char *Func24A570(const char *src, char *buf, const char *a, const char *b);
+extern "C" void *func_00248CC8(void *buf, s32 size, s32 a, s32 b);
+extern "C" char *func_00248D98(void *buf);
+s32 Func148EC8(s32 *types, s32 *vals, s32 *mults, s32 max, const char *s);
+extern const char D_002D7EC0[];
+extern const char D_002D7EC8[];
+struct W2Rec28 { s32 m0[5]; s32 ptr[1]; s32 t[1]; s32 v[1]; s32 mu[1]; s32 cnt; };
+//@func 0x299510
+extern "C" s32 func_00299510(u8 *self, void *data, const char *key, W2Rec28 *tbl, s32 num, s32 idx)
+{
+    char line[256];
+    char tok[256];
+    s32 i;
+    const char *p = Func24AF10(data, key);
+    if (*p == 0) return 0;
+    for (i = 0; i < num; i++) {
+        const char *q;
+        s32 n;
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = Func24A570(line, 0, D_002D7EC0, D_002D7EC8);
+        q = Func24A570(q, 0, D_002D7EC0, D_002D7EC8);
+        Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+        n = D_002A0D38->V16(func_00248D98(self + 4), tok);
+        if (n >= 2) {
+            tbl[i].ptr[idx] = (s32)func_00248CC8(self + 4, n, 0, 0);
+            tbl[i].cnt += Func148EC8(&tbl[i].t[tbl[i].cnt], &tbl[i].v[tbl[i].cnt], &tbl[i].mu[tbl[i].cnt], 4 - tbl[i].cnt, tok);
+        }
+    }
+    return 1;
+}

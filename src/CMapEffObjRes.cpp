@@ -262,7 +262,7 @@ class CMapEffAquariumWork : public CMapEffWork {
 public:
     CMapEffAquariumWork(CMapEffAquariumSub *sub);
     virtual ~CMapEffAquariumWork();
-    void Func1236C8(s32 i);
+    void Func1236C8(s32 i) throw();  // retail compiled it before its callers (nothrow calls)
     void CirclePos(CVec4 *out, CVec4 *c, f32 ang, f32 r);
     void Func1247F8();
     void Func123590();
@@ -603,6 +603,8 @@ struct CMapEffLeafNode2 {
 
 #define MIN123(a, b) ((a) < (b) ? (a) : (b))
 #define MAX123(a, b) ((a) < (b) ? (b) : (a))
+
+inline u32 RandMod(CMapEffRand *r, u32 n) { return r->Next32() % n; }
 // @decl-end
 
 CMapEffObjRes::CMapEffObjRes() {
@@ -929,7 +931,26 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00120B38);
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00120CB8);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001215B0);
+CMapEffRainWork::CMapEffRainWork(CMapEffArea *p) {
+    s32 i;
+    m_param = (CMapEffParam *)p;
+    m_unk8 = 1;
+    CalcRect(&m_rect, p);
+    m_unk20 = (f32)((CMapEffArea *)m_param)->m_unk11C / 360.0f;
+    m_unk24 = (f32)((CMapEffArea *)m_param)->m_unk120 * 10.0f / 100.0f + 0.0f;
+    m_drops = new CMapEffDrop[128];
+    m_unk2C = ((((CMapEffArea *)m_param)->m_unk124 > 128 ? 128 : ((CMapEffArea *)m_param)->m_unk124) << 7) / 100;
+    for (i = 0; i < 128; i++) Func121810(&m_drops[i], 1);
+    m_flakes = new CMapEffFlake[128];
+    m_active = 0;
+    m_free = 0;
+    for (i = 0; i < 128; i++) {
+        CMapEffFlake *f = &m_flakes[i];
+        f->m_unk1C = 1.0f;
+        f->m_next = (CMapEffFlake *)m_free;
+        m_free = (CMapEffNode *)f;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121788);
 
@@ -1014,7 +1035,26 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func121E28__15CMapEffRainWorkP13CM
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func122088__15CMapEffRainWorkP13CMapEffTarget);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00122440);
+CMapEffSnowWork::CMapEffSnowWork(CMapEffArea *p) {
+    s32 i;
+    m_param = p;
+    m_unk8 = 1;
+    CalcRect(&m_rect, p);
+    m_unk20 = 0.08f;
+    m_unk28 = (f32)m_param->m_unk120 / 360.0f;
+    m_unk24 = (f32)m_param->m_unk124 * (0.1f - 0.0f) / 100.0f + 0.0f;
+    m_unk2C = 0.0f;
+    m_unk30 = (f32)m_param->m_unk128 * (0.05f - 1.0f) / 100.0f + 1.0f;
+    m_unk34 = 0.0f;
+    m_flakes = new CMapEffFlake[128];
+    m_active = 0;
+    m_free = 0;
+    for (i = 0; i < 128; i++) {
+        CMapEffFlake *f = &m_flakes[i];
+        f->m_next = (CMapEffFlake *)m_free;
+        m_free = (CMapEffNode *)f;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001225F0);
 
@@ -1148,7 +1188,7 @@ void CMapEffAquariumWork::CirclePos(CVec4 *out, CVec4 *c, f32 ang, f32 r) {
 
 extern "C" f32 func_00123670(f32 a, f32 b, f32 lim) { f32 d = b - a; f32 t = MAX123(MIN123(d, lim), -lim); return a + t; }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001236C8);
+INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1236C8__19CMapEffAquariumWorki);
 
 void CMapEffAquariumWork::Func123850(s32 i, s32 k) {
     if ((u32)i < 8 && (u32)k < 16) {
@@ -1165,7 +1205,7 @@ void CMapEffAquariumWork::Func123850(s32 i, s32 k) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func1239E8__19CMapEffAquariumWorki);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func123D88__19CMapEffAquariumWorki);
+void CMapEffAquariumWork::Func123D88(s32 i) { if ((u32)i < 8) { CMapEffAquariumSlot *s = &m_slots[i]; if (!s->m_busy) { if (RandMod((CMapEffRand *)&m_seed, 501) == 100) Func1236C8(i); } } }
 
 void CMapEffAquariumWork::Func123E28(s32 i) {
     if ((u32)i < 8) {

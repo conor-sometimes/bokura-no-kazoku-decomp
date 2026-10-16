@@ -88,6 +88,13 @@ void Func259300();
 struct W2FontCh { u8 p0[0x10]; s8 m10; };
 struct W2FontLay { u8 p0[0x10]; f32 m10; f32 m14; u8 p18[8]; f32 m20; u8 p24[0x30]; f32 m54; };
 extern "C" void func_00256DC8(void *ctx, W2FontCh *c, W2FontLay *l, f32 x, f32 y);
+extern s32 D_002BA218[];
+extern const char D_002E7550[];
+extern "C" s32 func_00259340(s32 a0, s32 a1, s32 a2, s32 a3, s32 t0, s32 t1, s32 t2, s32 t3);
+extern "C" s32 func_0022DD98(const char *name, s32 b, s32 n, s32 h);
+struct W2SndPos { s32 m0; u8 m4, m5, m6, m7; s32 m8; s32 mC; s32 m10; };
+extern "C" void func_0022E398(s32 h, W2SndPos *p, s32 n, s32 x);
+extern "C" void func_0022E230(s32 h, s32 pos, s32 x);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002571C0);
@@ -199,7 +206,47 @@ void Func259300() {
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259340);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259600);
+extern "C" s32 func_00259600(s32 i, s32 a1, s32 end, s32 loop, s32 start, const char *name, s32 base, s32 t3, s32 size, s32 s88, s32 s90)
+{
+    W2SndPos p;
+    CAt3 *a = 0;
+    s32 h = -1;
+    s32 idx;
+    idx = func_00259340(i, a1, end, loop, 0, t3, s88, s90);
+    if (idx >= 0) {
+        s32 n;
+        a = &D_393A00[idx];
+        a->m_ready = 0;
+        n = size / (D_002BA218[i] * 2) * D_002BA218[i] * 2;
+        h = func_0022DD98(name, t3, n, n >> 1);
+        if (h < 0) {
+            Func235DE0(D_002E7550, name);
+        } else {
+            a->m_sndId = h;
+            p.m0 = (*(s32 *)((u8 *)a + 0x40) + 0x3FF) / 1024 * D_002BA218[i] + base;
+            p.m4 = 1;
+            p.m5 = 0;
+            p.m6 = 0;
+            p.m7 = 0;
+            p.m8 = loop < 0 ? -1 : (*(s32 *)((u8 *)a + 0x3C) - 0x400) / 1024 * D_002BA218[i] + base;
+            p.mC = 0;
+            p.m10 = 0;
+            func_0022E398(h, &p, 1, 0);
+            if (start) {
+                if (start >= end) start = end;
+                if (start < 0) start = 0;
+                *(s32 *)((u8 *)a + 0x34) = start & ~0x3FF;
+                *(s32 *)((u8 *)a + 0x38) = start + 0x400;
+            }
+            func_0022E230(h, *(s32 *)((u8 *)a + 0x34) / 1024 * D_002BA218[i] + base, 0);
+            func_0022E450(h, 0);
+            return a->m_id;
+        }
+    }
+    if (h >= 0) func_0022DE48(h);
+    if (a) Func259858(idx, 1);
+    return -1;
+}
 
 void Func259858(s32 i, s32 b) {
     CAt3 *a = GetAt3(i, D_002E7578);

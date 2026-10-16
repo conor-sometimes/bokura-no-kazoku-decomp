@@ -1,0 +1,28 @@
+//@func 0x278E60
+int func_00278E60(const char *name, void *stat, int mask)
+{
+    SemaParam sp;
+    int res;
+    int sema, ok, i;
+    McCmd *c = &D_41EC40;
+    func_00276D38(0xD);
+    if (D_002BDB34 == 0) func_00276E68();
+    for (i = 0; i < 0x400; i++)
+        if ((((u8 *)c->u.cs.name)[i] = ((const u8 *)name)[i]) == 0) break;
+    if (i == 0x400) {
+        c->u.cs.name[0x3FF] = 0;
+        i = 0x3FF;
+    }
+    c->u.cs.st = *(struct W2St64 *)stat;
+    c->u.cs.mask = mask;
+    sp.max_count = 1;
+    sp.init_count = 0;
+    sp.option = 0;
+    sema = func_002731A0(&sp);
+    c->dst = &res;
+    c->size = 4;
+    c->sema = sema;
+    func_00275698(&D_41EC40, 0x450);
+    RPC_TAIL(0xD, i + 0x51, -11)
+    return res;
+}

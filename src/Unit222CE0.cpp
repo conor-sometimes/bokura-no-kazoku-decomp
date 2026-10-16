@@ -80,6 +80,17 @@ extern "C" void func_00224A88(f32 *, f32, f32, f32, f32, f32, f32, f32, f32, f32
 extern "C" s32 func_002280D0(void);
 extern "C" s32 func_00224D80(void);
 extern s32 D_002B8BE0[7][2];
+
+inline u32 *PutQs(s64 hi, s64 lo) {
+    u32 *q = PKT;
+    PKT = q + 4;
+    q[0] = lo;
+    q[1] = lo >> 32;
+    q[2] = hi;
+    q[3] = hi >> 32;
+    return q;
+}
+#define BITS(h, sh, m) (((h) & ((u64)(m) << (sh))) >> (sh))
 // @decl-end
 
 extern "C" s32 func_00222CE0(void) {
@@ -337,7 +348,24 @@ extern "C" void func_00223A78(void) {
     return func_002238F0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit222CE0", func_00223A90);
+extern "C" void func_00223A90(u64 t) {
+    u64 w, h, f;
+    s32 i;
+    w = (t & 0x3FFF) >> 5;
+    h = BITS(t, 14, 0x3F) << 16;
+    f = BITS(t, 32, 0x3F) << 24;
+    D_002B8AE0[4].lo = w | h | f;
+    D_002B8AE0[7].lo = w | (f | h) | 0x7FFFFFFF00000000ULL;
+    PUT(0x11000000);
+    PUT(0x1000404);
+    PUT(0x5000000);
+    PUT(0x300019C);
+    PUT(0x2000020);
+    PUT(0x6C098000);
+    for (i = 0; i < 9; i++) PutQs(D_002B8AE0[i].hi, D_002B8AE0[i].lo);
+    PUT(MSCAL(0));
+    PUT(0x10000000);
+}
 
 extern "C" void func_00223C00(s32 r, s32 g, s32 b) {
     PUT(0x11000000);

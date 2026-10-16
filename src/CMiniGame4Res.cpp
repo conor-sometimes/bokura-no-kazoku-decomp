@@ -9,6 +9,7 @@ struct CMiniGame4Data {
 };
 extern CMiniGame4Data *D_002A5A04;
 struct CRand {
+    CRand() { m_seed = 1; }
     u32 m_seed;
     u32 Next() {
         m_seed = m_seed * 0x19660D + 1;
@@ -63,7 +64,7 @@ extern char D_002E1438[];
 // Member classes of CMiniGame4 (library / CLayoutRes code, not named yet): constructors are
 // called explicitly.
 extern "C" void func_001B9D40(void *p);
-extern "C" void func_0025C230(void *p);
+extern "C" void *func_0025C230(void *p);
 
 // Same layout as the state block at the start of CMenuProcess.
 class CMiniGameTimer {
@@ -79,6 +80,17 @@ public:
     s32 m_unk4;               // 0x4
 };
 
+// Member objects of CMiniGame4: CLayoutObj (0x170 bytes) and the sound handle; their
+// constructors live in other units.
+extern "C" void *CLayoutObjCtor4(void *p) asm("__10CLayoutObj");
+struct CMg4Layout {
+    CMg4Layout() { CLayoutObjCtor4(this); }
+    u8 pad[0x170];
+};
+struct CMg4Snd {
+    CMg4Snd() { func_0025C230(this); }
+    u8 pad[0x74];
+};
 // The mini game task (vtable 0x2C21A8, still asm; ~CMiniGame4 stays INCLUDE_ASM).
 // CMiniGame4ResObj above is the same object.
 class CMiniGame4 : public CProcess {
@@ -93,9 +105,11 @@ public:
     s32 m_unk30;              // 0x30
     CMiniGameTimer m_timer;   // 0x34
     u8 pad3C[0x44];
-    u8 m_layout[13][0x170];   // 0x80
+    // 13 layout objects at 0x80 + i * 0x170 (separate members: retail constructs them one by one)
+    CMg4Layout m_l0, m_l1, m_l2, m_l3, m_l4, m_l5, m_l6, m_l7, m_l8, m_l9, m_l10, m_l11, m_l12;
     CRand m_rand;             // 0x1330
-    u8 m_unk1334[0xB0];       // 0x1334
+    CMg4Snd m_snd;            // 0x1334
+    u8 pad13A8[0x3C];
     s32 m_unk13E4;            // 0x13E4
     u8 pad13E8[0x4];
     s32 m_must[2];            // 0x13EC
@@ -192,7 +206,33 @@ void Func1D4CA0(void *a, s32 b, s32 c) {
     func_0024F5C0(a, p, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", __10CMiniGame4ii);
+CMiniGame4::CMiniGame4(s32 a, s32 b) {
+    s32 i;
+    if (!D_002A5A04) Func235DE0(D_002E1438);
+    m_rand.m_seed = Func251B88();
+    m_unk2C = a;
+    m_unk30 = b;
+    m_unk13E4 = 0;
+    for (i = 0; i < 2; i++) m_must[i] = 0;
+    m_unk1444 = 0;
+    m_unk1448 = 0;
+    m_unk1438 = 0;
+    m_unk143C = 0;
+    m_unk1440 = 0;
+    m_unk149C = 0;
+    m_unk14A0 = 0;
+    m_unk1504 = 0;
+    m_unk1508 = 0;
+    m_unk1430 = 0;
+    m_unk1434 = 0;
+    m_unk14AC = 0;
+    m_unk14B0 = 0;
+    m_unk150C = 0;
+    m_unk14B4 = -1;
+    m_unk1510 = 1;
+    m_unk1514 = 1;
+    m_unk13F4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", _$_10CMiniGame4);
 

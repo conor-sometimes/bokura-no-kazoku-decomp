@@ -572,6 +572,11 @@ struct CGameDBEv34b {
     s32 m1C;
     s32 m20;
 };
+
+extern const char *D_002A2C9C;
+extern const char D_002D82D0[], D_002D82D8[], D_002D82F8[], D_002D8318[];
+extern s32 D_002A29D0[], D_002A2A58[];
+extern char *D_002A2A40[];
 // @decl-end
 
 CGameDBMgr::CGameDBMgr() {
@@ -1003,7 +1008,85 @@ s32 Func148EC8(s32 *types, s32 *vals, s32 *mults, s32 max, const char *s) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_001490F8);
+int CGameDBMgr::Func1490F8() {
+    char line[256];
+    char tok[256];
+    char w[256];
+    const char *p;
+    void *data;
+    s32 i;
+    int ok;
+    s32 k, n, idx;
+    ok = 0;
+    data = Func24A4C0("action.txt");
+    if (data) {
+        p = Func24AF10(data, "ACTION_INFO");
+        if (*p) {
+            m_num1DC = func_0024B040(p, 1);
+            m_tbl1DC = (CGameDBRec5C *)m_buf.Func248CC8(m_num1DC * sizeof(CGameDBRec5C), 1, 1);
+            m_unk1E4 = 0;
+            for (i = 0; i < m_num1DC; i++) {
+                CGameDBRec5C *r = &m_tbl1DC[i];
+                const char *q, *s;
+                p = Func24AFE8(p, line, 1, 0x100);
+                for (k = 0; k < 3; k++) {
+                    r->m38[k] = -1;
+                    r->m44[k] = -1;
+                    r->m50[k] = 0;
+                }
+                q = func_0024A710(line, &r->m_id, 0, D_002D7EC0, D_002D7EC8);
+                m_unk1E4 = r->m_id < m_unk1E4 ? m_unk1E4 : r->m_id;
+                q = Func24A570(q, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+                r->m4 = func_00248DC0(&m_buf);
+                q = Func24A570(q, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+                r->m8 = func_00248DC0(&m_buf);
+                q = func_0024A710(q, &r->m10, 1, D_002D7EC0, D_002D7EC8);
+                q = Func24A570(q, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+                r->mC = func_00248DC0(&m_buf);
+                q = Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+                s = tok;
+                while ((s = Func24A570(s, w, D_002D82D0, D_002D7EC8), *s) || w[0]) {
+                    idx = Func147340(D_002A2998, w);
+                    if (idx < 0) {
+                        Func235DE0(D_002D82D8, w);
+                        idx = 0;
+                    }
+                    r->m14 |= D_002A29D0[idx];
+                    r->m18 = D_002A2A08[idx];
+                }
+                q = func_0024A710(q, &r->m1C, 0, D_002D7EC0, D_002D7EC8);
+                q = func_0024A710(q, &r->m20, 0, D_002D7EC0, D_002D7EC8);
+                q = Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+                if (tok[0]) {
+                    s = tok;
+                    while ((s = Func24A570(s, w, D_002D82D0, D_002D7EC8), *s) || w[0]) {
+                        s32 kind = Func147340(D_002A2A40, w);
+                        if (kind < 0) {
+                            Func235DE0(D_002D82F8, w);
+                            kind = 0;
+                        }
+                        r->m24 |= D_002A2A58[kind];
+                        r->m28 = kind;
+                    }
+                } else {
+                    r->m24 = 0xF;
+                    r->m28 = 4;
+                }
+                q = func_0024A710(q, &r->m2C, 0, D_002D7EC0, D_002D7EC8);
+                Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+                n = D_002A0D38->V16(func_00248D98(&m_buf), tok);
+                if (n >= 2) {
+                    r->m30 = (const char *)m_buf.Func248CC8(n, 0, 0);
+                    r->m34 = Func148EC8(r->m38, r->m44, r->m50, 3, tok);
+                }
+            }
+            ok = 1;
+        }
+    }
+    if (data) D_002B91B0(data);
+    Func235DE0(D_002D8318, ok);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D82D0);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D82D8);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D82F8);
@@ -1230,7 +1313,47 @@ int CGameDBMgr::Func14A8C0() {
     return ok;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014AAD0);
+int CGameDBMgr::Func14AAD0() {
+    char line[256];
+    int ok;
+    void *data;
+    s32 i;
+    s32 n;
+    s32 a, b;
+    ok = 0;
+    data = Func24A4C0(D_002A2C9C);
+    if (data) {
+        m_num240 = 10;
+        m_tbl240 = (CGameDBRec0C *)m_buf.Func248CC8(0x78, 1, 1);
+        for (i = 0; i < m_num240; i++) {
+            const char *key = D_002A2A70[i];
+            CGameDBRec0C *t = &m_tbl240[i];
+            const char *p = Func24AF10(data, key);
+            if (!p) continue;
+            t->m0 = i;
+            n = 0;
+            t->m8 = func_0024B040(p, 1);
+            t->m4 = (CGameDBRec24b *)m_buf.Func248CC8(t->m8 * sizeof(CGameDBRec24b), 1, 1);
+            if (t->m8 <= 0) continue;
+            do {
+                CGameDBRec24b *r = &t->m4[n];
+                const char *q;
+                p = Func24AFE8(p, line, 1, 0x100);
+                r->m0 = n;
+                q = Func24A570(line, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+                r->m4 = func_00248DC0(&m_buf);
+                for (a = 0; a < 2; a++)
+                    for (b = 0; b < 3; b++) q = func_0024A710(q, &r->m8[a][b], 0, D_002D7EC0, D_002D7EC8);
+                n++;
+                func_0024A710(q, &r->m20, 0, D_002D7EC0, D_002D7EC8);
+            } while (n < t->m8);
+        }
+        ok = 1;
+    }
+    if (data) D_002B91B0(data);
+    Func235DE0(" tutor (%d)\n", ok);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D84E8);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D84F8);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D8508);
@@ -1456,7 +1579,52 @@ s32 CGameDBMgr::Func14BD00(s32 a, s32 b, s32 *out, s32 max) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_0014C048);
+s32 CGameDBMgr::Func14C048(s32 *ids, s32 *flags, s32 name) {
+    s32 idx = Func1456A8(name);
+    s32 bit, v, i, count;
+    if (idx < 0) return 0;
+    i = 0;
+    count = 0;
+    D_002A0D38->V9();
+    D_002A0D38->V7(idx);
+    bit = Func14BB28(idx);
+    v = D_002A26E4->Func1091B0(idx + 0x46);
+    for (; i < m_num1E8; i++) {
+        CGameDBRecB0 *e = &m_tbl1E8[i];
+        switch (e->mC) {
+        case 2:
+            if (v != 1) continue;
+            break;
+        case 3:
+            if (v != 2) continue;
+            break;
+        case 4:
+            if (v != 3) continue;
+            break;
+        case 5:
+            if (v != 4) continue;
+            break;
+        case 6:
+            if (v != 5 && v != 7 && v != 8) continue;
+            break;
+        case 7:
+        case 8:
+            continue;
+        default:
+            Func235DE0("*** unknown school cate (%d)\n", e->mC);
+            continue;
+        }
+        if (!((e->m14 >> bit) & 1)) continue;
+        if (ids) ids[count] = e->m_id;
+        {
+            s32 f = (D_002A26E4->Func1091B0(0x1C) < e->m18) == 0;
+            if (flags) flags[count] = f;
+        }
+        count++;
+    }
+    D_002A0D38->V10();
+    return count;
+}
 
 s32 CGameDBMgr::Func14C2B0(s32 *ids, s32 *flags, s32 name) {
     s32 idx = Func1456A8(name);

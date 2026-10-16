@@ -96,6 +96,10 @@ struct PktSave { DmaTag *tag; DmaTag *call; u8 *cur; s32 sp; u8 *stack[32]; s32 
 extern "C" void func_00237260(PktSave *);
 extern "C" void func_002372D8(PktSave *);
 struct DispB { u32 b0 : 1; u32 b1 : 1; u32 rest : 30; u32 pad[9]; };
+
+s32 Func235DE0(const char *fmt, ...);
+extern const char D_002E5368[], D_002E5398[], D_002E53C8[], D_002E53F0[], D_002E5418[];
+#define VPUSTAT(v) asm volatile("cfc2.ni %0, $vi29" : "=r"(v))
 // @decl-end
 
 void *Func237A88(void *p0, int n) {
@@ -352,7 +356,6 @@ extern "C" DmaTag *func_002390A0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_002390B0);
 
-asm(".p2align 3");
 extern "C" void func_00239268(s32 i) {
     D_37BE38[i].m0 = 0;
 }
@@ -500,7 +503,54 @@ extern "C" void func_00239CA0(void) {
     return func_0023C7D0(D_37CD20, D_37CA90.buf[D_37CA88]);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_00239E00);
+extern "C" s32 func_00239E00(s32 mode, s32 timeout) {
+    u32 cnt = 0;
+    u32 st;
+    if (mode == 0) {
+        while (*(volatile u32 *)0x10009000 & 0x80000100) {
+            if (cnt++ > 0x4000000) {
+                Func235DE0(D_002E5368);
+                return -1;
+            }
+        }
+        while (*(volatile u32 *)0x1000A000 & 0x80000100) {
+            if (cnt++ > 0x4000000) {
+                Func235DE0(D_002E5398);
+                return -1;
+            }
+        }
+        while (*(volatile u32 *)0x10003C00 & 0x1F000003) {
+            if (cnt++ > 0x4000000) {
+                Func235DE0(D_002E53C8);
+                return -1;
+            }
+        }
+        VPUSTAT(st);
+        while (st & 0x100) {
+            if (cnt++ > 0x4000000) {
+                Func235DE0(D_002E53F0);
+                return -1;
+            }
+            VPUSTAT(st);
+        }
+        while (*(volatile u32 *)0x10003020 & 0xC00) {
+            if (cnt++ > 0x4000000) {
+                Func235DE0(D_002E5418);
+                return -1;
+            }
+        }
+        return 0;
+    } else {
+        s32 r = 0;
+        if (*(volatile u32 *)0x10009000 & 0x80000100) r |= 1;
+        if (*(volatile u32 *)0x1000A000 & 0x80000100) r |= 2;
+        if (*(volatile u32 *)0x10003C00 & 0x1F000003) r |= 4;
+        VPUSTAT(st);
+        if (st & 0x100) r |= 8;
+        if (*(volatile u32 *)0x10003020 & 0xC00) r |= 0x10;
+        return r;
+    }
+}
 
 extern "C" s32 func_0023A080(s32 f) {
     s32 r;

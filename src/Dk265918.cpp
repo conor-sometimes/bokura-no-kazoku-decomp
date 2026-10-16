@@ -86,6 +86,17 @@ extern "C" s32 func_0026CFB0(MpegSys *);
 extern "C" void func_0026D080(MpegSys *, s32, s32);
 extern "C" s32 func_0026C700(MpegSys *);
 extern "C" void func_00268138(SceMpeg *);
+#define W2F(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void *memset(void *, s32, u32);
+extern "C" void func_00268230(MpegSys *);
+extern "C" void func_00268CA8();
+extern "C" void func_00268CD0();
+extern const char D_002E9480[];
+extern "C" void func_00267BE0(Q4 *p, s32 a, s32 b);
+extern "C" u32 func_00267C18(MpegSys *s, Q4 *q, s32 size, u32 align);
+extern "C" s32 func_002679A8(SceMpeg *p);
+extern "C" s32 func_00267A08(SceMpeg *p);
+extern "C" void func_00267BF8(Q4 *p);
 // @decl-end
 
 extern "C" void func_00265918(char *dst) {
@@ -281,7 +292,88 @@ extern "C" s32 func_00267558(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00267608);
+extern "C" s32 func_00267608(SceMpeg *mp, u8 *work, u32 size)
+{
+    MpegSys *d;
+    Q4 *q;
+    u32 n;
+    memset(work, 0, size);
+    d = (MpegSys *)(((u32)work + 3) >> 2 << 2);
+    n = size - ((u8 *)d - work);
+    if (n < 0x10C0) {
+        func_002683A0(d, D_002E9480);
+        return 0;
+    }
+    q = (Q4 *)((u8 *)d + 0x120);
+    mp->sys = d;
+    func_00267BE0(q, (s32)((u8 *)d + 0x10C0), n - 0x10C0);
+    mp->width = 0;
+    mp->height = 0;
+    mp->frameCount = 0;
+    mp->pts = -1;
+    mp->dts = -1;
+    mp->flags = 0;
+    mp->pts2nd = -1;
+    mp->dts2nd = -1;
+    mp->flags2nd = 0;
+    d->mCC = 0;
+    W2F(s32, d, 0xD0) = 0;
+    W2F(s32, d, 0xD4) = 0;
+    W2F(s32, d, 0xD8) = 0;
+    W2F(s32, d, 0xDC) = 0;
+    W2F(s32, d, 0xE0) = 0;
+    d->mE4 = 0;
+    d->mE8 = 0;
+    d->mEC = 0;
+    d->mF0 = 0;
+    d->mF4 = 0;
+    d->mF8 = 0;
+    d->mFC = 0;
+    d->m100 = 0;
+    d->m110 = 0;
+    d->mC[0].m0 = 0;
+    d->mC[1].m0 = 0;
+    d->mC[4].m0 = 0;
+    d->mC[5].m0 = 0;
+    d->mC[6].m0 = 0;
+    d->m108 = -1;
+    d->mC[2].m0 = (s32)func_00268CA8;
+    d->mC[3].m0 = (s32)func_00268CD0;
+    W2F(s32, d, 0x60) = func_00267C18(d, q, 0x800, 8);
+    W2F(s32, d, 0x64) = 0;
+    W2F(s32, d, 0x114) = 0;
+    W2F(s32, d, 0x118) = 0;
+    W2F(s32, d, 0x11C) = 0;
+    d->m8C = 0;
+    d->m90 = 0;
+    d->m98 = -1;
+    W2F(s64, d, 0xA0) = 0;
+    W2F(s32, d, 0xA8) = 0;
+    d->mC4 = 0;
+    d->mAC = -1;
+    d->mB0 = -1;
+    d->mB4 = -1;
+    d->m870 = mp;
+    d->mC8 = 1;
+    func_00268230(d);
+    func_002679A8(mp);
+    func_00267A08(mp);
+    W2F(void *, d, 0x1D0) = (u8 *)d + 0x200;
+    W2F(void *, d, 0x1D4) = (u8 *)d + 0x268;
+    W2F(void *, d, 0x1DC) = (u8 *)d + 0x2D0;
+    W2F(void *, d, 0x1E0) = (u8 *)d + 0x338;
+    W2F(void *, d, 0x1E4) = (u8 *)d + 0x3A0;
+    W2F(void *, d, 0x1EC) = (u8 *)d + 0x408;
+    W2F(void *, d, 0x1F0) = (u8 *)d + 0x470;
+    W2F(void *, d, 0x1F4) = (u8 *)d + 0x4D8;
+    W2F(void *, d, 0x1FC) = (u8 *)d + 0x540;
+    func_00267BF8(q);
+    W2F(s32, d, 0x868) = -1;
+    W2F(s32, d, 0x864) = 0;
+    W2F(s32, d, 0x834) = 0x70003600;
+    W2F(s32, d, 0x86C) = 0;
+    return 1;
+}
 
 extern "C" s32 func_00267818(void) { return 1; }
 

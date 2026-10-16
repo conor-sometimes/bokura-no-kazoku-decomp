@@ -1,0 +1,55 @@
+//@decl
+extern LNode *D_380E04;
+extern const char D_002E5480[];
+//@func 0x23BA10
+extern "C" void func_0023BA10(s32 id, s32 n, u64 h) {
+    s32 i;
+    if (id < 0) return;
+    i = D_380E10[id];
+    if (i < 0) return;
+    func_001F1190();
+    if (n == 0) {
+        if (D_382E10[i].m8 != h) {
+            func_0023E088(func_0023DB28(D_382E10[i].m8, -1));
+            D_382E10[i].m8 = func_0023DB28(h, 1);
+        }
+    } else {
+        s16 *pp = &((s16 *)&D_382E10[i])[0x17];
+        s32 k, j;
+        for (j = 0; j < n; j++) {
+            k = *pp;
+            if (k == -1) {
+                LNode *L = D_380E04;
+                s32 f = L[6].b;
+                s32 nx = L[f].b;
+                s32 pv;
+                if (nx == k) {
+                    Func235DE0(D_002E5480);
+                    goto out;
+                }
+                pv = L[f].a;
+                L[pv].b = nx;
+                L[nx].a = pv;
+                L = D_380E04;
+                {
+                    LNode *u = &L[1];
+                    pv = u->a;
+                    L[pv].b = f;
+                    L[f].a = pv;
+                    L[f].b = 1;
+                    u->a = f;
+                }
+                D_382E18[f - 8] = k;
+                k = (s16)(f - 8);
+                *pp = f - 8;
+            }
+            pp = &D_382E18[k];
+        }
+        if (D_382E14[k] != h) {
+            func_0023E088(func_0023DB28(D_382E14[k], -1));
+            D_382E14[k] = func_0023DB28(h, 1);
+        }
+    }
+out:
+    return (void)func_001F11C8();
+}

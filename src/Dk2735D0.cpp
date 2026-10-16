@@ -80,6 +80,18 @@ void func_002683A0(void *m, const char *msg);
 int func_0027DFA8(int, char);
 void func_0027DFD8(int);
 #define W2SIO (*(volatile Sio *)&D_41CD90)
+typedef struct { int status; void *entry; void *stack; int stackSize; void *gpReg; int initPriority; int currentPriority; u32 attr, option; int waitType, waitId, wakeupCount; } W2ThreadParam;
+extern u8 D_41C460[];
+extern u8 D_2F36F0[];
+extern const char D_002E9DD8[];
+int func_00272FA0(W2ThreadParam *);
+int func_00272FC0(int, void *);
+int func_00273090(void);
+int func_00273030(int, int);
+void func_002730D0(int);
+void func_00273050(int);
+void func_00273110(int);
+void func_00273C20(TQ *q);
 // @decl-end
 
 SYSCALL(func_002735D0, 0x7C)
@@ -240,7 +252,53 @@ s32 func_00273BE0(s32 n) { s32 r = func_00272F60(n); asm volatile("sync"); retur
 
 s32 func_00273C00(s32 n) { s32 r = func_00272F70(n); asm volatile("sync"); return r; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00273C20);
+void func_00273C20(TQ *q)
+{
+    for (;;) {
+        int i;
+        func_002731E0(D_41C860);
+        i = q->m0 & 0x1FF;
+        q->m0 = i + 1;
+        switch (q->e[i][0]) {
+        case 0:
+            func_002730D0(q->e[i][1]);
+            break;
+        case 1:
+            func_00273050(q->e[i][1]);
+            break;
+        case 2:
+            func_00273110(q->e[i][1]);
+            break;
+        default:
+            func_00274ED8(D_002E9DD8);
+            break;
+        }
+    }
+}
+
+int func_00273CF8(void)
+{
+    W2ThreadParam tp;
+    SemaParam sp;
+    if (D_002BDA98 > 0) return -1;
+    sp.init_count = 0;
+    sp.max_count = 0xFF;
+    if ((D_41C860 = func_002731A0(&sp)) < 0) return -1;
+    tp.entry = (void *)func_00273C20;
+    tp.stack = D_41C460;
+    tp.stackSize = 0x400;
+    tp.gpReg = D_2F36F0;
+    tp.initPriority = 0;
+    if ((D_002BDA98 = func_00272FA0(&tp)) < 0) {
+        func_002731B0(D_41C860);
+        return -1;
+    }
+    D_41C868.m0 = 0;
+    D_41C868.m4 = 0;
+    func_00272FC0(D_002BDA98, &D_41C868);
+    func_00273030(func_00273090(), 1);
+    return D_002BDA98;
+}
 
 s32 func_00273DD0(s32 tid)
 {

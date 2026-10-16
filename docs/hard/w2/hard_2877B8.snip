@@ -1,0 +1,38 @@
+//@decl
+enum W2Access { W2_PUBLIC = 1, W2_VIRTUAL, W2_PROTECTED, W2_PRIVATE };
+struct W2BaseInfo { W2UTI *base; int offset : 29; bool is_virtual : 1; W2Access access : 2; };
+struct W2ClassTI : W2UTI { W2BaseInfo *base_list; u32 n_bases; };
+inline bool w2_contained_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_mask; }
+extern "C" s32 W2TiEq(const W2TI *, const W2TI *) asm("func_00286B58");
+//@func 0x2877B8
+extern "C" W2UTI::sub_kind func_002877B8(const W2ClassTI *self, int boff, const W2TI &subtype, void *objptr, void *subptr)
+{
+    if (objptr == subptr && W2TiEq(&subtype, self))
+        return W2UTI::contained_public;
+
+    for (u32 i = self->n_bases; i--;) {
+        if (self->base_list[i].access != W2_PUBLIC)
+            continue;
+
+        void *p;
+
+        if (self->base_list[i].is_virtual && boff == -3)
+            continue;
+
+        p = 0;
+        if (objptr) {
+            p = (char *)objptr + self->base_list[i].offset;
+            if (self->base_list[i].is_virtual)
+                p = *static_cast<void **>(p);
+        }
+
+        W2UTI::sub_kind base_kind = self->base_list[i].base->do_find_public_subobj(boff, subtype, p, subptr);
+        if (w2_contained_p(base_kind)) {
+            if (self->base_list[i].is_virtual)
+                base_kind = W2UTI::sub_kind(base_kind | W2UTI::contained_virtual_mask);
+            return base_kind;
+        }
+    }
+
+    return W2UTI::not_contained;
+}

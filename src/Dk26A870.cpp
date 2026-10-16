@@ -63,6 +63,15 @@ extern "C" void func_0026BB98(u8 *, s32 *, s32 *, s32, s32, s32, s32, s32);
 extern const char D_002E9850[];
 
 extern const char D_002E9790[];
+
+struct W2ExtTbl { void (*f[11])(u8 *); };
+extern const W2ExtTbl D_002E98A0;
+
+static inline void W2SetDcPrec(s32 a) { volatile u32 *r = (volatile u32 *)0x10002010; *r = (*r & 0xFFFCFFFF) | (a << 16); }
+extern "C" s32 func_0026B4C8(u8 *, s32 *, s32 *, s32 *, s32 (*)[2][2], s32 (*)[2], s32 *);
+extern "C" s32 func_00268D00(u8 *, s32, s32, s32, s32, s32 (*)[2][2], s32 (*)[2], s32 *);
+extern const char D_002E9830[];
+extern "C" s32 func_0026B408(u8 *d, s32 PMV[2][2][2], s32 *motion_type, s32 mvfs[2][2], s32 *macroblock_type);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026A870);
@@ -116,7 +125,30 @@ extern "C" s32 func_0026AA70(u8 *d) {
 
 extern "C" s32 func_0026AD08(u8 *d) { return func_0026C008(d, 3); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026AD28);
+/* mpeg2decode motion.c calc_DMV (MPEG Software Simulation Group) */
+extern "C" void func_0026AD28(u8 *d, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy)
+{
+    if (*(s32 *)(d + 0x18C) == 3) {
+        if (*(s32 *)(d + 0x190)) {
+            DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1] - 1;
+            DMV[1][0] = ((3 * mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[1][1] = ((3 * mvy + (mvy > 0)) >> 1) + dmvector[1] + 1;
+        } else {
+            DMV[0][0] = ((3 * mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[0][1] = ((3 * mvy + (mvy > 0)) >> 1) + dmvector[1] - 1;
+            DMV[1][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+            DMV[1][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1] + 1;
+        }
+    } else {
+        DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
+        DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1];
+        if (*(s32 *)(d + 0x18C) == 1)
+            DMV[0][1]--;
+        else
+            DMV[0][1]++;
+    }
+}
 
 extern "C" s32 func_0026AEB0(u8 *d) {
     s32 val = 0, cont; u32 code;
@@ -166,7 +198,57 @@ extern "C" s32 func_0026B0D8(u8 *d, s32 unused, s32 *pos, s32 *inc, s32 *dc) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026B208);
+extern "C" s32 func_0026B208(u8 *d, s32 n)
+{
+    s32 buf[2][2][2];
+    s32 a[2][2];
+    s32 b[4];
+    s32 i, cnt, x48, x4C, x50;
+    s32 r;
+    i = 0;
+    cnt = 0;
+    if ((r = func_0026B0D8(d, n, &i, &cnt, (s32 *)buf)) != 0) return r;
+    *(s32 *)(d + 0x134) = 0;
+    while (1) {
+        if (i >= n) return 0;
+        *(s32 *)(d + *(s32 *)(d + 0x828) * 0x140 + 0x6E4) = 0;
+        if (!func_0026AA70(d)) return *(s32 *)(d + 0x10A0) == 0 ? 2 : 4;
+        if (cnt == 0) {
+            if (func_0026C278(d, 0x17) == 0 || *(s32 *)(d + 0x134)) {
+                *(s32 *)(d + 0x134) = 0;
+                return 3;
+            }
+            cnt = func_0026AEB0(d);
+            if (*(s32 *)(d + 0x134)) {
+                *(s32 *)(d + 0x134) = 0;
+                return 1;
+            }
+        }
+        if (i >= n) {
+            func_002683A0(d, D_002E9830);
+            return 2;
+        }
+        if (cnt == 1) {
+            if (!func_0026B4C8(d, &x48, &x4C, &x50, buf, a, b)) {
+                *(s32 *)(d + 0x134) = 0;
+                return 1;
+            }
+        } else {
+            if (!func_0026B408(d, buf, &x4C, a, &x48)) {
+                *(s32 *)(d + 0x134) = 0;
+                return 2;
+            }
+        }
+        if (!func_00268D00(d, i, cnt, x48, x4C, buf, a, b)) {
+            *(s32 *)(d + 0x134) = 0;
+            return 2;
+        }
+        if (i) func_00269A78(d, *(s32 *)(d + 0x828) ^ 1);
+        i++;
+        *(s32 *)(d + 0x828) ^= 1;
+        cnt--;
+    }
+}
 
 extern "C" s32 func_0026B408(u8 *d, s32 PMV[2][2][2], s32 *motion_type, s32 mvfs[2][2], s32 *macroblock_type) {
     s32 r = 1;
@@ -378,9 +460,52 @@ extern "C" void func_0026C820(u8 *d) {
     func_0026CC00(d); func_0026C8E8(d); func_0026CC48(d, t);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026C8E8);
+extern "C" void func_0026C8E8(u8 *d)
+{
+    W2ExtTbl tbl = D_002E98A0;
+    u32 r;
+    func_0026C618(d);
+    while ((r = func_0026C278(d, 32)) == 0x1B5 || r == 0x1B2) {
+        if (r == 0x1B5) {
+            u32 n;
+            func_0026C398(d, 32);
+            n = func_0026C4A8(d, 4);
+            n = n > 10 ? 0 : n;
+            tbl.f[n](d);
+            func_0026C618(d);
+        } else {
+            func_0026C398(d, 32);
+            func_0026C618(d);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026CA10);
+extern "C" void func_0026CA10(u8 *d) {
+    s32 v;
+    *(s32 *)(d + 0x17C) = func_0026C4A8(d, 4);
+    *(s32 *)(d + 0x180) = func_0026C4A8(d, 4);
+    *(s32 *)(d + 0x184) = func_0026C4A8(d, 4);
+    *(s32 *)(d + 0x188) = func_0026C4A8(d, 4);
+    W2SetDcPrec(func_0026C4A8(d, 2));
+    *(s32 *)(d + 0x18C) = v = func_0026C4A8(d, 2);
+    if (*(s32 *)(d + 0xEC) == 0) *(s32 *)(d + 0xEC) = v;
+    *(s32 *)(d + 0x190) = func_0026C4A8(d, 1);
+    *(s32 *)(d + 0x194) = func_0026C4A8(d, 1);
+    *(s32 *)(d + 0x198) = func_0026C4A8(d, 1);
+    IPU_CTRL = (IPU_CTRL & 0xFFBFFFFF) | (func_0026C4A8(d, 1) << 22);
+    IPU_CTRL = (IPU_CTRL & 0xFFDFFFFF) | (func_0026C4A8(d, 1) << 21);
+    IPU_CTRL = (IPU_CTRL & 0xFFEFFFFF) | (func_0026C4A8(d, 1) << 20);
+    *(s32 *)(d + 0x19C) = func_0026C4A8(d, 1);
+    func_0026C4A8(d, 1);
+    *(s32 *)(d + 0x1A0) = func_0026C4A8(d, 1);
+    if (func_0026C4A8(d, 1)) {
+        func_0026C4A8(d, 1);
+        func_0026C4A8(d, 3);
+        func_0026C4A8(d, 1);
+        func_0026C4A8(d, 7);
+        func_0026C4A8(d, 8);
+    }
+}
 
 extern "C" void func_0026CC00(u8 *p) { while (func_0026C4A8(p, 1)) func_0026C398(p, 8); }
 

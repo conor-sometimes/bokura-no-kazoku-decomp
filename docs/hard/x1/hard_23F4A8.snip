@@ -1,0 +1,68 @@
+//@decl
+extern "C" void *func_0023F458(s32);
+extern "C" u64 func_0023DD40(s32, s32, s32, s32);
+extern const char D_002E5AD8[], D_002E5B10[], D_002E5B40[], D_002E5B70[];
+//@func 0x23F4A8
+extern "C" s32 func_0023F4A8(s32 psm, s32 w, s32 h, s32 n) {
+    s32 th;
+    s32 ok;
+    u64 tex;
+    GEnt *a;
+    void *b;
+    s32 per, tw, m, i;
+    tex = 0;
+    a = 0;
+    b = 0;
+    ok = 0;
+    if (psm != 0x14 && psm != 0x2C && psm != 0x24) {
+        if (D_002B9CDC & 1) Func235DE0(D_002E5AD8, psm);
+        goto out;
+    }
+    w = (w + 7) & ~7;
+    per = 0x400 / w;
+    tw = 0x400;
+    if (!(per < n)) tw = per * w;
+    n = (n + per - 1) / per;
+    th = n * h;
+    tex = func_0023DD40(1, psm, tw, th);
+    if (!tex) {
+        if (D_002B9CDC & 1) Func235DE0(D_002E5B10);
+        goto out;
+    }
+    n = per * n;
+    m = n < 0x201 ? n : 0x200;
+    a = (GEnt *)func_0023F458(n * sizeof(GEnt));
+    if (!a || !(b = func_0023F458(m * 4))) {
+        if (D_002B9CDC & 1) Func235DE0(D_002E5B40);
+        goto out;
+    }
+    func_0023F770();
+    D_002B9CEC = w;
+    D_002B9CE8 = per;
+    D_002B9CE0 = tex;
+    D_002B9CF0 = h;
+    D_002B9CFC = m;
+    D_002B9D00 = (HEnt **)b;
+    D_002B9CF4 = n;
+    D_002B9CF8 = (Ent1C *)a;
+    D_38EF58.m0 = &D_38EF58;
+    D_38EF58.m4 = &D_38EF58;
+    for (i = 1; i < n; i++) {
+        GEnt *e = &a[i];
+        e->m14 = i;
+        e->m0 = (GEnt *)&D_38EF58;
+        e->m4 = (GEnt *)D_38EF58.m4;
+        D_38EF58.m4 = (LHead *)e;
+        e->m4->m0 = e;
+    }
+    tex = 0;
+    a = 0;
+    b = 0;
+    ok = 1;
+    if (D_002B9CDC & 4) Func235DE0(D_002E5B70, psm, tw, th, n);
+out:
+    if (b) D_002B91B0(b);
+    if (a) D_002B91B0(a);
+    if (tex) func_0023E088(tex);
+    return ok;
+}

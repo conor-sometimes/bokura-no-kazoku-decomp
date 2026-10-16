@@ -12,11 +12,11 @@ extern s32 D_338380;
 extern u8 D_002A62D8[];
 extern u8 D_002A63D8[];
 extern "C" Work3 *func_00215010(void);
-extern "C" void func_00219110(CVec4 *, CVec4 *);
-extern "C" void func_00219290(CVec4 *, CVec4 *);
-extern "C" void func_002186B0(void *, void *, CVec4 *, void *, void *, s32, f32, f32, f32);
-extern "C" void func_00218AD0(void *, void *, void *, void *, f32, f32, f32, void *, void *, s32);
-extern "C" void func_00218B70(void *, void *, void *, void *, f32, f32, f32, void *, void *, s32);
+extern "C" void func_00219110(CVec4 *, CVec4 *, CVec4 *, CVec4 *);
+extern "C" void func_00219290(CVec4 *, CVec4 *, CVec4 *, CVec4 *);
+extern "C" f32 func_002186B0(void *, void *, CVec4 *, void *, void *, s32, f32, f32, f32);
+extern "C" f32 func_00218AD0(void *, void *, void *, void *, f32, f32, f32, void *, void *, s32);
+extern "C" f32 func_00218B70(void *, void *, void *, void *, f32, f32, f32, void *, void *, s32);
 inline void Zero3(CVec4 *v) { v->x = 0.0f; v->y = 0.0f; v->z = 0.0f; }
 struct Rec3 { u8 pad[0x20]; s32 m20; };
 
@@ -51,6 +51,22 @@ extern "C" void func_00212A30(void *);
 
 extern "C" void func_00270A98(CVec4 *d, const CVec4 *a, const CVec4 *b);
 inline f32 VuSqrt217(f32 x) { f32 r; asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8"); return r; }
+
+inline f32 VuDot3_217(CVec4 *a, CVec4 *b) {
+    f32 r;
+    asm volatile("lqc2 $vf2, 0x0(%1)\n\tlqc2 $vf3, 0x0(%2)\n\tvmul.xyz $vf3, $vf2, $vf3\n\tvaddy.x $vf3, $vf3, $vf3y\n\tvaddz.x $vf3, $vf3, $vf3z\n\tqmfc2.ni $8, $vf3\n\tmtc1 $8, %0" : "=f"(r) : "r"(a), "r"(b) : "$8");
+    return r;
+}
+extern "C" void func_00270B68(CVec4 *d, const CVec4 *a, f32 s);
+
+inline f32 VuDot3_217b(CVec4 *a, CVec4 *b) {
+    f32 r;
+    asm volatile("lqc2 $vf2, 0x0(%1)\n\tlqc2 $vf3, 0x0(%2)\n\tvmul.xyz $vf3, $vf2, $vf3\n\tvaddy.x $vf3, $vf3, $vf3y\n\tvaddz.x $vf3, $vf3, $vf3z\n\tqmfc2.ni $8, $vf3\n\tmtc1 $8, %0" : "=f"(r) : "r"(a), "r"(b) : "$8");
+    return r;
+}
+extern "C" void func_00270A30(CVec4 *d, const CVec4 *a, const CVec4 *b);
+
+struct P217 { u8 pad[0xC]; u16 mC; s16 mE; void *m10; void *m14; f32 m18; f32 m1C; };
 // @decl-end
 
 extern "C" s32 func_00217F50(s32 strm, s32 x) {
@@ -219,7 +235,50 @@ extern "C" void func_00218E60(void) {
 extern "C" void func_00218E68(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_00218E70);
+extern "C" f32 func_00218E70(s32 *outA, s32 *outB, Work3 *o, P217 *p, f32 f) {
+    CVec4 s0, s1;
+    Work3 *n;
+    s32 found;
+    void *t1, *t2;
+    Func270C50(&s0, &D_338350.a);
+    Func270C50(&s1, &D_338350.b);
+    found = D_338350.flag;
+    for (n = o->parent; n; n = n->parent) {
+        if (n->m19) {
+            Func270C50(&D_338350.a, &n->m40);
+            Func270C50(&D_338350.b, &n->m50);
+            found = 1;
+            break;
+        }
+    }
+    if (found) {
+        t1 = p->m10;
+        if (!t1) t1 = D_002A62D8;
+        t2 = p->m14;
+        if (!t2) t2 = D_002A63D8;
+        switch (o->m18) {
+        case 0:
+            *outA = 0x80;
+            *outB = 0x80;
+            break;
+        case 1:
+            f = ((f32 (*)(void *, void *, CVec4 *, f32, f32, f32, void *, void *, s32))func_002186B0)(outA, outB, &o->m20, p->m18, p->m1C, f, t1, t2, p->mC);
+            break;
+        case 2:
+            f = func_00218AD0(outA, outB, &o->m20, &o->m30, p->m18, p->m1C, f, t1, t2, p->mC);
+            break;
+        case 3:
+            f = func_00218B70(outA, outB, &o->m20, &o->m30, p->m18, p->m1C, f, t1, t2, p->mC);
+            break;
+        }
+    } else {
+        *outA = 0;
+        *outB = 0;
+    }
+    Func270C50(&D_338350.a, &s0);
+    Func270C50(&D_338350.b, &s1);
+    return f;
+}
 
 extern "C" f32 func_00219078(Work3 *w) {
     f32 v;
@@ -242,9 +301,39 @@ extern "C" f32 func_00219078(Work3 *w) {
     return v < 0.01f ? 0.01f : v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_00219110);
+extern "C" void func_00219110(CVec4 *out, CVec4 *a, CVec4 *b, CVec4 *c) {
+    CVec4 d, e;
+    f32 len, t;
+    s32 eq = 0;
+    if (b->x == c->x && b->y == c->y && b->z == c->z) eq = 1;
+    if (!eq) {
+        func_00270A98(&d, a, b);
+        func_00270A98(&e, c, b);
+        len = VuSqrt217(e.x * e.x + e.y * e.y + e.z * e.z);
+        t = VuDot3_217b(&d, &e) / (len * len);
+        if (t < 0.0f) {
+            Func270C50(out, b);
+        } else if (!(t < 1.0f)) {
+            Func270C50(out, c);
+        } else {
+            func_00270B68(out, &e, t);
+            func_00270A30(out, out, b);
+        }
+    } else {
+        Func270C50(out, b);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_00219290);
+extern "C" void func_00219290(CVec4 *out, CVec4 *a, CVec4 *b, CVec4 *c) {
+    CVec4 d, e;
+    f32 len, dot;
+    func_00270A98(&d, a, b);
+    Func270C50(&e, c);
+    len = VuSqrt217(e.x * e.x + e.y * e.y + e.z * e.z);
+    dot = VuDot3_217(&d, &e);
+    func_00270B68(out, c, dot / (len * len));
+    func_00270A98(out, a, out);
+}
 
 extern "C" s32 func_00219368(s32 n) {
     s32 i;

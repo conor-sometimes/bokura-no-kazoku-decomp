@@ -2,6 +2,7 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "CPushBuf.h"
+#include "CFlagWork.h"
 //@sym memset 0x289FB0
 #include "libc.h"
 // Interface without fields (its RTTI name only): the vptr is at 0.
@@ -33,7 +34,6 @@ public:
 extern "C" void func_0016CF98(void *p, void *a);
 extern CNameDBMgr *D_002A35B0;
 
-class CFlagWork;
 extern CFlagWork *D_002A5358;
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);
 extern "C" const char *func_00109158(CFlagWork *w, s32 id);
@@ -41,7 +41,6 @@ extern "C" void *func_0024A570(void *a, char *buf, const char *s1, const char *s
 extern char D_002D9CD8[];
 extern char D_002D9CE0[];
 
-extern CFlagWork *D_002A26E0;
 extern s32 D_002A3640[];
 extern s32 D_002A3610[];
 extern char D_002D9CE8[];
@@ -63,6 +62,8 @@ extern "C" char *func_00248DC0(void *buf);
 extern s32 D_002A366C, D_002A3670, D_002A3674;
 extern const char *D_002A3678;
 extern const char *D_002A35B8[];
+extern "C" int strcmp(const char *, const char *);
+void Func16CB08(s32 type, s32 base, void *src);
 // @decl-end
 
 CNameDBMgr::CNameDBMgr() {
@@ -142,7 +143,29 @@ void Func16CB08(s32 type, s32 base, void *src) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CNameDBMgr", func_0016CBD0);
+void CNameDBMgr::Func16CBD0(s32 kind) {
+    const char *names[20];
+    s32 idx = func_0016C6D8(kind);
+    s32 n, base, cnt, i, k, m;
+    if (idx < 0) return;
+    n = D_002A3640[idx];
+    base = D_002A3610[idx];
+    cnt = 0;
+    for (i = 0; i < n; i++) {
+        if (*D_002A26E0->GetStr(base + i)) {
+            Func16CB08(kind, cnt, (void *)D_002A26E0->GetStr(base + i));
+            names[cnt++] = D_002A26E0->GetStr(base + i);
+        }
+    }
+    k = cnt;
+    for (i = 0; i < m_counts[idx] && cnt < n; i++) {
+        for (m = 0; m < k; m++)
+            if (!strcmp(names[m], m_tables[idx][i])) goto next;
+        Func16CB08(kind, cnt++, m_tables[idx][i]);
+    next:;
+    }
+    D_002A5358->Func108FF0(15, cnt);
+}
 
 // GNU as 2.10 bug: without a fresh frag here it assembles the `lui` of `lw $19, D_002A3610($2)`
 // as a copy of the following `lw` (position-dependent; appeared when the ctor became C++). The

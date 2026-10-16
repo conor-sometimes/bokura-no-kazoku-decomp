@@ -1,0 +1,107 @@
+//@decl
+extern const char *D_002A2C14, *D_002A2C18, *D_002A2C1C, *D_002A2C20;
+extern s32 D_002A2C28[];
+extern const char D_002D8188[];
+extern "C" const char *func_0024A778(const char *p, f32 *v, f32 def, const char *s1, const char *s2);
+extern "C" int atoi(const char *);
+struct CGameDBRec50 { s32 m0; s32 m4; f32 m8; f32 mC; s32 m10[4]; s32 m20[4]; s32 m30[4][2]; };
+//@func 0x149670
+int CGameDBMgr::Func149670() {
+    char line[256];
+    char tok[256];
+    char w[256];
+    char b3[256];
+    char pad[0x300];
+    void *data;
+    int ok;
+    s32 i, k;
+    const char *p;
+    ok = 0;
+    data = Func24A4C0(D_002A2C14);
+    if (!data) goto done;
+    p = Func24AF10(data, D_002A2C18);
+    if (*p == 0) goto end;
+    m_num1E8 = func_0024B040(p, 1);
+    m_tbl1E8 = (CGameDBRecB0 *)m_buf.Func248CC8(m_num1E8 * sizeof(CGameDBRecB0), 1, 1);
+    m_unk1F0 = 0;
+    for (i = 0; i < m_num1E8; i++) {
+        CGameDBRecB0 *r = &m_tbl1E8[i];
+        const char *q;
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = func_0024A710(line, &r->m_id, 0, D_002D7EC0, D_002D7EC8);
+        m_unk1F0 = r->m_id < m_unk1F0 ? m_unk1F0 : r->m_id;
+        q = Func24A570(q, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+        r->m4 = func_00248DC0(&m_buf);
+        q = Func24A570(q, func_00248DA8(&m_buf), D_002D7EC0, D_002D7EC8);
+        r->m8 = func_00248DC0(&m_buf);
+        q = Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+        r->mC = Func147340(D_002A2A70, tok);
+        func_0024A710(q, &r->m10, 0, D_002D7EC0, D_002D7EC8);
+    }
+    p = Func24AF10(data, D_002A2C1C);
+    if (*p == 0) goto end;
+    for (i = 0; i < m_num1E8; i++) {
+        CGameDBRecB0 *r = &m_tbl1E8[i];
+        const char *q;
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = Func24A570(line, 0, D_002D7EC0, D_002D7EC8);
+        q = Func24A570(q, 0, D_002D7EC0, D_002D7EC8);
+        q = Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+        r->m14 = Func149618(tok);
+        func_0024A710(q, &r->m18, 0, D_002D7EC0, D_002D7EC8);
+    }
+    p = Func24AF10(data, "SCHOOL_PASS");
+    if (*p == 0) goto end;
+    m_unk1F8 = func_0024B040(p, 1);
+    m_unk1F4 = (s32)m_buf.Func248CC8(m_unk1F8 * sizeof(CGameDBRec50), 1, 1);
+    for (i = 0; i < m_unk1F8; i++) {
+        CGameDBRec50 *r = &((CGameDBRec50 *)m_unk1F4)[i];
+        const char *q;
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = func_0024A710(line, &r->m0, 0, D_002D7EC0, D_002D7EC8);
+        q = func_0024A710(q, &r->m4, 0, D_002D7EC0, D_002D7EC8);
+        q = Func24A570(q, 0, D_002D7EC0, D_002D7EC8);
+        q = func_0024A778(q, &r->m8, 0.0f, D_002D7EC0, D_002D7EC8);
+        q = func_0024A778(q, &r->mC, 0.0f, D_002D7EC0, D_002D7EC8);
+        for (k = 0; k < 4; k++) {
+            const char *s;
+            q = Func24A570(q, tok, D_002D7EC0, D_002D7EC8);
+            s = Func24A570(tok, w, D_002D8188, D_002D7EC8);
+            if (tok[0] == '-' || tok[0] == '+') r->m20[k] = atoi(w);
+            else r->m10[k] = atoi(w);
+            s = func_0024A710(s, &r->m30[k][0], 0, D_002D8188, D_002D7EC8);
+            func_0024A710(s, &r->m30[k][1], r->m30[k][0], D_002D8188, D_002D7EC8);
+        }
+    }
+    p = Func24AF10(data, D_002A2C20);
+    if (*p == 0) goto end;
+    for (i = 0; i < m_num1E8; i++) {
+        CGameDBRecB0 *r = &m_tbl1E8[i];
+        const char *q;
+        p = Func24AFE8(p, line, 1, 0x100);
+        q = Func24A570(line, 0, D_002D7EC0, D_002D7EC8);
+        q = Func24A570(q, 0, D_002D7EC0, D_002D7EC8);
+        for (k = 0; k < 9; k++) {
+            q = func_0024A710(q, &r->m1C[k], 0, D_002D7EC0, D_002D7EC8);
+            if (r->m1C[k]) {
+                r->m64[r->mAC] = D_002A2C28[k];
+                r->m40[r->mAC] = r->m1C[k] > 0;
+                r->m88[r->mAC] = r->m1C[k];
+                r->mAC++;
+            }
+        }
+    }
+    p = Func24AF10(data, "SCHOOL_SCHOLAR");
+    if (*p) {
+        s32 n;
+        Func24AFE8(p, b3, 1, 0x100);
+        n = D_002A0D38->V16(func_00248D98(&m_buf), b3);
+        if (n >= 2) m_unk1FC = (s32)m_buf.Func248CC8(n, 0, 0);
+    }
+    ok = 1;
+end:
+    if (data) D_002B91B0(data);
+done:
+    Func235DE0(" school (%d)\n", ok);
+    return ok;
+}

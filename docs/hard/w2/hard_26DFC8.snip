@@ -1,0 +1,39 @@
+typedef struct { volatile int m0; int m4; int m8; int mC; int m10; } W2Xfer;
+int func_00272EC0(int ch, void *fn, int next, void *arg);
+void func_00273B38(int ch);
+void func_00273AD0(int ch);
+void func_00272ED0(int ch, int id);
+void func_0026DE80();
+extern const char D_002E9998[];
+//@func 0x26DFC8
+void func_0026DFC8(void *m, void *addr, int size)
+{
+    int v[8];
+    W2Xfer x;
+    int h, s;
+    x.m10 = size / 0x3FF + 1; //@p
+    x.m8 = size; //@p
+    x.mC = ((u32)addr + 0xFFC00) & 0x0FFFFFFF; //@p
+    x.m4 = 0; //@p
+    x.m0 = 0; //@p
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+    h = func_00272EC0(3, func_0026DE80, 0, &x);
+    HWREG(0x1000E010) = 8;
+    func_00273B38(3);
+    s = func_0027BD20();
+    HWREG(0x1000B010) = (u32)addr & 0x0FFFFFFF;
+    HWREG(0x1000B020) = 0xFFC0;
+    HWREG(0x1000B000) = 0x100;
+    if (s) func_0027BD78();
+    HWREG(0x10002000) = 0x700003FF;
+    v[0] = 4;
+    func_00267A98(((MM *)m)->m870, v);
+    while (x.m0 < x.m10)
+        ;
+    if (x.m4) func_002683A0(m, D_002E9998);
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+    func_00273AD0(3);
+    func_00272ED0(3, h);
+}

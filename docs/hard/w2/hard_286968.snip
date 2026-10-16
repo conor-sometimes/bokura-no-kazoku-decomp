@@ -1,0 +1,50 @@
+//@decl
+struct W2FrameState { void *cfa; void *eh_ptr; u8 p8[0x3FA - 8]; u16 retaddr_column; u8 p3FC[0x478 - 0x3FC]; } __attribute__((aligned(8)));
+struct W2FrameStateInt { W2FrameState s; void *saved_state; u32 pad; };
+extern "C" u8 *func_00286518(u8 *, W2FrameStateInt *, W2CieInfo *, void **);
+extern "C" void *memset(void *, int, unsigned int);
+extern "C" u8 *func_00285590(u8 *, void *);
+//@func 0x286968
+extern "C" W2FrameState *func_00286968(void *pc_target, W2FrameState *state_in)
+{
+    W2CieInfo info;
+    W2FrameStateInt state;
+    W2FdeF *f;
+    u8 *insn, *end;
+    int i;
+    void *pc;
+
+    f = func_00286140(pc_target);
+    if (f == 0)
+        return 0;
+
+    insn = func_002862E8((W2Fde2 *)f, &info);
+    if (insn == 0)
+        return 0;
+
+    memset(&state, 0, sizeof(state));
+    state.s.retaddr_column = info.ra_regno;
+    state.s.eh_ptr = info.eh_ptr;
+
+    {
+        W2FdeF *cie = (W2FdeF *)((char *)&f->CIE_delta - f->CIE_delta);
+        end = (u8 *)cie + cie->length + sizeof(cie->length);
+    }
+    while (insn < end)
+        insn = func_00286518(insn, &state, &info, 0);
+
+    insn = (u8 *)(f + 1);
+
+    if (info.augmentation[0] == 'z') {
+        insn = func_00285590(insn, &i);
+        insn += i;
+    }
+
+    end = (u8 *)f + f->length + sizeof(f->length);
+    pc = f->pc_begin;
+    while (insn < end && pc <= pc_target)
+        insn = func_00286518(insn, &state, &info, &pc);
+
+    *state_in = state.s;
+    return state_in;
+}

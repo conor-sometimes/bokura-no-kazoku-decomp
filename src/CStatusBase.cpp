@@ -145,7 +145,7 @@ public:
 };
 
 void *operator new(unsigned int n);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 #include "CFlagWork.h"
 extern CFlagWork *D_002A4B60;
 #include "CChrBodyWin.h"
@@ -251,7 +251,7 @@ void CStatusBaseSub19AE68::Func19AE78() {
     m_unk18 = 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AEC0);
+void CStatusBaseSub19AE68::Func19AEC0() { if ((u32)(m_unk18 - 2) >= 2) Func235DE0(D_002DDB18, m_unk18); m_unk18 = 2; m_unk1C = D_002A4B60->Func1091B0(0x68); D_002A4308->SetUnk384(1.0f); }
 
 s32 CStatusBaseSub19AE68::GetUnk18() {
     if (m_unk0 == 0) {

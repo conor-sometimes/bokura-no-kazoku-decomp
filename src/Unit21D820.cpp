@@ -114,6 +114,16 @@ inline void PutADc1D(u32 v, u32 a) {
     p[1] = 0;
     p[3] = 0;
 }
+
+extern "C" s32 func_0021BAC0(s32, void *, s32);
+extern "C" void func_0021BC88(s32, s32);
+extern "C" s32 func_0021BDD0(s32, s32);
+extern "C" void func_0021E370(void);
+extern s32 D_33D9A8;
+s32 Func235DE0(const char *fmt, ...);
+extern char D_002C5200[], D_002C82E8[], D_002C8300[], D_002CAE78[];
+extern const char D_002E3D18[], D_002E3D38[], D_002E3D58[], D_002E3D70[], D_002E3D88[], D_002E3DA0[], D_002E3DB8[];
+extern const char D_002E3DD0[], D_002E3DE8[], D_002E3E00[], D_002E3E18[], D_002E3E30[], D_002E3E48[], D_002E3E60[];
 // @decl-end
 
 extern "C" void func_0021D820(s32 n, s32 a, s32 b, s32 c, s32 d) {
@@ -237,7 +247,42 @@ extern "C" s32 func_0021E310(void) { s32 a = func_0021BCF8(1, 0); Func225088(); 
 
 INCLUDE_ASM("asm/nonmatchings/Unit21D820", func_0021E370);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21D820", func_0021E4A0);
+extern "C" void func_0021E4A0(void) {
+    s32 h, n;
+    func_0021E370();
+    h = func_0021BDD0(1, 0);
+    D_33D9A4 = h;
+    if (h < 0) {
+        Func235DE0(D_002E3D18);
+        return;
+    }
+    func_0021BC88(1, h);
+    D_33D9A0 = func_0021BAC0(1, D_002C5200, n = D_002C82E8 - D_002C5200);
+    func_0021BC88(1, 0);
+    Func235DE0(D_002E3D38);
+    Func235DE0(D_002E3D58, n, n);
+    Func235DE0(D_002E3D70, 0x39, 0x39);
+    Func235DE0(D_002E3D88, 0x36, 0x36);
+    Func235DE0(D_002E3DA0, 0x36, 0x36);
+    Func235DE0(D_002E3DB8, 0x36, 0x36);
+    Func235DE0(D_002E3DD0, 0x7C, 0x7C);
+    Func235DE0(D_002E3DE8, 0x7C, 0x7C);
+    Func235DE0(D_002E3E00, 0x7C, 0x7C);
+    Func235DE0(D_002E3E18, 0x36, 0x36);
+    Func235DE0(D_002E3E18, 0x36, 0x36);
+    Func235DE0(D_002E3E30, 0xA2, 0xA2);
+    Func235DE0(D_002E3E30, 0xA2, 0xA2);
+    Func235DE0(D_002E3E48, 0x3FF, 0x3FF);
+    h = func_0021BDD0(1, 0);
+    D_33D9AC = h;
+    if (h < 0) {
+        Func235DE0(D_002E3E60);
+        return;
+    }
+    func_0021BC88(1, h);
+    D_33D9A8 = func_0021BAC0(1, D_002C8300, D_002CAE78 - D_002C8300);
+    return (void)func_0021BC88(1, 0);
+}
 
 extern "C" s32 func_0021E6B8(u32 i) {
     s32 r = 0;

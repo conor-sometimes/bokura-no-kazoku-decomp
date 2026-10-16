@@ -1,0 +1,115 @@
+//@decl
+typedef struct W2Fs2 W2Fs2;
+struct W2Fs2 { void *cfa; void *eh_ptr; long cfa_offset; long base_offset; long args_size; long reg_or_offset[123]; unsigned short cfa_reg; unsigned short retaddr_column; char saved[123]; char indirect; };
+extern W2Fs2 *W2NextStackLevel(void *, W2Fs2 *, W2Fs2 *) asm("func_002844A0");
+extern void *W2GetRegAddr(unsigned, W2Fs2 *, W2Fs2 *) asm("func_002843A8");
+extern void W2CopyReg(unsigned, W2Fs2 *, W2Fs2 *) asm("func_00284438");
+extern void func_00284550(void);
+//@func 0x284558
+extern void *func_00284558(W2EhCtx *eh, void *pc, W2FrameStateT *my_udata_, long *offset_p)
+{
+    W2Fs2 *my_udata = (W2Fs2 *)my_udata_;
+    W2Fs2 ustruct2, *udata = &ustruct2;
+    W2Fs2 ustruct;
+    W2Fs2 *sub_udata = &ustruct;
+    void *saved_pc = pc;
+    void *handler;
+    void *handler_p = 0;
+    void *pc_p = 0;
+    W2Fs2 saved_ustruct;
+    int new_eh_model;
+    int cleanup = 0;
+    int only_cleanup = 0;
+    int rethrow = 0;
+    int saved_state = 0;
+    long args_size;
+    W2EhInfo *eh_info = (W2EhInfo *)eh->info;
+
+    if (eh->table_index != (void *)0)
+        rethrow = 1;
+
+    *udata = *my_udata;
+
+    handler = (void *)0;
+    for (;;) {
+        W2Fs2 *p = udata;
+        udata = W2NextStackLevel(pc, udata, sub_udata);
+        sub_udata = p;
+
+        if (!udata)
+            break;
+
+        if (udata->eh_ptr == 0)
+            new_eh_model = 0;
+        else
+            new_eh_model = (((W2ExcDesc *)(udata->eh_ptr))->runtime_id_field == (void *)-2);
+
+        if (rethrow) {
+            rethrow = 0;
+            handler = func_00284268(eh->table_index, (W2ExcDesc *)udata->eh_ptr, eh_info, 1, &cleanup);
+            eh->table_index = (void *)0;
+        } else if (new_eh_model)
+            handler = func_00284268(pc, (W2ExcDesc *)udata->eh_ptr, eh_info, 0, &cleanup);
+        else
+            handler = func_00284198(pc, (W2ExcTab *)udata->eh_ptr);
+
+        if (handler) {
+            if (cleanup) {
+                if (!saved_state) {
+                    saved_ustruct = *udata;
+                    handler_p = handler;
+                    pc_p = pc;
+                    saved_state = 1;
+                    only_cleanup = 1;
+                }
+            } else {
+                only_cleanup = 0;
+                break;
+            }
+        }
+
+        pc = (char *)(void *)*(long *)W2GetRegAddr(udata->retaddr_column, udata, sub_udata) - 1;
+    }
+
+    if (saved_state) {
+        udata = &saved_ustruct;
+        handler = handler_p;
+        pc = pc_p;
+        if (only_cleanup)
+            func_00284550();
+    }
+
+    if (!handler)
+        W2Terminate();
+
+    eh->handler_label = handler;
+
+    args_size = udata->args_size;
+
+    if (pc == saved_pc)
+        udata = my_udata;
+    else {
+        int i;
+        void *handler_pc = pc;
+
+        pc = saved_pc;
+        *udata = *my_udata;
+
+        while (pc != handler_pc) {
+            W2Fs2 *p = udata;
+            udata = W2NextStackLevel(pc, udata, sub_udata);
+            sub_udata = p;
+
+            for (i = 0; i < 122; ++i)
+                if (i != udata->retaddr_column && udata->saved[i]) {
+                    W2CopyReg(i, udata, my_udata);
+                }
+
+            pc = (char *)(void *)*(long *)W2GetRegAddr(udata->retaddr_column, udata, sub_udata) - 1;
+        }
+    }
+
+    *offset_p = (char *)udata->cfa - (char *)my_udata->cfa + args_size;
+
+    return handler;
+}

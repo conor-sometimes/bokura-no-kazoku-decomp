@@ -27,6 +27,9 @@ unit. All run on hokkaido from the repo root; scratch files live in `build/bk/` 
   effects of the functions before it in the .cpp (delay-slot filling, the GNU as `lui` bug) and
   swapped globals or callees behind masked address bits. `bk port` refuses a snippet that fails
   it (`BK_NO_UTEST=1` to skip).
+- `tools/bk/ushow.py SNIP [ADDR] [-q]` (run inside bokura-env): utest's in-unit compile shown side by side
+  (ours | retail, `!!` on differing words). `BK_EXTRA="-flag ..."` adds compiler flags and finds the function
+  by symbol (for flag sweeps), `BK_CC` swaps the driver, `BK_KEEP=1` keeps the spliced .cpp.
 - `tools/bk/bk hard [--port] [-j N]`: re-test every saved stuck function. When a function goes to
   HARD.md, save its best attempt as `docs/hard/<lane>/hard_<ADDR>.snip` (a normal snippet); after
   any discovery (a flag, a header, a trick), `bk hard` re-runs them all through utest and lists

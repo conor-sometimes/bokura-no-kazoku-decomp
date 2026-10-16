@@ -1,0 +1,40 @@
+//@decl
+extern "C" void func_0023AC10(char *, const char *, s32);
+//@func 0x23B658
+extern "C" s32 func_0023B658(const char *name) {
+    char key[0x20];
+    s32 r = -1;
+    if (name) {
+        s16 *tbl;
+        u32 h;
+        u8 *p;
+        char *kp;
+        s32 freeSlot, step, idx, k, e;
+        func_0023AC10(key, name, 0x13);
+        func_001F1190();
+        tbl = D_382E1C;
+        kp = key;
+        h = 0;
+        for (p = (u8 *)key; *p; p++) h += *p;
+        freeSlot = -1;
+        step = ((~h) & 0xF) * 2 + 1;
+        idx = h;
+        for (;;) {
+            k = idx % D_002B94F0;
+            e = tbl[k];
+            if (e > 0) {
+                if (!strcmp(D_382E10[e - 8].name, kp)) break;
+            } else {
+                if (freeSlot < 0) freeSlot = k;
+                if (e == 0) {
+                    e = -freeSlot;
+                    break;
+                }
+            }
+            idx = k + step;
+        }
+        if (e > 0) r = func_0023B510(e - 8);
+        func_001F11C8();
+    }
+    return r;
+}

@@ -130,6 +130,16 @@ s32 Func253BA8(s32 fmt);
 s32 Func254730(s32 psm);
 void Func254788(u64 tex0, s32 a, s32 b, s32 c, s32 d, s32 e, u8 *p);
 void Func254838(u64 tex0, s32 a, s32 b, s32 c, s32 d, s32 e, u8 *p);
+
+extern "C" u64 func_0023AA40(s32 c);
+extern "C" u64 func_0023BD80(s32 c);
+void Func225088();
+int Func2250C0();
+void Func2251E8();
+void Func227DC8(long t, s32 n, s32 p);
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
 // @decl-end
 
 void CDebOut::SetPos(f32 x, f32 y) {
@@ -405,4 +415,28 @@ void Func254838(u64 tex0, s32 a, s32 b, s32 c, s32 d, s32 e, u8 *p) {
     func_001EFF48(tex0, a, b, c, e, p + d * bpp * c / 8, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk252208", func_002548F0);
+extern "C" void func_002548F0(CMemTex *t, s32 id, s32 idx) {
+    u64 a = func_0023AA40(id);
+    u64 b = func_0023BD80(id);
+    Func225088();
+    if (t->m_unk20 > 0) {
+        idx = idx < t->m_unk24 - 1 ? idx : t->m_unk24 - 1;
+        idx = idx < 0 ? 0 : idx;
+        Func227DC8(b, t->m_unk20, t->m_unk18 + t->m_unk20 * idx * 4);
+    }
+    switch (t->m_unk4) {
+    case 0:
+        Func254788(a, 0, 0, t->m_unk10, 0, t->m_unk14, (u8 *)t->m_unk8);
+        break;
+    case 1:
+        Func254838(a, 0, 0, t->m_unk10, 0, t->m_unk14, (u8 *)t->m_unk8);
+        break;
+    }
+    func_00227A20();
+    func_00226DF8(6, (a & 0x3FFF) | (((a >> 14) & 0x3F) << 14) | (((a >> 32) & 0x3F) << 20) | ((u64)10 << 26) | ((u64)10 << 30)
+                     | ((u64)1 << 34) | ((b & 0x3FFF) << 37) | (((b >> 32) & 0x3F) << 51) | ((u64)1 << 61));
+    func_00226DF8(8, 2 | (2 << 2) | ((u64)(t->m_unk10 - 1) << 14) | ((u64)(t->m_unk14 - 1) << 34));
+    func_00227AA8();
+    Func2251E8();
+    return (void)Func2250C0();
+}

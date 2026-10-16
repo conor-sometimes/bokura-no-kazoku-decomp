@@ -24,6 +24,7 @@ typedef struct McCmd {
         struct { char a[0x400]; char data[0x400]; int b, len, e, f; } n5;
         struct { int fd; int off[2]; int whence, idx; } sk;
         struct { int fd; void *buf; int size; int n; unsigned char data[16]; int idx; } rd;
+        struct { int mask; struct W2St64 { char c[0x40]; } st; char name[0x400]; } cs;
     } u;
 } McCmd;
 extern McCmd D_41EC40;

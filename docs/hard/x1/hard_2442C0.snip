@@ -1,0 +1,32 @@
+//@decl
+struct SndFmt { s8 a, b, c, d; s32 m4, m8, mC, m10, m14, m18, m1C; };
+struct SndFmt2 { s8 a, b, c, d; s32 m4; };
+struct RingH { u8 pad[0xC]; s32 mC; };
+extern const char D_002E5E68[], D_002E5E80[], D_002E5E98[], D_002E5EA8[];
+//@func 0x2442C0
+extern "C" s32 func_002442C0(s32 a, SndReq *q, s32 i) {
+    SndChX *c = &SNDX[i];
+    Ring *r = c->m14;
+    const u8 *p = q->m8 + 4;
+    s32 n = q->mC - 4;
+    s32 ok = 1;
+    if (((RingH *)r)->mC == 0) {
+        SndFmt *f = (SndFmt *)&c->m18;
+        SndFmt2 *g = (SndFmt2 *)((u8 *)c + 0x38);
+        __builtin_memcpy(f, p, sizeof(SndFmt));
+        __builtin_memcpy(g, q->m8 + 0x24, sizeof(SndFmt2));
+        Func235DE0(D_002E5E68);
+        Func235DE0(D_002E5E80, f->a, f->b, f->c, f->d, f->m4, f->m8);
+        Func235DE0(D_002E5E98, f->mC, f->m10, f->m14);
+        Func235DE0(D_002E5EA8, g->a, g->b, g->c, g->d, g->m4);
+        c->m4 = c->m20 >= 16;
+        p = q->m8 + 0x2C;
+        n = q->mC - 0x2C;
+        ((RingH *)r)->mC = 1;
+    }
+    func_001F15F0();
+    if (func_00245518(r) < n) ok = 0;
+    else func_00245548(r, p, n);
+    func_001F1610();
+    return ok;
+}

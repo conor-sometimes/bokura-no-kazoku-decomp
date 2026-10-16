@@ -1,0 +1,55 @@
+//@decl
+int func_00272EC0(int ch, void *fn, int next, void *arg);
+void func_00273B38(int ch);
+void func_00273AD0(int ch);
+void func_00272ED0(int ch, int id);
+void func_0026DFC8(void *m, void *addr, int size);
+//@func 0x26E260
+void func_0026E260(void *vm, MP *p)
+{
+    MM *m = vm;
+    int v[8];
+    W2Feed f;
+    int n, h, s, small;
+    u32 addr;
+    n = p->mC * p->m10;
+    v[0] = 2;
+    func_00267A98(m->m870, v);
+    if (HWREG(0x10002010) & 0x4000) HWREG(0x10002010) = 0x40000000;
+    small = n < 0x400;
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+    func_0026BCE8(m, 0);
+    addr = *(u32 *)p;
+    while ((s32)HWREG(0x10002010) < 0)
+        ;
+    f.m4 = addr & 0x0FFFFFFF;
+    f.m0 = n * 24;
+    if (f.m0 > 0xFFFF) {
+        h = func_00272EC0(4, (void *)func_0026E188, 0, &f);
+        HWREG(0x1000E010) = 0x10;
+        func_00273B38(4);
+        s = func_0027BD20();
+        HWREG(0x1000B410) = f.m4;
+        HWREG(0x1000B420) = 0xFFFF;
+        HWREG(0x1000B400) = 0x101;
+        if (s) func_0027BD78();
+        f.m4 = (f.m4 + 0xFFFF0) & 0x0FFFFFFF;
+        f.m0 -= 0xFFFF;
+        if (small) func_0026DD58(m, *(void **)((u8 *)m + 0xF0), n);
+        else func_0026DFC8(m, *(void **)((u8 *)m + 0xF0), n);
+        func_00273AD0(4);
+        func_00272ED0(4, h);
+    } else {
+        s = func_0027BD20();
+        HWREG(0x1000B410) = *(u32 *)p & 0x0FFFFFFF;
+        HWREG(0x1000B420) = f.m0;
+        HWREG(0x1000B400) = 0x101;
+        if (s) func_0027BD78();
+        f.m0 = 0;
+        if (small) func_0026DD58(m, *(void **)((u8 *)m + 0xF0), n);
+        else func_0026DFC8(m, *(void **)((u8 *)m + 0xF0), n);
+    }
+    v[0] = 3;
+    func_00267A98(m->m870, v);
+}

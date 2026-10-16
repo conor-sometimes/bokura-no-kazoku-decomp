@@ -1,0 +1,48 @@
+typedef int u128 __attribute__((mode(TI)));
+void func_00273590(void);
+typedef struct { void (*func)(void *, void *); void *arg; void *gp; } Hnd2;
+typedef struct { volatile u8 *m0; s32 m4, m8; Hnd2 *mC; s32 m10; Hnd2 *m14; s32 m18; } HTab2;
+extern HTab2 D_41D198_h2 __asm__("D_41D198");
+typedef struct { u32 psize:8; u32 dsize:24; void *dest; s32 fid; u32 opt; } Hdr2;
+//@func 0x275550
+int func_00275550(void)
+{
+    u128 buf[7];
+    HTab2 *t = &D_41D198_h2;
+    volatile u8 *p = D_41D198_h2.m0;
+    int n = *p;
+    int i, cnt, id;
+    u128 *s, *d;
+    Hnd2 *tab;
+    void (*f)(void *, void *);
+    void *gp, *x;
+    if (n == 0) return 0;
+    cnt = (n + 15) / 16;
+    s = (u128 *)p;
+    *p = 0;
+    d = buf;
+    for (i = 0; i < cnt; i++) buf[i] = s[i];
+    func_00273590();
+    if (((volatile Hdr2 *)buf)->fid & 0x80000000) {
+        id = ((volatile Hdr2 *)buf)->fid & 0x7FFFFFFF;
+        if (id >= t->m10) goto end;
+        id *= sizeof(Hnd2);
+        f = ((Hnd2 *)(id + (char *)t->mC))->func;
+        if (!f) goto end;
+        asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(gp) : "r"(((Hnd2 *)(id + (char *)t->mC))->gp) : "memory");
+        tab = t->mC;
+    } else {
+        id = ((volatile Hdr2 *)buf)->fid;
+        if (id >= t->m18) goto end;
+        id *= sizeof(Hnd2);
+        f = ((Hnd2 *)(id + (char *)t->m14))->func;
+        if (!f) goto end;
+        asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(gp) : "r"(((Hnd2 *)(id + (char *)t->m14))->gp) : "memory");
+        tab = t->m14;
+    }
+    f(buf, ((Hnd2 *)(id + (char *)tab))->arg);
+    asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(x) : "r"(gp));
+end:
+    asm volatile("sync\n\tei");
+    return 0;
+}

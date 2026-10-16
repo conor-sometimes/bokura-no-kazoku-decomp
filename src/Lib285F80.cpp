@@ -66,13 +66,97 @@ static inline void *w2_read_pointer(void *p) { union W2Unaligned *up = (union W2
 
 struct W2DwState { u8 p0[8]; s64 m8; s64 m10; u8 p18[0x3F8 - 0x18]; u16 m3F8; u8 p3FA[0x477 - 0x3FA]; u8 m477; };
 extern "C" void func_00288FF8(void) __attribute__((noreturn));
+
+struct W2FdeF { u32 length; s32 CIE_delta; void *pc_begin; u32 pc_range; };
+struct W2ObjF { void *pc_begin; void *pc_end; W2FdeF *fde_begin; W2FdeF **fde_array; u32 count; W2ObjF *next; };
+extern "C" W2ObjF *D_424598;
+extern "C" int D_002BE1C4;
+extern "C" s32 func_002731E0(s32);
+extern "C" s32 func_002731C0(s32);
+extern "C" void func_00285FD8(W2ObjF *) throw();
+extern "C" W2FdeF *W2SearchFdes(W2FdeF *, void *) asm("func_00285F80");
+
+struct W2TI { const char *_name; virtual ~W2TI(); };
+struct W2UTI : W2TI {
+    enum sub_kind { unknown = 0, not_contained, contained_ambig, contained_virtual_mask = 1, contained_public_mask = 2, contained_mask = 4, contained_private = 4, contained_public = 6 };
+    struct dyncast_result {
+        void *target_obj;
+        sub_kind whole2target, whole2sub, target2sub;
+        dyncast_result() : target_obj(0), whole2target(unknown), whole2sub(unknown), target2sub(unknown) {}
+    };
+    virtual bool do_upcast(sub_kind, const W2TI &, void *, void *) const;
+    virtual bool do_dyncast(int boff, sub_kind access_path, const W2TI &target, void *objptr, const W2TI &subtype, void *subptr, dyncast_result &result) const;
+    virtual sub_kind do_find_public_subobj(int boff, const W2TI &subtype, void *objptr, void *subptr) const;
+    sub_kind find_public_subobj(int boff, const W2TI &subtype, void *objptr, void *subptr) const
+    {
+        if (boff >= 0)
+            return ((char *)subptr - (char *)objptr) == boff ? contained_public : not_contained;
+        if (boff == -2)
+            return not_contained;
+        return do_find_public_subobj(boff, subtype, objptr, subptr);
+    }
+};
+inline bool w2_contained_public_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_public; }
+inline bool w2_contained_nonvirtual_p(W2UTI::sub_kind access_path) { return (access_path & (W2UTI::contained_mask | W2UTI::contained_virtual_mask)) == W2UTI::contained_mask; }
 // @decl-end
 
 extern "C" W2Fde2 *func_00285F80(W2Fde2 *f, u32 pc) { for (; f->length != 0; f = (W2Fde2 *)((u8 *)f + f->length + 4)) { if (f->cie == 0) continue; if (f->pc_begin == 0) continue; if (pc - f->pc_begin < f->pc_range) return f; } return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00285FD8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286140);
+extern "C" W2FdeF *func_00286140(void *pc)
+{
+    W2ObjF *ob;
+    u32 lo, hi;
+
+    func_002731E0(D_002BE1C4);
+
+    for (ob = D_424598; ob; ob = ob->next) {
+        if (ob->pc_begin == 0)
+            func_00285FD8(ob);
+        if (pc >= ob->pc_begin && pc < ob->pc_end)
+            break;
+    }
+
+    if (ob == 0) {
+        func_002731C0(D_002BE1C4);
+        return 0;
+    }
+
+    if (!ob->fde_array || (void *)ob->fde_array == (void *)ob->fde_begin)
+        func_00285FD8(ob);
+
+    if (ob->fde_array && (void *)ob->fde_array != (void *)ob->fde_begin) {
+        func_002731C0(D_002BE1C4);
+
+        for (lo = 0, hi = ob->count; lo < hi;) {
+            u32 i = (lo + hi) / 2;
+            W2FdeF *f = ob->fde_array[i];
+
+            if (pc < f->pc_begin)
+                hi = i;
+            else if (pc >= (char *)f->pc_begin + f->pc_range)
+                lo = i + 1;
+            else
+                return f;
+        }
+    } else {
+        W2FdeF *f;
+        if (ob->fde_array) {
+            W2FdeF **p = ob->fde_array;
+            do {
+                f = W2SearchFdes(*p, pc);
+                if (f)
+                    break;
+                p++;
+            } while (*p);
+        } else
+            f = W2SearchFdes(ob->fde_begin, pc);
+        func_002731C0(D_002BE1C4);
+        return f;
+    }
+    return 0;
+}
 
 extern "C" u8 *func_002862E8(W2Fde2 *f, W2CieInfo *c)
 {
@@ -157,7 +241,25 @@ extern "C" void func_00286BE0(void *p, const char *n) { if (p) { FLD(const char 
 
 extern "C" s32 func_00286C00(W2TI2 *self, void *target, void *obj, void **adj) { s32 r[3]; r[0] = 0; r[1] = 0; r[2] = 0; if (self->v1(6, target, obj, r)) return 0; *adj = (void *)r[0]; return r[1] >= 6; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286C78);
+extern "C" void *func_00286C78(const W2UTI *self, int boff, const W2TI &target, void *objptr, const W2TI &subtype, void *subptr)
+{
+    W2UTI::dyncast_result result;
+
+    self->do_dyncast(boff, W2UTI::contained_public, target, objptr, subtype, subptr, result);
+    if (!result.target_obj)
+        return 0;
+    if (w2_contained_public_p(result.target2sub))
+        return result.target_obj;
+    if (w2_contained_public_p(W2UTI::sub_kind(result.whole2sub & result.whole2target)))
+        return result.target_obj;
+    if (w2_contained_nonvirtual_p(result.whole2sub))
+        return 0;
+    if (result.target2sub == W2UTI::unknown)
+        result.target2sub = static_cast<const W2UTI &>(target).find_public_subobj(boff, subtype, result.target_obj, subptr);
+    if (w2_contained_public_p(result.target2sub))
+        return result.target_obj;
+    return 0;
+}
 
 extern "C" s32 func_00286DC0(void *self, s32 access, void *target, void *obj, W2Upcast *res) { if (func_00286B58((const char **)self, (const char **)target)) { res->obj = obj; res->base = (void *)8; res->access = access; return (access & 6) == 4; } return 0; }
 

@@ -1,0 +1,63 @@
+//@decl
+typedef struct { int sema; void *buf; int size; int mC; int m10; int m14; int m18; } W2RpcReq7;
+extern W2RpcReq7 D_41EC40_7 __asm__("D_41EC40");
+extern int D_002BDAB0[32];
+//@func 0x277540
+int func_00277540(u32 id, int a, int b)
+{
+    W2RpcReq7 *rq = &D_41EC40_7;
+    Slot *s;
+    SemaParam sp;
+    int ret;
+    int sema, r, fl, i;
+    s = func_002768C0(id);
+    W2Lock(4);
+    if (D_002BDB34 == 0) {
+        func_00276D68();
+        return -1;
+    }
+    if (s == 0 || (fl = s->m4) == 0) {
+        func_00276D68();
+        return -9;
+    }
+    rq->m10 = a;
+    rq->mC = s->m0;
+    rq->m14 = b;
+    rq->m18 = s - D_420140;
+    sp.max_count = 1;
+    sp.init_count = 0;
+    sp.option = 0;
+    sema = func_002731A0(&sp);
+    rq->size = 4;
+    rq->buf = &ret;
+    rq->sema = sema;
+    if (fl & 0x8000) {
+        func_002731E0(D_002BDB44);
+        for (i = 0; i < 32; i++) {
+            if (D_002BDAB0[i] == -1) {
+                D_002BDAB0[i] = rq->sema;
+                rq->sema = -rq->sema;
+                break;
+            }
+        }
+        func_002731C0(D_002BDB44);
+    }
+    if (func_002760B0(D_420340, 4, 0, rq, 0x1C, D_41F880, 4, 0, 0) < 0) {
+        func_002731B0(sema);
+        func_00276D68();
+        return -11;
+    }
+    r = *(int *)((u32)D_41F880 | 0x20000000);
+    func_00276D68();
+    if (r == 0) {
+        func_002731B0(sema);
+        return -11;
+    }
+    if (fl & 0x8000) {
+        func_002731B0(sema);
+        return 0;
+    }
+    func_002731E0(sema);
+    func_002731B0(sema);
+    return ret;
+}

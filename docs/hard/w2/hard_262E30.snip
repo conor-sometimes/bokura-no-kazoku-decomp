@@ -1,0 +1,56 @@
+//@decl
+extern s32 D_002BBBD0;
+extern s32 D_41A814;
+extern s32 D_41A818;
+extern u8 D_41A820[];
+struct W2ThParam { s32 status; void *entry; void *stack; s32 stackSize; void *gp; s32 prio; };
+extern W2ThParam D_41A850;
+extern const char D_002E9048[];
+extern "C" s32 func_002731E0(s32);
+extern "C" void func_00272FE0(void);
+extern "C" s32 func_00274F10(const char *, ...);
+extern "C" s32 func_00273090(void);
+extern "C" s32 func_002730A0(s32, void *);
+extern "C" s32 func_00272FA0(W2ThParam *);
+extern "C" s32 func_00272FC0(s32, s32);
+extern "C" s32 func_00273030(s32, s32);
+//@func 0x262E30
+extern "C" void func_00262E30(void) {
+    while (1) {
+        func_002731E0(D_002BBBE0);
+        if (D_002BBC18 == -1) {
+            V(D_002BBBF4) = 0;
+            D_002BBC18 = 0;
+            V(D_002BBBD4) = 0;
+            V(D_41A814) = 0;
+            func_00272FE0();
+        }
+        if (D_002BBBD0 > 0) func_00274F10(D_002E9048, D_41A800, V(D_002BBC1C));
+        if (D_41A800 && V(D_002BBC1C)) {
+            u32 save;
+            asm volatile("move %0, $28\n\tlw $28, %1" : "=&r"(save) : "m"(D_41A804));
+            ((void (*)(s32))D_41A800)(V(D_002BBC1C));
+            asm volatile("move $28, %0" : : "r"(save));
+        }
+        V(D_002BBBF4) = 0;
+    }
+}
+
+extern "C" s32 func_00262F00(s32 prio, void *stack, s32 size) {
+    s32 r = 1;
+    if (D_002BBBD4 == 0) {
+        D_41A818 = func_00273090();
+        func_002730A0(D_41A818, D_41A820);
+        D_41A850.stackSize = size;
+        D_41A850.entry = (void *)func_00262E30;
+        D_41A850.stack = stack;
+        D_41A850.prio = prio;
+        D_41A850.gp = 0;
+        D_002BBBD4 = func_00272FA0(&D_41A850);
+        func_00272FC0(D_002BBBD4, 0);
+    } else {
+        r = 0;
+        func_00273030(D_002BBBD4, prio);
+    }
+    return r;
+}

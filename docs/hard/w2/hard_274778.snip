@@ -1,0 +1,32 @@
+//@decl
+extern const double D_002E9E98;
+extern const double D_002E9EA0;
+extern const double D_002E9EA8;
+extern const char D_002E9E80[];
+extern const char D_002E9E88[];
+extern const char D_002E9E90[];
+double func_00283490(double);
+int func_002746E0(double);
+//@func 0x274778
+void func_00274778(double d)
+{
+    int e = 0;
+    if (d < 0.0) {
+        d = 0.0 - d;
+        ((void (*)(int))D_002BDAA0)('-');
+    }
+    if (d < D_002E9E98) {
+        while (d < D_002E9EA0) {
+            d = d * 10.0;
+            e--;
+        }
+    } else if (d >= 1.0) {
+        while (d >= 1.0) {
+            d = d / 10.0;
+            e++;
+        }
+    }
+    func_00274ED8(D_002E9E80, func_002746E0(func_00283490(d * D_002E9EA8)));
+    if (e >= 0) func_00274ED8(D_002E9E88, e);
+    else func_00274ED8(D_002E9E90, e);
+}

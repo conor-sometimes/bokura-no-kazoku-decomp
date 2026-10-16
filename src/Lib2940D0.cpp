@@ -25,7 +25,7 @@ extern "C" void __builtin_delete(void *);
 void Func235DE0(const char *fmt, ...);
 struct CMapAttrLightPos { s32 m[4]; };
 struct TArrB { s32 m0; CMapAttrLightPos *m_data; s32 m_cap; s32 m_count; s32 m_grow; void *m_vptr; };
-class CModelAccSub118168 { public: CModelAccSub118168 *Init(); };
+class CModelAccSub118168 { public: CModelAccSub118168 *Init() throw(); };
 extern "C" void func_00294E90(TArrB *a, s32 flags);
 // The map light (0xC0 bytes): its constructor is CModelAccSub118168::Init (it returns this), its
 // destructor only destroys the TArray<CMapAttrLightPos> at 0x28.
@@ -224,7 +224,41 @@ extern "C" CMapAttrLight *func_00294420(TArrA *a, s32 i) {
     return func_002947D0(a, i);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2940D0", func_00294438);
+extern "C" void func_00294438(TArrA *a, s32 n, s32 init) {
+    if (a->m_cap < n) {
+        CMapAttrLight *p;
+        a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+        p = func_002947E8(a, a->m_cap);
+        if (p == 0) {
+            Func235DE0(D_002D3B28, a->m_cap * sizeof(CMapAttrLight));
+            return;
+        }
+        if (a->m_data) {
+            memcpy(p, a->m_data, a->m_count * sizeof(CMapAttrLight));
+            func_00294818(a, a->m_data);
+        }
+        a->m_data = p;
+    }
+    if (init) {
+        if (a->m_count < n) {
+            CMapAttrLight tmp;
+            func_00294848(a, a->m_data + a->m_count, &tmp, n - a->m_count);
+        } else if (n < a->m_count) {
+            func_002948B0(a, a->m_data + n, a->m_count - n);
+        }
+    }
+    a->m_count = n;
+    if (a->m_data) {
+        if (n == 0) {
+            func_00294818(a, a->m_data);
+            a->m_data = 0;
+            a->m_cap = 0;
+        } else if (a->m_cap - a->m_grow >= n) {
+            a->m_cap = (n + a->m_grow - 1) / a->m_grow * a->m_grow;
+            a->m_data = func_00294908(a, a->m_data, a->m_cap);
+        }
+    }
+}
 
 extern "C" CMapAttrLight *func_002945F8(TArrA *a, s32 i) {
     return &a->m_data[i];

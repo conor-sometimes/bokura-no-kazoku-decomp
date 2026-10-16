@@ -1,0 +1,21 @@
+//@decl
+extern u8 W2vt_cl[] asm("_vt$5CList");
+extern "C" void func_0025C580(CSndWorkM *w);
+extern "C" void __builtin_delete(void *);
+struct W2Tag {
+    s32 head; W2Tag *prev; W2Tag *next; void *vt;
+    void Unlink() { prev->next = next; next->prev = prev; next = this; prev = this; }
+    void TagDtor() { vt = D_vtCListTag; prev->next = next; next->prev = prev; prev = this; next = this; }
+    W2Tag *First() { return next->head ? 0 : next; }
+    void ListDtor() { W2Tag *x; vt = W2vt_cl; while ((x = First()) != 0) x->Unlink(); TagDtor(); }
+};
+//@func 0x25C2C0
+extern "C" void func_0025C2C0(CSndWorkM *w, s32 c) {
+    u8 *p = (u8 *)w;
+    FLD(void *, p, 0xC) = W2vt_sw;
+    func_0025C580(w);
+    ((W2Tag *)(p + 0x24))->ListDtor();
+    ((W2Tag *)(p + 0x14))->ListDtor();
+    ((W2Tag *)p)->TagDtor();
+    if (c & 1) return (void)__builtin_delete(w);
+}

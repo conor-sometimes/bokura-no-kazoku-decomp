@@ -1,0 +1,39 @@
+//@decl
+struct CRandG {
+    CRandG() { m_seed = 1; }
+    u32 m_seed;
+    u32 Next() {
+        m_seed = m_seed * 0x19660D + 1;
+        return (m_seed >> 12) & 0xFFFF;
+    }
+    u32 Rand64K() { return ((Next() << 16) | Next()) % 0x10000; }
+};
+struct CCol5 { f32 v[5]; };
+s32 Func14BB28(s32 idx);
+//@func 0x14D7C8
+void CGameDBMgr::Func14D7C8(f32 *out, s32 idx, s32 v) {
+    CRandG rnd;
+    s32 k = Func14BB28(idx);
+    s32 n, j;
+    f32 t;
+    CCol5 *tbl, *cur, *nx, *pv;
+    if (k < 0) return;
+    n = m_charas[k].mC;
+    tbl = (CCol5 *)m_charas[k].m8;
+    j = v < n - 1 ? v : n - 1;
+    if (j < 0) j = 0;
+    t = (f32)j * 0.20000001f / 35.0f + 0.05f;
+    {
+        s32 on = (n - 1) * 5;
+        s32 o = j * 5;
+        s32 op = o - 5;
+        if (o + 5 < on) on = o + 5;
+        if (op < 0) op = 0;
+        nx = (CCol5 *)((f32 *)tbl + on);
+        pv = (CCol5 *)((f32 *)tbl + op);
+        cur = (CCol5 *)((f32 *)tbl + o);
+    }
+    rnd.m_seed = D_002A26E4->Func1091B0(0) + j + k * 35 + 0x3039;
+#define ONE(i) { f32 a = cur->v[i] + (pv->v[i] - cur->v[i]) * t; f32 b = cur->v[i] + (nx->v[i] - cur->v[i]) * t; out[i] = (f32)(s32)rnd.Rand64K() / 65535.0f * (b - a) + a; }
+    ONE(0) ONE(1) ONE(2) ONE(3) ONE(4)
+}

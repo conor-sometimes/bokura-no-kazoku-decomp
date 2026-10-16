@@ -1,0 +1,47 @@
+//@func 0x224818
+extern "C" void func_00224818(f32 *m, f32 a, f32 b, f32 c, f32 d, f32 e, f32 f, f32 g, f32 h, f32 i, f32 h2, f32 i2, f32 j, f32 k, f32 l, f32 n) {
+    f32 sx = 2.0f / (i2 - h2);
+    f32 sz = -(i2 + h2) / (i2 - h2);
+    f32 slope = (g - f) / (h - i);
+    f32 ofs = (-i * g + h * f) / (h - i);
+    f32 za, zb;
+    m[0] = a * b / l;
+    m[1] = a * c / n;
+    m[2] = sx;
+    m[3] = 0;
+    m[4] = 0;
+    m[5] = 0;
+    m[6] = sz;
+    m[7] = 1.0f;
+    m[8] = 1.0f / m[0];
+    m[9] = 1.0f / m[1];
+    m[10] = 1.0f / sx;
+    m[11] = 0;
+    m[12] = 0;
+    m[13] = 0;
+    m[14] = -sz / sx;
+    m[15] = 0;
+    if (j < k) {
+        za = -1.0f / (k - j) * 255.0f;
+        zb = k / (k - j) * 255.0f;
+    } else {
+        za = m[3];
+        zb = 255.0f;
+    }
+    m[16] = d;
+    m[17] = e;
+    m[18] = ofs - slope * sz / sx;
+    m[19] = za / sx;
+    m[20] = l;
+    m[21] = n;
+    m[22] = slope / sx;
+    m[23] = zb - za * sz / sx;
+    m[24] = d - l;
+    m[25] = e - n;
+    m[26] = -1.0f;
+    m[27] = 0;
+    m[28] = l + d;
+    m[29] = n + e;
+    m[30] = 1.0f;
+    m[31] = 1.0f;
+}

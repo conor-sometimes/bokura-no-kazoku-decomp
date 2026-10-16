@@ -22,7 +22,9 @@ EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
 # as -g only for the C++ units: the C-style units from CAppMain on (scripts/text_units.py) match
 # only without it, so they were built differently (docs/compiler.md).
 ASG      := -Wa,-g
-build/src/CAppMain.cpp.o build/src/Unit%.cpp.o: ASG :=
+# Dk260A60 (MPEG audio decoder) too: 0x262B18 ends with an unaligned struct copy whose last `sdr`
+# only lands in the `jr` delay slot when gas reorders (lane w2).
+build/src/CAppMain.cpp.o build/src/Unit%.cpp.o build/src/Dk260A60.cpp.o: ASG :=
 # Two groups of dklib units were built with the SDK compiler ee-gcc 2.9-991111, not the game's 2.96
 # (docs/compiler.md):
 # - SDK_OBJS (lane d3): dklib's units from 0x262D28 (IPU, MPEG stream, ...), C++ through 2.9 and its
@@ -48,6 +50,11 @@ $(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
 #   gives the C sibcall).
 LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
 $(LIBC_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+# LIBC_C_OBJS: the LIBC units that are C, compiled by the C front end (`-x c`): libgcc2's EH builtins
+#   (__builtin_dwarf_cfa, __builtin_eh_return in __throw/__rethrow) are C-only, and newlib's bnez/bnezl
+#   choices after calls only match as C. Lib285F80 stays C++ (tinfo.cc classes).
+LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
+$(LIBC_C_OBJS): CXXFLAGS = -x c -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split

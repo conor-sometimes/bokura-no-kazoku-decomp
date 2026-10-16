@@ -1,0 +1,39 @@
+//@decl
+extern s8 D_002E80BE[];
+extern s8 *D_002E8898[];
+extern s8 *D_002E8808[];
+extern s32 D_002E7AB0[];
+extern s32 *D_002E883C[];
+//@func 0x261470
+extern "C" s32 func_00261470(u8 *p, u32 a1, s32 a2, s32 start, s32 end, s32 sf, Bits *b) {
+    s32 idx = a2 * 2 + a1;
+    s32 nb = D_002E80BE[idx];
+    s8 *t1 = D_002E8898[idx - 2];
+    s8 *t2 = D_002E8808[idx - 2];
+    s32 sh, n, code;
+    s32 *dst, *tab;
+    if (a1 >= 2) return -1;
+    if (a2 < 1 || a2 > 7) return -1;
+    if (end == start) return -1;
+    sh = D_002E7AB0[sf];
+    dst = (s32 *)(p + 0x1A40) + start;
+    tab = D_002E883C[(sf - 3 * (21 - sh)) * 7 + a2];
+    n = end - start;
+    if (a2 == 1) {
+        do {
+            code = t1[func_002613E8(nb, b)];
+            b->m68C8 += t2[code];
+            *dst++ += tab[code * 2] >> sh;
+            if (n != 1) *dst++ += tab[code * 2 + 1] >> sh;
+            n -= 2;
+        } while (n > 0);
+        return 0;
+    }
+    do {
+        code = t1[func_002613E8(nb, b)];
+        n--;
+        b->m68C8 += t2[code];
+        *dst++ += tab[code] >> sh;
+    } while (n > 0);
+    return 0;
+}

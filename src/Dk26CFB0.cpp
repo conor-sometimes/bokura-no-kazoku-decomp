@@ -63,6 +63,9 @@ u64 func_002734E0(u64);
 void func_00273A00(int);
 void func_00272EA0(int, int);
 void func_00272DA0(int, int, int);
+
+typedef struct { u64 frame1, frame1addr, zbuf1, zbuf1addr, xyoffset1, xyoffset1addr, scissor1, scissor1addr, prmodecont, prmodecontaddr, colclamp, colclampaddr, dthe, dtheaddr, test1, test1addr; } W2GsDrawEnv1;
+short func_0026FC10(short psm, short w, short h);
 // @decl-end
 
 int func_0026CFB0(Mpeg *m)
@@ -357,7 +360,32 @@ void func_0026ED28(DispEnv *e)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026EDE8);
+int func_0026EDE8(W2GsDrawEnv1 *draw, short psm, short w, short h, short ztest, short zpsm)
+{
+    draw->frame1addr = 0x4C;
+    draw->frame1 = ((u64)(((w + 63) >> 6) & 0x3F) << 16) | ((u64)(psm & 0xF) << 24);
+    draw->zbuf1addr = 0x4E;
+    if (ztest == 0)
+        draw->zbuf1 = (u64)(long)func_0026FC10(psm, w, h) | ((u64)(zpsm & 0xF) << 24) | ((u64)1 << 32);
+    else
+        draw->zbuf1 = (u64)(long)func_0026FC10(psm, w, h) | ((u64)(zpsm & 0xF) << 24);
+    draw->xyoffset1addr = 0x18;
+    draw->xyoffset1 = (((u64)0x800 - (short)(w >> 1)) << 4) | (((u64)0x800 - (short)(h >> 1)) << 36);
+    draw->scissor1addr = 0x40;
+    draw->scissor1 = ((u64)(w - 1) << 16) | ((u64)(h - 1) << 48);
+    draw->prmodecontaddr = 0x1A;
+    draw->prmodecont |= 1;
+    draw->colclampaddr = 0x46;
+    draw->colclamp |= 1;
+    draw->dtheaddr = 0x45;
+    if (psm & 2) draw->dthe |= 1;
+    else draw->dthe &= ~(u64)1;
+    draw->test1addr = 0x47;
+    if (ztest) draw->test1 = ((u64)(ztest & 3) << 17) | 0x10000;
+    else draw->test1 = 0x30000;
+    asm volatile("sync");
+    return 8;
+}
 
 int func_0026EFD0(W2GsClear *cp, short ztest, short x, short y, short w, short h, u8 r, u8 g, u8 b, u8 a, u32 z)
 {

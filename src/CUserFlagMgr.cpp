@@ -306,6 +306,15 @@ struct CSvmHook {
         m_fn = f;
     }
 };
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+extern "C" void func_00248C30(CPushBuf *p);
+extern "C" char *func_0024A4A0(void *p);
+extern s32 D_002A1944, D_002A1948, D_002A194C;
+extern void *D_002A1950;
+extern "C" void func_0028A140(void *base, u32 n, u32 size, int (*cmp)(const char **, const char **));
+extern "C" void func_00248C70(CPushBuf *p);
+void Func249348();
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -502,7 +511,6 @@ INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6280);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D6290);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62A0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62A8);
-#if 0 // DIFF 1 (g1): retail tests idx < 0x180 with a plain beqz, ours gets beqzl (nested ifs, &&, goto and signed/unsigned forms all the same)
 int CUserFlagMgr::Vf13F948(const char *name) {
     char line[0x100];
     char path[0x100];
@@ -563,8 +571,6 @@ int CUserFlagMgr::Vf13F948(const char *name) {
     Func249348();
     return ok;
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F948);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62C8);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62D0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D62D8);

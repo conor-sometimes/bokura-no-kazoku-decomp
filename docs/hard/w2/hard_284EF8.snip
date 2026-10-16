@@ -1,0 +1,102 @@
+//@decl
+extern u64 func_00281B20(u64, u64);
+static __inline__ W2Fp *w2_fpmul_parts(W2Fp *a, W2Fp *b, W2Fp *tmp)
+{
+    u64 low = 0;
+    u64 high = 0;
+
+    if (w2_isnan(a)) {
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (w2_isnan(b)) {
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+    if (w2_isinf(a)) {
+        if (w2_iszero(b))
+            return &D_002EAB80;
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (w2_isinf(b)) {
+        if (w2_iszero(a)) {
+            return &D_002EAB80;
+        }
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+    if (w2_iszero(a)) {
+        a->sign = a->sign != b->sign;
+        return a;
+    }
+    if (w2_iszero(b)) {
+        b->sign = a->sign != b->sign;
+        return b;
+    }
+
+    {
+        u64 nl = a->frac & 0xffffffff;
+        u64 nh = a->frac >> 32;
+        u64 ml = b->frac & 0xffffffff;
+        u64 mh = b->frac >> 32;
+        u64 pp_ll = func_00281B20(ml, nl);
+        u64 pp_hl = func_00281B20(mh, nl);
+        u64 pp_lh = func_00281B20(ml, nh);
+        u64 pp_hh = func_00281B20(mh, nh);
+        u64 res2 = 0;
+        u64 res0 = 0;
+        u64 ps_hh__ = pp_hl + pp_lh;
+        if (ps_hh__ < pp_hl)
+            res2 += 0x100000000ULL;
+        pp_hl = (ps_hh__ << 32) & 0xffffffff00000000ULL;
+        res0 = pp_ll + pp_hl;
+        if (res0 < pp_ll)
+            res2++;
+        res2 += ((ps_hh__ >> 32) & 0xffffffffUL) + pp_hh;
+        high = res2;
+        low = res0;
+    }
+
+    tmp->exp = a->exp + b->exp;
+    tmp->sign = a->sign != b->sign;
+    tmp->exp += 4;
+    while (high >= (1ULL << 61)) {
+        tmp->exp++;
+        if (high & 1) {
+            low >>= 1;
+            low |= 0x8000000000000000ULL;
+        }
+        high >>= 1;
+    }
+    while (high < (1ULL << 60)) {
+        tmp->exp--;
+
+        high <<= 1;
+        if (low & 0x8000000000000000ULL)
+            high |= 1;
+        low <<= 1;
+    }
+    tmp->frac = high;
+    tmp->cls = W2_NUMBER;
+    return tmp;
+}
+//@func 0x284EF8
+extern double func_00284EF8(double arg_a, double arg_b)
+{
+    W2Fp a;
+    W2Fp b;
+    W2Fp tmp;
+    W2Fp *res;
+    union { double d; u64 l; } au, bu;
+
+    au.d = arg_a;
+    bu.d = arg_b;
+
+    func_002881A8(&au, (W2FpNum2 *)&a);
+    func_002881A8(&bu, (W2FpNum2 *)&b);
+
+    res = w2_fpmul_parts(&a, &b, &tmp);
+
+    return func_002880D0((W2FpNum *)res);
+}

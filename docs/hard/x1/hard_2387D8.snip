@@ -1,0 +1,61 @@
+//@decl
+#define BITK(x, sh, m, k) (((((u64)(x)) >> ((sh) - (k))) & ((u64)(m) << (k))) >> (k))
+#define LOWB(x, n) (((u64)(x) << (64 - (n))) >> (64 - (n)))
+extern "C" s32 func_002381C0(s32, s32, s32);
+extern "C" void func_00237408(s32);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" void func_002374B0(void);
+extern "C" void func_00238660(void);
+extern "C" void func_00238678(void);
+extern "C" void func_00238718(s32 unused, u32 *p);
+extern "C" void func_00238788(void);
+#define PUTW(v) { u32 *w_ = (u32 *)D_002B94E4; D_002B94E4 = (u8 *)(w_ + 1); *w_ = (v); }
+static inline void PQ4(u32 a, u32 b, u32 c, u32 d) {
+    u32 *q = (u32 *)D_002B94E4;
+    D_002B94E4 = (u8 *)(q + 4);
+    q[0] = a;
+    q[1] = b;
+    q[2] = c;
+    q[3] = d;
+}
+//@func 0x2387D8
+extern "C" s32 func_002387D8(u64 tex, s32 x, s32 y, s32 w, s32 h, u8 *data) {
+    s32 tbp = (s32)LOWB(tex, 14);
+    s32 psm = (s32)BITK(tex, 32, 0x3F, 32);
+    s32 tbw = (s32)BITK(tex, 14, 0x3F, 14);
+    s32 n = func_002381C0(psm, tbp, tbw);
+    s64 bb = (s64)tbp | ((s64)tbw << 16) | ((s64)psm << 24);
+    s64 pos = (s64)x | ((s64)y << 16);
+    s64 reg = (s64)w | ((s64)h << 32);
+    s32 r;
+    func_00237720((u32)func_00238660, 0, 0, 0);
+    func_00237350(0x10);
+    func_00237408(0);
+    PUTW(0);
+    PUTW(0x6008000);
+    PUTW(0x13000000);
+    PUTW(0x50000006);
+    PQ4(0x8005, 0x10000000, 0xE, 0);
+    PQ4(bb, bb >> 32, 0x50, 0);
+    PQ4(pos, pos >> 32, 0x51, 0);
+    PQ4(reg, reg >> 32, 0x52, 0);
+    PQ4(0, 0, 0x61, 0);
+    PQ4(1, 0, 0x53, 0);
+    func_00237720((u32)func_00238678, 0, 0, 0);
+    while (n > 0) {
+        s32 c = 0xFFFF < n ? 0xFFFF : n;
+        func_00237720((u32)func_00238718, (u32)data, c, 0);
+        n -= c;
+        data += c << 4;
+    }
+    func_00237720((u32)func_00238788, 0, 0, 0);
+    PUTW(0x6000000);
+    PUTW(0);
+    PUTW(0);
+    PUTW(0);
+    func_00237460();
+    r = func_00237450();
+    func_002374B0();
+    return (r + 15) / 16;
+}

@@ -38,8 +38,8 @@ public:
 
 class CStatusItem {
 public:
-    void Func1A1B38();
-    int Func1A1AA0();
+    void Func1A1B38() throw();  // throw(): retail compiled both before their callers (nothrow calls)
+    int Func1A1AA0() throw();
     void Fade(s32 mode, s32 total);
     void Func1A3378();
     void SetText(s32 i, const char *s);
@@ -476,6 +476,11 @@ public:
 extern CSePlayer *D_002A5468;
 
 extern char D_002DDFE0[];
+
+// May-throw aliases of two methods defined above: retail compiled Func1A4D28 without seeing their
+// definitions (bnel there, docs/lessons.md nm), so CStatusWinSub1A4A40 was probably its own .cpp.
+extern "C" int SelMT(CStatusItem *, s32) asm("Select__11CStatusItemi");
+extern "C" void GetMT(CStatusItem *, f32 *, f32 *, s32) asm("GetMappedUnkC0__11CStatusItemPfT1i");
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -1615,7 +1620,25 @@ void CStatusWinSub1A40B8::SetUnk80(f32 x, f32 y) {
     m_unk84 = y;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A40C8__11CStatusItem);
+void CStatusItem::Func1A40C8() {
+    s32 i;
+    if (m_state == 1) Func1A1AA0();
+    else if (m_state == 4) Func1A1B38();
+    if (m_mapCount == 0) return;
+    for (i = 0; i < m_mapCount; i++) {
+        if (i == m_sel) {
+            m_entries[m_map[i]].m_unkDC = 1.0f;
+            m_entries[m_map[i]].m_unkE0++;
+        } else if (0.0f < m_entries[m_map[i]].m_unkDC) {
+            m_entries[m_map[i]].m_unkE0++;
+            m_entries[m_map[i]].m_unkDC -= 1.0f / (f32)D_002A4B60->Func1091B0(D_002A26E0->Func1091B0(7) + 5);
+            if (m_entries[m_map[i]].m_unkDC < 0.0f) {
+                m_entries[m_map[i]].m_unkDC = 0.0f;
+                m_entries[m_map[i]].m_unkE0 = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A4298__10CUnk1A4298);
 
@@ -1707,7 +1730,29 @@ void CStatusWinSub1A4A40::Func1A4BA8() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A4D28__19CStatusWinSub1A4A40);
+void CStatusWinSub1A4A40::Func1A4D28() {
+    f32 x, y;
+    if (m_unk70 >= 0x3C) {
+        if (m_unk70 == 0x3C) {
+            SelMT(m_item, 3);
+            GetMT(m_item, &x, &y, 3);
+            ((CMenuMgrSub1B6418 *)D_002A5538)->Move1B6488(x, y);
+        } else if (m_unk70 == 0x3D) {
+            SelMT(m_item, 4);
+            GetMT(m_item, &x, &y, 4);
+            ((CMenuMgrSub1B6418 *)D_002A5538)->Move1B6488(x, y);
+        } else {
+            Func235DE0(D_002DEBA0, m_unk70);
+        }
+    } else {
+        s32 col = m_unk70 % 6;
+        s32 row = m_unk70 / 6;
+        ((CMenuMgrSub1B6418 *)D_002A5538)->Move1B6488((f32)col * 37.0f + 299.0f, (f32)row * 26.0f + 142.0f);
+        m_item->Select(-1);
+        m_unk884 = m_str[(m_unk70 + m_unk74 * 60) * 2];
+        m_unk885 = m_str[(m_unk70 + m_unk74 * 60) * 2 + 1];
+    }
+}
 
 void CStatusWinSub1A4A40::Func1A4E88() {
 f32 x, y; s32 sel, idx;

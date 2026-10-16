@@ -1,0 +1,34 @@
+//@decl
+extern "C" s32 func_00238240(u64 tex0, s32 x, s32 y, s32 w, s32 h, s32 p);
+extern "C" s32 func_00238B08(u64 clut, s32 n, s32 p);
+//@func 0x253E78
+s32 CShareTex::Func253E78(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i) {
+    u64 tex, clut, v;
+    s32 n, m;
+    u32 *p;
+    if (m_unk4 < 0) return 0;
+    tex = m_unk8;
+    tex = (tex & ~((u64)0x3F << 32)) | ((u64)(b & 0x3F) << 32);
+    clut = m_unk10;
+    n = func_00238240(tex, c, d, e, f, a);
+    m = func_00238B08(clut, h * i, g);
+    p = PktAlloc(4);
+    p[0] = 4;
+    p[1] = 0x10000000;
+    p[2] = 0xE;
+    p[3] = 0;
+    v = 2 | (2 << 2) | ((u64)c << 4) | ((u64)(c + e - 1) << 14) | ((u64)d << 24) | ((u64)(d + f - 1) << 34);
+    p = PktAlloc(4);
+    p[0] = (s32)v;
+    p[1] = (s32)(v >> 32);
+    p[2] = 8;
+    p[3] = 0;
+    v = (tex & 0x3FFF) | (((tex >> 14) & 0x3F) << 14) | (((tex >> 32) & 0x3F) << 20) | ((u64)10 << 26) | ((u64)10 << 30)
+      | ((u64)1 << 34) | ((clut & 0x3FFF) << 37) | (((clut >> 32) & 0x3F) << 51) | ((u64)1 << 61);
+    p = PktAlloc(4);
+    p[0] = (s32)v;
+    p[1] = (s32)(v >> 32);
+    p[2] = 6;
+    p[3] = 0;
+    return n + m + 3;
+}

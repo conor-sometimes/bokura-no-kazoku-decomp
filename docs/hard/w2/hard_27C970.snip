@@ -1,0 +1,24 @@
+//@func 0x27C970
+int func_0027C970(unsigned long long now)
+{
+    AlarmEnt *e = D_002BF138.head;
+    unsigned int mode, sh;
+    unsigned long long t, t2;
+    if (D_002BF138.cur >= 0) return;
+    mode = *(volatile unsigned int *)0x10001010;
+    if (e == 0) {
+        func_0027C610(0);
+        func_0027C600(mode & ~0x800);
+        return;
+    }
+    t = e->target + e->start - e->elapsed;
+    while ((e = e->next) != 0 && (t2 = e->target + e->start - e->elapsed) < t + 0x7333) t = t2;
+    sh = mode & 3;
+    if ((long long)(t - now) < 0x7333) {
+        func_0027C610(*(volatile unsigned int *)0x10001000 + (int)(0x7333ULL >> (sh * 4)));
+        func_0027C600(mode & ~0x800);
+        return;
+    }
+    func_0027C600(mode & ~0x800);
+    func_0027C610((int)(t >> (sh * 4)));
+}

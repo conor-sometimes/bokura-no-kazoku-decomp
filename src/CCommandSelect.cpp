@@ -54,8 +54,10 @@ struct CCmdRec {
 class CCommandRecs {
 public:
     void ClearRec(s32 i);
+    void Remove(s32 k);
     u8 pad0[0x50];
     CCmdRec m_recs[16];       // 0x50
+    s32 m_num;                // 0x4D0
 };
 
 class CMenuRecordList {
@@ -134,6 +136,7 @@ struct CCsWin {
     u8 pad0[0x34];
     f32 m34;                  // 0x34
 };
+extern char D_002DD9C8[];
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD928);
@@ -188,7 +191,6 @@ void CCommandRecs::ClearRec(s32 i) {
 
 INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_00198CE0);
 
-#if 0 // DIFF 1 (g1): retail bnez with the next index's sll in the slot, ours bnezl; Insert 0x198CE0 is the mirror (k >= 16 is an unsigned test)
 void CCommandRecs::Remove(s32 k) {
     s32 i, n;
     if (k < 0 || m_num - 1 < k || (u32)k >= 16) return (void)Func235DE0(D_002DD9C8, k);
@@ -198,8 +200,6 @@ void CCommandRecs::Remove(s32 k) {
     if (n < 0) n = 0;
     m_num = n;
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CCommandSelect", func_00198E40);
 
 void CCommandSelect::Func198FA0(s32 k) {
     s32 a, b, c, d, e;

@@ -1,0 +1,52 @@
+//@decl
+extern char D_002B8D08;
+extern "C" void func_00233E08(void *f);
+extern "C" void func_00233E38(void *f);
+extern "C" void func_00233E68(void *f);
+extern "C" void func_00233E98(void *f);
+extern "C" void func_00239298(void);
+extern "C" void func_0022D9F0(void);
+extern "C" void func_0022FE80(s32 a, char *b);
+extern "C" void func_0022DC28(s32 a, s32 b);
+extern "C" void func_0022DC40(char *s);
+extern "C" void func_00234718(void);
+extern "C" void func_00234A38(void);
+extern "C" s32 func_00235A38(void);
+extern "C" char *func_00235A18(void);
+extern "C" void func_00235FD8(void);
+extern const char D_002E4F58[], D_002E4F70[], D_002E4F90[], D_002E4FA0[], D_002E4FA8[];
+extern const char *D_002B8F50[];
+extern const char *D_002B8EF0[];
+//@func 0x234D40
+extern "C" void func_00234D40(void) {
+    s32 i;
+    D_002B8D08 = '0';
+    func_00234C78();
+    D_002B8D60 = 0;
+    func_00234CE8();
+    func_00233E08(0);
+    func_00233E38(0);
+    func_00233E68(0);
+    func_00233E98(0);
+    for (i = 3; i >= 0; i--) {
+        D_36D980[i] = 0;
+    }
+    func_00234948();
+    Func235DE0(D_002E4F58, D_002B8D54);
+    Func235DE0(D_002E4F70, D_002B8D60 >> 16, (D_002B8D60 >> 8) & 0xFF, D_002B8D60 & 0xFF);
+    func_00239298();
+    func_0022D9F0();
+    if (D_002B8D70[0]) func_0022FE80(D_002B8D54, D_002B8D70);
+    func_0022DC28(0, D_002B8D54);
+    func_0022DC28(1, D_002B8D54);
+    func_0022DC40(D_002B8DF0);
+    func_00234718();
+    for (i = 0; i < 4; i++) Func235DE0(D_002E4F90, D_002B8F50[i], D_36D980[i] ? D_002E4FA0 : D_002E4FA8);
+    func_00234A38();
+    strcpy(D_36D540, D_002B8EF0[func_00235A38()]);
+    {
+        char *t = func_00235A18();
+        strcpy(D_36D540 + strlen(D_36D540), t);
+    }
+    return func_00235FD8();
+}

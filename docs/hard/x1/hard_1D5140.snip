@@ -1,0 +1,30 @@
+//@decl
+extern "C" const char *func_0024A778(const char *p, f32 *v, f32 def, const char *s1, const char *s2);
+extern char D_002E1490[];
+//@func 0x1D5140
+int CMiniGame4ResObj::Parse1D5140() {
+    char buf[256];
+    s32 i, j;
+    const char *q;
+    const char *p = func_0024AF10(D_002A5A04->m_text, D_002E1490);
+    if (*p == 0) return 0;
+    for (i = 0; i < 5; i++) {
+        p = func_0024AFE8(p, buf, 1, 0x100);
+        q = buf;
+        for (j = 0; j < 4; j++) q = func_0024A778(q, &m_tbl144C[i][j], 0.0f, D_002E1468, D_002E1470);
+    }
+    p = func_0024AFE8(p, buf, 1, 0x100);
+    q = buf;
+    for (j = 0; j < 4; j++) {
+        q = func_0024A778(q, &m_pairs[j].a, 0.0f, D_002E1468, D_002E1470);
+        q = func_0024A778(q, &m_pairs[j].b, 0.0f, D_002E1468, D_002E1470);
+    }
+    p = func_0024AFE8(p, buf, 1, 0x100);
+    q = buf;
+    for (j = 0; j < 3; j++) q = func_0024A778(q, &m_unk14A4[j], 0.0f, D_002E1468, D_002E1470);
+    p = func_0024AFE8(p, buf, 1, 0x100);
+    func_0024A778(buf, &m_unk1500, 0.0f, D_002E1468, D_002E1470);
+    p = func_0024AFE8(p, buf, 1, 0x100);
+    func_0024A778(buf, &m_unk1508, 0.0f, D_002E1468, D_002E1470);
+    return 1;
+}

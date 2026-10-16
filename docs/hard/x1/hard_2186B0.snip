@@ -1,0 +1,49 @@
+//@decl
+inline f32 Frac217(f32 x) {
+    f32 r;
+    s32 t;
+    asm volatile("mfc1 %1, %2\n\tqmtc2.ni %1, $vf2\n\tvftoi0.x $vf3, $vf2\n\tvmulaw.x ACC, $vf2, $vf0w\n\tvaddw.x $vf2, $vf0, $vf0w\n\tvitof0.x $vf3, $vf3\n\tbgez %1, 1f\n\tvmadda.x ACC, $vf2, $vf2\n1:\n\tvmsubw.x $vf2, $vf3, $vf0w\n\tqmfc2.ni $8, $vf2\n\tmtc1 $8, %0" : "=f"(r), "=&r"(t) : "f"(x) : "$8");
+    if (r == 1.0f) r = 0.0f;
+    return r;
+}
+inline f32 Min217(f32 a, f32 b) { return a < b ? a : b; }
+inline f32 VuSqrt217b(f32 x) { f32 r; asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8"); return r; }
+extern "C" f32 func_0021ACA8(f32 a, f32 b);
+//@func 0x2186B0
+extern "C" f32 func_002186B0(void *pa, void *pb, CVec4 *pos, void *ta, void *tb, s32 flags, f32 r0, f32 r1, f32 ang) {
+    s32 *outA = (s32 *)pa;
+    s32 *outB = (s32 *)pb;
+    s8 *tblA = (s8 *)ta;
+    s8 *tblB = (s8 *)tb;
+    CVec4 d;
+    f32 rel, h, m1, m2;
+    s32 va, vb0, vb1;
+    func_00270A98(&d, pos, &D_338360);
+    rel = Frac217(Frac217(func_0021ACA8(d.x, d.z)) - Frac217(D_338350.b.y));
+    h = rel * 0.5f;
+    m1 = Min217(Frac217(ang - (h + 0.5f)), Frac217((h + 0.5f) - ang));
+    m2 = Min217(Frac217(ang - h), Frac217(h - ang));
+    if (m1 < m2) h += 0.5f;
+    if (flags & 4) {
+        f32 dist = VuSqrt217b(d.x * d.x + d.y * d.y + d.z * d.z) * D_338350.m0;
+        f32 t, c;
+        if (r0 == r1) t = dist < r0 ? 0.0f : 1.0f;
+        else t = (dist - r0) / (r1 - r0);
+        c = t < 1.0f ? (t < 0.0f ? 0.0f : t) : 1.0f;
+        if (flags & 0x10) c = 1.0f - c;
+        va = tblA[(s32)(c * 255.0f)];
+    } else {
+        va = 0x80;
+    }
+    if (flags & 8) {
+        s8 *e = &tblB[(s32)(h * 512.0f) * 2];
+        vb1 = e[1];
+        vb0 = e[0];
+    } else {
+        vb1 = 0x80;
+        vb0 = 0x80;
+    }
+    *outA = (va * vb0) >> 7;
+    *outB = (va * vb1) >> 7;
+    return h;
+}

@@ -1,0 +1,28 @@
+//@func 0x19FE18
+void CStatusWin::Func19FE18() {
+    f32 a, b, c, d;
+    s32 n1, n2, n3, n4, i;
+    D_002A26E4->Func1091B0(0x27);
+    a = (f32)D_002A4B60->Func1091B0(0x19) / 10.0f;
+    b = (f32)D_002A4B60->Func1091B0(0x1A) / 10.0f;
+    c = (f32)D_002A4B60->Func1091B0(0x1B) / 10.0f;
+    d = (f32)D_002A4B60->Func1091B0(0x1C) / 10.0f;
+    n1 = D_002A4B60->Func1091B0(0x1D);
+    n2 = D_002A4B60->Func1091B0(0x1E);
+    n3 = D_002A4B60->Func1091B0(0x1F);
+    n4 = D_002A4B60->Func1091B0(0x20);
+    for (i = 0; i < 9; i++) {
+        if (i == m_unk50) {
+            if (m_unk58 < n1) ((f32 *)&m_unk60)[i] = b + (c - b) * ((f32)m_unk58 / (f32)n1);
+            else if (m_unk58 < n1 + n2) ((f32 *)&m_unk60)[i] = c - (c - a) * ((f32)(m_unk58 - n1) / (f32)n2);
+            else ((f32 *)&m_unk60)[i] = a;
+        } else if (i == m_unk54) {
+            if (m_unk58 < n3) ((f32 *)&m_unk60)[i] = a - (a - d) * ((f32)m_unk58 / (f32)n3);
+            else if (m_unk58 < n3 + n4) ((f32 *)&m_unk60)[i] = d + (b - d) * ((f32)(m_unk58 - n3) / (f32)n4);
+            else ((f32 *)&m_unk60)[i] = b;
+        } else {
+            ((f32 *)&m_unk60)[i] = b;
+        }
+    }
+    if (m_unk58 <= (n3 + n4 < n1 + n2 ? n1 + n2 : n3 + n4)) m_unk58++;
+}

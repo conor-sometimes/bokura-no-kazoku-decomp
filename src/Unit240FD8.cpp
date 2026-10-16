@@ -68,6 +68,11 @@ extern s32 D_38EF90;
 #define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
 extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
 extern "C" void func_00243080(char *);
+
+extern "C" s32 func_00240C60(s32);
+extern "C" s32 func_00240CB8(s32);
+extern "C" s32 func_002410D8(s32, s32 *, const char *, s32);
+extern "C" f32 func_00242468(s32);
 // @decl-end
 
 extern "C" Glyph18 *func_00240FD8(s32 i, s32 key) { FontEnt *f = FontAt(i); if (!f || !f->m38) return 0; return GlyphGet((Glyph18 *)f->m38, f->m30, key); }
@@ -317,7 +322,37 @@ INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00242468);
 
 INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00242918);
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00243080);
+extern "C" void func_00243080(char *s) {
+    f32 cw = (f32)func_00240C60(D_38EF90);
+    f32 ch = (f32)func_00240CB8(D_38EF90);
+    f32 a, b, c, d;
+    u8 *u;
+    a = D_38EFC8 * D_38EFC0 * D_38EFB0;
+    d = D_38EFCC * D_38EFC4 * D_38EFB4;
+    c = D_38EFB8 * D_38EFB0;
+    b = D_38EFBC * D_38EFB4;
+    u = (u8 *)s;
+    while (*u) {
+        s32 n = 0;
+        char *t;
+        s32 *g, k, i;
+        s = (char *)u;
+        for (t = s; *t && *t != '\n'; t++) n++;
+        g = (s32 *)__builtin_alloca(n * 4);
+        k = func_002410D8(D_38EF90, g, s, n);
+        for (i = 0; i < k; i++) {
+            if (g[i]) D_38EFA8 += func_00242468(g[i]) * c;
+            else D_38EFA8 += cw * c;
+            D_38EFA8 += a;
+        }
+        u += n;
+        if (*u == '\n') {
+            D_38EFA8 = 0;
+            D_38EFAC += ch * b + d;
+            u++;
+        }
+    }
+}
 
 extern "C" void func_002432C8(const char *fmt, ...) { char buf[0x1000]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_00243080(buf); }
 

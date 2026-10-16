@@ -7,8 +7,7 @@ extern "C" s32 func_0020E548(s32, s32);
 extern "C" s32 func_0025FBC8(s32 id, s32 b, f32 rate)
 {
     s32 type, x, y, z, n;
-    if (id < 0) return 0;
-    if (rate == 0.0f) return 0;
+    if (id < 0 || rate == 0.0f) return 0;
     type = W2SndType(id, b);
     x = func_0020E4B8(id, b);
     y = func_0020E4E8(id, b);

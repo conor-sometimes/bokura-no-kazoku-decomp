@@ -1,0 +1,29 @@
+//@decl
+extern "C" void func_00267608(void *, s32, s32);
+extern "C" void func_00266CF0(void *, s32, s32, void *, s32);
+extern "C" void func_00267A60(void *, s32, void *, s32);
+extern "C" void func_00243FB0(s32 i);
+extern "C" void func_00244500(void);
+extern "C" void func_002442C0(void);
+//@func 0x244A80
+extern "C" void func_00244A80(s32) {
+    s32 i;
+    if (D_002B9DAC) return;
+    D_002B9DAC = 1;
+    D_002B9D80 = (s32)D_002B91A4(0x180040);
+    D_002B9D9C = D_002B91A4(D_002B9DC8 * D_002B9DCC * 9 / 2 + 0x2840);
+    func_00244198();
+    for (i = 0; i < 4; i++) func_00243FB0(i);
+    D_002B9DA8 = (s32)func_00245460(0x80000);
+    func_00267608(&D_38F000, ((s32)D_002B9D9C + 0x3F) & ~0x3F, D_002B9DC8 * D_002B9DCC * 9 / 2 + 0x2800);
+    func_00266CF0(&D_38F000, 0, 0, (void *)func_00244240, D_002B9DA8);
+    for (i = 0; i < 4; i++) {
+        func_00266CF0(&D_38F000, 2, i, (void *)func_002442C0, i);
+        func_00266CF0(&D_38F000, 3, i, (void *)func_002442C0, i);
+    }
+    func_00267A60(&D_38F000, 0, (void *)func_00244470, 0);
+    func_00267A60(&D_38F000, 1, (void *)func_00244500, 0);
+    func_00267A60(&D_38F000, 2, (void *)func_00244658, 0);
+    func_00267A60(&D_38F000, 3, (void *)func_00244698, 0);
+    D_002B9D84 = -1;
+}

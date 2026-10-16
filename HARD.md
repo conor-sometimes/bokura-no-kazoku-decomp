@@ -229,7 +229,7 @@ below are kept in the lane's notes; each line says what still differs.
 - **CSvmRes 0x12DEC0** (CSvmRes::Load): 3 insns long; retail keeps the found chunk in v0 and computes `c + 0xC` before the null test, ours copies c to a2.
 - **ISysFlag 0x144270, 0x144378 (CSysFlag), 0x144C60, 0x144D68 (CCurFlag)**: bit get/set on `q = b / 7`, `mask = 1 << (b % 7)`, `if (q < 0 || 15 < q) printf(D_002D7940, b, q, mask)`. Retail keeps two signed compares (`bltz q; slti 15 < q`); ours folds to one unsigned compare. Inline `OutRange()` helper keeps two compares but materialises a flag. Same as 0x145160. Retail also computes `base + r*16` before the `r < 0` test (a local `id` did not help). Signatures are in include/CFlagWork.h now.
 - **CUserFlagMgr 0x140D40** (recursive operator-precedence parser, `Func140D40(w, s, depth)`: it takes a depth in a3, which the matched Func140EA0 passes as 0 by accident of `r = 0` living in a3): loop shape and register numbering differ (retail keeps the table pointer in two s-regs). Not ported; rename to `...PPCci` when it is.
-- **CSndWorkReal 0x12A0F0** (DIFF 1), **0x129900** (DIFF 3), **0x1296F0** (DIFF 2): best C is in CSndWorkReal.cpp in `#if 0` blocks above the INCLUDE_ASM. **0x129020** (DIFF 8): store order of m2C/m30/m34 in the two not-busy branches (perm of both triples tried); use the `CSndWork::SetVol(h, x)` inline for the volume tail. **0x1295E8**: s-register numbering of e/next (51 vs 52 insns, SetVol inline tried). **0x12A420**: retail keeps one exit for the 1.0/0.0/curve results; if-chain and ternary shapes 4 insns off. **0x12A510**: DIFF 18, `s + 0x28` and the `out->w = 0` store scheduled differently. **0x128F10** (unlink chara / all): IndexOf inline loop shape (2 insns short).
+- **CSndWorkReal 0x129900** (DIFF 3), **0x1296F0** (DIFF 2): best C is in CSndWorkReal.cpp in `#if 0` blocks above the INCLUDE_ASM. **0x129020** (DIFF 8): store order of m2C/m30/m34 in the two not-busy branches (perm of both triples tried); use the `CSndWork::SetVol(h, x)` inline for the volume tail. **0x1295E8**: s-register numbering of e/next (51 vs 52 insns, SetVol inline tried). **0x12A420**: retail keeps one exit for the 1.0/0.0/curve results; if-chain and ternary shapes 4 insns off. **0x12A510**: DIFF 18, `s + 0x28` and the `out->w = 0` store scheduled differently. **0x128F10** (unlink chara / all): IndexOf inline loop shape (2 insns short).
 - **CMiniGame3 0x1CA3B8 / 0x1CA4C8** (Set2/Set1, with Anim(i)->Set(..)): retail keeps `this + i*0x30` in three registers (two `daddu` copies) and addresses m_ent[i].m_state/m18/m1C as 0xC30/0xC48/0xC4C off it; ours folds 0xC30 into the base. Tried inline ResetScale on the entry and on the task, direct stores, chained. Set3/Set4/Set5 match with the Anim(i) helper.
 - **CMiniGame3 0x1CA528** (Shuffle, DIFF 2): best C in the source; only the order of `li 16` (the inline Rand(n) divisor) vs the LCG constant's `ori`.
 - **CMiniGame2 0x1C4810** (Pick): solved later (inline Range(lo, hi)); **0x1C4CA0** (LoadLevel): DIFF 25, s-register numbering (retail keeps &mD6C in s0; the CMiniGame3 twin 0x1C9F80 matches); **0x1C48E8** (SetQuestion): DIFF 26, register numbering only (m_q[j + 3] indexing and the inline CRand::Rand(n) give retail's shape).
@@ -240,11 +240,11 @@ below are kept in the lane's notes; each line says what still differs.
 - **CMiniGame2 0x1C4710 / CMiniGame3 0x1C9E90** (task destructors, key methods; Load is now C++ so the units could go to level 3): retail keeps `this + 0xAA0` (0x920 in CMiniGame3) in an s-register from the entry and destroys it first with func_001B9D70(p, 2); that member is built by func_001BD188, the others by func_001B9D40. POD members with explicit calls, class members, an implicit/inline derived destructor (passes 0, not 2) and an empty inline call on the member: all 59/64 insns.
 - **CMovieObj 0x13E800**: hill-climb perm of the 9 individual stores reaches DIFF 2 (as before); inline head Reset() can't interleave.
 - **Menu Update state machines** (0x1A7818 CMenuSysscr32, 0x1ABF80 CMenuSysscr09, ...): the CStateMachine loop `while (!done && !(m_flags & 0x80)) switch (m_state) {...}` matches retail's case tree (cases -1, -202, -207/-213, -226, -230 and `default: goto out`), but ours jump-threads `done = 1` straight to the exit while retail keeps the flag in a register and loops back; the whole loop collapses (115 vs 122 insns).
-- **CCommandSelect 0x198E40** (record remove): DIFF 1, best C in the source; **0x198CE0** (insert) is its mirror, 1 insn short (retail passes m_num for k in the k == m_num path). **0x19A480** (draw the two gauges): DIFF 29, s-register numbering only (pointer walk over m_rect; the index form is longer).
+- **CCommandSelect 0x198CE0** (insert) is the mirror of the matched Remove 0x198E40, 1 insn short (retail passes m_num for k in the k == m_num path). **0x19A480** (draw the two gauges): DIFF 29, s-register numbering only (pointer walk over m_rect; the index form is longer).
 - **CMenuTutorSelected 0x184090 / 0x1841D0** (caption draws): a CTextBuf filled field by field (~20 stores) whose scheduled order differs between the two functions; not tried beyond decoding (0x1841D0 sprintf's six (s32) casts of a f32 v[2][4] picked by m_mode).
 - **CSvmRes CValue setters** (update with `as -g`): the unfilled delay slots now match; what is left is the tail call: ours sibcalls sprintf/strcpy at the end of the switch (whatever the case order, `break` or `return`), retail keeps `jal` + epilogue.
 - **CSndWorkReal 0x128E78** (SetChara): perm of the fade-reset stores (with m_unkA8) best DIFF 4; field at 0x18 of the chara, not m_name.
-- **CUserFlagMgr 0x141F68 / 0x1425D8 / 0x141768 / 0x1409A8 / 0x13F948**: switch dispatchers now possible (jump tables work after the .rodata piece fix), not written yet; 0x142318's best C is in the source (DIFF 1).
+- **CUserFlagMgr 0x141F68 / 0x1425D8 / 0x141768 / 0x1409A8**: switch dispatchers now possible (jump tables work after the .rodata piece fix), not written yet; 0x142318's best C is in the source (DIFF 1).
 - Solved later in this round: CMapAttr 0x1182B8 (field init), CGameMain 0x150C30 (dtor, unit to level 3),
   CPhotoDBMgr 0x1705C0 (key method, unit to level 3) and 0x170B18 (PMF literals), CMapEffObjRes 0x1228F0.
 - Solved this round from older entries: CCharaRes 0x112030, 0x1120A0, 0x112B60 (lane 2 round 2).
@@ -362,7 +362,6 @@ Lane r3 (2026-10-15, rxsnd C units Unit20E938..Unit21F250).
 - **CMiniGame3 Set2 0x1CA3B8** now DIFF 3 (best C in the source): writing the stores as `m_ent[i].m0 = 9; m_ent[i].S18(1.0f); m_ent[i].m1C = 1.0f;` gets retail's 0xC30/0xC48/0xC4C addressing; retail stores m18 through a copy of the m0 base where ours recomputes it. Set1 0x1CA4C8 is its twin.
 - Solved later in g1: 0x13FF08 ParsePairs and 0x13FD00 (`while (s = Func(s, line, ...), *s || line[0])` with `continue`s, entries written as tbl[n].x), 0x142B38 SingleBit (`if (exact && (mask & ~(1 << i))) return -1; return i;`), 0x140358 (switch on *s with `*dst++ = *s++`), 0x1401B8 (inline Put(s32) on the writer, `Put(v >> 7i & 0x7F | (i > 0 ? 0x80 : 0))`, `n = n < 1 ? 1 : n`), 0x1C4810 Pick (inline Range), 0x1C9D70 CMiniGame3 ctor.
 - **CCommandSelect 0x199108**: 19 vs 18 insns, best C in the source. Four separate `m_rect[k].c = 1.0f` stores reproduce retail's daddu copy chain (the same chain as CMiniGame3 Set2); ours folds 0x500 into the index add where retail keeps `this + k*32` with displacement 0x500.
-- **CUserFlagMgr 0x13F948** (slot 2, loads the flag table): DIFF 1, best C in the source; only the idx < 0x180 test (retail beqz, ours beqzl). Getting there needed __builtin_alloca (not a VLA: no saved sp), a separate count index copied to n, `s = text` just before the loop (text spills to the stack as in retail) and `if (!line[0]) continue;` first in the body.
 - **CUserFlagMgr 0x1409A8** (compile one token): DIFF 59 at the same length, best C in the source; block layout of the shared 'unknown' print (cross-jumped in retail). Real signatures: Func1409A8(CUserFlagWriter *, const char *tok, const char **s) and Func140938(CUserFlagWriter *, const char **) (both renamed), Func140D40 takes a third int (depth).
 - **IFadeMgr 0x10B350** (fade draw): hand-built GS/GIF packet (inline packet macros, u64 bitfield packing, cvt.w.s colours); not tried. **CFaceObj 0x10E138**: draw-list builder (10-arg virtual call, 32-byte upload entries on a 0x2000 stack array, TEX0 psm bits patched per entry); not tried.
 - **CMenuTutorSelected 0x1848E0** (Draw): the same inline GS packet builder as IFadeMgr 0x10B350 (D_2EBB48 packet pointer, TEX/FRAME/ZBUF from func_0023C650/658); not tried. No lane has a C version of these packet macros yet.
@@ -533,7 +532,6 @@ functions listed in r5.tsv.
 - CGameSeasonPrev 0x1582C8 DrawSeasonImage (225 insns): structure matches (best C: docs/hard/g4/hard_1582C8.snip, u64 tex from vslot 5, clut slot 6, `s32 ofs = 8; s32 w = 0x280;` before the loop so `(w<<4)+ofs` stays unfolded, loop-invariant TEX0 hoisted). Remaining: register allocation. Target keeps the raw tex ($17) and masked tex ($22) in separate pseudos but still computes TBP from the masked one; one variable gives the wrong s-reg order, two variables let combine fold `(tex0 & ~M) & 0x3FFF` into `tex0 & 0x3FFF`. DIFF ~1090.
 - CChrBodyWin.cpp 0x187A68 Func187A68 (ChrTypeImg name, 191 insns): structure and branches match (best C: docs/hard/g4/hard_187A68.snip; returns int, `f = GetFlag187680(...)` reuses the parameter in the type-6 branch). Remaining: `this` and `f` swap s1/s2. DIFF 1130.
 - CGameMain 0x151120 Func151120(slot, name, delta, useSaved, e) (172 insns): logic and layout right (best C: docs/hard/g4/hard_151120.snip; needs IGameDBMgr slot 24 as `Func14DB70(f32 *out, s32 id)` and CGameMainFlagDef fields m4/m18/m1C/m20). Retail reloads `rec->m0` in the else branch; ours reuses the loop-test value (gcse), which shifts the s-registers. A `base = rec->m0` local gets to DIFF 91 but costs an s-reg.
-- CGameMain 0x1513D0 Func1513D0(slot, name, all) (161 insns): DIFF 1, in unit context too: retail `bnez` at the loop top (`if (!all && !func_00150EA8(this, i)) continue;`, delay slot `lw sel`), ours `bnezl`. Tried nested ifs, positive conditions, goto, while. Best C: docs/hard/g4/hard_1513D0.snip (uses CGameMain::Func150FD8, now named).
 - CGameMain 0x151A78 (single-event picker, 214 insns): best C docs/hard/g4/hard_151A78.snip (goto loop for the "all married" scan, CGameRand at this+0x144). Remaining: retail keeps `blez n` before the "first single event" loop (ours drops it), the two event prints share one Func235DE0 call, and the s-registers differ. DIFF ~1135.
 - CCharaObj 0x117B48 Func117B48 (VU0 matrix apply, 149 insns): DIFF 12, docs/hard/g4/hard_117B48.snip (VU_* macros as in 0x117898, VuApply with `register ... asm("$7")`/`asm("$5")` operands). Left: the resource entry pointer gets a0 (ours `beqz`) instead of v0 (`beql`), and the default `&D_002A05C0` goes through a3 instead of v0.
 - CCharaObj 0x117668 Func117668(s32) (VU0 model matrix, 140 insns): DIFF 5, docs/hard/g4/hard_117668.snip. Retail recomputes `&out` (`addiu $6, $29, 0x40`) for the call after the VU store; ours reuses $2 from the store's register variable. A tied output or a "$2" clobber makes it worse (a pseudo copy).
@@ -706,8 +704,6 @@ data is split.
 - **0x22FED0** (Unit22DE48, `if (a == -1) a = func_00234938(); if (f = func_00230460(a)) f->f[8]();`): one insn short: retail copies the returned FsOps* to $3 before the `beqz` (as in the early-return getters), ours tests $2. Its twin 0x22FE80 (f[7](b)) matches.
 - **0x10CDD0 / 0x10CE40** (CEFontWork, clamp a and b to [-128,128] then `(a * (b > 0 ? 128 - b : 128)) >> 7` / `b < 0 ? b + 128`): retail evaluates all four range compares (`slti -0x80`, `slti 0x81`) before the first branch, with the values copied through two registers; plain nested ternaries give the right compares but branchy order (DIFF 25), inline clamp helpers get `li 128; slt`.
 - **0x1091B0** (CFlagWork::Func1091B0, read a flag value: bounds check, `memcpy(&v, m_data + d->m_off, d->m_size)`, sign-extend by `(4 - size) * 8`): DIFF 17, register choice only: retail copies `this` to a2 and keeps `id` in a1; ours copies both. Tried early returns, nested if, goto.
-- **0x123D88** (CMapEffAquariumWork::Func123D88: `if ((u32)i < 8) { s = &m_slots[i]; if (!s->m_busy && RandMod(seed, 501) == 100) Func1236C8(i); }`, RandMod an inline taking the divisor so the divu keeps its zero trap): DIFF 2, ours `bnezl` / `bnel` with `ld ra` in the likely slot, retail plain `bnez`/`bne`.
-- **0x19AEC0** (CStatusBaseSub19AE68::Func19AEC0: warn unless m_unk18 is 2 or 3, then m_unk18 = 2, m_unk1C = flag 0x68, SetUnk384(1.0f)): DIFF 1, `bnezl` with `li v0,2` in the likely slot vs retail `bnez` (li in the slot, repeated after the print). Tried `!= 2 && != 3`, unsigned range, `< 2 || > 3`, switch.
 - **0x1447A8** (CCurFlag ctor: CFlagWork(0,-1) base, `D_002A26E4 = this`, Func108448(this, D_002A1D40, -1), then the print as a tail `j`): DIFF 2, only where the `lui %hi(D_002A26E4)` is scheduled (retail before the call setup, store in the jal delay slot).
 - **0x1B4418** (CMenuMgr::Start1B4418: id < 0x2B check with print, m64/m68, `m_proc = D_002A5470[id](this, id)`, SetUnk50(arg), print): DIFF 2, prologue order of `move s0,a0` vs the `sll` of id.
 - **0x19CCF8** (CStatusBase, `k = base + round(n * Clamp01(t))`, changed flag `*cur != k`, `*cur = k`, `*out` clamped 0..9 with movn/movz): two insns long; retail copies a0/a1 to t1/t0 first (inline-function parameters?) and if-converts the final clamp.
@@ -759,10 +755,12 @@ Lane w2 (goal 6b, dklib Dk* and library Lib* units), 2026-10-16. Best attempts i
   schedules `move v0,zero` before the store.
 - 0x276020 (Dk2752B8, queue a command): DIFF 5; retail emits `q->m10 = c` before copying the fields,
   ours after the first two loads (tried if/else orders, per-branch stores).
-- 0x2843A8 (libgcc get_reg_addr), 0x285EF0 (libgcc add_fdes): first tries 2-insn length differences;
-  retail keeps `udata + 0xC` / `reg + 0x3F0` as separate addends (saved[] indexed through a hoisted
-  base), add_fdes keeps the fde_insert inline's `accu->linear.count` pointer in t6 and branch-likely
-  forms. docs/hard/w2/hard_2843A8_285EF0.snip.
+- 0x2843A8 (libgcc get_reg_addr), 0x285EF0 (libgcc add_fdes): with Lib283858 as C and the real
+  frame_state layout (cfa, eh_ptr, cfa_offset, base_offset, args_size, long reg_or_offset[123], cfa_reg,
+  retaddr_column, saved[123], indirect) get_reg_addr is DIFF 22 as `if (saved[reg] == 2) do ... while`:
+  retail rotates the while loop by duplicating the exit test and, when the first test fails, reuses the
+  loaded saved[] byte for the `== 1` test; ours reloads. add_fdes keeps the fde_insert inline's
+  `accu->linear.count` pointer in t6 and branch-likely forms. docs/hard/w2/hard_2843A8_285EF0.snip.
 - 0x287A70 (libgcc __cp_push_exception): DIFF 2 after hill-climbing perm of the 9 field stores
   (docs/hard/w2/hard_287A70.snip).
 - 0x286E20 (__user_type_info::do_dyncast): 37 vs 38 insns; retail `beql` to a shared epilogue after the
@@ -790,11 +788,10 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
 
 - **0x21BAC0** (114 insns): Unit219970 func_0021BAC0 (VU program upload slot alloc): DIFF 22-23, prologue scheduling (i*4 / i*0x441 order) and the store order of the 3 GItem fields (retail p,x,y; best perm y,x,p). Needs Grp.it[32][16] (GItem moved up) and s32 return in the unit decl.
 - **0x1D5420** (76 insns): CMiniGame4Res shuffle (CMiniGame4ResObj::Shuffle1D5420, needs CRand::Rand and the method decl added in the unit): DIFF 46. Retail reads order[j] through (this+4) + a running 0x1400+4j offset with the base re-copied in the loop (daddu $10,$7) and writes through a separate this+0x1404 pointer; best: read via a view struct o->a[0x500+j], write m_order[j]. Register allocation still differs.
-- **0x223A90** (92 insns): Unit222CE0 TEX0-to-FRAME VIF packet (PUT/PutQ with s64 halves): the same-mask DImode AND problem of 0x23A1D8: our two (t >> k) & 0x3F share 'li 63' (CSE), retail keeps two andi; everything after it shifts (DIFF 91). u32 casts and a u64 bitfield struct tried.
 - **0x10DFD0** (56 insns): CFaceObj::Draw (fills a sprite record {u64 tex; x; y; w; h; handle} from a face cell, optional font-manager vcall slot 5 with 9 args): DIFF 11. Store order and the early v0=0 now match; left: p->m0 lands in v1 (retail a0) and the order of the vcall argument setup (retail loads p->mA/p->m8 before the slot address).
 - **0x244500** (86 insns): Unit243AB8 IPU/MPEG input refill: everything matches except one slot: retail 'li a0,0x101; and; sw (volatile 0x1000B410); jal func_00244498; nop' (retail gas honoured .set volatile), ours lets GNU as move the sw into the jal slot; NOSWAP() after the store blocks GCC from hoisting the li, a register-asm a0 variable miscompiles. Everything after is shifted by one insn (DIFF 38).
 - **0x236BC8** (102 insns): Unit236130 debug console row render (8x8 1bpp font, rows doubled by 1 << (1 - mode)): DIFF 30, register allocation inside the cell loop only (retail: ch reuses v's register, col in $4, bits $10, p and the row-copy counter share $9). Needs the (s32 (*)(...)) cast on func_00236B50 (retail passes unextended ints).
-- **0x2384B8** (106 insns): Unit237A88 BITBLTBUF/TRXPOS/TRXREG/TRXDIR A+D packet (returns 6 qwords): same DImode-mask problem as 0x223A90: our (x >> k) & 0x3F / & 0x3FFF share li 63 / li 0x3FFF registers (CSE of the forced constant; -O1, -fno-gcse etc. do not change it), retail has andi everywhere; SImode masks add dsll/dsra32 truncations. Packet decoded in the snippet.
+- **0x2384B8** (106 insns): Unit237A88 BITBLTBUF/TRXPOS/TRXREG/TRXDIR A+D packet (returns 6 qwords): the mask part is solved with BITK/LOWB (all andi now, see the snippet and docs/lessons.md ## x1), DIFF 92 left: retail reassociates the bb ORs as ((srclo|dst32) | (dstlo|src32)) | (src14|dst14) and keeps &D_002B94E4 in t7 with 4 saved regs (0x20 frame), ours uses 5 (0x30). Statement-order perm (720 orders) found nothing.
 - **0x2381C0** (32 insns): Unit237A88 switch with jump table jtbl_002E5230: blocked, the C-style units have no .rodata of their own (ro_tail).
 - **0x23D330** (38 insns): Unit23C680 switch with jump table jtbl_002E55C0: blocked (ro_tail, level 1).
 - **0x23DD40** (210 insns): Unit23C680 switch with jump table: blocked (ro_tail, level 1).
@@ -826,19 +823,13 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
   the start_fde_sort results through it; ours keeps pc_begin/pc_end pointers in s3/s4 (0x50 frame).
 - 0x287B00 (__cp_pop_exception, newer rethrow logic), 0x287E50/0x287EB8 (__throw_bad_cast/typeid with EH
   landing pads merged with the next function) not attempted.
-- 0x28AD50 (newlib _raise_r, simplified): DIFF 1, `bnez` vs our `bnezl` at the `_sig_func == NULL` test.
 - 0x2762A8 (Dk2752B8, 15 insns): retail leaves every delay slot empty and returns 0/1 from two blocks; ours
   folds to `andi` result (10 insns); volatile fields tried.
 - 0x27F670 (libpad, 6-byte copy into the RPC buffer): retail keeps &D_424380 in s16 and builds the copy
   pointer from it; ours materialises the address twice (55 vs 54).
 - 0x2688E8 (Dk268138, MPEG buffer pointers, 9 out-params): retail recomputes `q * 384` three times; ours CSEs.
-- 0x27E260 (Dk27DBB8, IPU register snapshot): DIFF 17, register naming of the constant addresses only.
 - 0x283D20 (libgcc __eh_alloc): retail's mask search is a short down-counting loop (67 vs 56 insns ours).
 - 0x27DE90 (Dk27DBB8, call handler table switching $gp per entry) not attempted.
-- 0x291A58 (newlib multadd): DIFF 1, `bnez` vs our `bnezl` at `wds >= b->_maxwds`. 0x291D10 (lo0bits): retail
-  tests `x & 1` with andi/bnel and stores `*y` in the likely slot (46 vs 47 insns).
-  docs/hard/w2/hard_291D10_291A58.snip.
-- 0x292018 (newlib pow5mult): DIFF 1, same bnez/bnezl pattern at `if (!(p5 = ptr->_p5s))` (docs/hard/w2/hard_292018.snip).
 - 0x2926D0 (newlib d2b): DIFF 5, only which register carries word1 before the lo0bits call (docs/hard/w2/hard_2926D0.snip).
 - 0x280E88 (newlib __ieee754_sqrtf, no-denormal variant): DIFF 8, scheduling of the mantissa setup only.
 - 0x283490 / 0x2835A8 (libgcc __fixunsdfdi / __fixunssfdi): DIFF 17-18, the libgcc2 source matches except
@@ -853,30 +844,367 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
 - 0x267E58 func_00267E58 (Dk265918, 72 insns, MPEG decode step): DIFF 3 with `{ s32 ok; if (!func_0026D110(s, 0)) ok = 0; else ok = func_0026CFB0(s) != 0; r = ok; }` (the sibling 0x267FC0 matched with the `ok = 0; if (f()) ok = 1;` movn form). Only the temp register differs: retail ok in $3 (v1), ours v0. Tried inline helper, t temp, ?:, u32. Snip docs/hard/w2/hard_267E58.snip.
 - 0x2746E0 func_002746E0 (Dk2735D0, 38 insns, double -> int with round-half): logic and instruction sequence match; registers m/e swapped (retail m=$5 a1, e=$6 a2; ours m=a2, e=a1) and retail leaves the final `jr` delay slot empty (dsra32 before jr). DIFF 25. Tried m as param, union, decl orders. Snip docs/hard/w2/hard_2746E0.snip.
 - 0x275398 func_00275398 (Dk2752B8, 78 insns, sceSifSendCmd core): DIFF 17, store scheduling only (needs alias D_41D1A0 in config/aliases.ld, added). Retail stores dma[0].data (from the a0 copy of src) before dma[0].addr, and in the packet entry stores data/addr/size/cid/psize/mode in source order with the D_41D1A0 load hoisted; `bk perm` over both blocks finds no order. Snip docs/hard/w2/hard_275398.snip.
-- 0x285180 dpdiv (Lib283858, 80 insns, fp-bit divide with _fpdiv_parts inlined): DIFF 1. Retail loads b->class as `lw $5, 0x20($29)`, ours as `lw a1, 0(s0)` (s0 = &b, kept for the unpack call and `return b`). Tried enum/int struct types, cast forms, isnan forms, `a->normal_exp -= 1` (needed; `--` gives DIFF 19), __inline__, memory barrier. Snip docs/hard/w2/hard_285180.snip.
 - 0x27B1A0 func_0027B1A0 (Dk27A100, 86 insns, IOP reset/reboot packet): everything matches except retail leaves both `jal func_00273470` and `jal func_002735B0` delay slots empty (`lui a0,0x8000` stays before the jal); ours moves the lui into the second slot, shifting the rest (DIFF 12). Tried K&R/const/unsigned decls, asm barrier, temp arg. Snip docs/hard/w2/hard_27B1A0.snip.
 - 0x263668 / 0x263980 (Dk2631E0, 92 insns each, sound RPC bind): structure matches (snip for 263668); retail leaves the delay slots of `jal func_002731F0` / `jal func_002731C0` (kernel syscall stubs, PollSema/SignalSema) empty with the `lw a0, D_002BBBE8` before the jal, ours moves the load into the slot. Same pattern as 0x27B1A0 (syscall stubs 0x273470/0x2735B0). Calls to non-syscall functions in the same functions are filled normally. Snip docs/hard/w2/hard_263668.snip.
 - 0x26DB60 func_0026DB60 (Dk26CFB0, 92 insns, toSPR DMA REF-chain builder): logic right (struct blk[2] at 0x5A8 with cur at 0x828, n hoisted, id 3/0 via movz); loop body register allocation and scheduling differ (retail p=$10 i=$11 n=$12 n-1=$13 b=$14 a=$15, ours t2..t7 in another order), DIFF ~80. Snip docs/hard/w2/hard_26DB60.snip.
 - 0x26D720 func_0026D720 (Dk26CFB0, 94 insns, MPEG pts/dts/flags): DIFF 17. Control flow and the divide call match; retail computes the odd bit as `andi $17,x,1; andi $16,cnt,1; and; andi $2,m90,1; and` (keeps the `& 1` on the 64-bit m90), ours drops it, and the 6-term flags OR (shifts 0,3,8,7,5,6 of p+0x2C..0x40) schedules differently (`bk perm` over the terms: best DIFF 19). Snip docs/hard/w2/hard_26D720.snip.
 - 0x257068 func_00257068 (Dk254AA8, 86 insns, font string width/draw): DIFF 4, one call's argument scheduling: retail sets `mov.s $f13,y` before `jal func_00256DC8` and puts `daddu $6,$16` (l) in the delay slot; ours the other way round. The other call in the same function matches. Snip docs/hard/w2/hard_257068.snip.
 - 0x262108 func_00262108 (Dk260A60, 97 insns, audio frame decode loop): outer loops and calls right (snip); the resync byte copy differs: retail skips trailing 0xF8 bytes with a do-loop whose `base < p` test sits in a bnel delay slot, then copies backwards entering the copy loop in its middle (`b; sb` with the already loaded byte). Our while/for forms get rotated/duplicated by GCC (DIFF ~74). Snip docs/hard/w2/hard_262108.snip.
-- 0x25FBC8 func_0025FBC8 (Dk25E340, 90 insns, sound buffer size by format): logic in snip; two blockers: (1) retail converts float to int with `cvt.w.s` (splat prints it as `.word 0x46000064`), our ee-gcc 2.96 emits `trunc.w.s` for a C cast, so it needs inline asm; (2) the early-return/switch layout differs (DIFF 89). The same `.word 0x46000064` appears in ~10 other unmatched functions (CSndWorkReal, CFlagWork, CGameMain, Unit237A88...). Snip docs/hard/w2/hard_25FBC8.snip.
+- 0x25FBC8 func_0025FBC8 (Dk25E340, 90 insns, sound buffer size by format): DIFF 43, snip docs/hard/w2/hard_25FBC8.snip. The `cvt.w.s` is NOT a blocker: a plain `(s32)` cast emits it (objdump just prints the R5900 encoding 0x46000024|... as `trunc.w.s`; utest compares bytes). Left: the switch compares (retail `beql` with the next constant in the slot, ours `beqz`+`li`) and the n/z register pair (retail $6/$4, ours a1/a2). `if (id < 0 || rate == 0.0f) return 0;` fixed the head (89 -> 43).
 - 0x274118 func_00274118 (Dk2735D0, 102 insns, DECI2 sio event handler): control flow right (snip); s-register assignment swapped (retail param/result/index in $16 and the Sio pointer in $17; ours the reverse), and the receive-size test is unsigned (`sltiu`, param u32). Reusing param as the result and index variable gets DIFF 64. Snip docs/hard/w2/hard_274118.snip.
 - 0x275748 func_00275748 (Dk2752B8, 104 insns, sceSifInitRpc): structure, calls and tail calls right; s-register numbering differs (retail &D_41EBC0=$16, const 1=$17, D_41D3C0=$18; ours s0, s2, s1) and the ten RPC-data stores are ordered 0x20,0x0,0x14,0x4,0x1C,0x8,0xC,0x10,0x18,0x24 (`bk perm` can't run it standalone). DIFF 40. Snip docs/hard/w2/hard_275748.snip.
 - 0x289EAC func_00289EAC (Lib2888C0, 65 insns, newlib memmove with EE 2x lq/sq 32-byte blocks and ld/sd 8-byte words): newlib structure in snip; register use differs (retail copies dst_void to $8 and walks dst in $3, src stays in a1; ours copies src) and the block loops schedule differently, DIFF ~62. memcpy (0x289DFC) is in the same state.
 - 0x2958B0 func_002958B0 (Lib294A60, 22 insns): VU0 macro-mode distance (lqc2/vsub/sqc2, vsqrt via qmtc2/cfc2): inline-asm/handwritten, not attempted.
 - **0x10CF40** (58 insns): CList ~CTexCacheMgr (slot 6; slot 1 is the key method, so it can be written with the vtable in asm: CList.cpp now declares the ITexCacheMgr/CTexCacheMgr virtuals and the TList member at 0x20): DIFF 44. The inlined ~CList drain loop: retail tests the node at the top and loops back with 'bnez e' (no rotation), ours either rotates (while) or folds the bottom test to 'b' (do/while, goto); also D_002A039C = 0 should be a direct %lo store.
-- **0x21BF50** (98 insns): Unit21BEC0 TEX0/CLAMP setter (floats 0.5/1024 to D_33D6C0, GS_SET_TEX0/GS_SET_CLAMP into D_33D6B0): first 54 insns match; the TEX0 masks hit the DImode constant-CSE problem (ours li 63 / li 0x3FFF shared, retail andi each and TBW folded to 'and 0xFC000'). Twins 0x220708, 0x220890 (Unit21F250, D_33DCA0/D_33DCC0) are the same function. Matched GS_FRAME code in Dk24FAF0 0x2514B8 shows retail CSE-ing these constants too, so the source must have the masks in another form (u32 bitfield unions add truncations; tried).
+- **0x21BF50** (98 insns): Unit21BEC0 TEX0/CLAMP setter (floats 0.5/1024 to D_33D6C0, GS_SET_TEX0/GS_SET_CLAMP into D_33D6B0): masks solved with LOWB/BITK (all andi, TBW folds to and 0xFC000 like retail): DIFF 10, only the order of 6 independent insns in the TEX0 OR tree (retail: dsll32 cpsm before the and of TBW; tcc constant built after). Field-temp perm (120 orders), CLAMP first, hand-ordered OR all worse. Twins 0x220708, 0x220890 (Unit21F250) should go the same way.
 - **0x220708** (98 insns): Unit21F250 twin of 0x21BF50 (D_33DCA0/D_33DC90): same DImode-mask problem.
 - **0x220890** (98 insns): Unit21F250 Func220890 twin of 0x21BF50 (D_33DCC0/D_33DCB0): same DImode-mask problem.
-- **0x220E08** (108 insns): Unit21F250 VU microcode upload + debug size prints (needs D_33DCF8/D_33DCFC defined in config/aliases.ld): DIFF 12, only the first block: retail keeps the func_0021BDD0 result in v0 and uses $3 for the lui of D_33DCFC; ours copies it to v1 and puts the lui in v0. Everything after matches.
+- **0x220E08** (108 insns): Unit21F250 VU microcode upload + debug size prints (D_33DCF8/D_33DCFC are now in config/aliases.ld): DIFF 12, only the first block: retail keeps the func_0021BDD0 result in v0 (sw/bgez on v0, copy to a1 for both paths) and uses v1 for the raw lui 0x34 of D_33DCFC; ours copies it to v1 and puts the lui in v0. Tried r = ..., chained assignment, if-block return, reading the global back. The twin 0x21E4A0 matched (its result is not printed).
 - **0x23B510** (58 insns): Unit23A1D8 move a handle's node to the front of the D_37CDE0 index list: DIFF 51. Retail computes &D_37CDE0[r] and &D_37CDE0[1] from two separate lui/addiu of the symbol and writes the neighbours through `sh reg, D_37CDE0+off(idx)` $at macros; ours CSEs the base into one register (t3) and uses reg+reg addressing.
 - **0x1A1B38** (44 insns): CStatusWin CStatusItem::Func1A1B38 (switch on m_unk2C: Fade(1, flag 3/4) or ResetColors): blocked, its jump table jtbl_002DE180 sits in CMenuInputKanji's .rodata (text boundary: the function belongs to the next unit).
 - **0x2395A0** (62 insns): Unit237A88 DMA channel sync with timeout (sceDmaSync-like: mode 1 polls, else waits on chcr & 0x80000100, prints D_002E5348 and clears STR on timeout): draft DIFF 55; retail has an odd padded one-pass loop (and; li v0,0; 3 nops; bnez v0) around the chcr & ~0x101 store, i.e. some macro loop with a constant-false condition, and keeps the mask in $18.
-- **0x1A4D28** (88 insns): CStatusWin CStatusWinSub1A4A40::Func1A4D28 (cursor move for item 0x3C/0x3D or the 6-column grid): DIFF 1: retail 'bnel a1,v0 / li v0,0x3D' (likely), ours 'bne' with the same slot. Tried switch, if/else-if, early returns, int return type, a local copy of m_unk70.
 - **0x1A3488** (66 insns): CStatusWin CStatusItem reset (switch per entry type): blocked like 0x1A1B38, its jump table jtbl_002DE630 is in CMenuInputKanji's .rodata, so the CStatusItem code (0x1A0xxx-0x1A4xxx) likely starts the CMenuInputKanji object (unit boundary).
 - **0x241E78** (76 insns): Unit240FD8 TEX0 + GIF tag packet for the current font texture (same TEX0 expression as 0x21BF50): DImode-mask CSE problem; draft not written beyond the mask analysis (see 0x21BF50).
 - **0x148110** (74 insns): CGameDBMgr::Func148110 (load presetev table for the current mode, track the max id; needs CPushBuf::Func248CC8 declared in the unit): one delay slot: retail 'beqz v0,skip / sll v0,v1,2' (filled from the fall-through), ours leaves a nop there and the loop that follows gets an alignment nop. Count-down loop shape matched with 'for (i = 0; i < m_num1D0; i++)'.
 - **0x23DB28** (114 insns): Unit23C680 texture-handle debug print/refcount (uses the return address via $31 and u64 handle bitfields): not attempted beyond analysis; its three '& 0xFFF' and two '& 0x3F' masks are separate andi in retail (the DImode-mask problem of 0x21BF50).
-- **0x192710** (142 insns): CMenuContinue::Update (state.h menu machine, same shape as the unmatched CMenuNosave::Update and g3's 0x1AC200): DIFF 30. Same open problem as g3: retail places the then-block of the last wait (state 5, m4C, -0xBE) before its test and cross-jumps every 'm4 = X; done = 1; goto loop' into one 'li a0,1; b loop; sw v0,4' tail; ours keeps the test first. A while-loop with the case label inside (Duff style) duplicates the test.
 - **0x1722D8** (112 insns): CResortDBMgr::Func1722D8 (GET table: m_names[i] = {i + 0x10, 8 value pairs}): DIFF 9, register choice only: retail materialises 0x40 before 8 and reuses $2 for the two lui of D_002DA0D8/D_002DA0E0; ours uses v1/v0. Statement-order perm and size expressions tried.
+- **0x16D548** (52 insns): IAlbumMgr ~CAlbumMgr: blocked, key method (slot 0) of a class whose vtable sits in the merged IAlbumMgr/CPhotoEventObj data.
+- **0x143A90** (30 insns): ISysFlag ~CSysFlag: blocked, key method in the merged CSysFlag/ISysFlag unit (vt_CSysFlag # also ISysFlag).
+- **0x144808** (30 insns): ISysFlag ~CCurFlag: blocked, key method in the merged CSysFlag/ISysFlag unit.
+- **0x126E38** (24 insns): CMapEffObj ~CMapEffObj: blocked, key method; vtable inside the merged CMapEffObjRes piece.
+- **0x127888** (28 insns): CMapSndRes ~CMapSndRes: key method; level 3 would also have to emit the TArray<tagMapSndStepInfo> linkonce vtable that shares the piece. Not attempted.
+- **0x172C88** (30 insns): CMapDBExpr ~CMapDBExpr: key method; the piece also holds CMapDBMgr's and TArray<CMapDBExprReg>'s vtables. Not attempted.
+- **0x19D0A8** (36 insns): CStatusWin ~CStatusWin (slot 7, key method): the class is called CStatusWinV in CStatusWin.cpp because CStatusWin names the vtable-less window class there; level 3 needs that renaming first.
+- **0x113090** (38 insns): CCharaObj ~CCharaObj (key method): level 3 needs the inline ~CListTag (unlink + _vt$8CListTag store) without emitting CListTag's vtable, and the RTTI chain CCharaObj : TListTag<CCharaObj> : CListTag (t8TListTag1Z9CCharaObj is in the unit's .rodata).
+- **0x12E768** (60 insns): CSvmWork ~CSvmWork (key method): unit at level 1 and the piece holds TArray<const void *>'s vtable too. Not attempted.
+- **0x1BD958** (44 insns): CMiniGame1Res ~CMiniGame1 (key method): unit at level 1. Not attempted.
+- **0x1D4E98** (68 insns): CMiniGame4Res ~CMiniGame4 (key method): unit at level 1. Not attempted.
+- **0x2186B0** (264 insns): Unit217F50 3D sound pan/volume from listener (frac-wrapped angles via VU0 vftoi0/vmadda, distance falloff table, pan table): first 36 insns match with the snippet; then retail reloads the 1.0f constant for every 'frac == 1.0f' test (ours CSEs it across the volatile asm) and copies the frac result (mov.s f2,f0) before the test. Float args come in f12-f14 after the int args.
+- **0x108FF0** (70 insns): CFlagWork::Func108FF0 (set integer flag clamped to D_0029F2F0[size], memcpy into the data, Notify2/Notify1): clamp shape matches ('if (!(t < max)) t = max; v = t < min ? min : t'); left: retail builds &D_0029F2F0[size] with explicit lui/addiu/addu and reads m_min through a copy of that pointer (daddu $4,$3), ours uses the 'la $at' macro form. Tried sized/unsized array, base pointer local, inline clamp helper, struct copy.
+- **0x235DE0** (126 insns): Unit234318 Func235DE0 (the debug printf: EE va_start, vsprintf into a 0x400 buffer, hook D_002B8D00, buffered console/host output): DIFF 2: the vsprintf argument moves come out a1, a0, (jal) a2 in ours and a1, a2, (jal) a0 in retail. Placement of the va_start, a buffer pointer local and void * ap tried.
+- **0x241398** (164 insns): Unit240FD8 glyph alignment (sibling of the matched 0x241778: flags pick left/center/right and top/middle/bottom placement per glyph): draft DIFF 156; loop.c hoists fl & 1 and fl & 4 into saved registers in ours (retail keeps only fl & 2 hoisted, in $16) and the stack frame grows; store order inside the cases not yet checked.
+- **0x23F1C0** (166 insns): Unit23E868 glyph texture upload packet (BITBLT A+D with TEX0-style masks, then a pixel copy loop): not attempted beyond analysis: the DImode-mask problem of 0x21BF50 again (retail andi 0x3FFF / 0x3F unshared).
+- **0x146C08** (120 insns): CResNameMgr::Func146C08 (school name: entry by flag value, prefix D_002A28E0[j] for key in D_002A2910, uppercase, append season name; else Func146B58): DIFF 10: retail loads D_002A28E0[j] with explicit lui/addu/lw %lo into a1, ours gets the 'lw a1, D(reg)' $at macro, and j / j*4 swap registers. Loop forms and sized arrays tried.
+- **0x23B658** (86 insns): Unit23A1D8 texture name hash lookup (byte-sum hash, double hashing over D_382E1C, strcmp against D_382E10[e - 8].name, then func_0023B510): draft DIFF 76: retail sets v0 = -1 before the null test and r = -1 later (two -1s), keeps the key address in $22 and the hi of D_002B94F0 in $21; ours keeps r in s7 from the start. Twin 0x23B7B0 (same body) not attempted separately.
+- **0x23B7B0** (102 insns): Unit23A1D8 twin of 0x23B658 (hash lookup that also inserts): see 0x23B658.
+- **0x19AC20** (72 insns): CStatusBaseSub19AE68::Init19AC20 (switch on kind, per-case Find, cross-jumped default): DIFF 1: ours `beqzl v0` with `li v0,2` in the likely slot for the `kind < 2` test, retail plain `beqz` (same insn in the slot). Store order found by perm; switch case orders/if-chain/default-first all worse.
+- **0x2446D8** (96 insns): Unit243AB8 sound stream feeder thread (while !D_002B9DB8, push blocks while D_38F080 >= 2 and ring space > 0x800): DIFF 17, logic and code shape match; only register choice differs: retail hoists %hi of D_002B9DB4/DCC/DC8/D_38F000 into s6/s5/s4/s3, ours s3/s5/s6/s4; and the (D_38F078+5)%4 tail stores D_38F080 before the modulo (retail) vs after (ours). Locals for w/h, swapped statement order, other address forms tried.
+- **0x2390B0** (110 insns): Unit237A88 DMA channel interrupt handler, marked /* Handwritten function */ in the asm (lui/ori of 0x10008000 per use, no CSE): not attempted, keep as asm.
+- **0x224818** (138 insns): Unit222CE0 view/clip matrix setup (15 float args, 0x80-byte output, z range mapped to 0..255): math is complete in the draft but DIFF 116: float scheduling of the 13 div.s and the store order are far off (retail div order: slope, sz, sx, a*b/l, a*c/n, ofs, 1/m0, 1/m1, 1/sx, -sz/sx, ...; retail else branch reloads m[3]); reordering the source to the retail order made it worse (119). Twin 0x224A88 has the same shape.
+- **0x224A88** (142 insns): Unit222CE0 twin of 0x224818 (other projection variant, -2.0 factor, same 0x80 layout): not attempted separately, see 0x224818.
+- **0x235BF0** (100 insns): Unit234318 set boot path (device / dir / file name split into D_002B8D70/DF0/E70, ';1' stripped): logic complete, DIFF 58: retail copies q (func_00235B28 result, s2) into path's register s1 before the second half and reuses s2 for the func_00234108 result; ours keeps q in s2 throughout (CSE/regmove ties the copy). Tried path = q, a fresh variable, an inline helper taking q; the ending is a sibcall (return (void)Func235DE0).
+- **0x223CA8** (190 insns): Unit222CE0 texture/FRAME A+D packet (0x11000000, 0x5000000B, GIFtag NLOOP 10, regs 0x4E/0x4A/0x47/0x4C/1 plus three raw qwords from h+0xB0..): packs func_0023C650/658 results with (x>>32)&0x3F and (x&0x3FFF)>>5 masks, the same DImode-mask CSE problem as 0x223A90 (retail separate andi). Not drafted beyond decoding.
+- **0x2245A0** (150 insns): Unit222CE0 render-target setup (func_0023C650/658 of the target, func_0021BCF8, Func225088/2250C0, then FRAME/ZBUF/... A+D quads): three (x>>k)&0x3F masks in one block, the unsolved same-mask DImode problem (see 0x223A90); not drafted.
+- **0x2242E0** (176 insns): Unit222CE0 sibling of 0x2245A0 (same target query + A+D quads with (x>>32)&0x3F and (x>>14)&0x3F masks): same-mask DImode problem, not drafted.
+- **0x1A1AA0** (38 insns): CStatusWin switch whose jump table lives in CMenuInputKanji's rodata (like 0x1A1B38/0x1A3488): blocked until that rodata is split/converted.
+- **0x234D40** (128 insns): Unit234318 system init (device setup, prints, D_36D540 = table[func_00235A38()] + func_00235A18()): DIFF 27 in three spots: the first store's lui/li order (D_002B8D08 = '0'), the clear loop uses v0 as pointer (retail v1), and the final strcpy dest: retail rematerialises lui/addiu D_36D540 and adds strlen (sym + len), ours reuses s1 (len + s1). Tried StrAdd, explicit strcpy(D + strlen(D), t), &D[strlen], strcat, a local p. The 3 nops in the clear loop are the assembler's short-loop fix, not source.
+- **0x244A80** (136 insns): Unit243AB8 sound stream init (allocs via D_002B91A4, ring func_00245460(0x80000), func_00267608/266CF0/267A60 handler registration): code shape right but register allocation differs from the first lui on (DIFF 126): retail uses 7 saved regs (keeps hi(D_002B9D9C) in s4 and &D_002B9D9C in s2 for the post-call store, i in s3, &D_38F000 copied to s2), ours 6.
+- **0x23E088** (130 insns): Unit23C680 texture free (unlink VEnt from the used list, push on the 0x1003 free list, D_002B94FC callback, debug print with the caller's ra): DIFF 11, only the tail: retail computes k2 = (h>>14)&0x3F before loading D_002B9500 (lw into v0), ours loads the flag first (into a1), then a2/a3 register order of the print args. Needed: BITS() pre-shift masks (andi), asm("move %0,$31") for the return address, &D_388F30[0x1003].m2 through a pointer, D_388F30[idx].mX indexing (no element pointer), x reusing w.
+- **0x242170** (116 insns): Unit240FD8 font begin (packet start in D_38EF84/D_38EF80, TEX0 A+D for the current font texture with the 0x21BF50 TEX0 expression, then the RGBAQ A+D): masks fine with LOWB/BITK; DIFF 65 from store/load scheduling: retail stores D_38EF84, D_38EFE0, D_38EF80 (raw lui 0x39 -0x1080), D_38EFE4 in that order and loads p = D_38EF84 right after func_00240DF0 returns; ours differs (perm of the 4 stores best 72).
+- **0x1D5140** (136 insns): CMiniGame4ResObj param table parser (5x4 floats at 0x144C, 4 pairs at 0x14C0, 3 at 0x14A4, 0x1500, 0x1508; needs 'int Parse1D5140();' in the class): DIFF 14, registers only: the loop-hoisted hi(D_002E1468)/hi(D_002E1470) are s7/s6 in ours vs s6/s7 retail, and in the pairs loop the counter and lo(D_002E1470) swap s1/s2. Element-pointer and local fmt-pointer variants tried.
+- **0x23C340** (102 insns): Unit23A1D8 GS context/sprite setup: s16 args, func_0026EDE8/func_0026EFD0 (libvu0 sample-style), then a 128-bit GIF tag built with por/sq and ld/and/or/sd (sceGifTag bitfields on a u_long128): not attempted (needs a u128 bitfield struct).
+- **0x23BA10** (134 insns): Unit23A1D8 set texture page handle (n == 0: TexEnt.m8; else walk/allocate the D_382E18 chain, allocating nodes from the D_380E04 LNode free list, then D_382E14[k]); needs the unit decl changed to 'void func_0023BA10(s32, s32, u64)' and func_0023BD60 to void (it still matches): DIFF 30, register numbering inside the allocation block only (retail v1 for &D_380E04, a3 = L, t0 = f; ours t4, a1, a3). An inline allocator helper is worse (86).
+- **0x23BD98** (122 insns): Unit23A1D8 texture-page LNode list code (D_37CDE0/D_380E04 nodes, D_386E24 head index, unlink/relink sequences like 0x23BA10): not attempted beyond reading; expect the same t-register numbering issue as 0x23BA10 (and $at-macro la addressing in 0x23AFB8/0x23B1D0).
+- **0x23AC68** (156 insns): Unit23A1D8 texture-page LNode list code (D_37CDE0/D_380E04 nodes, D_386E24 head index, unlink/relink sequences like 0x23BA10): not attempted beyond reading; expect the same t-register numbering issue as 0x23BA10 (and $at-macro la addressing in 0x23AFB8/0x23B1D0).
+- **0x23AFB8** (134 insns): Unit23A1D8 texture-page LNode list code (D_37CDE0/D_380E04 nodes, D_386E24 head index, unlink/relink sequences like 0x23BA10): not attempted beyond reading; expect the same t-register numbering issue as 0x23BA10 (and $at-macro la addressing in 0x23AFB8/0x23B1D0).
+- **0x23B1D0** (208 insns): Unit23A1D8 texture-page LNode list code (D_37CDE0/D_380E04 nodes, D_386E24 head index, unlink/relink sequences like 0x23BA10): not attempted beyond reading; expect the same t-register numbering issue as 0x23BA10 (and $at-macro la addressing in 0x23AFB8/0x23B1D0).
+- **0x147130** (132 insns): CGameDBMgr::Func147130 (vtable slot 3, load the game database: Init(), open, the 15 table loaders, size print): DIFF 47 but only one real difference: the last test of the long loader chain becomes 'sltu s2, zero, v0' (if-converted ok = 1) in ours, retail keeps 'beqz; nop; li s2, 1'; every other diff is a branch offset. && chain, goto chain, bool, ok++ and swapped branch order tried.
+- **0x2387D8** (204 insns): Unit237A88 texture upload (BITBLTBUF/TRXPOS/TRXREG/TRXDIR A+D chain via func_00237720 callbacks, 0xFFFF-qword chunks, returns qwords): masks fine with LOWB/BITK, logic complete; DIFF 88 from register allocation in the packet block: retail preloads the A+D constants into t-registers (t1..t3, t8, t9) and keeps the call args early, ours puts 0x52/0x61/1 into dead s-registers. The callers' prototype (Unit226AE8: 4 args) is short of the real six.
+- **0x22FBF8** (96 insns): Unit22DE48, marked /* Handwritten function */ in the asm (unaligned lwl/lwr copy): not attempted, keep as asm.
+- **0x23D470** (124 insns): Unit23C680 VRAM page free (lower the D_388E28 watermarks, then clear the 4-bit page bitmap D_386E28 over the swizzled block layout of D_002B95E0[k]); needs the unit decl changed to 'void func_0023D470(s32, s32, s32, s32)': DIFF 33, register numbering in the nested loops only (retail y = t1 shared with the first loop counter, x = a3, s = a2; ours x shares t1, y = t4, s = a3). Declaration-order perm, loop-variable reuse variants tried.
+- **0x19C278** (98 insns): CStatusBaseSub19B8C8 hue setter (needs 'void SetHue19C278(u32 v);' in the class; VuFrac inline asm as in CCharaObj): DIFF 46, one root cause: retail moves v from a1 to a2 at entry (copy in the first bnez delay slot) and uses a2 for the range test, the m_unk18 store and GetHue's second argument; ours keeps v in a1 (bnezl + sltiu in the likely slot) and moves it before the call, which shifts the rest. Local copy and reading m_unk18 back tried.
+- **0x2442C0** (108 insns): Unit243AB8 stream header handler (first block: copy the 0x20-byte format and 8-byte extra header from the request with __builtin_memcpy (ldl/ldr/sdl/sdr like retail), debug prints, then push the payload into the ring): DIFF 64, mostly the frame: retail's frame is 0x80 with 0x30 unused bytes below the saved registers (an inlined helper's dead local?) and it keeps the request pointer in s5, ours 0x50. Packed-struct copies give lwl/lwr field reads (worse).
+- **0x1E3978** (148 insns): CMiniGame6 destructor (slot 0 of _vt$10CMiniGame6, the key method; drains the 0x9EC ring with an inlined modulo ring read): needs CMiniGame6Res converted to level 3 first (dataconv.py; its vt/ro pieces have no '# also'); not attempted this round.
+- **0x1E3660** (198 insns): CMiniGame6Res virtual (vtable slot, jalr callbacks): same class as 0x1E3978, left with it for the level-3 conversion of CMiniGame6Res; not attempted.
+- **0x14D7C8** (234 insns): CGameDBMgr::Func14D7C8 (vtable slot 23: a chara's 5 colour factors interpolated between the neighbouring table rows plus a seeded CRand jitter; needs 'void Func14D7C8(f32 *out, s32 idx, s32 v);' in the class): math, constants (0.2 must be written 0.20000001f: this as truncates '0.2f' to 0x3E4CCCCC, retail has ...CD) and the Rand form ((Next() << 16 | Next()) % 0x10000, cast to s32) are right; DIFF 193 from the clamp code (retail compares byte offsets with slt and adds the base afterwards, j via movz with a 0 default) and the scheduling of the unrolled 5-element block.
+- **0x149670** (470 insns): CGameDBMgr::Func149670 (school.txt loader: SCHOOL table, flags, SCHOOL_PASS 0x50-byte records, per-school 9 stat bonuses, SCHOOL_SCHOLAR script; needs the CGameDBRecB0 fields m4/m8/m1C/m40/m64/m88/mAC, now in the unit): logic and layout complete, DIFF 49, all register choice: retail keeps this in s6 and the tok buffer address in s7, ours the other way round, which renumbers the loop counters too. (The SCHOOL_* strings are literals in the snippet.)
+- **0x217FE8** (252 insns): Unit217F50 stream-play protothread (PtHdr at +0x2C, waits at lines 0x9F2/0x9FB/0xA0F/0xA24/0xA36/0xA79, then the 0x3F parameter push and a restart goto back to after the first wait): decoded (see the notes in this entry's history: waits on func_00213238, func_00219818, func_00219880 with a 0x2000/0x4000 mode, func_002198E8, func_0020F358 with 10 args) but not written; needs a Play variant struct (hdr at 0x2C, m40/m42 s16, m44..m4C) and the PTV macros of Unit215A38.
+- **0x2176C0** (338 insns): Unit215A38 rxsnd protothread (PTV_BEGIN/PTV_WAIT_WHILE flavour, several waits and parameter pushes like 0x217FE8): not attempted this round.
+- **0x216FF0** (370 insns): Unit215A38 rxsnd protothread (PTV_BEGIN/PTV_WAIT_WHILE flavour, several waits and parameter pushes like 0x217FE8): not attempted this round.
+- **0x242468** (300 insns): Unit240FD8 glyph draw (flushes the pending TEX0/RGBA A+D like 0x242170 when D_38EFE4/D_38EFE0 are set, then the glyph sprite): contains the 0x242170/0x21BF50 TEX0 block whose scheduling is unsolved; not attempted.
+- **0x19FE18** (166 insns): CStatusWin::Func19FE18 (9 slot brightness values from flag params 0x19-0x20, fade by m_unk58): DIFF 18, only the FP registers of the two '(f32)m_unk58 / (f32)nX' branches (retail: converted m_unk58 in f2, divisor f1, difference in f0; ours f0/f2/f1); the '(m58 - n) / n' branches match. Needed: the sums n1+n2 / n3+n4 written as expressions (retail keeps two copies), the output indexed off m_unk60 inside the loop. Implicit-conversion, local-ratio and reordered-term variants tried.
+- **0x1A0D98** (170 insns): CStatusWin text draw helper (builds a local CEFontWork, __10CEFontWork ctor, then ~40 field stores of positions/colours/scale and the draw call): store-order puzzle of a 0x90-byte local; not attempted.
+- **0x19E300** (178 insns): CStatusWin::Func19E300 (status line text via func_00185BD0 from flag values, truncated copy when m_unk64 == 2): logic complete, DIFF 45: the two values from flags 0x3B3D/m_unk50+0x28 sit in s6/s7 swapped against retail (s7/s6), and the final 'n*2 < strlen(buf)' test is if-converted to sltiu in ours (retail beql/b with li 1 / li 0). Declaration order, early returns vs single exit tried.
+- **0x1A1040** (246 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 246 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x239850** (176 insns): Unit237A88: GS/VIF packet builder with u64 handle fields (DImode masks now writable with BITK/LOWB) and many A+D quads; register allocation of the constant pool is the usual problem (see 0x2387D8); 176 insns, dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x244EE8** (176 insns): Unit243AB8: sound stream ring-buffer feeder (MIN macros calling the callee twice, see docs/lessons.md r3); 176 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x238C70** (220 insns): Unit237A88: GS/VIF packet builder with u64 handle fields (DImode masks now writable with BITK/LOWB) and many A+D quads; register allocation of the constant pool is the usual problem (see 0x2387D8); 220 insns, dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x212210** (318 insns): Unit210070: rxsnd PCM/sequence stream update (list walk with many callee results; frame-pointer/alloca style like the matched 0x211598); 318 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x2117D8** (284 insns): Unit210070: rxsnd PCM/sequence stream update (list walk with many callee results; frame-pointer/alloca style like the matched 0x211598); 284 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x238240** (158 insns): Unit237A88: GS/VIF packet builder with u64 handle fields (DImode masks now writable with BITK/LOWB) and many A+D quads; register allocation of the constant pool is the usual problem (see 0x2387D8); 158 insns, dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x211E30** (248 insns): Unit210070: rxsnd PCM/sequence stream update (list walk with many callee results; frame-pointer/alloca style like the matched 0x211598); 248 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E8D68** (256 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 256 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F94C8** (232 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 232 insns, AT,u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F9868** (232 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 232 insns, AT,u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x19C428** (194 insns): CStatusBase: status base window update/draw (float math, VU0 frac helper, virtual calls); 194 insns, AT,vu0. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E6E80** (200 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 200 insns, AT. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x23C8D8** (242 insns): Unit23C680: texture VRAM allocator (bitmap and LNode list code, see 0x23D470/0x23E088); 242 insns, AT. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1A0510** (306 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 306 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x190E60** (296 insns): CMenuReviewResult: menu review result draw (float layout); 296 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x22C728** (226 insns): Unit22BFD0: file/stream system code; 226 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1FAEA8** (248 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 248 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x19C730** (344 insns): CStatusBase: status base window update/draw (float math, VU0 frac helper, virtual calls); 344 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F5F28** (238 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 238 insns, AT,dsra32. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F62E0** (238 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 238 insns, AT,dsra32. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x18FB50** (330 insns): CMenuGetMoney: menu get money draw (float layout); 330 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F8E80** (402 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 402 insns, AT,u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x163DD0** (196 insns): CGameEventObj: game event object (huge frame, string buffers, virtual calls); 196 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x19B1F8** (408 insns): CStatusBase: status base window update/draw (float math, VU0 frac helper, virtual calls); 408 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F9C08** (446 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 446 insns, AT,dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x18E1E0** (278 insns): CMenuCommon: menu common draw/update (switch with jump table, floats, VU0); 278 insns, AT,vu0,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1485E8** (410 insns): CGameDBMgr: game database table loader / query (same style as the matched Func14AAD0/Func1490F8: long, needs exact declaration order for spill slots); 410 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x14AE30** (422 insns): CGameDBMgr: game database table loader / query (same style as the matched Func14AAD0/Func1490F8: long, needs exact declaration order for spill slots); 422 insns, u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1FA300** (362 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 362 insns, AT,dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1FA8A8** (362 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 362 insns, AT,dsra32,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x22CAB0** (342 insns): Unit22BFD0: file/stream system code; 342 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1A4298** (466 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 466 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1FD5C8** (414 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 414 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x18D958** (396 insns): CMenuCommon: menu common draw/update (switch with jump table, floats, VU0); 396 insns, jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x19BA00** (444 insns): CStatusBase: status base window update/draw (float math, VU0 frac helper, virtual calls); 444 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x14EE18** (290 insns): CGameDBMgr: game database table loader / query (same style as the matched Func14AAD0/Func1490F8: long, needs exact declaration order for spill slots); 290 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x23A4D8** (320 insns): Unit23A1D8: texture page manager (LNode list code, see 0x23BA10); 320 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F69D8** (304 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 304 insns, u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1F7E18** (306 insns): Unit1F4918: xmn sprite/packet builder (texture lookups through D_30E108 with error prints, TEX0/CLAMP/UV packing; the TEX0 OR-tree ordering of 0x21BF50 is still open); 306 insns, u128,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E72D0** (672 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 672 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x23D660** (280 insns): Unit23C680: texture VRAM allocator (bitmap and LNode list code, see 0x23D470/0x23E088); 280 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x18CEF0** (482 insns): CMenuCommon: menu common draw/update (switch with jump table, floats, VU0); 482 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1A1418** (294 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 294 insns, AT,jtbl,vu0. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E80A0** (686 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 686 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E4630** (400 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 400 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1478E8** (522 insns): CGameDBMgr: game database table loader / query (same style as the matched Func14AAD0/Func1490F8: long, needs exact declaration order for spill slots); 522 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1E3FF8** (398 insns): CMiniGame6Res: mini game 6 (needs CMiniGame6Res converted to level 3 for its virtuals; float game logic); 398 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x164290** (378 insns): CGameEventObj: game event object (huge frame, string buffers, virtual calls); 378 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x15FE28** (248 insns): CGameEventObj: game event object (huge frame, string buffers, virtual calls); 248 insns, AT. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1B8CB0** (632 insns): CLayoutRes: layout resource parser (switch with jump table); 632 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x19D5A0** (384 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 384 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x14DCE0** (472 insns): CGameDBMgr: game database table loader / query (same style as the matched Func14AAD0/Func1490F8: long, needs exact declaration order for spill slots); 472 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1A64D0** (730 insns): CMenuInputKanji: kanji input menu draw (float layout, glyph grid); 730 insns, AT,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x240038** (610 insns): Unit23E868: glyph texture upload (BITBLT A+D with handle masks, pixel copy loop); 610 insns, u128,dsra32. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x242918** (474 insns): Unit240FD8: font text layout/draw (like the matched 0x243080 but with the TEX0 flush block of 0x242170); 474 insns, fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x243338** (480 insns): Unit240FD8: font text layout/draw (like the matched 0x243080 but with the TEX0 flush block of 0x242170); 480 insns. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x18C130** (830 insns): CMenuCommon: menu common draw/update (switch with jump table, floats, VU0); 830 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x1A1CF0** (1442 insns): CStatusWin: status window drawing/update (float layout math and CEFontWork setups); 1442 insns, AT,jtbl,fp. Not attempted this round (time went to the smaller and better-understood functions first).
+- **0x23F4A8** (178 insns): Unit23E868 glyph cache init (texture via func_0023DD40, entry and hash arrays via func_0023F458, free-list of 0x1C GEnt nodes on D_38EF58, cleanup path): logic, stack slots and n reuse right; DIFF 142 from s-register numbering only (retail per s0, n s1, w s2, tex s7, a s6, b s8, tw s5; ours shifted), which also changes the size. Declaration-order perm changes nothing.
+- 0x286968 __frame_state_for (Lib285F80, 110 insns): DIFF 3 with the gcc 2.96 frame.c source (locals info, state, i, pc in that order; frame_state aligned 8 so the copy is ld/sd). Only `&pc` for the FDE loop: ours hoists `sp+0x4A4` into an s-register, retail recomputes it in the jal delay slot each iteration. Snip docs/hard/w2/hard_286968.snip.
+- 0x278CC0 func_00278CC0 (Dk2779D8, 104 insns, mc RPC with a name argument): DIFF 1, one `addu` operand order in the name copy loop: retail `addu $4,$18,$16` (cmd + i), ours `addu a0,s0,s2` (i + cmd) for the `sb` to cmd->u.fn.name[i]; the load side (`name + i`) matches. Tried pointer/array/cast forms, declaration orders. Snip docs/hard/w2/hard_278CC0.snip.
+- 0x274778 func_00274778 (Dk2735D0, 90 insns, print a double as "0.%d" "e+%d"): retail loads 0.1 (twice) and 1e6 from the unit's literal pool with the assembler macro form (`lui $1,%hi; ld $5,%lo($1)`), so the constants must be C literals emitted into Dk2735D0's .rodata at 0x2E9E98-0x2E9EAF: needs the unit's rodata converted first (not done; the unit shares the ro segment). Logic in snip (soft-float calls come out as dpcmp/dpsub/dpmul/dpdiv).
+- 0x2877B8 __class_type_info::do_find_public_subobj (Lib285F80, 90 insns): DIFF 23 with the 2.96 tinfo.cc source (base_info as `int offset:29; bool is_virtual:1; access:2`, `p = 0;` hoisted). Left: objptr gets s3 instead of s1 and the `objptr + offset` add is scheduled into a different delay slot (retail recomputes it on the virtual path). Snip docs/hard/w2/hard_2877B8.snip.
+- 0x284EF8 dpmul (Lib283858, 162 insns, fp-bit multiply with _fpmul_parts inlined, now in C): DIFF 47, same instruction sequence (64x64 via four __muldi3 calls with fp-bit's `(ps_hh__ << 32) & 0xffffffff00000000LL` and `((ps_hh__ >> 32) & 0xffffffffL)` forms); only the s-register allocation of pp_hl/res2/high differs (retail keeps them in s1, ours s6/t0). Snip docs/hard/w2/hard_284EF8.snip.
+- 0x284558 throw_helper (Lib283858, 228 insns): the gcc 2.96 libgcc2 source with the cleanup/saved_state logic, DWARF_FRAME_REGISTERS 122 and the 0x478-byte frame_state gives the same blocks and frame (0xDF0, three frame_states at 0/0x480/0x900, spills at 0xD80..); register allocation differs throughout (retail hoists `my_udata + 0x460` as the copy-loop end into s7 and spills sub_udata; ours keeps sub_udata in s8). DIFF 216 (everything shifted). Snip docs/hard/w2/hard_284558.snip.
+- 0x26DE80 func_0026DE80 (Dk26CFB0, 82 insns, libmpeg fromIPU DMA handler): DIFF 57; logic in snip (m0/m8/mC volatile, m10 not: retail CSEs `m10 - 1` across both tests). Retail keeps the state pointer in t1 and a hoisted 0x100 in t0, scheduling differs; ours is 2 insns longer.
+
+### 0x275550 (Dk2752B8, sif cmd interrupt handler, 0x148) DIFF 27
+docs/hard/w2/hard_275550.snip: everything but the copy-loop preheader. Retail tests the quad count with
+`blez $5` and copies it to the doloop counter in the delay slot; ours emits `beqz` (gcc proves
+(n+15)/16 >= 0 from the andi'd byte) and the loop registers shift by one. Tried i<cnt, i=cnt..>0,
+while(cnt--), if(cnt>0), byte-step loop, ps2sdk `psize & 0xff` bitfield form.
+
+### 0x27C970 (Dk27C020, alarm timer re-arm, 0x190) DIFF 9
+docs/hard/w2/hard_27C970.snip: all but the scan loop's schedule. Retail puts `t = t2` before the
+loop label (entry and `b` delay slot) and `t + 0x7333` in the `beqz e` delay slot; ours sinks
+`t = t2` into that delay slot. Six loop spellings (while/for/for(;;), inline time helper, signedness)
+all give DIFF 9; bk perm has nothing to permute.
+
+### 0x26D9A8 (Dk26CFB0, field/frame picture setup, 0x1B8) DIFF 21
+docs/hard/w2/hard_26D9A8.snip (perm-best order). Logic right; retail keeps `m->m870` in a3 ($7)
+and builds the second call's args from it before storing mA0/m98, ours puts it in t1 and
+schedules the `sd 1, 0xA0` early. bk perm on the 10 stores after the second call: 33 -> 21
+(SDKC compile is slow, ~130 orders in 5 min).
+
+### 0x26DFC8 (Dk26CFB0, IPU->mem transfer with DMA handler, 0x1C0) DIFF 6
+docs/hard/w2/hard_26DFC8.snip (stores in bk perm's best order, 21 -> 6). Only a register swap left in
+the `HWREG(0x1000B020) = 0xFFC0; HWREG(0x1000B000) = 0x100;` pair: retail keeps values in v1 and
+the second address in a0, ours the other way round. `0x3FF << 6`, `0xFFC00 >> 4`, `(u16)` casts: no change.
+
+### 0x262E30 (Dk262D28, libcdvd callback thread + its starter 0x262F00 merged by splat, 0xA0+0xD0)
+docs/hard/w2/hard_262E30.snip: the thread loop 0x262E30 matches (V() on the D_002BBBF4/C18/BBD4/
+D_41A814 stores and on D_002BBC1C; utest's DIFF 9 there is only the reloc-less `0x420000` hi
+constants of the retail asm). The starter 0x262F00 (`r = 1; if (!D_002BBBD4) {GetThreadId,
+ReferThreadStatus, CreateThread, StartThread} else {r = 0; ChangeThreadPriority}`) has r and the
+hoisted %hi(D_002BBBD4) in swapped saved registers (retail r=s3, hi=s4). Setting `r = 1` at the end
+of the if body fixes the registers but sinks the `li` into a delay slot. Needs D_41A814 in
+config/aliases.ld (added).
+
+### 0x27EB28 (Dk27DBB8, scePadPortOpen, 0x1E8) DIFF 9 (2 of them reloc-only)
+docs/hard/w2/hard_27EB28.snip (bk perm best of all 5040 tail orders). Everything up to the RPC call
+matches (a `q = D_424280[port][slot]` local fixes the port/slot register swap). Retail stores the
+port entry as m10, *q, mC, m8, m0, m4 and loads the return value `D_424380[3]` after the stores;
+ours sinks the stores/hoists the load differently (alias analysis sees D_424190, D_424280 and
+D_424380 as distinct globals). The two reloc-only diffs are retail's raw `0x424380` lui/sw.
+
+### 0x25C2C0 (Dk25A010, CSndWork deleting destructor, written without the vtable, 0x178) DIFF 78
+docs/hard/w2/hard_25C2C0.snip: inline CList/CListTag dtors as W2Tag members. Retail's list-clear
+loop tests at the top (`x = next->head ? 0 : next; beql x, exit`) and ends with `bnez x, top`
+(reloading l->next in the slot); gcc here always proves x != 0 at the bottom and emits `b`, or
+rotates the loop (`while`, `for(;;)`, `do {..} while (x)` all tried). Also the Unlink load order
+(retail loads x->prev before x->next for `prev->next = next`).
+
+### 0x25B048 (Dk25A010, CSndMgr slot 30: load a sound bank from a push buffer, 0x1E8) DIFF 49
+docs/hard/w2/hard_25B048.snip (slot signature changed to (a, name, heap, src, n) in the unit's
+CSndMgr). Logic matches; retail tests the allocation result inside each heap branch
+(`beqz d, print` then `b common`) and allocates name/src/n/this to s3/s5/s6/s4 with the flag in s7;
+ours inverts the per-branch test or merges it, and the saved-register assignment differs
+(goto-to-cleanup, goto-to-print, in-branch print+return and merged `d &&` forms tried).
+
+### 0x261470 (Dk260A60, MPEG audio Huffman decode of one section into the spectrum, 0x1F8) DIFF ~120
+docs/hard/w2/hard_261470.snip: control flow, loops and arithmetic match instruction for
+instruction; the saved-register assignment differs (retail: nbits s7, D_002E8898 row s6,
+D_002E8808 row s5, end s1 copied in the prologue, `p` moved to a1) so every line shifts. All six
+declaration orders tried (best 119).
+
+### 0x263E80 (Dk2631E0, libcdvd S-command client init (sceCdInit-like, mode arg), 0x1F8) DIFF 26
+docs/hard/w2/hard_263E80.snip: instruction-for-instruction except a permutation of the saved
+registers (retail: mode s2, hi(D_002BBBD0) s6, hi(D_002BBC08) s1, hi(D_41AA50) s5, hi(D_41AA90)
+s4, hi(D_002BCDC0) s7; ours mode s7, ...). Needs volatile reads of D_002BBBEC and the RPC-failure
+block placed inline (`if (rpc < 0) { fail: ...; return mode != 8 ? 6 : -1; }`). The
+`%hi(D_FFFFF)` spin-count relocations will also show as reloc-only diffs in utest.
+
+### 0x288268 (Lib285F80, fp-bit.c __fpcmp_parts_d, 0x120) DIFF 55-66
+docs/hard/w2/hard_288268.snip is the upstream source verbatim. The head confirmed it matches
+byte-for-byte as C (`-x c -O2 -G0`), but Lib285F80 is compiled as C++ (tinfo.cc classes live in
+the same unit) and the C++ front end lays out the isinf/iszero blocks differently (nested-if form:
+DIFF 55). Needs the unit split at the fp-bit/tinfo boundary or a C-compiled slice.
+
+### Big newlib functions: upstream newlib-1.9.0 is the source, blocked on jump tables
+_dtoa_r 0x28F728 (dtoa.c, opcode similarity 0.96), _vfprintf_r 0x28DA28 (vfprintf.c, 0.93),
+_strtod_r 0x28B970 (strtod.c, 0.91) and 0x28CCB8 all dispatch through `jtbl_` tables in the shared
+`ro_tail` .rodata piece. Compiled as C their switches emit new jump tables into the unit's
+.rodata, so they need the library .rodata split per unit (level 2) first. Generate the snippet from
+the preprocessed upstream file the way build/bk/w2/malgen.py does for mallocr.c.
+_malloc_r 0x289640 (mallocr.c with MALLOC_ALIGNMENT 16, no jump table): upstream is 408 insns,
+retail 458: Sony changed it (DIFF ~400 as is); not attempted further.
+
+### 0x2667C0 (Dk265918, libmpeg stream-id table match, 64-bit masks, 0x200) DIFF 126
+docs/hard/w2/hard_2667C0.snip: semantics decoded (10-entry {id, mask} table at D_002BD7A8, nested
+64-bit switches choose a sub-mask and a field width). Retail hoists `code >> 24`, `code >> 32` and
+`(s32)(code & 0xFFFF)` before the loop but keeps `code & 0xFFFFFF0000` inside it, and lays out
+the inner switches as compare trees (`bnel ... i++` continue paths); ours CSEs differently. SDK
+compiler (991111, C++).
+
+### 0x264078 (Dk2631E0, libcdvd N-command client init with retry fallback to 0x263E80, 0x1E8) DIFF 20
+docs/hard/w2/hard_264078.snip: instruction for instruction except that the hoisted %hi registers
+of D_002BBBD0 and D_41AA50 are swapped (retail s6/s5, ours s5/s6); the rest of the DIFF is utest
+reloc noise (retail's raw `0x100000` spin count and `-0x5570` offsets). Needs `n = 0` before the
+`if (D_002BBC08 < 0)` and volatile D_002BBBF0 reads. Same family as 0x263E80.
+
+### 0x276E68 (Dk2752B8, fileio client init (sceFsInit-like), 0x204) DIFF 9 (some reloc-only)
+docs/hard/w2/hard_276E68.snip: logic and calls match; a `q = &D_4203C0` pointer taken before
+sceSifInitRpc reproduces the hoisted s0/s1 pair. Left: prologue save/`lui` scheduling and the tail
+(retail materialises %hi(D_002BDB38) before %hi(D_002BDB34) around the unaligned 4-byte copies of the
+reply). The reply is copied with lwl/lwr+swl/swr (a char[4] struct type); its real layout unknown.
+
+### 0x253E78 (Dk252208, CShareTex::Func253E78 vtable slot 6: upload + GS CLAMP/TEX0 A+D packet, 0x218) DIFF 63
+docs/hard/w2/hard_253E78.snip: everything up to the packet writes matches (`tex = m_unk8;` as its
+own statement and `return n + m + 3`). The three PktAlloc(4) blocks (GIFtag 4/0x10000000/0xE,
+CLAMP_1 region clamp, TEX0_1 like 0x2548F0) are scheduled differently: retail keeps the 16-byte
+step in t5 and interleaves the header stores (0,8,4,0xC); store order perms don't help.
+
+### 0x277540 (Dk2752B8, fileio RPC 4 (lseek-like, async flag 0x8000 registers the sema in D_002BDAB0), 0x238) DIFF 113
+docs/hard/w2/hard_277540.snip: logic as retail (same shape as the matched 0x2773C0). Ours keeps
+`fl & 0x8000` in a saved register and swaps the a/sema registers; retail recomputes the andi.
+SDKC unit: a field-type search over W2RpcReq7 was not tried yet.
+Same family, same blocker (not attempted separately): 0x277778 (Dk2752B8, RPC 2, 152 insns) and
+0x2796D8 (Dk2779D8, RPC 0x16 with a 64-bit offset `sd` into the request, 142 insns).
+
+### 0x259340 (Dk2571C0, AT3 stream slot allocate/init, 0x2C0) DIFF 52-63
+docs/hard/w2/hard_259340.snip: logic complete (free-list pop, player open, ~30 field inits,
+push on the active list, unwind path). Left: loop/start params in swapped saved registers and the
+order of the ~18 inits (bk perm hill-climb 63 -> 52 in 900 tries).
+
+### 0x268F50 (Dk268138, libmpeg form_predictions (mpeg2decode recon.c, Sony IPU variant), 450 insns) DIFF ~426 (4 short, shifted)
+docs/hard/w2/hard_268F50.snip: full logic reconstructed from mpeg2decode's form_predictions:
+frame/field pictures, MC_FRAME/FIELD/16X8/DMV, forward then backward with the average flag; the
+predictor is func_00269658(d, src, sfield, dfield, yoff, h, bx, by, dx, dy, fieldflag, avg) and
+field pictures pick their source from a local {{m1E0,m1F0},{m1E4,m1F4}} table. Retail keeps a 1 in
+s3 (shared with `sel`) from the prologue and is 4 instructions longer; not tuned yet. calc_DMV
+(0x26AD28, matched) and the macroblock loop (0x26B208, matched) are its neighbours.
+
+### 0x299510 / 0x2996C0 (Lib298A78, linkonce DB-table loaders: per line, read a name, intern it in the user-flag script mgr, parse its conditions with Func148EC8; records 0x28 / 0x24 bytes) DIFF 77
+docs/hard/w2/hard_299510.snip (W2Rec28 struct-array form; same pattern as CGameDBMgr::Func14A620).
+Retail strength-reduces to a field pointer, a record pointer and a down-counter (num), with the
+record arguments in different saved registers; ours keeps the index. 0x2996C0 is the same template
+for 0x24-byte records (fields at 0x10..0x20).
+
+### 0x27B798 (Dk27A100, kernel TLB init: three tables of 16-byte entries via 0x27B6B8, `mtc0 $6` Wired + sync.p, then fill to 48 entries)
+Not C: the entry index lives in $25 (t9) across `jal 0x27B6B8`, which only hand-written code
+does (the callee must preserve t9). Leave as INCLUDE_ASM.
+- 0x267CA0 (Dk265918, sceMpegGetPicture-style decode loop) switches through jtbl_002E9570 in ro_tail: blocked like the big newlib functions (needs the library .rodata split).
+
+### 0x2715B0 (Dk26FC10, planar shadow projection matrix from plane normal + light, point/directional, 100 insns) DIFF ~99
+docs/hard/w2/hard_2715B0.snip: maths decoded (both branches). Retail loads n[0..2] once, keeps lx/ly
+in $f16/$f15 and lz in $f14 and reuses the three products; its FP register choice and store
+schedule differ from every form tried (plain, local n, product temporaries).
+
+### 0x274FE8 (Dk2735D0, sceSifInitCmd, 160 insns) DIFF ~159 (one extra saved register)
+docs/hard/w2/hard_274FE8.snip: full sifcmd init (cmd data at D_41D198, 32 handlers at D_41D1C0,
+32 sregs at D_41D340 cleared from the top, the two system handlers 0x274F90/0x274F70, D_STAT/SIF
+checks, DMAC 5 handler, then either the sub-address handshake or the 0x80000002 init packet).
+Ours uses one more saved register (s5) so everything shifts; SDKC strict-aliasing field types
+(W2CmdData) not searched yet.
+
+### 0x26E260 (Dk26CFB0, libmpeg CSC through the IPU with the 0x26E188 DMA feed, 162 insns) DIFF 5 (v0/v1 swap only)
+docs/hard/w2/hard_26E260.snip: matches except the first `if (IPU_CTRL & 0x4000) IPU_CTRL =
+0x40000000;` where retail holds the address in v1 and the value in v0 (ours the reverse). The rest
+of utest's DIFF is reloc-only lui noise. Volatile int/u32, pointer local, bit-shift tests tried.
+
+### 0x278E60 (Dk2779D8, fileio chstat-like RPC 0xD: name + 64-byte stat + mask, 144 insns) DIFF 3
+docs/hard/w2/hard_278E60.snip (adds a `cs` member to the unit's McCmd union). Same blocker as
+0x278CC0: the name-copy store address is `addu c, i` in retail and `addu i, c` in ours (declaration
+order, unsigned i, pointer/array spellings tried), plus one store pair swapped.
+
+### Not attempted this round (triaged; addr, unit, insns, note)
+- 0x24FAF0 func_0024FAF0 (Dk24FAF0, 58 insns): CResCacheUnit key-method destructor: needs Dk24FAF0 converted to level 3 first
+- 0x260878 func_00260878 (Dk25E340, 122 insns): filter-bank interpolation, 4x256 loop with two coefficient tables (decoded in my notes: per-channel 8-step ramp)
+- 0x261668 func_00261668 (Dk260A60, 136 insns): not attempted (size/time)
+- 0x261888 func_00261888 (Dk260A60, 138 insns): not attempted (size/time)
+- 0x287C88 func_00287C88 (Lib285F80, 114 insns): not attempted (size/time)
+- 0x2574B8 Func2574B8__9CFontWorkffPfT3PPCcPvi (Dk2571C0, 150 insns): not attempted (size/time)
+- 0x257B70 Func257B70__9CFontWorkffPfT3PPCcPvi (Dk2571C0, 150 insns): not attempted (size/time)
+- 0x261068 func_00261068 (Dk260A60, 162 insns): not attempted (size/time)
+- 0x26D468 func_0026D468 (Dk26CFB0, 164 insns): IPU field/frame picture output, heavy spilling (11 live values)
+- 0x2562B0 Func2562B0__9CFontWorkPvPcii (Dk254AA8, 130 insns): not attempted (size/time)
+- 0x268640 func_00268640 (Dk268138, 170 insns): not attempted (size/time)
+- 0x2566A0 Func2566A0__9CFontWorkPCci (Dk254AA8, 164 insns): not attempted (size/time)
+- 0x26D110 func_0026D110 (Dk26CFB0, 174 insns): not attempted (size/time)
+- 0x2779D8 func_002779D8 (Dk2779D8, 176 insns): not attempted (size/time)
+- 0x27CBC0 func_0027CBC0 (Dk27C020, 168 insns): not attempted (size/time)
+- 0x263BA0 func_00263BA0 (Dk2631E0, 184 insns): not attempted (size/time)
+- 0x256DC8 func_00256DC8 (Dk254AA8, 154 insns): not attempted (size/time)
+- 0x2571C0 func_002571C0 (Dk2571C0, 190 insns): not attempted (size/time)
+- 0x2669C0 func_002669C0 (Dk265918, 196 insns): not attempted (size/time)
+- 0x26E9B0 func_0026E9B0 (Dk26CFB0, 222 insns): not attempted (size/time)
+- 0x257840 func_00257840 (Dk2571C0, 204 insns): not attempted (size/time)
+- 0x269658 func_00269658 (Dk268138, 264 insns): IPU form_prediction (Sony), 264 insns, heavy spilling
+- 0x261AB0 func_00261AB0 (Dk260A60, 90 insns): not attempted (size/time)
+- 0x255200 func_00255200 (Dk254AA8, 184 insns): not attempted (size/time)
+- 0x254AA8 func_00254AA8 (Dk254AA8, 288 insns): not attempted (size/time)
+- 0x26B4C8 func_0026B4C8 (Dk26A870, 298 insns): mpeg macroblock_modes/decode (Sony IPU VLC), 298 insns
+- 0x287378 func_00287378 (Lib285F80, 272 insns): not attempted (size/time)
+- 0x254248 func_00254248 (Dk252208, 298 insns): not attempted (size/time)
+- 0x265D98 func_00265D98 (Dk265918, 116 insns): not attempted (size/time)
+- 0x286518 func_00286518 (Lib285F80, 276 insns): frame.c with a jump table in ro_tail
+- 0x256A00 func_00256A00 (Dk254AA8, 242 insns): jump table in ro_tail
+- 0x2883B0 func_002883B0 (Lib285F80, 324 insns): not attempted (size/time)
+- 0x282E40 func_00282E40 (Dk2828C0, 346 insns): not attempted (size/time)
+- 0x285728 func_00285728 (Lib283858, 350 insns): frame.c execute_cfa_program-like (gcc 2.96), 350 insns
+- 0x2828C0 func_002828C0 (Dk2828C0, 352 insns): not attempted (size/time)
+- 0x26FF38 func_0026FF38 (Dk26FC10, 118 insns): not attempted (size/time)
+- 0x287138 func_00287138 (Lib285F80, 144 insns): not attempted (size/time)
+- 0x263330 func_00263330 (Dk2631E0, 198 insns): not attempted (size/time)
+- 0x282230 func_00282230 (Dk280098, 420 insns): not attempted (size/time)
+- 0x277C98 func_00277C98 (Dk2779D8, 222 insns): not attempted (size/time)
+- 0x281B98 func_00281B98 (Dk280098, 422 insns): not attempted (size/time)
+- 0x2523F8 Func2523F8__7CDebOutPCcPiN32i (Dk252208, 418 insns): CDebOut printf-style formatter, 418 insns
+- 0x289640 func_00289640 (Lib2888C0, 458 insns): _malloc_r: upstream newlib mallocr.c (MALLOC_ALIGNMENT 16) is 408 insns, retail 458: Sony changes
+- 0x26F580 func_0026F580 (Dk26CFB0, 420 insns): jump table in ro_tail
+- 0x25D608 func_0025D608 (Dk25C438, 352 insns): not attempted (size/time)
+- 0x2748E0 func_002748E0 (Dk2735D0, 382 insns): jump table in ro_tail (vsprintf-like)
+- 0x276930 func_00276930 (Dk2752B8, 238 insns): jump table in ro_tail
+- 0x261C18 func_00261C18 (Dk260A60, 316 insns): not attempted (size/time)
+- 0x266FA8 func_00266FA8 (Dk265918, 364 insns): not attempted (size/time)
+- 0x260A60 func_00260A60 (Dk260A60, 386 insns): not attempted (size/time)
+- 0x28CCB8 func_0028CCB8 (Lib28AE50, 766 insns): jump table in ro_tail (newlib)
+- 0x2586C8 Func2586C8__FP8CAt3Node (Dk2571C0, 782 insns): jump table in ro_tail
+- 0x28B970 func_0028B970 (Lib28AE50, 966 insns): _strtod_r: upstream newlib strtod.c (0.91 similar), jump table in ro_tail
+- 0x28F728 func_0028F728 (Lib28D8B0, 1178 insns): _dtoa_r: upstream newlib dtoa.c (0.96 similar), jump table in ro_tail
+- 0x28DA28 func_0028DA28 (Lib28D8B0, 1436 insns): _vfprintf_r: upstream newlib vfprintf.c (0.93 similar), jump table in ro_tail

@@ -1,0 +1,28 @@
+//@decl
+class CStatusWinSub1A0A10 { public: CStatusItem *Find(const char *name); };
+class CChrBodyWinSub188748 { public: void SetUnk388(s32 v); void SetUnk374(f32 v); };
+extern CStatusWinSub1A0A10 *D_002A5408;
+extern char D_002DDA70[], D_002DDA78[], D_002DDA88[], D_002DDA98[];
+//@func 0x19AC20
+void CStatusBaseSub19AE68::Init19AC20(s32 kind) {
+    switch (kind) {
+    case 0: m_unk0 = (s32)D_002A5408->Find(D_002DDA70); break;
+    case 1: m_unk0 = (s32)D_002A5408->Find(D_002DDA78); break;
+    case 2: m_unk0 = (s32)D_002A5408->Find(D_002DDA88); break;
+    default:
+        Func235DE0(D_002DDA98, kind);
+        kind = 0;
+        m_unk0 = (s32)D_002A5408->Find(D_002DDA70);
+        break;
+    }
+    ((CChrBodyWinSub188748 *)D_002A4308)->SetUnk388(m_unk0);
+    ((CChrBodyWinSub188748 *)D_002A4308)->SetUnk374(0.0f);
+    ((CStatusItem *)m_unk0)->Func1A3378();
+    m_unk4 = kind;
+    m_unkC = 0.0f;
+    m_unk8 = 0;
+    m_unk10 = 0;
+    m_unk18 = 0;
+    m_unk1C = 0;
+    m_unk14 = 0;
+}

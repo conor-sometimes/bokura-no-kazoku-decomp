@@ -100,6 +100,14 @@ extern u8 D_41F880[];
 extern u8 D_420340[];
 s32 func_002760B0(void *, s32, s32, void *, s32, void *, s32, void *, void *);
 s32 W2Lock(s32) __asm__("func_00276D38");
+
+typedef struct W2RpcCdS { int m0; int m4; int m8; int mC; int m10; int m14; int m18; int m1C; void *m20; int m24; } W2RpcCd;
+typedef struct { int p0[5]; void * m14; int m18; void * m1C; int m20; int m24; int m28; int m2C; int m30; int m34; } W2RpcPkt;
+void func_00275698(void *p, int n);
+typedef struct { int m0; void *(*func)(int, void *, int); void *buf; int size; int m10, m14, m18; void * m1C; void *m20; int m24; void *m28; int m2C; int m30; unsigned int m34; } W2RpcSd;
+typedef struct { int m0, m4, m8, mC, m10, m14, m18; int m1C; int m20; } W2RpcRp;
+typedef struct { int src; int dest; int size; int attr; } W2DmaT;
+int func_00273560(W2DmaT *, int);
 // @decl-end
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
@@ -294,7 +302,60 @@ int func_00275EE0(RpcClient *cd, int rpc, int mode)
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00276020);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002760B0);
+s32 func_002760B0(void *vcd, s32 fno, s32 mode, void *send, s32 ssize, void *recv, s32 rsize, void *endfunc, void *efarg)
+{
+    W2RpcCd *cd = (W2RpcCd *)vcd;
+    void *gp;
+    W2RpcPkt *call;
+    SemaParam sp;
+    call = (W2RpcPkt *)func_00275910((Pool *)&D_41EBC0);
+    if (call == 0) return -1;
+    cd->m20 = efarg;
+    cd->m4 = call->m18;
+    cd->m0 = (int)call;
+    cd->m1C = (int)endfunc;
+    asm volatile("move %0, $28" : "=r"(gp));
+    cd->m18 = (int)gp;
+    call->m20 = fno;
+    call->m24 = ssize;
+    call->m28 = (int)recv;
+    call->m2C = rsize;
+    call->m14 = (void *)call;
+    call->m1C = (void *)cd;
+    call->m34 = (int)cd->m24;
+    if (!(mode & 2)) {
+        if (send == recv) {
+            func_00275698(send, ssize < rsize ? rsize : ssize);
+        } else {
+            if (ssize > 0) func_00275698(send, ssize);
+            if (rsize > 0) func_00275698(recv, rsize);
+        }
+    }
+    if (mode & 1) {
+        if (endfunc == 0) call->m30 = 0;
+        else call->m30 = 1;
+        cd->m8 = -1;
+        if (func_002754D0(0x8000000A, (int)call, 0x40, (int)send, cd->m14, ssize)) return 0;
+        func_002759B8((P *)call);
+        return -2;
+    }
+    sp.init_count = 0;
+    sp.max_count = 1;
+    cd->m8 = func_002731A0(&sp);
+    if (cd->m8 < 0) {
+        func_002759B8((P *)call);
+        return -3;
+    }
+    call->m30 = 1;
+    if (func_002754D0(0x8000000A, (int)call, 0x40, (int)send, cd->m14, ssize) == 0) {
+        func_002731B0(cd->m8);
+        func_002759B8((P *)call);
+        return -2;
+    }
+    func_002731E0(cd->m8);
+    func_002731B0(cd->m8);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002762A8);
 
@@ -360,7 +421,53 @@ Wq *func_00276578(WqHead *q)
     return e;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002765D0);
+void func_002765D0(Wq *wq)
+{
+    W2RpcSd *sd = (W2RpcSd *)wq;
+    W2DmaT dma[2];
+    W2RpcRp *pkt;
+    void *rec;
+    int size = 0;
+    int count, id, i;
+    rec = sd->func(sd->m24, sd->buf, sd->size);
+    if (rec) size = sd->m2C;
+    if (sd->size > 0) func_00275698(sd->buf, sd->size);
+    if (size > 0) func_00275698(rec, size);
+    func_0027BD20();
+    if (sd->m34 & 4) pkt = (W2RpcRp *)func_00275A08b(&D_41EBC0, sd->m34 >> 16);
+    else pkt = (W2RpcRp *)func_002759D8b(&D_41EBC0);
+    func_0027BD78();
+    pkt->m20 = (int)0x8000000A;
+    pkt->m1C = (int)sd->m1C;
+    if (sd->m30) {
+        while (!func_002754D0(0x80000008, (int)pkt, 0x40, (int)rec, (int)sd->m28, size))
+            ;
+        return;
+    }
+    pkt->m18 = 0;
+    count = 0;
+    pkt->m10 = 0;
+    if (size > 0) {
+        count = 1;
+        dma[0].src = (int)rec;
+        dma[0].dest = (int)sd->m28;
+        dma[0].size = size;
+        dma[0].attr = 0;
+    }
+    dma[count].src = (int)pkt;
+    dma[count].dest = (int)sd->m20;
+    dma[count].size = 0x40;
+    dma[count].attr = 0;
+    count++;
+    do {
+        id = func_00273560(dma, count);
+        if (id == 0) {
+            i = 0x100000;
+            while (i--)
+                ;
+        }
+    } while (id == 0);
+}
 
 void func_00276798(WqHead *q)
 {
