@@ -53,6 +53,7 @@ public:
     void Func25CD38(s32 id, f32 v);
     void Func25CCB0(s32 id, f32 v);
     void Func25C910(s32 id, s32 v, s32 w);
+    void Func25C840(s32 id, s32 a, s32 b);
     s32 Func25CF58(s32 id);
     void Func25CE30(s32 id, s32 v);
     void Func25D1A0(struct CSndPrm *p);
@@ -214,7 +215,22 @@ s32 Func25C810(s32 a, s32 b) {
     return func_001F1180() == 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25C840__8CSndWorkiii);
+void CSndWork::Func25C840(s32 id, s32 a, s32 b)
+{
+    CSndUnitX4 *n = (CSndUnitX4 *)Func25C4B0(id);
+    CSndUnitX4 *p;
+    for (p = n; n; p = n) {
+        n = (CSndUnitX4 *)Func25C510(p);
+        if (Func25C810(a, b)) {
+            delete (CSndNodeV *)p;
+        } else {
+            p->m1D = 1;
+            p->m1F = a;
+            p->m1C = 1;
+            p->m4E = b;
+        }
+    }
+}
 
 void CSndWork::Func25C910(s32 id, s32 v, s32 w) {
     for (CSndUnitX2 *p = (CSndUnitX2 *)Func25C4B0(id); p; p = (CSndUnitX2 *)Func25C510(p)) {
@@ -351,7 +367,24 @@ void Func25D270(CSndTree *t, s32 b) {
     Func25D388(t, b);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25D2B0__FP8CSndTreei);
+void Func25D2B0(CSndTree *t, s32 b)
+{
+    CSndUnitX4 *n = (CSndUnitX4 *)SndItem(t->m2C);
+    CSndUnitX4 *p;
+    for (p = n; n; p = n) {
+        n = (CSndUnitX4 *)SndItem(n->m_next);
+        if (p->m18 != b) continue;
+        if (p->m1D != 0) continue;
+        if (Func25C810(0, 0)) {
+            delete (CSndNodeV *)p;
+        } else {
+            p->m1D = 1;
+            p->m1F = 0;
+            p->m1C = 1;
+            p->m4E = 0;
+        }
+    }
+}
 
 void Func25D388(CSndTree *t, s32 b) {
     for (CSndNode *p = SndItem(t->m1C); p; p = SndItem(p->m_next)) Func25D270((CSndTree *)p, b);

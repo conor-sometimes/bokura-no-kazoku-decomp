@@ -1,0 +1,6 @@
+//@decl
+inline CSndNode *W2Item(CSndNode *n) { CSndNode *r = 0; if (n->m_head == 0) r = n; return r; }
+//@func 0x25C580
+extern "C" void func_0025C580(void *p) { CSndNode *h = (CSndNode *)((u8 *)p + 0x24); CSndNode *n; while ((n = W2Item(h->m_next)) != 0) delete (CSndNodeV *)n; }
+//@func 0x25C5D8
+extern "C" void func_0025C5D8(void *p) { CSndNode *h = (CSndNode *)((u8 *)p + 0x14); CSndNode *n; while ((n = W2Item(h->m_next)) != 0) delete (CSndNodeV *)n; }

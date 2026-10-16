@@ -1,0 +1,5 @@
+//@decl
+typedef struct W2Cmd { int m0, m4, m8, mC, m10, m14; char p18[0x38 - 0x18]; struct W2Cmd *m38; int m3C; void *m40; } W2Cmd;
+typedef struct { int m0, m4; W2Cmd *m8; } W2CQ;
+//@func 0x276380
+void func_00276380(W2Cmd *c, int a, int b, int d, int e, int f, W2CQ *q) { W2Cmd *p; func_0027BD20(); c->m3C = 0; c->m38 = 0; c->m0 = a; c->m4 = b; c->m8 = d; c->m10 = e; c->m14 = f; c->m40 = q; if (q->m8 == 0) q->m8 = c; else { p = q->m8; while (p->m38) p = p->m38; p->m38 = c; } func_0027BD78(); }

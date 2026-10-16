@@ -76,13 +76,7 @@ void Func238158(void *p, int v);
 void Func225088();
 int Func2250C0();
 void Func225240(int v);
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-    void SetUnk0And20(f32 x, f32 y);
-    void Move1B6488(f32 x, f32 y);
-    void SetUnkE0(s32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 // The window item (CStatusWin.cpp); CUnk1A4298 above is the same object.
 class CVec4;

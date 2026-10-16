@@ -11,12 +11,29 @@ public:
     u8 pad18[4];
     s32 m1C;                  // 0x1C
 };
-class CTexCacheMgr {
+// The node list at 0x20 (TList<CCacheInfo>: CListTag fields, vptr at 0xC).
+struct CTexCacheList { s32 m_isHead; CTexCacheList *m_prev; CTexCacheList *m_next; void *m_vt; };
+// Vtable _vt$12CTexCacheMgr (in asm): slot 0 is an inline library function, slot 1
+// (func_0010D028) the key method; the destructor is the last slot.
+class ITexCacheMgr {
 public:
-    void Clear();
-    void Age();
-    void Release10D200();
-    u8 pad0[0x4];
+    virtual void V0() = 0;
+    virtual void V1() = 0;
+    virtual void Release10D200() = 0;
+    virtual void Clear() = 0;
+    virtual void Age() = 0;
+    virtual void V5() = 0;
+};
+class CTexCacheMgr : public ITexCacheMgr {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void Release10D200();
+    virtual void Clear();
+    virtual void Age();
+    virtual void V5();
+    virtual ~CTexCacheMgr();
+    // vptr 0x0
     void *m4;                 // 0x4
     s32 m8;                   // 0x8
     s32 mC;                   // 0xC
@@ -24,6 +41,7 @@ public:
     s32 m14;                  // 0x14
     s32 m18;                  // 0x18
     CTexCacheEnt *m1C;        // 0x1C
+    CTexCacheList m20;        // 0x20
 };
 extern void (*D_002B91B0)(void *p);
 void BlitFlip8(u8 *dst, u8 *src, int stride, int x, int y, int w, int h);

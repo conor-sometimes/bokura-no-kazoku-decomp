@@ -1,0 +1,39 @@
+//@decl
+extern u8 D_36FA6F[];
+extern u64 D_002B91D0[];
+//@func 0x236BC8
+extern "C" void func_00236BC8(s32 row) {
+    s32 sh = 1 - func_0026E888()->m4;
+    u32 *p0 = (u32 *)((u32)D_36FA6F & ~15);
+    s32 j;
+    for (j = 0; j < 80; j++) {
+        u32 v = D_379AA8[row][j];
+        u32 col = (v & 0xFFFFFF) | 0x80000000;
+        u64 bits;
+        s32 y;
+        v = (v >> 24) - 0x20;
+        if (v >= 0x60) v = 0;
+        bits = D_002B91D0[v];
+        for (y = 0; y < 8; y++) {
+            u32 *p = p0;
+            s32 x, k;
+            for (x = 0; x < 8; x++) {
+                *p = (s32)(bits & 1) ? col : 0;
+                bits >>= 1;
+                p++;
+            }
+            p0 += 0x280;
+            for (k = 0; k < (1 << sh) - 1; k++) {
+                u32 *q = p0;
+                s32 i;
+                for (i = 0; i < 8; i++) {
+                    *q = q[-0x280];
+                    q++;
+                }
+                p0 += 0x280;
+            }
+        }
+        p0 = p0 - (0x1400 << sh) + 8;
+    }
+    return (void)((s32 (*)(s32, s32, s32, s32, s32))func_00236B50)(0, (row * 8) << sh, 0x280, 8 << sh, (s32)((u32)D_36FA6F & ~15));
+}

@@ -46,9 +46,24 @@ TypeInfo *__tf9type_info();
 extern const char D_002EAE30[];
 extern TypeInfo D_2EB910;
 }
+
+extern u8 W2vt_exception[] asm("_vt$9exception");
+extern u8 W2vt_bad_exception[] asm("_vt$13bad_exception");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_si2[] asm("_vt$14__si_type_info");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_class[] asm("_vt$17__class_type_info");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_exc2[] asm("_vt$9exception");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2TI { const char *name; virtual void v0(); virtual void v1(); virtual void v2(); virtual s32 v3(s32, void *, void *, void *); };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029E9F0);
+extern "C" s32 func_0029E9F0(W2TI *self, s32 boff, void *sub, void *obj, void *subptr) { if (boff >= 0) return ((u8 *)subptr - (u8 *)obj) == boff ? 6 : 1; if (boff == -2) return 1; return self->v3(boff, sub, obj, subptr); }
 
 extern "C" void func_0029EA58(void *p, s32 flag)
 {
@@ -66,7 +81,7 @@ extern "C" TypeInfo *__tf14__si_type_info()
     return &D_425410;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EB10);
+extern "C" void *func_0029EB10(void *p, const char *n, void *ti) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_si2; FLD(void *, p, 8) = ti; }
 
 extern "C" void func_0029EB28(void *p, s32 flag)
 {
@@ -84,7 +99,7 @@ extern "C" TypeInfo *__tf17__class_type_info()
     return &D_425420;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EBE0);
+extern "C" void *func_0029EBE0(void *p, const char *n, void *bl, s32 bn) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_class; FLD(void *, p, 8) = bl; FLD(s32, p, 0xC) = bn; }
 
 extern "C" TypeInfo *__tf9exception()
 {
@@ -92,9 +107,9 @@ extern "C" TypeInfo *__tf9exception()
     return &D_2EB918;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EC40);
+extern "C" void *func_0029EC40(void *p) { *(void **)p = W2vt_exception; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029EC50);
+extern "C" void func_0029EC50(void *p, s32 c) { *(void **)p = W2vt_exc2; if (c & 1) { __builtin_delete(p); return; } }
 
 extern "C" TypeInfo *__tf13bad_exception()
 {
@@ -105,9 +120,9 @@ extern "C" TypeInfo *__tf13bad_exception()
     return &D_425430;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029ECD8);
+extern "C" void *func_0029ECD8(void *p) { *(void **)p = W2vt_bad_exception; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29E9F0", func_0029ECE8);
+extern "C" void func_0029ECE8(void *p, s32 c) { *(void **)p = W2vt_exc2; if (c & 1) { __builtin_delete(p); return; } }
 
 extern "C" void func_0029ED20(void *p, s32 flag)
 {

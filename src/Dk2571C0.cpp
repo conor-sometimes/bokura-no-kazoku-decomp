@@ -84,13 +84,35 @@ void Func259E90(u32 i, f32 v);
 s32 Func259F18(u32 i);
 s32 Func259C28(u32 i);
 void Func259300();
+
+struct W2FontCh { u8 p0[0x10]; s8 m10; };
+struct W2FontLay { u8 p0[0x10]; f32 m10; f32 m14; u8 p18[8]; f32 m20; u8 p24[0x30]; f32 m54; };
+extern "C" void func_00256DC8(void *ctx, W2FontCh *c, W2FontLay *l, f32 x, f32 y);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_002571C0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", Func2574B8__9CFontWorkffPfT3PPCcPvi);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257710);
+extern "C" void func_00257710(void *ctx, f32 *ox, f32 *oy, W2FontCh **items, s32 n, W2FontLay *l, s32 flags, f32 x, f32 y)
+{
+    f32 w;
+    if (flags & 4) {
+        s32 i;
+        w = 0.0f;
+        for (i = 0; i < n; i++) {
+            W2FontCh *c = items[i];
+            if (c) func_00256DC8(ctx, c, l, x - l->m10 + (f32)c->m10 * l->m20, y + w);
+            w += l->m14;
+            w += l->m54;
+        }
+        w -= l->m54;
+    } else {
+        w = l->m14 * (f32)n + l->m54 * (f32)(n - 1);
+    }
+    *ox = l->m10;
+    *oy = w;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257840);
 

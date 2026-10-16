@@ -80,6 +80,12 @@ extern "C" s32 func_002666D0(void);
 
 extern "C" u64 func_00266738(u32, u64);
 struct StrEnt { u64 id; u64 m8; s32 m10; s32 m14; void *m18; s32 m1C; };
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" s32 func_0026D110(MpegSys *, s32);
+extern "C" s32 func_0026CFB0(MpegSys *);
+extern "C" void func_0026D080(MpegSys *, s32, s32);
+extern "C" s32 func_0026C700(MpegSys *);
+extern "C" void func_00268138(SceMpeg *);
 // @decl-end
 
 extern "C" void func_00265918(char *dst) {
@@ -372,4 +378,44 @@ INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00267E58);
 
 extern "C" s32 func_00267F78(SceMpeg *p, s32 a, s32 b) { if (p->sys->m18C != 3) return func_00267FC0(p, a, b); return func_00267E58(p, a, b); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00267FC0);
+extern "C" s32 func_00267FC0(SceMpeg *mp, s32 a, s32 b)
+{
+    MpegSys *s = mp->sys;
+    s32 skip = 0;
+    s32 r;
+    FLD(s32, s, 0x138) = 0;
+    if (b == -1 || a < b) skip = 1;
+    if (FLD(s32, s, 8) == 0) {
+        mp->frameCount = 0;
+        FLD(s32, s, 8) = 1;
+    }
+    if (func_0026D110(s, 0) && skip) func_0026CFB0(s);
+    if (FLD(s32, s, 0x10A0)) return 0;
+    FLD(s32, s, 0x138) = 1;
+    if (func_0026C700(s) == 0) {
+        func_00268138(mp);
+        FLD(s32, s, 0) = 1;
+        return 0;
+    }
+    {
+        s32 want = 2;
+        if (FLD(s32, s, 0xEC) != 1) want = 1;
+        if (FLD(s32, s, 0x18C) != want) return -1;
+    }
+    {
+        s32 ok = 0;
+        if (func_0026D110(s, 1)) ok = 1;
+        r = 0;
+        if (ok && skip) {
+            if (func_0026CFB0(s)) r = 1;
+        }
+    }
+    if (FLD(s32, s, 0x10A0)) return 0;
+    func_0026D080(s, FLD(s32, s, 0x130), FLD(s32, s, 4));
+    FLD(s32, s, 0x138) = 0;
+    mp->frameCount = FLD(s32, s, 0x130) - FLD(s32, s, 0xC4);
+    FLD(s32, s, 0x130)++;
+    FLD(s32, s, 4)++;
+    if (!skip) func_00267B10(mp);
+    return r;
+}

@@ -24,35 +24,18 @@ class CUnk237E90 {
 public:
     int Func237E90(int v);
 };
-class CMenuMgrSub1B5BF8 {
-public:
-    void Reset();
-    void SetUnk30(int v);
-    void SetUnk0(f32 x, f32 y);
-    void SetUnk34(int v);
-    void SetUnk1C(f32 v);
-    void SetUnk10(f32 r, f32 g, f32 b);
-};
+#include "CMenuMgrSub1B5BF8.h"
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 extern "C" int func_001B5E18(CMenuMgrSub1B5BF8 *p);
 extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, f32 x, f32 y, const char *s);
-class CMenuMgrSub1B4768 {
-public:
-    int GetEntry0(int k);
-    void Reset1B4D28();
-    void SetUnk20(f32 x, f32 y, f32 z);
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(int v);
 };
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, int k);
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern "C" int func_001B66E8(CMenuMgrSub1B6418 *p);
 extern "C" int sprintf(char *buf, const char *fmt, ...);

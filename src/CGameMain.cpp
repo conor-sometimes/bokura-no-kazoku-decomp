@@ -122,10 +122,7 @@ public:
     u8 pad8[0x24];
     s32 m2C;                  // 0x2C
 };
-class CResMgr24F {
-public:
-    void Func24F5C0(void *res, int v);
-};
+#include "CResMgr24F.h"
 void *Func24F2E8(int size);
 class CGameMainRes153410 { public: void Init153410(int a); };
 class CUnk237E90 {

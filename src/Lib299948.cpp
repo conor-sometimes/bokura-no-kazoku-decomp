@@ -135,6 +135,23 @@ extern const char D_002DA2F0[];
 }
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2Snd34 { u8 pad[0x34]; u8 m34; u8 pad35[7]; s16 m3C; s16 m3E; };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2LT { s32 isHead; W2LT *prev; W2LT *next; void *vptr; };
+extern u8 W2vt_lt[] asm("_vt$8CListTag");
+
+extern u8 W2s__vt_10IInterfMgr[] asm("_vt$10IInterfMgr");
+extern "C" void W2s____5CTask(void *, s32) asm("_$_5CTask");
+extern "C" void W2s___dl__5CTaskPv(void *) asm("__dl__5CTaskPv");
+extern u8 W2s__vt_9IAlbumMgr[] asm("_vt$9IAlbumMgr");
+
+extern u8 W2vt_peo[] asm("_vt$14CPhotoEventObj");
+extern "C" void func_001327F8(void *, s32);
 // @decl-end
 
 extern "C" s32 func_00299948(void *p) { return FLD(s32, p, 0x23C); }
@@ -184,7 +201,7 @@ extern "C" TypeInfo *__tf15CGameSeasonPost()
     return &D_424910;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299AB0);
+extern "C" void func_00299AB0(W2LT *p, s32 flags) { p->vptr = W2vt_lt; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (flags & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf17CGameScheduleUnit()
 {
@@ -242,7 +259,7 @@ extern "C" TypeInfo *__tf11CGameResort()
     return &D_424970;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299DA0);
+extern "C" void func_00299DA0(void *p, s32 c) { *(void **)((u8 *)p + 0x4) = W2s__vt_10IInterfMgr; W2s____5CTask(p, 0); if (c & 1) { W2s___dl__5CTaskPv(p); return; } }
 
 extern "C" TypeInfo *__tf10IInterfMgr()
 {
@@ -271,11 +288,11 @@ extern "C" TypeInfo *__tf10CInterfMgr()
     return &D_424980;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299EF8);
+extern "C" void func_00299EF8(void *p, f32 f) { W2Snd34 *s = (W2Snd34 *)((u8 *)p + 0x50); s->m34 = 1; s32 v = (s32)(f * 128.0f); s->m3E = v; s->m3C = v; }
 
 extern "C" s32 func_00299F28(void *p) { return FLD(s32, p, 0xC0); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299F30);
+extern "C" s32 func_00299F30(void *p) { return FLD(s32, p, 0xCC) && FLD(f32, p, 0xD0) == 1.0f && FLD(s32, p, 0x8E4); }
 
 extern "C" f32 func_00299F68(void *p) { return FLD(f32, p, 0x918); }
 
@@ -306,7 +323,7 @@ extern "C" TypeInfo *func_0029A028()
     return &D_2EB838;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A068);
+extern "C" void func_0029A068(void *p, s32 c) { *(void **)((u8 *)p + 0x4) = W2s__vt_9IAlbumMgr; W2s____5CTask(p, 0); if (c & 1) { W2s___dl__5CTaskPv(p); return; } }
 
 extern "C" TypeInfo *__tf9IAlbumMgr()
 {
@@ -317,7 +334,7 @@ extern "C" TypeInfo *__tf9IAlbumMgr()
     return &D_4249C0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A120);
+extern "C" void func_0029A120(void *p, s32 c) { *(void **)((u8 *)p + 0xFEC4) = W2vt_peo; func_001327F8(p, 0); if (c & 1) { __builtin_delete(p); return; } }
 
 extern "C" TypeInfo *__tf14CPhotoEventObj()
 {
@@ -356,7 +373,8 @@ extern "C" void Release__11CPhotoDBMgr(VDel_29A2A8 *p) { delete p; }
 
 extern "C" s32 Func29A2E0__11CPhotoDBMgr(void *p) { return FLD(s32, p, 0x1C); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", Func29A2E8__11CPhotoDBMgr);
+extern "C" void *W2PhotoGet(void *p, s32 i) asm("Func29A2E8__11CPhotoDBMgr");
+extern "C" void *W2PhotoGet(void *p, s32 i) { if (i < 0 || FLD(s32, p, 0x1C) - 1 < i) return 0; return FLD(u8 *, p, 0x18) + i * 32; }
 
 extern "C" s32 Func29A320__11CPhotoDBMgr(void *p) { return FLD(s32, p, 0x20); }
 
@@ -377,7 +395,7 @@ extern "C" TypeInfo *__tf12CResortDBMgr()
 
 extern "C" void func_0029A3B8(VDel_29A3B8 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_0029A3F0);
+extern "C" void *func_0029A3F0(void *p, s32 i) { if (i >= 0 && !(FLD(s32, p, 0x14) - 1 < i)) return FLD(u8 *, p, 0x10) + i * 48; return 0; }
 
 extern "C" s32 func_0029A430(void *p) { return FLD(s32, p, 0x14); }
 

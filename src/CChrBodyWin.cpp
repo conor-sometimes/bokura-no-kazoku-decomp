@@ -208,10 +208,7 @@ extern "C" void func_00226DF8(s32 reg, u64 v);
     ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
      ((u64)(minv) << 24) | ((u64)(maxv) << 34))
 
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *a, s32 *b, s32 k);
-};
+#include "CMenuRecordWin.h"
 struct CChrSprPkt {
     s32 u0, v0, u1, v1;
     s32 x0, y0, x1, y1;
@@ -252,14 +249,7 @@ class CUnk237E90 {
 public:
     void Func237E90(int v);
 };
-class CMenuMgrSub1B5BF8 {
-public:
-    void Reset();
-    void SetUnk0(f32 x, f32 y);
-    void SetUnk10(f32 x, f32 y, f32 z);
-    void SetUnk1C(f32 v);
-    void SetUnk30(s32 v);
-};
+#include "CMenuMgrSub1B5BF8.h"
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 extern "C" int func_001B5E18(CMenuMgrSub1B5BF8 *p);
 extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, f32 x, f32 y, const char *s);

@@ -1,0 +1,31 @@
+//@decl
+extern int D_002BF1F4;
+extern const char D_002EA118[];
+int func_00273540(int);
+typedef struct { void *m0; void *m4; int m8; int mC; } W2PadReq;
+int func_00273560(W2PadReq *, int);
+void func_00274F10(const char *, ...);
+//@func 0x27E7B0
+int func_0027E7B0(int a, int b)
+{
+    W2PadReq req[16];
+    int *q;
+    int r;
+    if (((int *)D_424190[a][b].pad)[1] != 0 && func_00273540(((int *)D_424190[a][b].pad)[1]) >= 0)
+        goto fail;
+    q = D_424190[a][b].m4;
+    q[0]++;
+    req[0].m4 = (char *)((int *)D_424190[a][b].pad)[0] + ((q[0] & 1) << 5);
+    func_00292EC8(q, (char *)q + 0x1F);
+    req[0].m0 = q;
+    req[0].m8 = 0x20;
+    req[0].mC = 0;
+    r = func_00273560(req, 1);
+    if (r == 0) {
+fail:
+        if (D_002BF1F4) func_00274F10(D_002EA118);
+        return 0;
+    }
+    ((int *)D_424190[a][b].pad)[1] = r;
+    return 1;
+}

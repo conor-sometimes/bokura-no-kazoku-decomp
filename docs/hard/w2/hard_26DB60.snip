@@ -1,0 +1,27 @@
+//@decl
+extern u8 D_41C240[];
+typedef struct { u32 sadr; u32 pad; u32 a[4]; u32 b[4]; u8 p28[0x12C - 0x28]; s32 n; u8 p130[0x10]; } W2SprBlk;
+typedef struct { u8 p0[0x5A8]; W2SprBlk blk[2]; s32 cur; } W2SprDec;
+//@func 0x26DB60
+void func_0026DB60(W2SprDec *d)
+{
+    u64 *p;
+    int i, n, st;
+    u64 id;
+    p = (u64 *)(((u32)D_41C240 & 0x0FFFFFFF) | 0x20000010);
+    n = d->blk[d->cur].n;
+    for (i = 0; i < n; i++) {
+        id = 3;
+        if (i == n - 1) id = 0;
+        p[0] = ((u64)(d->blk[d->cur].a[i] & 0x0FFFFFFF) << 32) | 0x30000030;
+        p[2] = ((u64)(d->blk[d->cur].b[i] & 0x0FFFFFFF) << 32) | (id << 28) | 0x30;
+        p += 4;
+    }
+    st = func_0027BD20();
+    asm volatile("sync.l");
+    *(volatile u32 *)0x1000D480 = d->blk[d->cur].sadr;
+    *(volatile u32 *)0x1000D430 = (u32)D_41C240;
+    *(volatile u32 *)0x1000D420 = 0;
+    *(volatile u32 *)0x1000D400 = 0x105;
+    if (st) func_0027BD78();
+}

@@ -1,0 +1,6 @@
+//@decl
+extern "C" void *memset(void *, int, unsigned int);
+//@func 0x29A7A0
+extern "C" void func_0029A7A0(TArrMapDBExprReg *p, s32 idx, s32 n) { MapDBExprReg tmp; s32 end; u8 *dst, *src; s32 k; MapDBExprReg *q; if (idx < 0 || func_0029A4F8(p) < idx) { Func235DE0(D_002DA2F0, idx, func_0029A4F8(p)); return; } end = idx + n; func_0029A5E0(p, func_0029A4F8(p) + n, 0); dst = (u8 *)&p->m_data[end]; src = (u8 *)&p->m_data[idx]; for (k = (func_0029A4F8(p) - end) * 36 - 1; k >= 0; k--) dst[k] = src[k]; q = &p->m_data[idx]; memset(&tmp, 0, 0x24); func_0029A9A8(p, q, tmp, n); }
+//@func 0x29A7A0
+extern "C" void func_0029A7A0(TArrMapDBExprReg *p, s32 idx, s32 n) { MapDBExprReg tmp; if (idx < 0 || func_0029A4F8(p) < idx) { Func235DE0(D_002DA2F0, idx, func_0029A4F8(p)); return; } { s32 end = idx + n; func_0029A5E0(p, func_0029A4F8(p) + n, 0); { u8 *dst = (u8 *)&p->m_data[end]; u8 *src = (u8 *)&p->m_data[idx]; s32 k; for (k = (func_0029A4F8(p) - end) * 36 - 1; k >= 0; k--) dst[k] = src[k]; } } { MapDBExprReg *q = &p->m_data[idx]; memset(&tmp, 0, 0x24); func_0029A9A8(p, q, tmp, n); } }

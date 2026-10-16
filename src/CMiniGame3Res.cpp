@@ -11,10 +11,7 @@ public:
     u8 pad[0x20];
     // vptr 0x20
 };
-class CResMgr24F {
-public:
-    void Func24F5C0(void *res, int v);
-};
+#include "CResMgr24F.h"
 void *Func24F2E8(int size);
 struct CMiniGame3Ent {
     s32 m0;                   // 0x0

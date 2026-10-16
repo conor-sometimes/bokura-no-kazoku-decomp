@@ -45,6 +45,9 @@ extern "C" int Func25C220__Fv(void);
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+typedef void (*W2Fn)(void *);
 // @decl-end
 
 extern "C" TypeInfo *__tf7CMemTex()
@@ -195,9 +198,9 @@ extern "C" void func_0029DBC0(void *p, s32 v) { FLD(s32, p, 0x34) = v; }
 
 extern "C" void func_0029DBC8(void *p, s32 v) { FLD(s32, p, 0x38) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29D6D0", func_0029DBD0);
+extern "C" void func_0029DBD0(void *p, void *a) { FLD(W2Fn, p, 0x34)(a); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29D6D0", func_0029DBF0);
+extern "C" void func_0029DBF0(void *p, void *a) { FLD(W2Fn, p, 0x38)(a); }
 
 extern "C" s32 func_0029DC10(void *p) { return FLD(s32, p, 0x18); }
 

@@ -1,0 +1,36 @@
+//@func 0x275748
+void func_00275748(void)
+{
+    int r;
+    func_0027BD20();
+    if (D_002BDAA8) {
+        func_0027BD78();
+        return;
+    }
+    D_002BDAA8 = 1;
+    func_0027BD78();
+    func_00274FE8();
+    func_0027BD20();
+    D_41EBC0_r.m0 = 1;
+    D_41EBC0_r.m4 = (void *)((u32)D_41D3C0 | 0x20000000);
+    D_41EBC0_r.m8 = 0x20;
+    D_41EBC0_r.mC = 0;
+    D_41EBC0_r.m10 = 0;
+    D_41EBC0_r.m14 = (void *)((u32)D_41DBC0 | 0x20000000);
+    D_41EBC0_r.m18 = 0x20;
+    D_41EBC0_r.m1C = (void *)((u32)D_41E3C0 | 0x20000000);
+    D_41EBC0_r.m20 = 0x20;
+    D_41EBC0_r.m24 = 0;
+    func_002752D0(0x80000008, (void *)func_00275A48, &D_41EBC0_r);
+    func_002752D0(0x80000009, (void *)func_00275E10, &D_41EBC0_r);
+    func_002752D0(0x8000000A, (void *)func_00276020, &D_41EBC0_r);
+    func_002752D0(0x8000000C, (void *)func_00275B58, &D_41EBC0_r);
+    func_0027BD78();
+    if (func_002735B0(0x80000002) == 0) {
+        ((int *)(D_41D3C0 + 0x40))[3] = 1;
+        func_002754D0(0x80000002, (int)(D_41D3C0 + 0x40), 0x10, 0, 0, 0);
+        while (func_00274FA0(0) == 0)
+            ;
+        func_002735A0(0x80000002, 1);
+    }
+}

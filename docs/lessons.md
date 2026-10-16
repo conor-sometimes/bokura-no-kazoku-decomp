@@ -648,3 +648,32 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Hidden pass-through arguments**: callers matched earlier with too few parameters (0x22E770, 0x22E828, 0x21B4A8, 0x21ACA8) got the extra parameter added so the callee can take its real arguments; the caller's code does not change. *(bokura)*
 - **Store order of independent field resets** again: bk perm (hill climb) found 0x1B47E8, 0x1B6300, 0x1B7C10 quickly; when it stalls at DIFF 2 the remaining swap is usually two constants in registers (0x1121F0). *(bokura)*
 - **GNU as lui bug moves with the code**: utest reported "the rest of Unit21F250 differs from 0x220FF0" and mk.sh/luibug.py then named func_00220FB8, which already had `asm(".p2align 3")`; after the code before it changed, *removing* that line fixed it (and 0x21BDD0 in Unit219970 needed a new one). Re-check every `.p2align` workaround when the code above it changes. *(bokura)*
+## w2 (overnight grind 2026-10-16: libgcc, newlib, Sony SDK libs, linkonce)
+- **libgcc and newlib (0x283858-0x292E20) are ee-gcc 2.96 C with strict aliasing**: `-x c` matched the first
+  wrappers, but C++ with `return;` after a final void call gives the same sibcall, so they stay .cpp; what
+  needed the Makefile group (LIBC_OBJS, no -fno-strict-aliasing) was __register_frame_info (mutex load
+  hoisted above the list stores) and _init_signal_r (table pointer hoisted out of the clear loop). *(bokura)*
+- **newlib math_private.h macros as written**: isnan/isinf/fabsf/copysignf only matched with the
+  `do { ieee_double_shape_type ew_u; ew_u.value = d; ix0 = ew_u.parts.msw; ... } while (0)` macros
+  (GET/SET_FLOAT_WORD likewise); a single union or block-scoped unions were 2-12 off. Same for
+  newlib's CHECK_INIT(fp) in vfprintf wrappers: the `do {...} while (0)` form fixed the s-register order. *(bokura)*
+- **newlib reent syscall wrappers**: `errno = 0; if ((ret = _read(fd, buf, n)) == -1 && errno != 0) ptr->_errno = errno;`
+  with `long ret` (EE long is 64-bit) for _read_r/_write_r (retail `bne` + `daddu v0`), `int` for the
+  others (`bnel`). *(bokura)*
+- **libgcc fp-bit wrappers**: the FLO_union locals go after the fp_number_type locals in declaration
+  order (retail frame: a/b/tmp at 0/0x20/0x40, the unions at 0x60/0x68). *(bokura)*
+- **Raw addresses splat left unnamed** (`lui 0x42; sw 0x3F00`): defined as symbols in config/aliases.ld
+  (D_423F00, D_424518) so C can reference them without a %hi(sym)+off fold into another symbol. *(bokura)*
+- **Linkonce field-store order**: GCC 2.96 emits a run of 2-4 independent stores as last, first, second, ...;
+  write the source so that order comes out (or `bk perm`). *(bokura)*
+- **Callee `throw()` and delay slots (C++ units)**: a call to a function whose definition is not visible (and not declared `throw()`) keeps reorg from filling the following branch's delay slot with the shared `move a0,sN` (retail fills it; ours leaves a nop and duplicates the move). Retail saw the definition (template member such as TArray<T>::Count, compiled elsewhere). Fix: call through a local alias declared `throw()`: `extern "C" s32 W2Cnt(TArrB *) throw() asm("func_002943C8");` (Lib294A60 func_00294D70).
+- A value-initialised temporary `T()` passed to a const-ref parameter zero-fills it (memset for a 16-byte struct, sw $0 for 4 bytes), evaluated after the other arguments' loads; use an alias of the callee with `const T &`.
+- SDK C (Dk27C020 alarms): retail re-tests a popped free-list entry (`if (e) pop; if (!e) error` with unfilled slots) when the pop is a `static __inline__` helper returning e; written inline, jump threading merges the tests. A store that retail keeps out of a delay slot (the slot gets the return-value move instead) was a volatile store: `((volatile FreeEnt *)e)->p[0] = 0;`.
+- Switch shape (EE-GCC 2.96): the case bodies are laid out in source order, so the retail block order gives the case order (Lib285F80 DW_OP decoder: a `case 0x90:` falling into `case 0x70 ... 0x8F:` had to come right before it). An `sltiu` range test means the switch operand is unsigned (`unsigned int op = *p++`); a `u8` operand promotes to int and gives `slti`.
+- A pointer kept in a0 across `jal abort` (not moved to an s-register) means the callee was declared noreturn.
+- A shared error block (printf + return -1) that retail places in the middle of the function, between an if's then-branch and its else, came from duplicated inline `{ printf(...); return -1; }` bodies in two wait loops that GCC cross-jumped; a single `goto timeout` label at the end places it last (Dk26CFB0 0x26F400).
+- Float to int: retail uses `cvt.w.s` (splat shows `.word 0x46000064`), but our ee-gcc 2.96 compiles a C `(int)f` cast to `trunc.w.s`, so those functions cannot match without inline asm (`asm("cvt.w.s %1,%2\n\tmfc1 %0,%1" : "=r"(n), "=&f"(t) : "f"(v))`). About 10 unmatched functions across the tree contain it.
+- **More 2.96 shapes (w2, second half)**: `return ret > -1 ? 0 : ret` folds to `slti/movz`; retail's `slt/movn` came from `{ int v = 0; if (ret < 0) v = ret; return v; }`. A bool temp that retail materialises with `daddu r,0; movn r,one,v0` is `ok = 0; if (f()) ok = 1;`. `(p + 11) - s` keeps the `s - 11` hoist that `p - s + 11` loses. Accumulating `w += a; w += b;` vs `w += a + b` changes the add order.
+- **Varargs on EE** (coordinator): `char *ap = (char *)__builtin_next_arg(last) - (8 - __builtin_args_info(2)) * 8;` (va-mips.h form) matched sprintf/_sprintf_r/fiprintf.
+- **fp-bit**: write the class as an enum with the inline `isnan/isinf/iszero` helpers from fp-bit.c; `a->normal_exp -= 1` vs `--` changes scheduling (dpdiv).
+- **Callee return type**: declaring a void-looking SDK callee as returning a value (or void) flips v0/v1 choices around the call (sceGsResetGraph's GsPutIMR, the sio write loop's DECI2 poll); try both before permuting.

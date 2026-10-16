@@ -1,0 +1,24 @@
+//@decl
+#define GS_SET_TEX0B(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+#define GS_SET_CLAMPB(wms, wmt, minu, maxu, minv, maxv) \
+    ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
+     ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+extern f32 D_33D6C0[4];
+extern u64 D_33D6B0[2];
+extern "C" u64 func_0023AA40(s32);
+extern "C" u64 func_0023BCB8(s32, s32);
+//@func 0x21BF50
+extern "C" void func_0021BF50(s32 a, s32 b, s32 x, s32 y, s32 w, s32 h) {
+    u64 tex, clut;
+    D_33D6C0[0] = ((f32)x + 0.5f) * (1.0f / 1024.0f);
+    D_33D6C0[1] = ((f32)y + 0.5f) * (1.0f / 1024.0f);
+    D_33D6C0[2] = ((f32)w + 0.5f) * (1.0f / 1024.0f);
+    D_33D6C0[3] = ((f32)h + 0.5f) * (1.0f / 1024.0f);
+    tex = func_0023AA40(a);
+    clut = func_0023BCB8(a, b);
+    D_33D6B0[0] = GS_SET_TEX0B(tex & 0x3FFF, (tex >> 14) & 0x3F, (tex >> 32) & 0x3F, 10, 10, 1, 0, clut & 0x3FFF, (clut >> 32) & 0x3F, 0, 0, 1);
+    D_33D6B0[1] = GS_SET_CLAMPB(2, 2, x, x + w - 1, y, y + h - 1);
+}

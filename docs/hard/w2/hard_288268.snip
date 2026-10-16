@@ -1,0 +1,8 @@
+//@decl
+enum W2FCc { W2Cc_SNAN, W2Cc_QNAN, W2Cc_ZERO, W2Cc_NUMBER, W2Cc_INF };
+struct W2FpC { W2FCc cls; u32 sign; s32 exp; u32 pad; u64 frac; };
+static inline int w2c_isnan(W2FpC *x) { return x->cls == W2Cc_SNAN || x->cls == W2Cc_QNAN; }
+static inline int w2c_isinf(W2FpC *x) { return x->cls == W2Cc_INF; }
+static inline int w2c_iszero(W2FpC *x) { return x->cls == W2Cc_ZERO; }
+//@func 0x288268
+extern "C" s32 func_00288268(W2FpC *a, W2FpC *b) { if (w2c_isnan(a) || w2c_isnan(b)) return 1; if (w2c_isinf(a) && w2c_isinf(b)) return b->sign - a->sign; if (w2c_isinf(a)) return a->sign ? -1 : 1; if (w2c_isinf(b)) return b->sign ? 1 : -1; if (w2c_iszero(a) && w2c_iszero(b)) return 0; if (w2c_iszero(a)) return b->sign ? 1 : -1; if (w2c_iszero(b)) return a->sign ? -1 : 1; if (a->sign != b->sign) return a->sign ? -1 : 1; if (a->exp > b->exp) return a->sign ? -1 : 1; if (a->exp < b->exp) return a->sign ? 1 : -1; if (a->frac > b->frac) return a->sign ? -1 : 1; if (a->frac < b->frac) return a->sign ? 1 : -1; return 0; }

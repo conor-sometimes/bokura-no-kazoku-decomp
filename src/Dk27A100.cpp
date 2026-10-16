@@ -245,7 +245,7 @@ int func_0027AF88(const char *a, const char *b, int *c) { return func_0027AE80(a
 
 int func_0027AFA8(const char *a, int *c) { return func_0027AE80(a, D_002EA058, c, 1); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027AFD0);
+int func_0027AFD0(int a, void *out, unsigned int size) { if (func_0027A440() < 0) return 0xFFFF0000; if (size >= 3) return 0xFFFEFFFE; D_420600[0] = a; D_420600[1] = size; if (func_002760B0(D_420800, 3, 0, D_420600, 0x20, D_420600, 0x20, 0, 0) < 0) return 0xFFFEFFFF; if (size == 0) *(unsigned char *)out = *(unsigned char *)D_420600; else if (size == 1) *(unsigned short *)out = *(unsigned short *)D_420600; else if (size == 2) *(int *)out = D_420600[0]; else return 0xFFFEFFFE; return 0; }
 
 int func_0027B0C0(int a, void *b, int n)
 {
@@ -275,7 +275,26 @@ int func_0027B320(void)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027B370);
+int func_0027B370(const char *s)
+{
+    char buf[0x50];
+    const char *p;
+    const char *pfx = D_002EA060;
+    char *d;
+    for (p = s; *p; p++)
+        ;
+    if ((unsigned int)((p + 11) - s) > 0x50) {
+        func_00274F10(D_002EA070, s);
+        return 0;
+    }
+    func_00275748(0);
+    func_002758E8();
+    d = buf;
+    while (*pfx) *d++ = *pfx++;
+    while (*s) *d++ = *s++;
+    *d = 0;
+    return func_0027B1A0(buf, 0);
+}
 
 int func_0027B480(int a)
 {
@@ -311,7 +330,7 @@ SYSCALL(func_0027B5B0, 0x5B)
 
 SYSCALL(func_0027B5C0, 0x74)
 
-INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027B5D0);
+void func_0027B5D0(void) { unsigned int i; func_0027B5C0(D_002BDED8[0].a, D_002BDED8[0].b); func_0027B568(0x80075000, D_002BDB58, 0x330); func_00273420(0); func_00273420(2); func_0027B5C0(D_002BDED8[1].a, D_002BDED8[1].b); func_0027B5C0(D_002BDED8[2].a, D_002BDED8[2].b); for (i = 3; i < 8; i++) ((void (*)(int, int))func_0027B5C0)(D_002BDED8[i].a, func_0027B5B0(D_002BDED8[i].a)); D_002BDED0 = func_0027B5B0(3); }
 
 SYSCALL(func_0027B698, 0x55)
 

@@ -29,16 +29,8 @@ public:
 
     u8 pad0[0x10];
 };
-class CMenuMgrSub1B6BA8 {
-public:
-    ~CMenuMgrSub1B6BA8();
-    void Release1B6F00();
-};
-class CUnk2A55B0 {
-public:
-    ~CUnk2A55B0();
-    void Free1B7E28();
-};
+#include "CMenuMgrSub1B6BA8.h"
+#include "CUnk2A55B0.h"
 extern CMenuMgrSub1B6BA8 *D_002A55AC;
 extern CUnk2A55B0 *D_002A55B0;
 

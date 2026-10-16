@@ -1,0 +1,26 @@
+//@decl
+extern const char D_002E5348[];
+//@func 0x2395A0
+extern "C" s32 func_002395A0(DmaChan *c, s32 mode, s32 timeout, s32 ch) {
+    if (mode == 1) return (c->chcr & 0x80000100) != 0;
+    if (c->chcr & 0x80000100) {
+        if (timeout == 0) timeout = 0x4000000;
+        while (timeout--, c->chcr & 0x80000100) {
+            if (timeout < 0) {
+                u32 v;
+                Func235DE0(D_002E5348, ch);
+                v = c->chcr;
+                if ((v >> 8) & 1) {
+                    u32 t;
+                    do {
+                        t = v & ~0x101;
+                        v = t;
+                    } while (0);
+                    c->chcr = t;
+                }
+                ((u16 *)c)[1] = 0;
+            }
+        }
+    }
+    return 0;
+}

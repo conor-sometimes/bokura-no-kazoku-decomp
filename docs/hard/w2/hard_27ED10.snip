@@ -1,0 +1,10 @@
+//@decl
+typedef struct { void *func; void *arg; void *gp; int pad; } W2Hnd;
+//@func 0x27F748
+int func_0027F748(int a, int b) { unsigned char *p; if (D_424190[a][b].m10 == 0) return 0; p = (unsigned char *)func_0027EDC8(a, b); if (p[0x72] != 1) return 0; if (p[0x64] < 2) return 0; if (p[0x66] < 2) return 0; return p[0x79] + ((unsigned long)p[0x7A] << 8) + ((unsigned long)p[0x7B] << 16) + ((unsigned long)p[0x7C] << 24); }
+//@func 0x27F748
+int func_0027F748(int a, int b) { unsigned char *p; if (D_424190[a][b].m10 == 0) return 0; p = (unsigned char *)func_0027EDC8(a, b); if (p[0x72] != 1) return 0; if (p[0x64] < 2) return 0; if (p[0x66] < 2) return 0; return p[0x79] + ((unsigned long)p[0x7C] << 24) + (((unsigned long)p[0x7A] << 8) + ((unsigned long)p[0x7B] << 16)); }
+//@func 0x27ED10
+int func_0027ED10(int a, int b) { int *q = &D_424190[a][b].m10; if (*q == 0) return 0; D_424380[0] = 0xE; D_424380[1] = a; D_424380[2] = b; D_424380[4] = 1; if (func_002760B0(D_424140, 1, 0, D_424380, 0x80, D_424380, 0x80, 0, 0) < 0) return 0; *q = 0; return D_424380[3]; }
+//@func 0x27DD80
+int func_0027DD80(int id, void *func, void *arg) { void *gp; W2Hnd *tbl; unsigned int n; int s; W2Hnd *e; if (id < 0) { id &= 0x7FFFFFFF; tbl = (W2Hnd *)D_423F08; n = 0x20; } else { tbl = (W2Hnd *)D_002BF158; n = D_002BF15C; } if ((unsigned int)id >= n) return 0x80000069; s = func_0027BD20(); e = &tbl[id]; e->func = func; e->arg = arg; asm volatile("move %0, $28" : "=r"(gp)); e->gp = gp; if (s) func_0027BD78(); return 0; }

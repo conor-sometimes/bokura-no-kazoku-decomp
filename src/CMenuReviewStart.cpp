@@ -16,10 +16,7 @@ class CUnk237E90 {
 public:
     int Func237E90(int v);
 };
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern "C" int func_001B66E8(void *p);
 void *Func237570(int size);

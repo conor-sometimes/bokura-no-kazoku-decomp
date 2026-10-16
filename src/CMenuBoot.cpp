@@ -13,17 +13,9 @@ public:
     u8 pad0[0x7CE4];
 };
 
-class CMenuMgrSub1B6BA8 {
-public:
-    ~CMenuMgrSub1B6BA8();
-    void Release1B6F00();
-};
+#include "CMenuMgrSub1B6BA8.h"
 extern CMenuMgrSub1B6BA8 *D_002A55AC;
-class CUnk2A55B0 {
-public:
-    ~CUnk2A55B0();
-    void Free1B7E28();
-};
+#include "CUnk2A55B0.h"
 extern CUnk2A55B0 *D_002A55B0;
 extern void *D_002A5538;
 extern "C" int func_00245818(void *p, s32 v);

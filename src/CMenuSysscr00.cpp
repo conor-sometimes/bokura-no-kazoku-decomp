@@ -31,10 +31,7 @@ public:
     void Func1829E8(s32 v);
     void GetCursorPos(f32 *x, f32 *y);
 };
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 // The CMenuSave screen (0x7DC0 bytes, created by NewCMenuSysscr00); its code starts here.
 class CMenuSave {

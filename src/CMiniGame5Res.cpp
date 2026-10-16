@@ -44,11 +44,7 @@ class CTaskList24F5C0 {
 public:
     s32 Func24F5C0(void *task, s32 pri);
 };
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk0And20(f32 x, f32 y);
-    void Move1B6488(f32 x, f32 y);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 struct CMiniGame5Quest {
     s32 m_rank;               // 0x0
@@ -103,12 +99,7 @@ inline s32 RandRange(CRand *rnd, s32 lo, s32 hi) {
     if (lo == hi) return lo;
     return ((rnd->Next() << 16) | rnd->Next()) % (u32)(hi - lo + 1) + lo;
 }
-class CFlagWork {
-public:
-    int Func1091B0(int id);
-    void Func108FF0(int id, int v);
-};
-extern CFlagWork *D_002A26E0;
+#include "CFlagWork.h"
 extern s32 D_002A5A10[3];
 class CMiniGame5 : public CProcess {
 public:

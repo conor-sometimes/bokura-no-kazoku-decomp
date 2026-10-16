@@ -3,10 +3,7 @@
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "CMenuProcess.h"
 #include "CBgWork.h"
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);
@@ -30,10 +27,7 @@ public:
 
 //@sym memset 0x289FB0
 #include "libc.h"
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 
 class CTutorTimer {
 public:
@@ -153,15 +147,9 @@ extern "C" CTextBuf *func_0010BF88(CTextBuf *p);
 extern "C" const char *func_00256260(CTextBuf *p, s32 id);
 extern "C" void func_002565B0(CTextBuf *p, f32 *w, f32 *h, const char *fmt, ...);
 extern "C" void func_002564B8(CTextBuf *p, f32 *w, f32 *h, const char *s);
-class CUnk2A55B0 {
-public:
-    s32 Size1B8500();
-};
+#include "CUnk2A55B0.h"
 extern CUnk2A55B0 *D_002A55B0;
-class CMenuMgrSub1B6418 {
-public:
-    void GetDefaultSize(f32 *w, f32 *h);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern CFlagWork *D_002A4B60;
 extern char D_002DAC90[], D_002DACB8[], D_002DAB40[];

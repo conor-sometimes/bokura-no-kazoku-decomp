@@ -51,6 +51,17 @@ show the same 991111 signature; they will need the same switch.
 Alignment: library objects start at 16-byte boundaries (0x268D00 after padding nops); a matched
 function before one needs `asm(".space 8")`, since `.p2align 4` raises the whole object's alignment.
 
+## libgcc and newlib (0x283858-0x292E20): ee-gcc 2.96 with strict aliasing
+
+Lane w2 (2026-10-16): libgcc (`__pure_virtual`, eh, frame.c, fp-bit) and newlib (stdio, stdlib, math,
+mprec) are ee-gcc 2.96 code built **without** `-fno-strict-aliasing` (the game's 2.96 units use it).
+The Makefile builds Lib283858, Lib285F80, Lib2888C0, Lib28AE50, Lib28D8B0 and Lib290990 with
+`-O2 -G0 -fno-exceptions` (`LIBC_OBJS`), and tools/bk/bk.py follows by address (`LIBC_RANGES`).
+Evidence: __register_frame_info (mutex load hoisted above the list stores) and _init_signal_r (table
+pointer hoisted out of the clear loop) only match with strict aliasing; everything else in the range
+matches either way. The sources stay .cpp (C++ with `return;` after a final void call gives the C
+sibcall). Lib290990's tail from 0x292E20 (0x292E20-0x2930A0) is 991111 SDK C and needs its own unit.
+
 ## Evidence
 
 Each function was written as C++, compiled with each candidate, and compared with the

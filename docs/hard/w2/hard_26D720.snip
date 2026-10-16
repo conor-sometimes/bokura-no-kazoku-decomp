@@ -1,0 +1,39 @@
+//@decl
+typedef struct { u8 p0[0x8C]; s32 m8C; s64 m90; s32 m98; u8 p9C[4]; s64 mA0; s32 mA8; u8 pAC[0x108 - 0xAC]; s64 m108; s32 m110; } W2PtsSys;
+typedef struct { u8 p0[0x18]; s64 m18; s64 m20; u8 p28[4]; s32 m2C, m30, m34, m38, m3C, m40; } W2PtsPic;
+s64 func_00281B20(s64, s64);
+//@func 0x26D720
+void func_0026D720(void *m_, MP *p_, void *a, void *b, void *c)
+{
+    W2PtsSys *m = (W2PtsSys *)m_;
+    W2PtsPic *p = (W2PtsPic *)p_;
+    s64 *pts = (s64 *)a;
+    s64 *dts = (s64 *)b;
+    u64 *flags = (u64 *)c;
+    if (m->m8C != 0) {
+        if (p->m18 >= 0) {
+            *pts = p->m18;
+        } else {
+            s32 base = m->m98;
+            if (base < 0) {
+                *pts = p->m18;
+            } else {
+                s32 x = (s32)m->mA0;
+                s32 cnt = m->mA8;
+                s32 xo = x & 1;
+                s32 c1 = cnt & 1; s32 odd = (s32)(xo & c1 & (m->m90 & 1));
+                *pts = base + ((s32)(func_00281B20(m->m90, x) >> 1) + odd);
+                if (xo & m->m90) m->mA8 = cnt + 1;
+            }
+        }
+    } else {
+        *pts = p->m18;
+    }
+    if (m->m110 == 2 && m->m108 >= 0) {
+        *pts = m->m108;
+        m->m110 = 0;
+        m->m108 = -1;
+    }
+    *dts = p->m20;
+    *flags = (u64)p->m2C | ((u64)p->m30 << 3) | ((u64)p->m34 << 8) | ((u64)p->m38 << 7) | ((u64)p->m40 << 5) | ((u64)p->m3C << 6);
+}

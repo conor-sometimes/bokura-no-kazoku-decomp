@@ -152,13 +152,19 @@ public:
     s32 m_unk180;             // 0x180
 };
 
+struct CStatusWinEnt { u8 pad0[0xE4]; void *m_unkE4; void *m_unkE8; u8 padEC[0x14]; };
 class CStatusWinSub1A1BF0 {
 public:
     CStatusWinSub1A1BF0();
     ~CStatusWinSub1A1BF0();
     int Load1A1CF0(const char *p, char *line);
 
-    u8 pad0[0x90] __attribute__((aligned(16)));
+    u8 pad0[0x24] __attribute__((aligned(16)));
+    s32 m_num;                // 0x24
+    CStatusWinEnt *m_ents;    // 0x28
+    u8 pad2C[0x14];
+    void *m_unk40;            // 0x40
+    u8 pad44[0x4C];
 };
 
 void *operator new(unsigned int n);
@@ -291,10 +297,7 @@ extern const char D_002DDF10[], D_002DDF68[], D_002DDF70[], D_002DDF78[];
 //@sym Func1A40C8__11CStatusItem 0x1A40C8
 extern const char D_002DE018[];
 
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-};
+#include "CMenuMgrSub1B6418.h"
 extern const char D_002DEB60[], D_002DEBA0[];
 
 extern "C" char *func_0024BA08(char *buf, s32 v);
@@ -312,15 +315,7 @@ class CUnk1A4298 {
 public:
     int Func1A4298();
 };
-class CMenuMgrSub1B4768 {
-public:
-    int GetEntry0(int k);
-    void Reset1B4D28();
-    void SetUnk20(f32 x, f32 y, f32 z);
-    void SetUnk30(f32 x, f32 y, f32 z, f32 w);
-    void SetUnk40(f32 x, f32 y, f32 z, f32 w);
-    void SetUnk50(int v);
-};
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(int v);
@@ -1345,7 +1340,17 @@ INCLUDE_ASM("asm/nonmatchings/CStatusWin", Func1A1B38__11CStatusItem);
 CStatusWinSub1A1BF0::CStatusWinSub1A1BF0() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", _$_19CStatusWinSub1A1BF0);
+CStatusWinSub1A1BF0::~CStatusWinSub1A1BF0() {
+    if (m_ents) {
+        for (s32 i = 0; i < m_num; i++) {
+            CStatusWinEnt *e = &m_ents[i];
+            if (e->m_unkE4) D_002B91B0(e->m_unkE4);
+            if (e->m_unkE8) D_002B91B0(e->m_unkE8);
+        }
+        if (m_unk40) D_002B91B0(m_unk40);
+        D_002B91B0(m_ents);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/CStatusWin", Load1A1CF0__19CStatusWinSub1A1BF0PCcPc);
 

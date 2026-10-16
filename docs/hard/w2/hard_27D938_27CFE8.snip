@@ -1,0 +1,4 @@
+//@func 0x27D938
+int func_0027D938(unsigned int id, int a, int b, FreeEnt *e) { int r = ((int (*)(int, int, int, int))e->p[1])(((int)e << 4) | (id & 0xFE) | 1, a, b, e->p[2]); if (r == 0) { e->next = D_423F00; D_423F00 = e; e->p[0] = 0; return -1; } return r; }
+//@func 0x27CFE8
+int func_0027CFE8(int id) { AlarmEnt *a = (AlarmEnt *)(((unsigned int)id >> 10) << 6); if (id < 0 || (id & 0x3FF) != a->seq) return 0x80008002; if (D_002BF138.cur == id) return 0x80000010; if (a->flags & 2) func_0027CB88(a); a->seq = 0; a->flags = 0; a->next = D_002BF138.free; D_002BF138.free = a; D_002BF138.used--; return 0; }

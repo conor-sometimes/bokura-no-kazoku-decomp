@@ -2335,3 +2335,6 @@ Func114C78__9CCharaObji = 0x00114c78; // type:func
 Get145558__8CCurFlagUii = 0x00145558; // type:func
 Vf2932F0__8CSysFlagi = 0x001446d8; // type:func
 Update1B45E8__8CMenuMgr = 0x001b45e8; // type:func
+__9CCharaObj = 0x00112fe0; // type:func
+__12CEventMesRes = 0x0013d910; // type:func
+Request16D870__9CAlbumMgri = 0x0016d870; // type:func

@@ -1,0 +1,16 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+struct W2File4 { u8 *p; s32 r; s32 w; u16 flags; s16 file; u8 *base; s32 size; s32 lbfsize; void *cookie; void *rd; void *wr; void *sk; void *cl; u8 pad30[0x54 - 0x30]; void *data; };
+extern "C" s32 func_00290990(void *);
+extern "C" s32 func_0028CC40(W2F *, const char *, void *);
+//@func 0x28CB88
+extern "C" s32 func_0028CB88(W2File4 *fp, const char *fmt, void *ap) { s32 ret; W2File4 fake; u8 buf[0x400]; 
+fake.data = fp->data; //@p
+fake.flags = fp->flags & ~2; //@p
+fake.file = fp->file; //@p
+fake.cookie = fp->cookie; //@p
+fake.wr = fp->wr; //@p
+fake.base = fake.p = buf; //@p
+fake.size = fake.w = 0x400; //@p
+fake.lbfsize = 0; //@p
+ ret = func_0028CC40((W2F *)&fake, fmt, ap); if (ret >= 0 && func_00290990(&fake)) ret = -1; if (fake.flags & 0x40) fp->flags |= 0x40; return ret; }

@@ -1,0 +1,4 @@
+//@func 0x2737E8
+int func_002737E8(int a, void *b, int c) { if (a == 0) { if (D_002BDA90 == 0) { if (func_002744F8(b) == 0) return -1; D_002BDA90 = 1; } return func_00274428(b, c); } return -1; }
+//@func 0x2737E8
+int func_002737E8(int a, void *b, int c) { if (a == 0) { if (!D_002BDA90) { if (!func_002744F8(b)) goto fail; D_002BDA90 = 1; } return func_00274428(b, c); } fail: return -1; }

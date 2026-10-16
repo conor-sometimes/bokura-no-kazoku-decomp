@@ -1,0 +1,10 @@
+//@decl
+struct W2Accu2 { void **linear; u32 lcount; void **erratic; u32 ecount; };
+struct W2Ob3 { void *pc_begin; void *pc_end; void *fde_begin; void **fde_array; u32 count; void *next; };
+extern "C" void *func_00285728(W2Accu2 *, u32);
+extern "C" u32 func_00285EB0(void *);
+extern "C" void func_00285EF0(void *, W2Accu2 *, void **, void **);
+extern "C" void *func_00289348(u32);
+static inline int W2StartSort(W2Accu2 *accu, u32 count) { if (count) accu->linear = (void **)func_00289348(count * 4); else accu->linear = 0; if (accu->linear) accu->erratic = (void **)func_00289348(count * 4); else accu->erratic = 0; accu->lcount = 0; accu->ecount = 0; return accu->linear != 0; }
+//@func 0x285FD8
+extern "C" void func_00285FD8(W2Ob3 *ob) { u32 count; W2Accu2 a; void *pb, *pe; void **arr; if (ob->pc_begin) count = ob->count; else { if (ob->fde_array) { void **p = ob->fde_array; for (count = 0; *p; ++p) count += func_00285EB0(*p); } else count = func_00285EB0(ob->fde_begin); ob->count = count; } if (!W2StartSort(&a, count) && ob->pc_begin) return; pb = (void *)-1; pe = 0; if (ob->fde_array) { void **p = ob->fde_array; for (; *p; ++p) func_00285EF0(*p, &a, &pb, &pe); } else func_00285EF0(ob->fde_begin, &a, &pb, &pe); arr = (void **)func_00285728(&a, count); if (arr) ob->fde_array = arr; ob->pc_begin = pb; ob->pc_end = pe; }

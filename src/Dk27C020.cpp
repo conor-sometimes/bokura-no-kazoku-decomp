@@ -63,12 +63,17 @@ extern int func_0027D5C8(int, unsigned long long, void *, void *);
 
 int func_0027D188(int);
 int func_0027D288(int);
-int func_0027D470(int);
-int func_0027D508(int);
+unsigned long long func_0027D470(int);
+unsigned long long func_0027D508(int);
 
 typedef struct FreeEnt { struct FreeEnt *next; int p[3]; } FreeEnt;
 extern FreeEnt D_423B00[64];
 extern FreeEnt *D_423F00;
+
+int func_0027D938();
+static __inline__ FreeEnt *W2AllocEnt(void) { FreeEnt *e = D_423F00; if (e) D_423F00 = e->next; return e; }
+
+int func_0027D938();
 // @decl-end
 
 SYSCALL(func_0027C020, 0x74)
@@ -96,7 +101,7 @@ int func_0027C088(void)
     return ((v >> 13) & 7) == 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027C0F0);
+void func_0027C0F0(void) { unsigned int i; if (func_0027C088()) { func_0027C020(D_002BE970[0].a, D_002BE970[0].b); func_0027C030(0x80074000, D_002BE1C8, 0x7A8); func_00273420(0); func_00273420(2); func_0027C020(D_002BE970[1].a, D_002BE970[1].b); for (i = 2; i < 3; i++) ((void (*)(int, int))func_0027C020)(D_002BE970[i].a, func_0027C078(D_002BE970[i].a)); } }
 
 SYSCALL(func_0027C1A0, 0x5A)
 
@@ -175,7 +180,7 @@ int func_0027C460(unsigned int *dst, unsigned int *src, unsigned int n)
 
 SYSCALL(func_0027C498, 0x5B)
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027C4A8);
+void func_0027C4A8(void) { unsigned int i; if (!(*(volatile unsigned int *)0x10001810 & 0x100)) { func_0027C440(D_002BF0F8[0].a, D_002BF0F8[0].b); func_0027C450(0x80076000, D_002BE990, 0x740); func_0027C450(0x82000, D_002BF0D0, 0x28); func_00273420(0); func_00273420(2); func_0027C440(D_002BF0F8[1].a, D_002BF0F8[1].b); for (i = 2; i < 8; i++) ((void (*)(int, int))func_0027C440)(D_002BF0F8[i].a, func_0027C498(D_002BF0F8[i].a)); } }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027C580);
 
@@ -185,7 +190,35 @@ void func_0027C600(int v) { func_0027C580(0xB0001010, v); }
 
 void func_0027C610(int v) { func_0027C580(0xB0001020, v); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027C620);
+int func_0027C620(int mode)
+{
+    int i, id, st;
+    unsigned int v;
+    if (D_002BF138.id >= 0) return 0x80008001;
+    D_002BF138.counter = 0;
+    D_002BF138.used = 0;
+    memset(D_421B00, 0, sizeof(D_421B00));
+    D_002BF138.free = D_421B00;
+    for (i = 127; i >= 0; i--) D_421B00[i].next = &D_421B00[i + 1];
+    D_421B00[127].next = 0;
+    func_0027D8E8();
+    id = func_00272E90(0xB, (void *)func_0027CBC0, 0, 0);
+    if (id < 0) return 0x80009021;
+    D_002BF138.id = id;
+    st = func_0027BD20();
+    v = *(volatile unsigned int *)0x10001010;
+    v = (v & ~3) | mode;
+    v |= 0x300;
+    if (!(v & 0x80)) {
+        func_0027C5F0(0);
+        v |= 0xC80;
+        func_0027C610(0xFFFF);
+    }
+    func_0027C600(v);
+    func_00273A68(0xB);
+    if (st) func_0027BD78();
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027C778);
 
@@ -303,13 +336,13 @@ int func_0027D350(int a) { int s = func_0027BD20(); int r = func_0027D288(a); if
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D3A0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D470);
+unsigned long long func_0027D470(int id) { AlarmEnt *a = (AlarmEnt *)(((unsigned int)id >> 10) << 6); if (id < 0 || (id & 0x3FF) != a->seq) return -1; if (a->flags & 1) return a->start - a->elapsed; return 0; }
 
-int func_0027D4B8(int a) { int s = func_0027BD20(); int r = func_0027D470(a); if (s) func_0027BD78(); return r; }
+int func_0027D4B8(int a) { int s = func_0027BD20(); int r = ((int (*)(int))func_0027D470)(a); if (s) func_0027BD78(); return r; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D508);
+unsigned long long func_0027D508(int id) { AlarmEnt *a = (AlarmEnt *)(((unsigned int)id >> 10) << 6); unsigned long long r; if (id < 0 || (id & 0x3FF) != a->seq) return -1; r = a->elapsed; if (a->flags & 1) r += func_0027CE60() - a->start; return r; }
 
-int func_0027D578(int a) { int s = func_0027BD20(); int r = func_0027D508(a); if (s) func_0027BD78(); return r; }
+int func_0027D578(int a) { int s = func_0027BD20(); int r = ((int (*)(int))func_0027D508)(a); if (s) func_0027BD78(); return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D5C8);
 
@@ -348,6 +381,52 @@ int func_0027D8E8(void) { int i; D_423F00 = D_423B00; for (i = 0; i < 64; i++) D
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D938);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D998);
+int func_0027D998(unsigned long long ticks, void *handler, void *arg)
+{
+    FreeEnt *e;
+    int id, st;
+    if (!handler) return 0x80000016;
+    st = func_0027BD20();
+    e = W2AllocEnt();
+    if (!e) {
+        if (st) func_0027BD78();
+        return 0x80008005;
+    }
+    id = func_0027CFA0();
+    if (id < 0) {
+        e->next = D_423F00;
+        D_423F00 = e;
+        ((volatile FreeEnt *)e)->p[0] = 0;
+        if (st) func_0027BD78();
+        return id;
+    }
+    e->p[1] = (int)handler;
+    e->p[2] = (int)arg;
+    e->p[0] = id;
+    func_0027D6C0(id, ticks, (void *)func_0027D938, e);
+    func_0027D238(id);
+    if (st) func_0027BD78();
+    return ((int)e << 4) | (id & 0xFE) | 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027DAC8);
+int func_0027DAC8(unsigned long long ticks, void *handler, void *arg)
+{
+    FreeEnt *e;
+    int id;
+    if (!handler) return 0x80000016;
+    e = W2AllocEnt();
+    if (!e) return 0x80008005;
+    id = func_0027CF30();
+    if (id < 0) {
+        e->next = D_423F00;
+        D_423F00 = e;
+        ((volatile FreeEnt *)e)->p[0] = 0;
+        return id;
+    }
+    e->p[1] = (int)handler;
+    e->p[2] = (int)arg;
+    e->p[0] = id;
+    func_0027D5C8(id, ticks, (void *)func_0027D938, e);
+    func_0027D188(id);
+    return ((int)e << 4) | (id & 0xFE) | 1;
+}

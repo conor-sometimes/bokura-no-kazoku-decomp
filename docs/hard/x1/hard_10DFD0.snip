@@ -1,0 +1,31 @@
+//@decl
+class CFaceFontMgr {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual s32 V5(s32 c, s32 h, s32 t, s32 w, s32 hh, s32 x, s32 y, s32 w2, s32 h2);
+};
+extern CFaceFontMgr *D_002A039C;
+struct CFaceSprSrc { s32 m0; s32 m4; s16 m8; s16 mA; s32 mC; };
+struct CFaceSpr { u64 m0; s32 m8; s32 mC; s32 m10; s32 m14; s32 m18; };
+//@func 0x10DFD0
+int CFaceObj::Draw(void *pv, s32 a, s32 b, s32 c, s32 d) {
+    CFaceSprSrc *p = (CFaceSprSrc *)pv;
+    CFaceSpr *o = (CFaceSpr *)this;
+    s32 h;
+    if (!p->m0) return 0;
+    h = p->m0;
+    if (d && p->mC && D_002A039C) {
+        h = D_002A039C->V5(c, h, p->m4, p->m8, p->mA, 0, 0, p->m8, p->mA);
+    }
+    o->m0 = p->m4;
+    o->m8 = a;
+    o->mC = b;
+    o->m10 = p->m8;
+    o->m14 = p->mA;
+    o->m18 = h;
+    return 1;
+}

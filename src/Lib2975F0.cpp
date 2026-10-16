@@ -81,6 +81,9 @@ extern const char D_002D5598[];
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2N8 { s32 a; s32 b; };
 // @decl-end
 
 extern "C" void func_002975F0(VDel_2975F0 *p) { delete p; }
@@ -180,7 +183,22 @@ extern "C" ConstPtr *func_00297A70(TArrConstPtr *a, ConstPtr *p, s32 n)
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297AA8);
+extern "C" void func_00297AA8(TArrConstPtr *a, s32 i, s32 n)
+{
+    if (i < 0 || Func297708__FPv(a) < i) {
+        Func235DE0(D_002D5598, i, Func297708__FPv(a));
+        return;
+    }
+    s32 end = i + n;
+    func_00297768(a, Func297708__FPv(a) + n, 0);
+    u8 *d = (u8 *)(a->m_data + end);
+    u8 *s = (u8 *)(a->m_data + i);
+    for (s32 k = (Func297708__FPv(a) - end) * sizeof(ConstPtr) - 1; k >= 0; k--)
+        d[k] = s[k];
+    ConstPtr tmp;
+    tmp.w[0] = 0;
+    func_002979B0(a, a->m_data + i, tmp, n);
+}
 
 extern "C" void func_00297BB8(TArrConstPtr *a, s32 i, const ConstPtr &v) { a->m_data[i] = v; }
 
@@ -239,9 +257,9 @@ extern "C" s32 func_00297DF0(void *p) { return FLD(s32, p, 0x470); }
 
 extern "C" void func_00297DF8(void *p) { FLD(s32, p, 0x2914) = 1; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E08);
+extern "C" void func_00297E08(void *p, s32 a, W2N8 n) { FLD(s32, p, 0x50) = a; FLD(W2N8, p, 0x54) = n; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E30);
+extern "C" void func_00297E30(void *p, s32 a, W2N8 n) { FLD(s32, p, 0x5C) = a; FLD(W2N8, p, 0x60) = n; }
 
 extern "C" s32 func_00297E58(void *p) { return FLD(s32, p, 0x704); }
 

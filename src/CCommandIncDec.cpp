@@ -18,20 +18,14 @@ void Func237A88(void *p, int v);
 void *Func237C30(void *p);
 int Func238158(void *p, int v);
 void Func225240(int v);
-class CMenuMgrSub1B4768 {
-public:
-    s32 GetEntry0(s32 i);
-};
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(int v);
 };
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern void *D_002A5534;
-class CMenuLoadMemorialSub17B3A0 {
-public:
-    int Func17B4A0();
-};
+#include "CMenuLoadMemorialSub17B3A0.h"
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 // Command menu with +/- rows. Update is the vtable's key method: written as a plain member
 // here (the unit shares its object with CStatusBase, so its vtable stays asm).

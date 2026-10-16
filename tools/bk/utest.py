@@ -160,6 +160,15 @@ def utest(path, quiet=False):
                                  f'retail 0x{a_theirs:X} ({tref.get(i, "?")})')
             elif rel and rel[1] and i in tref:
                 a_ours, a_theirs = addr_of(rel[1], table), addr_of(tref[i], table)
+                # REL objects keep the addend in place: `sym+off` (D_338390.active) can be retail's
+                # own label at that address (D_33A5A0). LO16 exact; HI16 only its half (the low
+                # part of the addend sits in the paired LO16)
+                if a_ours is not None and a_theirs is not None and a_ours != a_theirs:
+                    lo = x & 0xFFFF
+                    if rel[0] == 6 and a_ours + (lo - 0x10000 if lo & 0x8000 else lo) == a_theirs:
+                        a_ours = a_theirs
+                    elif rel[0] == 5 and -0x8000 < a_ours + (lo << 16) - a_theirs <= 0x8000:
+                        a_ours = a_theirs
                 if a_ours is not None and a_theirs is not None and a_ours != a_theirs:
                     bad += 1
                     notes.append(f'insn {i}: ours {rel[1]} (0x{a_ours:X}), retail {tref[i]} (0x{a_theirs:X})')

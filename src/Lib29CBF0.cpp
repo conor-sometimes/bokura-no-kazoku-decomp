@@ -71,6 +71,14 @@ extern "C" char *strcpy(char *, const char *);
 extern "C" int func_00245818(void *);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2RcB { s32 a, b, c; virtual ~W2RcB(); };
+struct W2Rc : W2RcB { s32 m10; s32 m14; };
+
+extern u8 W2s__vt_9CRootTask[] asm("_vt$9CRootTask");
+extern "C" void W2s____5CTask(void *, s32) asm("_$_5CTask");
+extern "C" void W2s___dl__5CTaskPv(void *) asm("__dl__5CTaskPv");
 // @decl-end
 
 extern "C" TypeInfo *__tf8CAppMain()
@@ -157,13 +165,13 @@ extern "C" void *func_0029CF88(void *p) { void *n = FLD(void *, p, 0x58); return
 
 extern "C" void func_0029CF98(void *p, s32 v) { FLD(s32, p, 0x14) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CFA0);
+extern "C" void func_0029CFA0(W2Rc *p) { p->m14 = 0; if (!p->m10) delete p; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CFE8);
 
 extern "C" s32 func_0029D018(W2Tbl48 *p, s32 a, s32 b) { return p->m[a][b] > 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D038);
+extern "C" void func_0029D038(void *p, s32 c) { *(void **)((u8 *)p + 0x4) = W2s__vt_9CRootTask; W2s____5CTask(p, 0); if (c & 1) { W2s___dl__5CTaskPv(p); return; } }
 
 extern "C" TypeInfo *__tf9CRootTask()
 {

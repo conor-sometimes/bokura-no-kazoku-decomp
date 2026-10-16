@@ -52,6 +52,22 @@ extern "C" s32 FW_Func1091B0(void *, s32) asm("Func1091B0__9CFlagWorki");
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 extern "C" s32 Func1456A8__Fi(s32);
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+void Func235DE0(const char *, ...);
+extern "C" void *memcpy(void *, const void *, unsigned int);
+extern "C" const char D_002D6948[];
+struct W2Stk { u8 pad[8]; u8 *buf; s32 n; bool Peek(void *o, s32 sz) { if (n < sz) { Func235DE0(D_002D6948); return 0; } memcpy(o, buf + n - sz, sz); return 1; } bool Pop(void *o, s32 sz) { if (Peek(o, sz)) { n -= sz; return 1; } return 0; } };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2N8b { s32 a; s32 b; };
+struct W2VC { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(s32); };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" const char D_002D6930[];
+struct W2UF { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual void v9(); virtual void v10(); virtual void v11(); virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15(); virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19(); virtual void v20(); virtual void v21(); virtual void v22(); virtual void v23(); virtual void v24(); virtual void v25(); };
+struct W2Stk2 { u8 pad[8]; u8 *buf; s32 n; s32 size; bool Push(const void *o, s32 sz) { if (size < n + sz) { Func235DE0(D_002D6930); return 0; } memcpy(buf + n, o, sz); return 1; } bool PushN(const void *o, s32 sz) { if (Push(o, sz)) { n += sz; return 1; } return 0; } };
+struct W2CF { s32 pad[7]; virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual s32 v9(s32, s32); };
 // @decl-end
 
 extern "C" f32 func_00298A78(void *p) { return FLD(f32, p, 0x16C); }
@@ -73,7 +89,7 @@ extern "C" TypeInfo *__tf12CUserFlagMgr()
 
 extern "C" void func_00298AE8(VDel_298AE8 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298B20);
+extern "C" void func_00298B20(void *p, s32 a, W2N8b n) { FLD(s32, p, 4) = a; FLD(W2N8b, p, 8) = n; }
 
 extern "C" void func_00298B48(void *p) { UFM_Func13F488(p, 0); }
 
@@ -81,13 +97,13 @@ extern "C" void func_00298B68(void *p) { FLD(s32, p, 0x58DC) = 0; }
 
 extern "C" void func_00298B70(void *p, s32 a) { s32 b = Func1456A8__Fi(a); if (b >= 0) FLD(u32, p, 0x58DC) |= 1 << b; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298BB0);
+extern "C" void func_00298BB0(W2VC *p, s32 a) { p->v5(); p->v6(a); }
 
 extern "C" void func_00298C10(void *p) { FLD(s32, p, 0x58DC) = 0xFF; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298C20);
+extern "C" void func_00298C20(W2UF *p) { s32 v = FLD(s32, p, 0x58DC); ((W2Stk2 *)((u8 *)p + 0x58E0))->PushN(&v, 4); p->v5(); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298CC0);
+extern "C" void func_00298CC0(void *p) { s32 v = 0; ((W2Stk *)((u8 *)p + 0x58E0))->Pop(&v, 4); FLD(s32, p, 0x58DC) = v; }
 
 extern "C" s32 func_00298D48(void *p) { return UFM_SingleBit(p, FLD(u32, p, 0x58DC), 0); }
 
@@ -99,9 +115,9 @@ extern "C" s32 func_00298D88(void *p) { return FLD(s32, p, 0x590C); }
 
 extern "C" void func_00298D90(void *p, s32 v) { FLD(s32, p, 0x5928) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298D98);
+extern "C" void func_00298D98(W2UF *p) { s32 v = FLD(s32, p, 0x5910); ((W2Stk2 *)((u8 *)p + 0x5914))->PushN(&v, 4); p->v25(); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298E38);
+extern "C" void func_00298E38(void *p) { s32 v = 0; ((W2Stk *)((u8 *)p + 0x5914))->Pop(&v, 4); FLD(s32, p, 0x5910) = v; }
 
 extern "C" void func_00298EC0(void *p) { FLD(s32, p, 0x5910) = 0; }
 
@@ -179,13 +195,13 @@ extern "C" s32 func_002991E8(void *p) { return FW_Func1091B0(p, 0x17) / 4; }
 
 extern "C" s32 func_00299218(void *p) { return FW_Func1091B0(p, 0x17) / 4 + 0x19; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00299248);
+extern "C" s32 func_00299248(W2CF *p, s32 a) { return p->v9(0x106, a) + p->v9(0x10C, a); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_002992C8);
+extern "C" s32 func_002992C8(W2CF *p, s32 a) { return p->v9(0x112, a) + p->v9(0x118, a); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00299348);
+extern "C" s32 func_00299348(W2CF *p, s32 a) { return p->v9(0x11E, a) + p->v9(0x124, a); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_002993C8);
+extern "C" s32 func_002993C8(W2CF *p, s32 a) { return p->v9(0x12A, a) + p->v9(0x130, a); }
 
 extern "C" TypeInfo *__tf11CResNameMgr()
 {

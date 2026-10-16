@@ -121,7 +121,9 @@ def build():
     out = subprocess.run([f'{R}/tools/bk/mk.sh'], capture_output=True, text=True, cwd=R).stdout
     if 'OK:' in out:
         return None
-    bad = re.findall(r'build/src/(\w+)\.cpp\.o', open(f'{R}/build/bk/build.log').read())
+    log = open(f'{R}/build/bk/build.log').read()
+    bad = re.findall(r'\*\*\* \[[^\]]*build/src/(\w+)\.cpp\.o\] Error', log) or \
+        re.findall(r'^src/(\w+)\.cpp:\d+: Internal error', log, re.M)
     return bad[0] if bad else 'link'
 
 

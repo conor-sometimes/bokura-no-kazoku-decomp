@@ -410,4 +410,8 @@ func_00280260 = 0x00280260; /* old name still called from another unit (merge in
 /* lane L2: soft-float subtract the compiler calls by name (func_00284E90, lane L1's unit); __fixdfdi's -a */
 dpsub = 0x00284E90;
 D_423F00 = 0x00423F00; /* Dk27C020 free-list head after D_423B00[64] (lane w1) */
-D_423F00 = 0x00423F00; /* lane w2: free-list head after the 64-entry pool D_423B00 (Dk27C020 0x27D8E8), not a splat symbol */
+D_424518 = 0x00424518; /* lane w2: libgcc dwarf_reg_size_table (0x284438 copy_reg), not a splat symbol */
+dpmul = 0x00284EF8; /* lane w2: soft-float multiply the compiler calls by name (newlib _mprec_log10 0x292928) */
+dpadd = 0x00284E38; /* lane w2: soft-float add the compiler calls by name (__floatdidf 0x287F98) */
+litodp = 0x00285310; /* lane w2: soft-float int to double the compiler calls by name (__floatdidf 0x287F98) */
+D_41D1A0 = 0x0041D1A0; /* lane w2: SIF cmd server register address (Dk2752B8 0x275398), not a splat symbol */

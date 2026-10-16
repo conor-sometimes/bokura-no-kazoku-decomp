@@ -1,0 +1,5 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+extern "C" void *func_00286968(void *, void *);
+//@func 0x2844A0
+extern "C" void *func_002844A0(void *pc, void *udata, void *caller) { caller = func_00286968(pc, caller); if (!caller) return 0; if (FLD(s8, udata, 0x3FC + FLD(u16, caller, 0x3F8))) FLD(s32, caller, 0) = (s32)*(s64 *)func_002843A8(FLD(u16, caller, 0x3F8), udata, 0); else FLD(s32, caller, 0) = FLD(s32, udata, 0); if (FLD(s8, caller, 0x477)) FLD(s32, caller, 0) = *(s32 *)(FLD(u8 *, caller, 0) + FLD(s32, caller, 0x10)); FLD(s32, caller, 0) += FLD(s32, caller, 8); return caller; }

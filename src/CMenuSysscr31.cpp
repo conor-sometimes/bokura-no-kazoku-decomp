@@ -7,10 +7,7 @@ public:
     static CMenuSysscr27 *Create();
 };
 
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);
@@ -52,30 +49,13 @@ class CUnk1A4298 {
 public:
     int Func1A4298();
 };
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-};
-class CMenuMgrSub1B4768 {
-public:
-    int GetEntry0(s32 i);
-    void SetUnk20(f32 x, f32 y, f32 z);
-    void SetUnk30(f32 a, f32 b, f32 c, f32 d);
-    void SetUnk40(f32 a, f32 b, f32 c, f32 d);
-    void SetUnk50(s32 v);
-};
+#include "CMenuRecordWin.h"
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(s32 e);
 };
-class CMenuMgrSub1B5BF8 {
-public:
-    void Reset();
-    void SetUnk30(s32 v);
-    void SetUnk10(f32 a, f32 b, f32 c);
-    void SetUnk1C(f32 v);
-    void SetUnk0(f32 a, f32 b);
-};
+#include "CMenuMgrSub1B5BF8.h"
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *m, s32 v);

@@ -1,0 +1,32 @@
+//@decl
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" s32 func_0026D110(MpegSys *, s32);
+extern "C" s32 func_0026CFB0(MpegSys *);
+extern "C" void func_0026D080(MpegSys *, s32, s32);
+//@func 0x267E58
+extern "C" s32 func_00267E58(SceMpeg *mp, s32 a, s32 b)
+{
+    MpegSys *s = mp->sys;
+    s32 skip = 0;
+    s32 r;
+    if (b == -1 || a < b) {
+        if (FLD(s32, s, 8) == 0) {
+            mp->frameCount = 0;
+            FLD(s32, s, 8) = 1;
+        }
+        { s32 ok; if (!func_0026D110(s, 0)) ok = 0; else ok = func_0026CFB0(s) != 0; r = ok; }
+    } else {
+        r = func_0026D110(s, 0);
+        skip = 1;
+        func_00267B10(mp);
+    }
+    if (FLD(s32, s, 0x10A0)) return 0;
+    func_0026D080(s, FLD(s32, s, 0x130), FLD(s32, s, 4));
+    if (FLD(s32, s, 0x18C) != 3 && !skip) FLD(s32, s, 0x138) = !FLD(s32, s, 0x138);
+    mp->frameCount = FLD(s32, s, 0x130) - FLD(s32, s, 0xC4);
+    if (FLD(s32, s, 0x138) == 0) {
+        FLD(s32, s, 0x130)++;
+        FLD(s32, s, 4)++;
+    }
+    return r;
+}

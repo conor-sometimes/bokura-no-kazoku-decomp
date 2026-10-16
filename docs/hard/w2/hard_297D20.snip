@@ -1,0 +1,10 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+struct W2Rand2 { u32 m_seed; u32 Next() { m_seed = m_seed * 0x19660D + 1; return (m_seed >> 12) & 0xFFFF; } };
+inline f32 W2RandF(W2Rand2 *g, f32 lo, f32 hi) { u32 r = g->Next() << 16; r |= g->Next(); return (f32)(s32)(r & 0xFFFF) / 65535.0f * (hi - lo) + lo; }
+//@func 0x297D20
+extern "C" f32 func_00297D20(void *p, f32 lo, f32 hi) { if (FLD(f32, p, 0x2920) < 0.0f) return W2RandF((W2Rand2 *)((u8 *)p + 4), lo, hi); return FLD(f32, p, 0x2920); }
+//@func 0x297D20
+extern "C" f32 func_00297D20(void *p, f32 lo, f32 hi) { f32 v = FLD(f32, p, 0x2920); if (v < 0.0f) v = W2RandF((W2Rand2 *)((u8 *)p + 4), lo, hi); return v; }
+//@func 0x297D20
+extern "C" f32 func_00297D20(void *p, f32 lo, f32 hi) { if (FLD(f32, p, 0x2920) >= 0.0f) return FLD(f32, p, 0x2920); return W2RandF((W2Rand2 *)((u8 *)p + 4), lo, hi); }

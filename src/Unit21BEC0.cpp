@@ -82,6 +82,46 @@ struct P21EFB0 { f32 m0, m4, m8, mC; u8 pad[0x40]; f32 m50, m54, m58, m5C; };
 #define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
 typedef s32 (*F860c)(s32, s32);
 inline s32 Chunk21D(s32 n, s32 max, s32 d) { s32 c = n; if (c > max) c = n / d; return c > max ? max : c; }
+
+extern u64 D_33D6B0[2];
+extern f32 D_33D6C0[4];
+extern "C" void func_00237408(s32);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" s32 func_002374B0(void);
+extern "C" void func_0021CE60(f32 a, f32 b, f32 c, f32 d);
+inline void PutAD(s64 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[0] = v;
+    p[1] = v >> 32;
+    p[2] = a;
+    p[3] = 0;
+}
+inline void PutADc(u32 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[2] = a;
+    p[0] = v;
+    p[1] = 0;
+    p[3] = 0;
+}
+inline void PutTag(s64 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[2] = a;
+    p[0] = v;
+    p[1] = v >> 32;
+    p[3] = 0;
+}
+inline void PutADc2(u32 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[0] = v;
+    p[2] = a;
+    p[1] = 0;
+    p[3] = 0;
+}
 // @decl-end
 
 extern "C" void func_0021BEC0(void) {
@@ -123,7 +163,29 @@ extern "C" s32 func_0021C110(void) {
     return func_0021C770();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C150);
+extern "C" s32 func_0021C150(void) {
+    s32 n;
+    s64 t;
+    func_002375C0();
+    func_00237350(8);
+    func_00237408(8);
+    func_00237408(0x10);
+    PutAD(D_33D6B0[0], 6);
+    PutAD(D_33D6B0[1], 8);
+    PutADc2(0x44, 0x42);
+    PutADc(0x60, 0x14);
+    func_00237460();
+    t = ((func_00237450() + 15) / 16 - 1) | 0x8000 | ((s64)0x8000 << 45);
+    PutTag(t, 0xE);
+    func_002374B0();
+    func_00237460();
+    PUT(0x11000000);
+    n = func_00237450();
+    PUT2(((n + 15) / 16 - 1) | 0x50000000);
+    func_002374B0();
+    func_0021CE60(D_33D6C0[0], D_33D6C0[1], D_33D6C0[2], D_33D6C0[3]);
+    return Func238158((void *)func_002377D8(), 1);
+}
 
 extern "C" s32 func_0021C328(s32 a) {
     func_0021C750();

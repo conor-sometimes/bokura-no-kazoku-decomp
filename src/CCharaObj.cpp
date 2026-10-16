@@ -1,6 +1,7 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#include "CList.h"
 // CSwingBoneObj.cpp: vptr at 0x30.
 class CSwingBoneObj {
 public:
@@ -72,6 +73,16 @@ public:
 class CCharaObjSub48 {
 public:
     void Func252BB8();
+    void *m_unk0;
+    s32 m_unk4;
+    s32 m_unk8;
+    s32 m_unkC;
+};
+// Bone remap table (Dk252208): vptr at 0x10, destructor = key method there.
+class CBoneDupMap : public CCharaObjSub48 {
+public:
+    CBoneDupMap();
+    virtual ~CBoneDupMap();
 };
 
 // CModelAccResMgr (its unit starts after this file); only its size is needed here.
@@ -93,8 +104,11 @@ extern "C" int func_001ECCA8(s32 h);
 extern u8 *D_002A5D0C;
 extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
 
-class CCharaObj {
+// The list node base (CList.h) puts the vptr at 0xC; the destructor (key method, slot 0) stays asm.
+class CCharaObj : public CListTag {
 public:
+    CCharaObj();
+    virtual ~CCharaObj();
     void Func114C78(s32 set);
     void Part24Func10DC80();
     void Part24Func10DBD8();
@@ -153,7 +167,6 @@ public:
     void Func1156A8(f32 target, s32 turn, s32 n, s32 k, f32 a, f32 b);
     s32 Func1135F0(CCharaRes *res);
 
-    u8 pad0[0x10];
     s32 m_unk10;              // 0x10
     CCharaRes *m_res;         // 0x14
     s32 m_unk18;              // 0x18
@@ -168,8 +181,7 @@ public:
     s32 m_unk3C;              // 0x3C
     s32 m_unk40;              // 0x40
     s32 m_unk44;              // 0x44
-    CCharaObjSub48 m_unk48;   // 0x48
-    u8 pad49[0x13];
+    CBoneDupMap m_unk48;      // 0x48
     s32 m_unk5C;              // 0x5C
     s32 m_unk60;              // 0x60
     s32 m_unk64;              // 0x64
@@ -200,7 +212,8 @@ public:
     s32 m_unk138;             // 0x138
     f32 m_unk13C;             // 0x13C
     s32 m_unk140;             // 0x140
-    u8 pad144[0xC];
+    u8 pad144[0x8];
+    s32 m_unk14C;             // 0x14C
     s32 m_unk150;             // 0x150
     u8 pad154[0x4];
     s32 m_unk158;             // 0x158
@@ -392,9 +405,33 @@ struct CFaceObjHead {
     u8 pad0[0x14];
     s32 m14;
 };
+
+extern s32 D_002A0440;
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00112FE0);
+CCharaObj::CCharaObj() {
+    m_unk14C = 1;
+    m_unk10 = D_002A0440++;
+    m_res = 0;
+    m_unk18 = 0;
+    m_part1C = 0;
+    m_part20 = 0;
+    m_part24 = 0;
+    m_unk28 = 0;
+    m_unk2C = 0;
+    m_unk30 = 0;
+    m_unk34 = 0;
+    m_unk38 = 0;
+    m_unk3C = -1;
+    m_unk40 = -1;
+    m_unk44 = 0;
+    m_unk5C = -1;
+    m_unk60 = -1;
+    m_unk64 = 0;
+    m_unk6C = 1;
+    m_unk184 = 0;
+    Func113128();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113090);
 

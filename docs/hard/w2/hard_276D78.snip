@@ -1,0 +1,5 @@
+//@decl
+s32 func_00276D38(void);
+extern int D_4203C0[16];
+//@func 0x276D78
+int func_00276D78(int a, int b) { register int gp asm("$28"); int s, old; ((s32 (*)(int))func_00276D38)(0x1B); if (!D_002BDB34) func_00276E68(); s = func_0027BD20(); old = D_4203C0[0]; D_4203C0[1] = b; D_4203C0[0] = a; D_420400 = (void *)gp; if (s) func_0027BD78(); func_00276D68(); return old; }

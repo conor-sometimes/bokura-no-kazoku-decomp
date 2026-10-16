@@ -66,6 +66,36 @@ struct W2Snd70 { u8 m0; u8 m1; u8 m2; u8 m3; };
 extern "C" s32 SW_Func25CB90(void *, s32, s32, s32) asm("Func25CB90__8CSndWorkiii");
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void SW_Func25CC18(void *, s32, s32, s32) asm("Func25CC18__8CSndWorkiii");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+extern u8 W2vt_bad_cast[] asm("_vt$8bad_cast");
+extern u8 W2vt_bad_typeid[] asm("_vt$10bad_typeid");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_ti[] asm("_vt$9type_info");
+extern u8 W2vt_user2[] asm("_vt$16__user_type_info");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_exc[] asm("_vt$9exception");
+
+extern u8 W2s__vt_t12TSndUnitReal1Z11CSndUnitSeq[] asm("_vt$t12TSndUnitReal1Z11CSndUnitSeq");
+extern "C" void W2s_func_0025EDB8(void *, s32) asm("func_0025EDB8");
+extern "C" void W2s_Func25E030__FPv(void *) asm("Func25E030__FPv");
+extern u8 W2s__vt_t12TSndUnitReal1Z11CSndUnitStr[] asm("_vt$t12TSndUnitReal1Z11CSndUnitStr");
+extern "C" void W2s_func_0025F9A8(void *, s32) asm("func_0025F9A8");
+extern u8 W2s__vt_t12TSndUnitReal1Z10CSndUnitTg[] asm("_vt$t12TSndUnitReal1Z10CSndUnitTg");
+extern "C" void W2s_func_0025E340(void *, s32) asm("func_0025E340");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void *W2F25DBF8(void *) asm("Func25DBF8__FP8CSndObj2");
+extern "C" void func_0025D608(void *, void *, s32);
+struct W2SO { s32 a, b, c; virtual void v0(); virtual void *v1(); };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" TypeInfo *__tf8CSndWork()
@@ -81,9 +111,9 @@ extern "C" s32 func_0029DEB8(void *p) { return FLD(s32, p, 0x10); }
 
 extern "C" void func_0029DEC0(void *p, s32 a, s32 b) { if (b >= 0) { SW_Func25CB90(p, a, b, b); return; } SW_Func25CB90(p, a, b, -b); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DEF8);
+extern "C" void func_0029DEF8(void *p, s32 id, f32 x) { s32 v = (s32)(x * 128.0f); if (v >= 0) { SW_Func25CB90(p, id, v, v); return; } SW_Func25CB90(p, id, v, -v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF48);
+extern "C" void func_0029DF48(void *p, s32 id, f32 v, s32 b) { SW_Func25CC18(p, id, (s32)(v * 128.0f), b); }
 
 extern "C" void func_0029DF80(void *p, u8 v) { FLD(u8, p, 0x36) = v; FLD(u8, p, 0x34) = 1; }
 
@@ -172,7 +202,7 @@ extern "C" TypeInfo *__tf10CSndUnitTg()
     return &D_424F80;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E2F0);
+extern "C" void func_0029E2F0(void *p, s32 c) { *(void **)((u8 *)p + 0xc) = W2s__vt_t12TSndUnitReal1Z10CSndUnitTg; W2s_func_0025E340(p, 0); if (c & 1) { W2s_Func25E030__FPv(p); return; } }
 
 extern "C" TypeInfo *__tft12TSndUnitReal1Z10CSndUnitTg()
 {
@@ -183,7 +213,7 @@ extern "C" TypeInfo *__tft12TSndUnitReal1Z10CSndUnitTg()
     return &D_424F90;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E3A8);
+extern "C" void func_0029E3A8(void *p, s32 x) { void *r = FLD(W2SO *, p, 0x10)->v1(); if (r) { void *s = W2F25DBF8(r); if (s) func_0025D608((u8 *)p + 0xC0, s, x); } }
 
 extern "C" void *func_0029E418(void *p) { return (u8 *)p + 0xC0; }
 
@@ -196,7 +226,7 @@ extern "C" TypeInfo *__tf11CSndUnitSeq()
     return &D_424FB0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E470);
+extern "C" void func_0029E470(void *p, s32 c) { *(void **)((u8 *)p + 0xc) = W2s__vt_t12TSndUnitReal1Z11CSndUnitSeq; W2s_func_0025EDB8(p, 0); if (c & 1) { W2s_Func25E030__FPv(p); return; } }
 
 extern "C" TypeInfo *__tft12TSndUnitReal1Z11CSndUnitSeq()
 {
@@ -207,7 +237,7 @@ extern "C" TypeInfo *__tft12TSndUnitReal1Z11CSndUnitSeq()
     return &D_424FA0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E528);
+extern "C" void func_0029E528(void *p, s32 x) { void *r = FLD(W2SO *, p, 0x10)->v1(); if (r) { void *s = W2F25DBF8(r); if (s) func_0025D608((u8 *)p + 0xC0, s, x); } }
 
 extern "C" void *func_0029E598(void *p) { return (u8 *)p + 0xC0; }
 
@@ -220,7 +250,7 @@ extern "C" TypeInfo *__tf11CSndUnitStr()
     return &D_424FC0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E5F0);
+extern "C" void func_0029E5F0(void *p, s32 c) { *(void **)((u8 *)p + 0xc) = W2s__vt_t12TSndUnitReal1Z11CSndUnitStr; W2s_func_0025F9A8(p, 0); if (c & 1) { W2s_Func25E030__FPv(p); return; } }
 
 extern "C" TypeInfo *__tft12TSndUnitReal1Z11CSndUnitStr()
 {
@@ -231,7 +261,7 @@ extern "C" TypeInfo *__tft12TSndUnitReal1Z11CSndUnitStr()
     return &D_424FD0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E6A8);
+extern "C" void func_0029E6A8(void *p, s32 x) { void *r = FLD(W2SO *, p, 0x10)->v1(); if (r) { void *s = W2F25DBF8(r); if (s) func_0025D608((u8 *)p + 0xE0, s, x); } }
 
 extern "C" void *func_0029E718(void *p) { return (u8 *)p + 0xE0; }
 
@@ -241,7 +271,7 @@ extern "C" TypeInfo *__tf9type_info()
     return &D_2EB910;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E760);
+extern "C" void *func_0029E760(void *p, const char *n) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_ti; }
 
 extern "C" s32 func_0029E778(void *p) { return FLD(s32, p, 0x0); }
 
@@ -256,9 +286,9 @@ extern "C" TypeInfo *__tf8bad_cast()
     return &D_4253F0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E7F0);
+extern "C" void *func_0029E7F0(void *p) { *(void **)p = W2vt_bad_cast; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E800);
+extern "C" void func_0029E800(void *p, s32 c) { *(void **)p = W2vt_exc; if (c & 1) { __builtin_delete(p); return; } }
 
 extern "C" TypeInfo *__tf10bad_typeid()
 {
@@ -269,9 +299,9 @@ extern "C" TypeInfo *__tf10bad_typeid()
     return &D_4253E0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E888);
+extern "C" void *func_0029E888(void *p) { *(void **)p = W2vt_bad_typeid; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E898);
+extern "C" void func_0029E898(void *p, s32 c) { *(void **)p = W2vt_exc; if (c & 1) { __builtin_delete(p); return; } }
 
 extern "C" void func_0029E8D0(void *p, s32 flag)
 {
@@ -289,7 +319,7 @@ extern "C" TypeInfo *__tf16__user_type_info()
     return &D_425400;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E988);
+extern "C" void *func_0029E988(void *p, const char *n) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_user2; }
 
 extern "C" s32 func_0029E9A0(s32 x) { return x >= 4; }
 

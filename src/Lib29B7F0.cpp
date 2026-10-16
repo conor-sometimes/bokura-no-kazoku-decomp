@@ -81,6 +81,31 @@ struct VDel_29BD90 { virtual void v0(); virtual void v1(); virtual void v2(); vi
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+extern "C" void *func_001B9E78(void *, s32);
+extern "C" void *W2FindEntry(void *, const char *) asm("FindEntry__10CLayoutObjPCc");
+extern "C" void W2Draw1BA1D0(void *, void *, s32, f32, f32, f32, f32, f32, f32) asm("Draw1BA1D0__10CLayoutObjP12CLayoutEntryiffffff");
+extern "C" s32 W2Func1BA520(void *, void *, s32, f32, f32, f32, f32, f32, f32) asm("Func1BA520__10CLayoutObjP12CLayoutEntryiffffff");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2LT2 { s32 isHead; W2LT2 *prev; W2LT2 *next; void *vptr; };
+extern u8 W2vt_lt2[] asm("_vt$8CListTag");
+extern u8 W2vt_mg2[] asm("_vt$13CMiniGame2Res");
+extern u8 W2vt_mg3[] asm("_vt$13CMiniGame3Res");
+extern u8 W2vt_mg4[] asm("_vt$13CMiniGame4Res");
+extern "C" void W2Rel2(void *) asm("Release__13CMiniGame2Res");
+extern "C" void W2Rel3(void *) asm("Release__13CMiniGame3Res");
+extern "C" void W2Rel4(void *) asm("Release1D4C68__16CMiniGame4ResObj");
+extern "C" void W2LayRes(void *, s32) asm("_$_10CLayoutRes");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2V4 { f32 x, y, z, w; };
+extern "C" void W2F270C50(void *, const void *) asm("Func270C50__FP5CVec4PC5CVec4");
+extern "C" void func_00270B00(void *, void *, void *);
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" TypeInfo *__tf13CMenuSysscr22()
@@ -288,23 +313,23 @@ extern "C" void func_0029BF00(void *p, f32 v) { FLD(f32, p, 0x5C) = v; }
 
 extern "C" void func_0029BF08(void *p, s32 v) { FLD(s32, p, 0x60) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BF10);
+extern "C" void func_0029BF10(void *p, s32 id, s32 i, f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) { W2Draw1BA1D0(p, func_001B9E78(p, id), i, a, b, c, d, e, f); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BFB0);
+extern "C" void func_0029BFB0(void *p, const char *n, s32 i, f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) { W2Draw1BA1D0(p, W2FindEntry(p, n), i, a, b, c, d, e, f); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C050);
+extern "C" s32 func_0029C050(void *p, s32 id, s32 i, f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) { return W2Func1BA520(p, func_001B9E78(p, id), i, a, b, c, d, e, f); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C0F0);
+extern "C" s32 func_0029C0F0(void *p, const char *n, s32 i, f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) { return W2Func1BA520(p, W2FindEntry(p, n), i, a, b, c, d, e, f); }
 
 extern "C" u32 func_0029C190(void *p, void *q, u32 f) { return FLD(u32, q, 4) | f | FLD(u32, p, 0x60); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C1A8);
+extern "C" void func_0029C1A8(void *p, f32 *r, u8 *e, u32 align, f32 *ofs, f32 x, f32 y, f32 sx, f32 sy) { u8 *tex; r[0] = x + ofs[0]; r[1] = y + ofs[1]; r[2] = ofs[2]; r[3] = ofs[3]; if (r[2] == 0.0f) r[2] = FLD(s32, e, 0x88); if (r[3] == 0.0f) r[3] = FLD(s32, e, 0x8C); tex = FLD(u8 *, e, 0xC); if (r[2] == 0.0f && tex) r[2] = FLD(s32, tex, 0x10); if (r[3] == 0.0f && tex) r[3] = FLD(s32, tex, 0x14); r[2] *= FLD(f32, e, 0x30); r[3] *= FLD(f32, e, 0x34); if (sx != 1.0f) { f32 w = r[2] * sx; r[0] -= (w - r[2]) * 0.5f; r[2] = w; } if (sy != 1.0f) { f32 h = r[3] * sy; r[1] -= (h - r[3]) * 0.5f; r[3] = h; } switch (align & 0xF0) { case 0x10: r[0] -= r[2] * 0.5f; break; case 0x20: r[0] -= r[2]; break; } switch (align & 0xF00) { case 0x100: r[1] -= r[3] * 0.5f; break; case 0x200: r[1] -= r[3]; break; } r[2] = r[2] + r[0]; r[3] = r[3] + r[1]; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C390);
+extern "C" void func_0029C390(void *p, f32 *o, f32 *i) { o[0] = (i[0] - FLD(f32, p, 0x48)) * FLD(f32, p, 0x40) + FLD(f32, p, 0x48); o[1] = (i[1] - FLD(f32, p, 0x4C)) * FLD(f32, p, 0x44) + FLD(f32, p, 0x4C); o[2] = (i[2] - FLD(f32, p, 0x48)) * FLD(f32, p, 0x40) + FLD(f32, p, 0x48); o[3] = (i[3] - FLD(f32, p, 0x4C)) * FLD(f32, p, 0x44) + FLD(f32, p, 0x4C); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C408);
+extern "C" void func_0029C408(void *p, s32 *o, f32 *i) { s32 x = 0x6C00, y = 0x7200; o[0] = (s32)(i[0] * 16.0f) + x; o[1] = (s32)(i[1] * 16.0f) + y; o[2] = (s32)(i[2] * 16.0f) + x; o[3] = (s32)(i[3] * 16.0f) + y; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C480);
+extern "C" void func_0029C480(void *p, u8 *out, u8 *src, u32 flags, f32 x, f32 y) { W2V4 t; if (flags & 0x40000000) { W2F270C50(out, src + 0x40); W2F270C50(out + 0x10, src + 0x50); W2F270C50(out + 0x20, src + 0x60); W2F270C50(out + 0x30, src + 0x70); } else { f32 a = x * FLD(f32, p, 0x58); f32 b = y * FLD(f32, p, 0x5C); t.w = b; t.x = a; t.y = a; t.z = a; func_00270B00(&t, &t, (u8 *)p + 0x20); if (flags & 0x1000000) { func_00270B00(out, &t, src + 0x40); func_00270B00(out + 0x10, &t, src + 0x50); func_00270B00(out + 0x20, &t, src + 0x60); func_00270B00(out + 0x30, &t, src + 0x70); } else func_00270B00(out, &t, src + 0x40); } }
 
 extern "C" TypeInfo *__tf13CMiniGame1Res()
 {
@@ -335,7 +360,7 @@ extern "C" TypeInfo *__tf13CMiniGame2Res()
     return &D_424D70;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C728);
+extern "C" void func_0029C728(W2LT2 *p, s32 c) { p->vptr = W2vt_mg2; W2Rel2(p); W2LayRes((u8 *)p + 0x34, 2); W2LayRes((u8 *)p + 0x10, 2); p->vptr = W2vt_lt2; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (c & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf10CMiniGame2()
 {
@@ -355,7 +380,7 @@ extern "C" TypeInfo *__tf13CMiniGame3Res()
     return &D_424DA0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C870);
+extern "C" void func_0029C870(W2LT2 *p, s32 c) { p->vptr = W2vt_mg3; W2Rel3(p); W2LayRes((u8 *)p + 0x34, 2); W2LayRes((u8 *)p + 0x10, 2); p->vptr = W2vt_lt2; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (c & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf10CMiniGame3()
 {
@@ -375,7 +400,7 @@ extern "C" TypeInfo *__tf13CMiniGame4Res()
     return &D_424DB0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C9B8);
+extern "C" void func_0029C9B8(W2LT2 *p, s32 c) { p->vptr = W2vt_mg4; W2Rel4(p); W2LayRes((u8 *)p + 0x34, 2); W2LayRes((u8 *)p + 0x10, 2); p->vptr = W2vt_lt2; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (c & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf10CMiniGame4()
 {

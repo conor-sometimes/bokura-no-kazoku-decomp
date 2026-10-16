@@ -1,0 +1,24 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+extern "C" void *func_00283D20(u32);
+extern "C" void func_00287A10(void);
+extern u8 W2vt_si[] asm("_vt$14__si_type_info");
+extern u8 W2vt_user[] asm("_vt$16__user_type_info");
+//@func 0x287A70
+extern "C" void func_00287A70(void *value, void *type, void *cleanup) { u8 *p = (u8 *)func_00283D20(0x30); 
+FLD(void *, p, 0xC) = type ; //@p
+FLD(void *, p, 0x10) = cleanup ; //@p
+FLD(void *, p, 0x28) = value ; //@p
+FLD(s16, p, 4) = 4 ; //@p
+FLD(s16, p, 6) = 1 ; //@p
+FLD(void *, p, 8) = value ; //@p
+FLD(void *, p, 0) = (void *)func_00287A10 ; //@p
+FLD(s64, p, 0x20) = 0 ; //@p
+FLD(s32, p, 0x14) = 0 ; //@p
+ void **q = (void **)func_00283980(); FLD(void *, p, 0x18) = *q; *q = p; }
+//@func 0x286BC0
+extern "C" void func_00286BC0(void *p, const char *n, void *ti) { if (p) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_si; FLD(void *, p, 8) = ti; } }
+//@func 0x286BE0
+extern "C" void func_00286BE0(void *p, const char *n) { if (p) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_user; } }
+//@func 0x286E20
+extern "C" s32 func_00286E20(void *self, s32 boff, s32 access, void *target, void *obj, void *sub, void *subptr, s32 *res) { if (obj == subptr && func_00286B58((const char **)self, (const char **)sub)) { res[2] = access; return 0; } if (func_00286B58((const char **)self, (const char **)target)) { res[0] = (s32)obj; res[1] = access; res[3] = 1; } return 0; }

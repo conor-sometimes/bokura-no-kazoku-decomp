@@ -157,6 +157,22 @@ extern u8 D_vtCSndUnit[] __asm__("_vt$8CSndUnit");
 extern u8 D_vtCListTag[] __asm__("_vt$8CListTag");
 void Func25E030(void *p);
 struct CSndLinkB { s32 m0; CSndLinkB *m4; CSndLinkB *m8; void *mC; s32 m10; s32 m14; s32 m18; };
+
+struct W2VDelC { s32 m0, m4, m8; virtual ~W2VDelC(); };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern u8 W2vt_sw[] asm("_vt$8CSndWork");
+extern u8 W2vt_lsw[] asm("_vt$t5TList1Z8CSndWork");
+extern u8 W2vt_lsu[] asm("_vt$t5TList1Z8CSndUnit");
+struct W2LH { s32 head; W2LH *prev; W2LH *next; void *vt; };
+
+struct W2SeHdr { u8 p0[0xC]; s32 mC; };
+struct W2SeEnt { W2SeHdr *m0; u8 p4[0x28]; s32 m2C; u8 p30[0xC]; };
+struct W2SeTab { u8 p0[0x14]; W2SeEnt *m14; s32 m18; };
+
+struct W2SeHdr2 { u8 p0[8]; s32 m8; s32 mC; };
+struct W2SeEnt2 { W2SeHdr2 *m0; u8 p4[0x24]; s32 m28; u8 p2C[0x10]; };
+struct W2SeTab2 { u8 p0[0x14]; W2SeEnt2 *m14; s32 m18; };
 // @decl-end
 
 s32 Func25A010(s32 i, s32 v) { return (v / D_002BA218[i]) << 10; }
@@ -310,7 +326,29 @@ s32 CSndMgr::Func25A628(const char *name, s32 i) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025A738);
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025A838);
+extern "C" W2SeEnt2 *func_0025A838(W2SeTab2 *t, s32 i, s32 j)
+{
+    W2SeEnt2 *e;
+    W2SeHdr2 *h;
+    s32 k;
+    if (i < 0 || t->m18 - 1 < i) return 0;
+    e = (W2SeEnt2 *)(i * sizeof(W2SeEnt2) + (u32)t->m14);
+    h = e->m0;
+    if (h == 0) return e;
+    switch (h->m8) {
+    case 0:
+    case 1:
+    case 2:
+        if (h->m8 == j) return e;
+        break;
+    case 3:
+        for (k = 0; k < h->mC; k++) {
+            if (e[k + 1].m28 < 0) return &e[k + 1];
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025A908);
 
@@ -369,7 +407,23 @@ void CSndMgr::Func25B230(s32 i) {
     if (e) e->m38++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025B260);
+extern "C" W2SeEnt *func_0025B260(W2SeTab *t, s32 i, s32 j)
+{
+    W2SeEnt *e;
+    if (i < 0 || t->m18 - 1 < i) return 0;
+    e = (W2SeEnt *)(i * sizeof(W2SeEnt) + (u32)t->m14);
+    switch (e->m2C) {
+    case 0:
+    case 1:
+    case 2:
+        if (j == 0) return e;
+        break;
+    case 3:
+        if (j < e->m0->mC) return &t->m14[i + j + 1];
+        break;
+    }
+    return 0;
+}
 
 void Func25B308(s32 a, u32 fl) {
     s32 x = func_002088B8(a);
@@ -590,10 +644,10 @@ extern "C" void func_0025C138(CSndLinkB *u, s32 chrg) {
     if (chrg & 1) return Func25E030(u);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025C1E8);
+extern "C" void func_0025C1E8(W2VDelC *p) { delete p; }
 
 void *Func25C220() { return D_41A788; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025C230);
+extern "C" void func_0025C230(CSndWorkM *w) { u8 *p = (u8 *)w; W2LH *b = (W2LH *)(p + 0x24); W2LH *a = (W2LH *)(p + 0x14); FLD(void *, p, 0xC) = W2vt_sw; FLD(s32, p, 0) = 0; FLD(void *, p, 8) = p; FLD(void *, p, 4) = p; a->vt = W2vt_lsw; a->next = a; a->prev = a; a->head = 1; b->vt = W2vt_lsu; b->prev = b; b->head = 1; b->next = b; Func25BD60((CSndPrm *)(p + 0x34)); FLD(s32, p, 0x10) = 0; ((CSndWork *)D_41A788)->Func25C438((CSndUnitN *)p); return; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025C2C0);

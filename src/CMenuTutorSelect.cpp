@@ -8,10 +8,7 @@ class CChrBodyData {
 public:
     ~CChrBodyData();
 };
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuTutorSelect.
 class CMenuTutorSelect : public CMenuProcess {

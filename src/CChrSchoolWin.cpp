@@ -41,19 +41,9 @@ class CStatusItem {
 public:
     void Func1A3378();
 };
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-    void Func1A3740(s32 v, const char *s);
-};
-class CStatusWinSub1A40B8 {
-public:
-    void SetUnk80(f32 x, f32 y);
-};
-class CStatusWin {
-public:
-    CStatusItem *Func1A0CF0(const char *name);
-};
+#include "CMenuRecordWin.h"
+#include "CStatusWinSub1A40B8.h"
+#include "CStatusWin.h"
 extern CStatusWin *D_002A5408;
 extern CFlagWork *D_002A5358;
 extern char D_002DAF80[], D_002DAF88[], D_002DAF90[];

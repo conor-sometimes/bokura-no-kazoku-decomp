@@ -47,12 +47,7 @@ public:
 };
 
 extern const char D_002DD7F8[];
-class CMenuRecordWin {
-public:
-    void Func1A3740(s32 v, const char *s);
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-    void Func1A3B58(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 class CMenuRecordSub196E68 {
 public:
     void CallFunc1A3740(s32 v);
@@ -77,10 +72,7 @@ public:
     s32 NumRows();
 };
 
-class CStatusWinSub1A40B8 {
-public:
-    void SetUnk80(f32 x, f32 y);
-};
+#include "CStatusWinSub1A40B8.h"
 
 class CMenuRecordItem {
 public:
@@ -135,14 +127,7 @@ extern char D_002DD800[], D_002DD810[], D_002DD928[];
 #include "CFlagWork.h"
 extern CFlagWork *D_002A5358;
 extern "C" void func_00196938(CMenuRecordList *p, s32 i, s32 a, s32 b, s32 c, s32 d, s32 e);
-class CMenuMgrSub1B5BF8 {
-public:
-    void SetUnk0(f32 a, f32 b);
-    void Reset();
-    void SetUnk30(s32 v);
-    void SetUnk10(f32 a, f32 b, f32 c);
-    void SetUnk1C(f32 v);
-};
+#include "CMenuMgrSub1B5BF8.h"
 extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 struct CMenuRecordWinF { u8 pad0[0x34]; f32 m_unk34; };
@@ -158,17 +143,7 @@ void Func237A88(void *p, int v);
 void *Func237C30(void *p);
 int Func238158(void *p, int v);
 void Func225240(int v);
-class CMenuMgrSub1B4768 {
-public:
-    void SetUnk50(s32 v);
-    void SetUnk30(f32 a, f32 b, f32 c, f32 d);
-    s32 GetEntry0(s32 i);
-    void Reset1B4D28();
-    void SetUnk4C(f32 v);
-    void SetUnk20(f32 a, f32 b, f32 c);
-    void SetUnk40(f32 a, f32 b, f32 c, f32 d);
-    void SetUnk58(u32 v);
-};
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(int v);
@@ -178,15 +153,7 @@ extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
 struct CVec2f { f32 x, y; };
 struct CMenuRecordWinF2 { u8 pad0[0x34]; f32 m_unk34; };
 
-class CMenuLoadMemorialSub17B3A0 {
-public:
-    void CallFunc17B3E8();
-    void SetUnk40(f32 x, f32 y, s32 v);
-    void SetUnk10(f32 x, f32 y);
-    void SetUnk20(f32 x, f32 y);
-    void SetUnk30(f32 x, f32 y, f32 z, f32 w);
-    s32 Draw17B4D8(s32 k);
-};
+#include "CMenuLoadMemorialSub17B3A0.h"
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 
 extern "C" int func_001A0510(void *p);
@@ -197,10 +164,7 @@ class CStatusWin {
 public:
     f32 GetItemUnk34_2();
 };
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 class CMenuLoadMemorialSub17A8D8b {
 public:

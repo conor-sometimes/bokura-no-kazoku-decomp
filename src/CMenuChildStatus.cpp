@@ -7,10 +7,7 @@ public:
     static CMenuCommon *Create();
 };
 
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 class CStatusBaseSub19AD40 {

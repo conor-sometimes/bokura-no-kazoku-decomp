@@ -16,10 +16,7 @@ class CStatusItem {
 public:
     void Func1A3378();
 };
-class CStatusWin {
-public:
-    CStatusItem *Func1A0CF0(const char *name);
-};
+#include "CStatusWin.h"
 extern CStatusWin *D_002A5408;
 extern char D_002DD818[];
 // Command menu base. Vtable 0x2C1A40: Update and Draw, both pure in retail; Update is declared
@@ -71,10 +68,7 @@ extern "C" void func_00196E90(void *p, s32 row);
 extern char D_002DD878[];
 extern "C" int func_001456A8(s32 v);
 
-class CMenuRecordWin {
-public:
-    void Func1A3740(s32 v, const char *s);
-};
+#include "CMenuRecordWin.h"
 extern "C" void func_001A3DC8(void *p, s32 i, s32 v);
 extern "C" void func_001864A8(char *buf);
 extern "C" const char *func_001A36B0(void *w, s32 v);

@@ -29,17 +29,8 @@ public:
 
     u8 pad0[0x10];
 };
-class CMenuMgrSub1B6BA8 {
-public:
-    ~CMenuMgrSub1B6BA8();
-    void Release1B6F00();
-    int Check1B7428(u32 i);
-};
-class CUnk2A55B0 {
-public:
-    ~CUnk2A55B0();
-    void Free1B7E28();
-};
+#include "CMenuMgrSub1B6BA8.h"
+#include "CUnk2A55B0.h"
 extern CMenuMgrSub1B6BA8 *D_002A55AC;
 extern CUnk2A55B0 *D_002A55B0;
 
@@ -67,10 +58,7 @@ public:
 };
 
 
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern "C" void func_001829E8(void *p, s32 v);
 extern "C" void func_00183090(void *p, f32 *x, f32 *y);

@@ -34,6 +34,7 @@ public:
 
 class CPushBuf {
 public:
+    CPushBuf();
     void Func248E00();
     int Func248EB0();
 
@@ -46,6 +47,19 @@ public:
     s32 GetName(s32 i);
 
     u8 padC[0x4];
+    CPushBuf m_buf;           // 0x10
+    s32 m_unk1C;              // 0x1C
+    s32 m_unk20;              // 0x20
+};
+
+// The resource object proper (vtable _vt$12CEventMesRes; the methods above call it
+// CEventMesResSub13DD98 and see the CListTag fields as a CEvNode).
+#include "CList.h"
+class CEventMesRes : public CListTag {
+public:
+    CEventMesRes();
+    virtual ~CEventMesRes();
+
     CPushBuf m_buf;           // 0x10
     s32 m_unk1C;              // 0x1C
     s32 m_unk20;              // 0x20
@@ -65,7 +79,10 @@ inline void EvInsert(CEvNode *n, CEvNode *h) { CEvNode *p = h->m_prev; n->m_next
 inline CEventMesResSub13DD98 *EvCheck(CEvNode *n) { return n->m0 == 0 ? (CEventMesResSub13DD98 *)n : 0; }
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/CEventMesRes", func_0013D910);
+CEventMesRes::CEventMesRes() {
+    m_unk1C = 0;
+    m_unk20 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventMesRes", func_0013D958);
 

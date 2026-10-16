@@ -119,10 +119,7 @@ public:
     u8 pad0[0x34];
     f32 m_unk34;              // 0x34
 };
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 class CUnk237E90 {
 public:
     int Func237E90(int v);
@@ -132,21 +129,9 @@ void Func237A88(void *p, int v);
 void *Func237C30(void *p);
 int Func238158(void *p, int v);
 void Func225240(int v);
-class CMenuMgrSub1B4768 {
-public:
-    void Reset1B4D28();
-};
+#include "CMenuMgrSub1B4768.h"
 extern CMenuMgrSub1B4768 *D_002A5530;
-class CMenuLoadMemorialSub17B3A0 {
-public:
-    void CallFunc17B3E8();
-    int Func17B4A0();
-    void SetUnk40(f32 x, f32 y, s32 v);
-    void SetUnk20(f32 x, f32 y);
-    void SetUnk10(f32 x, f32 y);
-    void SetUnk30(f32 x, f32 y, f32 z, f32 w);
-    s32 Draw17B4D8(s32 k);
-};
+#include "CMenuLoadMemorialSub17B3A0.h"
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 
 extern char D_002DAEB8[];

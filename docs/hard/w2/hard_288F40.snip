@@ -1,0 +1,7 @@
+//@decl
+enum W2FCf { W2Cf_SNAN, W2Cf_QNAN, W2Cf_ZERO, W2Cf_NUMBER, W2Cf_INF };
+struct W2FpF { W2FCf cls; u32 sign; s32 exp; u32 frac; };
+union W2FBits { float f; u32 l; struct { unsigned int frac : 23 __attribute__((packed)); unsigned int exp : 8 __attribute__((packed)); unsigned int sign : 1 __attribute__((packed)); } b; };
+static inline int w2f_iszero(W2FpF *x) { return x->cls == W2Cf_ZERO; }
+//@func 0x288F40
+extern "C" float func_00288F40(W2FpF *src) { u32 fraction = src->frac; s32 sign = src->sign; s32 exp = 0; W2FBits dst; if (w2f_iszero(src)) { fraction = 0; } else if (fraction == 0) { exp = 0; } else { if (src->exp < -126) { fraction = 0; } else if (src->exp > 128) { exp = 0xFF; fraction = 0; } else { exp = src->exp + 127; if (src->exp == 128 && (s32)fraction < 0) { exp = 0xFF; fraction = 0; } else fraction >>= 7; } } dst.b.frac = fraction; dst.b.exp = exp; dst.b.sign = sign; return dst.f; }

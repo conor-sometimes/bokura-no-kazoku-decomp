@@ -59,6 +59,36 @@ extern "C" void func_00222050(s32, s32, s32, s32);
 extern "C" void func_00237350(s32);
 extern "C" s32 func_00237860(s32, CVec4 *);
 inline s32 Chunk21F(s32 n, s32 max, s32 d) { s32 c = n; if (c > max) c = n / d; return c > max ? max : c; }
+
+s32 Func238158(void *, s32);
+extern u64 D_33DC90[2];
+extern f32 D_33DCA0[4];
+extern u64 D_33DCB0[2];
+extern f32 D_33DCC0[4];
+extern "C" void func_00237408(s32);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" s32 func_002374B0(void);
+extern "C" void func_00221C50(s32, u64, s32, u64);
+extern "C" void func_00221DA8(f32, f32, f32, f32);
+extern "C" void func_00221E50(s32, u64, s32, u64);
+extern "C" void func_00221FA8(f32, f32, f32, f32);
+inline void PutAD20(s64 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[0] = v;
+    p[1] = v >> 32;
+    p[2] = a;
+    p[3] = 0;
+}
+inline void PutADc20(u32 v, u32 a) {
+    u32 *p = D_002B94E4;
+    D_002B94E4 = p + 4;
+    p[0] = v;
+    p[2] = a;
+    p[1] = 0;
+    p[3] = 0;
+}
 // @decl-end
 
 extern "C" void func_0021F250(f32 a, f32 b) {
@@ -398,7 +428,32 @@ extern "C" void func_00220AA8(void) {
     func_00221100();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220AE8);
+extern "C" s32 func_00220AE8(void) {
+    s32 n;
+    s64 t;
+    func_002375C0();
+    func_00237350(8);
+    func_00237408(8);
+    func_00237408(0x10);
+    PutAD20(D_33DC90[0], 6);
+    PutAD20(D_33DC90[1], 8);
+    PutADc20(0x44, 0x42);
+    PutADc20(0x60, 0x14);
+    func_00237460();
+    t = ((func_00237450() + 15) / 16 - 1) | 0x8000 | ((s64)0x8000 << 45);
+    PutAD20(t, 0xE);
+    func_002374B0();
+    func_00237460();
+    PUT(0x11000000);
+    n = func_00237450();
+    PUT2(((n + 15) / 16 - 1) | 0x50000000);
+    func_002374B0();
+    func_00221C50(6, D_33DC90[0], 8, D_33DC90[1]);
+    func_00221DA8(D_33DCA0[0], D_33DCA0[1], D_33DCA0[2], D_33DCA0[3]);
+    func_00221E50(6, D_33DCB0[0], 8, D_33DCB0[1]);
+    func_00221FA8(D_33DCC0[0], D_33DCC0[1], D_33DCC0[2], D_33DCC0[3]);
+    return Func238158((void *)func_002377D8(), 1);
+}
 
 extern "C" void func_00220D10(void) { s32 a = func_00221008(); s32 b = ((FnI)func_00220AA8)(); s32 c = func_00220AE8(); func_002210E0(); func_00221468(a); func_00222258(); func_00221B08(&D_33DB90); func_00222050(D_33DCD0.m0, D_33DCD0.m4, D_33DCD0.m8, D_33DCD0.mC); func_00221468(b); func_00221468(c); return func_00221100(); }
 

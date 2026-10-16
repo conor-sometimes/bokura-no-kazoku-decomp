@@ -1,0 +1,33 @@
+//@decl
+extern u8 D_002B9E00[];
+extern const char D_002E5EC0[];
+extern "C" s32 func_002454F0(Ring *);
+extern "C" void func_00273420(s32);
+//@func 0x244500
+extern "C" s32 func_00244500(void) {
+    s32 n;
+    Ring *h;
+    func_001F15F0();
+    if (!D_002B9DA0) {
+        Func235DE0(D_002E5EC0);
+        return 0;
+    }
+    h = (Ring *)D_002B9DA8;
+    func_00245618(h, D_002B9DA4);
+    n = func_002454F0(h) / 2048 * 2048;
+    if (n > 0x80000) n = 0x80000;
+    if (n > 0) {
+        func_00273420(0);
+        *(volatile u32 *)0x1000B420 = n >> 4;
+        *(volatile u32 *)0x1000B410 = (u32)func_00245600(h) & 0x0FFFFFFF;
+        func_00244498(0x101);
+    } else if (D_002B9D88 < 5) {
+        func_00273420(0);
+        *(volatile u32 *)0x1000B420 = 1;
+        *(volatile u32 *)0x1000B410 = (u32)D_002B9E00 & 0x0FFFFFFF;
+        func_00244498(0x101);
+    }
+    D_002B9DA4 = n;
+    func_001F1610();
+    return 1;
+}

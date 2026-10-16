@@ -76,6 +76,10 @@ typedef struct { u8 p0[4]; int m4, m8, mC, m10; } MI;
 int sprintf(char *, const char *, ...);
 extern const char D_002E9968[];
 void func_002683A0(void *m, const char *msg);
+
+int func_0027DFA8(int, char);
+void func_0027DFD8(int);
+#define W2SIO (*(volatile Sio *)&D_41CD90)
 // @decl-end
 
 SYSCALL(func_002735D0, 0x7C)
@@ -326,7 +330,37 @@ void func_002740D8(Ring *r)
 
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274118);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_002742B0);
+int func_002742B0(void *s_, int len)
+{
+    const char *s = (const char *)s_;
+    int n = 0, i = 0, st;
+    u8 *out, *p;
+    if (W2SIO.mC) return -1;
+    st = func_0027BD20();
+    out = (u8 *)((u32)D_41CDC0 | 0x20000000);
+    W2SIO.mC = 1;
+    W2SIO.m10 = out;
+    p = out + 0xC;
+    while (--len != -1) {
+        if (*s == '\n') {
+            *p++ = '\r';
+            if (++i >= 0x100) break;
+        }
+        *p++ = *s++;
+        n++;
+        if (++i >= 0x100) break;
+    }
+    W2SIO.m4 = i + 0xC;
+    *(u16 *)out = W2SIO.m4;
+    if (func_0027DFA8(W2SIO.m0, out[7]) < 0) {
+        W2SIO.mC = 0;
+        if (st) func_0027BD78();
+        return -1;
+    }
+    while (W2SIO.mC) func_0027DFD8(W2SIO.m0);
+    if (st) func_0027BD78();
+    return n;
+}
 
 int func_00274428(void *vbuf, int n)
 {

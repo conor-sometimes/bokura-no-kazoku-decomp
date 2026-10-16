@@ -46,6 +46,23 @@ extern u32 D_002BD968[16];
 typedef struct { u8 p0[0xF4]; int mF4; int mF8; int mFC; } MS;
 int sprintf(char *, const char *, ...);
 extern const char D_002E9968[];
+
+typedef struct { u64 testa, testaaddr, prim, primaddr, rgbaq, rgbaqaddr, xyz2a, xyz2aaddr, xyz2b, xyz2baddr, testb, testbaddr; } W2GsClear;
+
+typedef struct { unsigned long NLOOP : 15; unsigned long EOP : 1; unsigned long pad16 : 16; unsigned long id : 14; unsigned long PRE : 1; unsigned long PRIM : 11; unsigned long FLG : 2; unsigned long NREG : 4; unsigned long REGS0 : 4; unsigned long REGS1 : 4; unsigned long REGS2 : 4; unsigned long REGS3 : 4; unsigned long REGS4 : 4; unsigned long REGS5 : 4; unsigned long REGS6 : 4; unsigned long REGS7 : 4; unsigned long REGS8 : 4; unsigned long REGS9 : 4; unsigned long REGS10 : 4; unsigned long REGS11 : 4; unsigned long REGS12 : 4; unsigned long REGS13 : 4; unsigned long REGS14 : 4; unsigned long REGS15 : 4; } W2GifTag;
+typedef struct { u32 vifcode[4]; W2GifTag giftag; u64 bitbltbuf, bitbltbufaddr, trxpos, trxposaddr, trxreg, trxregaddr, finish, finishaddr, trxdir, trxdiraddr; } W2GsStoreImage;
+
+typedef struct { u32 m0; u32 m4; } W2Feed;
+
+typedef struct { u32 vif[4]; W2GifTag giftag0; u64 r[6]; W2GifTag giftag1; } W2GsLoadImage;
+extern const char D_002E9B20[];
+#define W2DMAADDR(p) ((((u32)(p) & 0x70000000) == 0x70000000) ? (((u32)(p) & 0x0FFFFFFF) | 0x80000000) : ((u32)(p) & 0x0FFFFFFF))
+
+typedef struct { s16 inter, omode, ffmode, version; s32 m8, mC; } W2GsState;
+u64 func_002734E0(u64);
+void func_00273A00(int);
+void func_00272EA0(int, int);
+void func_00272DA0(int, int, int);
 // @decl-end
 
 int func_0026CFB0(Mpeg *m)
@@ -178,7 +195,28 @@ INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DE80);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DFC8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026E188);
+int func_0026E188(int ch, W2Feed *f)
+{
+    *(volatile u32 *)0x1000E010 = 0x10;
+    if (f->m0 == 0) {
+        asm volatile("sync.l\n\tei");
+        return 1;
+    }
+    if (f->m0 > 0xFFFF) {
+        *(volatile u32 *)0x1000B410 = f->m4;
+        *(volatile u32 *)0x1000B420 = 0xFFFF;
+        *(volatile u32 *)0x1000B400 = 0x101;
+        f->m4 = (f->m4 + 0xFFFF0) & 0x0FFFFFFF;
+        f->m0 -= 0xFFFF;
+    } else {
+        *(volatile u32 *)0x1000B410 = f->m4;
+        *(volatile u32 *)0x1000B420 = f->m0;
+        *(volatile u32 *)0x1000B400 = 0x101;
+        f->m0 = 0;
+    }
+    asm volatile("sync.l\n\tei");
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026E260);
 
@@ -237,7 +275,39 @@ void func_0026E670(BitStr *s, int n)
 
 u8 *func_0026E6C8(BitStr *s, s32 n) { u8 *p = (u8 *)s->m8 + (n >> 3); if (p >= s->m24) p -= s->m28; return p; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026E6F8);
+void func_0026E6F8(short mode, short inter, short omode, short ffmode)
+{
+    W2GsState *g;
+    switch (mode) {
+    case 0:
+        g = (W2GsState *)func_0026E888();
+        *(volatile u64 *)0x12001000 = 0x200;
+        g->inter = inter;
+        g->omode = omode;
+        g->version = (u16)((*(volatile u64 *)0x12001000 >> 16) & 0xFF);
+        func_002734E0(0xFF00);
+        g->ffmode = ffmode != 0;
+        if (g->m8) {
+            func_00273A00(2);
+            func_00272EA0(2, g->mC);
+            g->m8 = 0;
+            g->mC = 0;
+        }
+        func_00272DA0(inter & 1, omode & 0xFF, ffmode & 1);
+        break;
+    case 1:
+        *(volatile u64 *)0x12001000 = 0x100;
+        break;
+    case 5:
+        g = (W2GsState *)func_0026E888();
+        g->ffmode = ffmode != 0;
+        g->inter = inter;
+        g->omode = omode;
+        g->version = (u16)((*(volatile u64 *)0x12001000 >> 16) & 0xFF);
+        func_00272DA0(inter & 1, omode & 0xFF, ffmode & 1);
+        break;
+    }
+}
 
 void *func_0026E888(void) { return D_002BD9C0; }
 
@@ -289,12 +359,80 @@ void func_0026ED28(DispEnv *e)
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026EDE8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026EFD0);
+int func_0026EFD0(W2GsClear *cp, short ztest, short x, short y, short w, short h, u8 r, u8 g, u8 b, u8 a, u32 z)
+{
+    cp->testaaddr = 0x47;
+    cp->testa = ((u64)1 << 16) | ((u64)1 << 17);
+    cp->prim = 6;
+    cp->rgbaqaddr = 1;
+    cp->rgbaq = (u64)r | ((u64)g << 8) | ((u64)b << 16) | ((u64)a << 24) | ((u64)0x3f800000 << 32);
+    cp->primaddr = 0;
+    cp->xyz2a = (u64)(x << 4) | ((u64)(y << 4) << 16) | ((u64)z << 32);
+    cp->xyz2aaddr = 5;
+    cp->xyz2baddr = 5;
+    cp->xyz2b = (u64)((x + w) << 4) | ((u64)((y + h) << 4) << 16) | ((u64)z << 32);
+    cp->testbaddr = 0x47;
+    if (ztest) cp->testb = ((u64)1 << 16) | ((u64)(ztest & 3) << 17);
+    else cp->testb = ((u64)1 << 16) | ((u64)1 << 17);
+    asm volatile("sync");
+    return 6;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026F0D8);
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026F2C0);
+int func_0026F2C0(W2GsStoreImage *sp, short sbp, short sbw, short spsm, short x, short y, short w, short h)
+{
+    sp->vifcode[0] = 0;
+    sp->vifcode[1] = 0x06008000;
+    sp->vifcode[2] = 0x13000000;
+    sp->vifcode[3] = 0x50000006;
+    *(u128 *)&sp->giftag = 0;
+    sp->giftag.NLOOP = 5;
+    sp->giftag.EOP = 1;
+    sp->giftag.NREG = 1;
+    sp->giftag.REGS0 = 0xE;
+    sp->bitbltbuf = (u64)sbp | ((u64)sbw << 16) | ((u64)spsm << 24);
+    sp->bitbltbufaddr = 0x50;
+    sp->trxpos = (u64)x | ((u64)y << 16);
+    sp->trxposaddr = 0x51;
+    sp->trxreg = (u64)w | ((u64)h << 32);
+    sp->trxregaddr = 0x52;
+    sp->finish = 0;
+    sp->finishaddr = 0x61;
+    sp->trxdir = 1;
+    sp->trxdiraddr = 0x53;
+    asm volatile("sync");
+    return 7;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026F400);
+int func_0026F400(W2GsLoadImage *lp, void *src)
+{
+    u32 i = 0;
+    while (*(volatile u32 *)0x1000A000 & 0x100) {
+        if (i++ > 0x1000000) {
+            func_00274F10(D_002E9B20);
+            return -1;
+        }
+    }
+    *(volatile u32 *)0x1000A020 = 6;
+    if (((u32)lp & 0x70000000) == 0x70000000)
+        *(volatile u32 *)0x1000A010 = ((u32)lp & 0x0FFFFFFF) | 0x80000000;
+    else
+        *(volatile u32 *)0x1000A010 = (u32)lp & 0x0FFFFFFF;
+    *(volatile u32 *)0x1000A000 = 0x101;
+    while (*(volatile u32 *)0x1000A000 & 0x100) {
+        if (i++ > 0x1000000) {
+            func_00274F10(D_002E9B20);
+            return -1;
+        }
+    }
+    *(volatile u32 *)0x1000A020 = lp->giftag1.NLOOP;
+    if (((u32)src & 0x70000000) == 0x70000000)
+        *(volatile u32 *)0x1000A010 = ((u32)src & 0x0FFFFFFF) | 0x80000000;
+    else
+        *(volatile u32 *)0x1000A010 = (u32)src & 0x0FFFFFFF;
+    *(volatile u32 *)0x1000A000 = 0x101;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026F580);

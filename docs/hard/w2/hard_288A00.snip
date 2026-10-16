@@ -1,0 +1,7 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+typedef void *(*W2TiFn)(void);
+typedef void (*W2Abort)(void) __attribute__((noreturn));
+extern "C" void *func_00286C78(void *, s32, void *, void *, void *, void *);
+//@func 0x288A00
+extern "C" void *func_00288A00(W2TiFn from, W2TiFn to, s32 req, void *addr, W2TiFn sub, void *subptr) { if (!req) ((W2Abort)func_00288FF8)(); return func_00286C78(from(), -1, to(), addr, sub(), subptr); }

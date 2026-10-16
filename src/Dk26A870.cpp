@@ -319,7 +319,25 @@ extern "C" void func_0026C398(u8 *d, u32 cmd) {
     *(s32 *)(d + 0x854) = 32;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026C4A8);
+extern "C" s32 func_0026C4A8(u8 *d, s32 n)
+{
+    s32 cnt = 0;
+    u32 r;
+    while ((IPU_CTRL & 0x80004000) == 0x80000000 && !*(s32 *)(d + 0x10A0)) {
+        if (cnt++ > 5000) { func_00267B10(*(void **)(d + 0x870)); cnt = 0; }
+    }
+    if (*(s32 *)(d + 0x830) || *(s32 *)(d + 0x854) < n) {
+        IPU_CMD = 0x40000000;
+        *(s32 *)(d + 0x830) = D_002BD940[4];
+        *(s32 *)(d + 0x850) = (s32)func_0026BE80(d);
+    }
+    r = *(u32 *)(d + 0x850) >> (32 - n);
+    *(s32 *)(d + 0x854) = 32;
+    IPU_CMD = n | 0x40000000;
+    *(s32 *)(d + 0x830) = D_002BD940[(u32)(n | 0x40000000) >> 28];
+    *(s32 *)(d + 0x850) = (s32)func_0026BE80(d);
+    return r;
+}
 
 extern "C" void func_0026C618(u8 *d) {
     s32 n;

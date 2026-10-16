@@ -159,6 +159,8 @@ extern const char D_002DA2F0[];
 }
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" MapDBExprReg *func_0029A578(TArrMapDBExprReg *a, s32 i) { return &a->m_data[i]; }
@@ -264,7 +266,7 @@ extern "C" void func_0029ABE8(VDel_29ABE8 *p) { delete p; }
 
 extern "C" s32 func_0029AC20(void *p) { return FLD(s32, p, 0x4C); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29A578", func_0029AC28);
+extern "C" void *func_0029AC28(void *p, s32 i) { if (i >= 0 && !(FLD(s32, p, 0x4C) - 1 < i)) return FLD(u8 *, p, 0x48) + i * 36; return 0; }
 
 extern "C" TypeInfo *func_0029AC68()
 {

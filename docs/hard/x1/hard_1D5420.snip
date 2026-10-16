@@ -1,0 +1,24 @@
+//@decl
+struct CMiniGame4View { u32 m0; s32 a[0x50B]; };
+//@func 0x1D5420
+void CMiniGame4ResObj::Shuffle1D5420() {
+    s32 i;
+    CMiniGame4View *o = (CMiniGame4View *)this;
+    for (i = 10; i >= 0; i--) o->a[0x500 + i] = i;
+    for (s32 j = 0; j < 11; j++) {
+        s32 t = o->a[0x500 + j];
+        s32 r = m_rand.Rand(11);
+        m_order[j] = o->a[0x500 + r];
+        o->a[0x500 + r] = t;
+    }
+    for (s32 k = 0; k < m_numMust; k++) {
+        for (s32 j = 0; j < 11; j++) {
+            if (o->a[0x500 + j] == m_must[k]) {
+                s32 t = o->a[0x500 + k];
+                o->a[0x500 + k] = o->a[0x500 + j];
+                o->a[0x500 + j] = t;
+                break;
+            }
+        }
+    }
+}

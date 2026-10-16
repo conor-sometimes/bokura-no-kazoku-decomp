@@ -41,6 +41,13 @@ SDKC_OBJS := $(SDKC_UNITS:%=build/src/%.cpp.o)
 SDKC01CC := tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc
 $(SDKC_OBJS): EECC := $(SDKC01CC)
 $(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
+# - LIBC_OBJS (lane w2): libgcc and newlib (0x283858-0x292E20: __pure_virtual, eh, frame.c, fp-bit,
+#   tinfo, libc) are the game compiler's 2.96 but without -fno-strict-aliasing (__register_frame_info
+#   0x285CA0 loads the mutex before the list stores, _init_signal_r 0x28AB88 hoists the table pointer
+#   out of its clear loop, only with strict aliasing). Written as C++ (`return;` after a final void call
+#   gives the C sibcall).
+LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
+$(LIBC_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split

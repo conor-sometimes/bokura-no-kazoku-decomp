@@ -1,0 +1,73 @@
+//@decl
+extern "C" void CMenuSub1A7658Ctor(void *p, CStatusItem *item) asm("__14CMenuSub1A7658P10CUnk1A4298");
+//@func 0x192710
+s32 CMenuContinue::Update() {
+    s32 done = 0;
+    CMenuSub1A7658 *k;
+    s32 st;
+    if (m_state == 6) {
+        if (m_unk58) {
+            delete m_unk58;
+            m_unk58 = 0;
+        }
+        m_unk4C = -1;
+        m_state = 5;
+        goto end;
+    }
+loop:
+    if (done) goto out;
+    {
+        u32 fl = (u16)m_unk0;
+        if ((fl >> 7) & 1) goto out;
+    }
+    st = m_unk4;
+    switch (st) {
+    case -1:
+        m_unk5C = D_002A5408->Find("savequit");
+        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window.\n", "savequit");
+        m_unk5C->Func1A3378();
+        m_unk5C->SetUnkF0(5, 0);
+        m_unk5C->SetUnkF0(6, 1);
+        k = (CMenuSub1A7658 *)operator new(0x5C);
+        CMenuSub1A7658Ctor(k, m_unk5C);
+        m_unk58 = k;
+        if (!k) {
+            Func235DE0("*** Can't Create SelectMenu\n");
+            m_state = 5;
+            m_unk4C = st;
+            m_unk4 = -0xBE;
+            done = 1;
+            goto loop;
+        }
+        ((CMenuInputKanji *)k)->SetUnk4C(0x1110);
+        if (m_unk50 < 0) m_unk58->Func1A7308(0);
+        else m_unk58->Func1A7308(m_unk50);
+    case -0xAA:
+    case -0x9F:
+        if (m_unk58->m_unk54 != 2) {
+            m_unk4 = -0xAA;
+            done = 1;
+            goto loop;
+        }
+        m_state = 4;
+        goto wait_ba;
+    case -0xBA:
+    wait_ba:
+        if (m_unk58->m_unk54 == 3) {
+            m_state = 5;
+            m_unk4C = m_unk58->m_unk58;
+            m_unk4 = -0xBE;
+            done = 1;
+            goto loop;
+        }
+        m_unk4 = -0xBA;
+        done = 1;
+        goto loop;
+    case -0xBE:
+    default:
+        goto out;
+    }
+out:
+    if (m_unk58) func_001A73B0(m_unk58);
+end:;
+}

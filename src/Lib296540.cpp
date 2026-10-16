@@ -90,6 +90,13 @@ extern char _vt$10IEnvResMgr[];
 extern "C" void *__nw__8CHeapObjUi(u32 n);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+struct W2LT3 { s32 isHead; W2LT3 *prev; W2LT3 *next; void *vptr; };
+extern u8 W2vt_lt3[] asm("_vt$8CListTag");
+extern u8 W2vt_cro[] asm("_vt$12CCharaResObj");
+extern u8 W2vt_mro[] asm("_vt$10CMapResObj");
+extern "C" void W2CharaResDtor(void *, s32) asm("_$_9CCharaRes");
+extern "C" void W2MapResDtor(void *, s32) asm("_$_7CMapRes");
 // @decl-end
 
 extern "C" void func_00296540(void *p, f32 v) { FLD(f32, p, 0x54) = v; }
@@ -318,7 +325,7 @@ extern "C" TypeInfo *__tf12ICharaResMgr()
     return &D_4247D0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002970B8);
+extern "C" void func_002970B8(W2LT3 *p, s32 c) { p->vptr = W2vt_cro; W2CharaResDtor((u8 *)p + 0x10, 2); p->vptr = W2vt_lt3; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (c & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf12CCharaResObj()
 {
@@ -358,7 +365,7 @@ extern "C" TypeInfo *__tf10IMapResMgr()
     return &D_424800;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib296540", func_002972F8);
+extern "C" void func_002972F8(W2LT3 *p, s32 c) { p->vptr = W2vt_mro; W2MapResDtor((u8 *)p + 0x10, 2); p->vptr = W2vt_lt3; p->prev->next = p->next; p->next->prev = p->prev; p->next = p; p->prev = p; if (c & 1) return (void)__builtin_delete(p); }
 
 extern "C" TypeInfo *__tf10CMapResObj()
 {

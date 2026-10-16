@@ -1,0 +1,41 @@
+//@decl
+extern int D_41D1A0;
+typedef struct { u32 psize : 8; u32 dsize : 24; void *dest; int cid; u32 opt; } W2CmdHdr;
+typedef struct { void *data; void *addr; int size; int mode; } W2SifDma;
+void func_00275698(void *, int);
+int func_00273570(W2SifDma *, int);
+int func_00273560b(W2SifDma *, int) __asm__("func_00273560");
+//@func 0x275398
+int func_00275398(int cid, int mode, int pkt_, int pktsize, int src_, int dest_, int size)
+{
+    W2CmdHdr *pkt = (W2CmdHdr *)pkt_;
+    void *src = (void *)src_;
+    void *dest = (void *)dest_;
+    W2SifDma dma[2];
+    int count;
+    if ((unsigned int)(pktsize - 16) > 96) return 0;
+    count = 0;
+    if (size > 0) {
+        pkt->dsize = size;
+        pkt->dest = dest;
+        dma[count].data = src;
+        dma[count].addr = dest;
+        dma[count].size = size;
+        dma[count].mode = 0;
+        count++;
+        if (mode & 4) func_00275698(src, size);
+    } else {
+        pkt->dsize = 0;
+        pkt->dest = 0;
+    }
+    dma[count].addr = (void *)D_41D1A0;
+    dma[count].data = pkt;
+    dma[count].size = pktsize;
+    pkt->cid = cid;
+    dma[count].mode = 0x44;
+    pkt->psize = pktsize;
+    func_00275698(pkt, pktsize);
+    count++;
+    if (mode & 1) return func_00273570(dma, count);
+    return func_00273560b(dma, count);
+}

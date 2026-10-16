@@ -50,9 +50,9 @@ extern DmaRegs *D_002BDA10_c[10] __asm__("D_002BDA10");
 int func_0026FF38(void *);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FC10);
+short func_0026FC10(short psm, short w, short h) { unsigned long *p = (unsigned long *)func_0026E888(); int bw = (w + 63) / 64; int bh; if (psm & 2) bh = (h + 63) / 64; else bh = (h + 31) / 32; if ((*p & 0xFFFF0000FFFFUL) == 1) return bw * bh; return bw * bh * 2; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FCD8);
+void func_0026FCD8(void *d) { volatile u32 *p = (volatile u32 *)d; int i = 0x1000000; while (*p & 0x100) { if (--i < 0) { func_00274F10(D_002E9D30); func_00270470(p); } } }
 
 void func_0026FD48(void *p, u32 addr, int t)
 {

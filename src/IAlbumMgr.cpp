@@ -229,6 +229,9 @@ class CPhotoEventObjSub8 {
 public:
     void Func16E008(s32 a, s32 b, s32 c);
 };
+
+struct CAlbumSlots { u8 pad[0x200]; s32 slot[2]; };
+inline void AlbClr(CAlbumSub8 *c) { c->m_unk4 = -1; c->m_unk2 = 0; c->m_unk0 = 0; }
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016D548);
@@ -274,7 +277,22 @@ void CAlbumMgr::Term16D768() {
     ((CAlbumMgrSub16D618 *)this)->Reset();
 }
 
-INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016D870);
+s32 CAlbumMgr::Request16D870(s32 k) {
+    s32 i;
+    CAlbumSlots *s;
+    if (IsBusy()) return -1;
+    if (GetCur() && m_unk200[0] == k) return m_unk214;
+    s = (CAlbumSlots *)((u8 *)this + 4);
+    if (s->slot[m_unk214]) m_unk214 = m_unk214 == 0;
+    i = m_unk214;
+    m_unk200[0] = k;
+    m_unk20C = 1;
+    s->slot[i] = 0;
+    m_unk210 = 0;
+    m_unk218 = 0;
+    AlbClr(&m_unk8);
+    return m_unk214;
+}
 
 void CAlbumMgr::Cancel16D940() {
     if (IsBusy()) m_unk210 = 1;

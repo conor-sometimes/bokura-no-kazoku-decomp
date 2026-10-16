@@ -39,13 +39,17 @@ extern const char D_002E95D0[];
 extern const char D_002E95F8[];
 
 #define UNC(x) (((x) & 0x0FFFFFFF) | 0x20000000)
+
+extern "C" void func_0026D898(MpegSys *, MpegBuf *, s32);
+extern "C" void func_0026D9A8(MpegSys *, MpegBuf *, MpegBuf *, s32);
+extern const char D_002E9588[];
 // @decl-end
 
 extern "C" s32 func_00268138(SceMpeg *p) { MpegSys *o = p->sys; s32 r = 0; if (o->m4 && o->m8) { func_002681B0(o); r = 1; p->frameCount = o->m130 - o->mC4; o->m4 = 0; } return r; }
 
 extern "C" void func_002681A0(MpegSys *s) { s->m860 = 0; func_0026AA48(1); return; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk268138", func_002681B0);
+extern "C" void func_002681B0(MpegSys *m) { s32 n = m->m130; if (m->m138) { func_002683A0(m, D_002E9588); m->m138 = 0; return; } if (m->m18C == 3) func_0026D898(m, m->m1D0[0].m4, n - 1); else func_0026D9A8(m, m->m1D0[1].m4, m->m1D0[2].m4, n - 1); m->m138 = 0; }
 
 extern "C" void func_00268230(MpegSys *o) { u32 spr = 0x70000000; func_0026AA48(1); o->m5A8 = spr; o->m5AC = 0x70001800; o->m6E8 = 0x70001B00; o->m6EC = 0x70003300; o->m828 = 0; }
 

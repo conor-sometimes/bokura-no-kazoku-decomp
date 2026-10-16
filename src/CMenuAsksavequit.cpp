@@ -33,10 +33,7 @@ public:
     void *m_unk10;            // 0x10
 };
 
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 extern "C" void func_00189270(void *p, s32 v);
 class CMenuLoadMemorialSub17A8D8 {
@@ -59,10 +56,7 @@ public:
     CMenuLoadMemorialSub17A8D8 *m_unk7C; // 0x7C
 };
 
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 class CUnk1A4298 {
 public:
     int Func1A4298();
@@ -89,20 +83,11 @@ public:
     CUnk1A4298 *m_unk48;     // 0x48
 };
 
-class CMenuMgrSub1B4768 {
-public:
-    s32 GetEntry0(s32 i);
-    void Reset1B4D28();
-    void SetUnk4C(f32 v);
-    void SetUnk20(f32 x, f32 y, f32 z);
-};
+#include "CMenuMgrSub1B4768.h"
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern "C" int func_001B4ED0(CMenuMgrSub1B4768 *p, s32 v);
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuAsksavequit.
 class CMenuAsksavequit : public CMenuProcess {
 public:

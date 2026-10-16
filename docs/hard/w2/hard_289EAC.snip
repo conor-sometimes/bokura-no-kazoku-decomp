@@ -1,0 +1,46 @@
+//@decl
+typedef int W2u128 __attribute__((mode(TI)));
+//@func 0x289EAC
+extern "C" void *func_00289EAC(void *dst_void, const void *src_void, unsigned int length)
+{
+    char *dst = (char *)dst_void;
+    const char *src = (const char *)src_void;
+    W2u128 *aligned_dst;
+    const W2u128 *aligned_src;
+    unsigned int len = length;
+
+    if (src < dst && dst < src + len) {
+        src += len;
+        dst += len;
+        while (len--) {
+            *--dst = *--src;
+        }
+    } else {
+        if (!(len < 32) && !(((u32)src | (u32)dst) & 15)) {
+            aligned_dst = (W2u128 *)dst;
+            aligned_src = (W2u128 *)src;
+
+            while (len >= 32) {
+                *aligned_dst++ = *aligned_src++;
+                *aligned_dst++ = *aligned_src++;
+                len -= 32;
+            }
+
+            while (len >= 8) {
+                *(long long *)aligned_dst = *(long long *)aligned_src;
+                aligned_dst = (W2u128 *)((long long *)aligned_dst + 1);
+                aligned_src = (W2u128 *)((long long *)aligned_src + 1);
+                len -= 8;
+            }
+
+            dst = (char *)aligned_dst;
+            src = (char *)aligned_src;
+        }
+
+        while (len--) {
+            *dst++ = *src++;
+        }
+    }
+
+    return dst_void;
+}

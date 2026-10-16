@@ -1,0 +1,26 @@
+//@decl
+extern s16 D_380E00[];
+extern "C" s32 func_0023AF48(void);
+//@func 0x23B510
+extern "C" s32 func_0023B510(s32 k) {
+    s32 r = func_0023AF48();
+    LNode *n;
+    LNode *h;
+    s16 a, b;
+    if (r < 0) return -1;
+    n = &D_37CDE0[r];
+    h = &D_37CDE0[1];
+    D_380E00[r] = k;
+    b = n->b;
+    a = n->a;
+    D_37CDE0[a].b = b;
+    D_37CDE0[b].a = a;
+    a = h->a;
+    D_37CDE0[a].b = r;
+    n->b = 1;
+    n->a = a;
+    h->a = r;
+    (*(u16 *)&D_382E10[k].m2C)++;
+    (*(volatile s32 *)&D_380E08)++;
+    return r - 8;
+}

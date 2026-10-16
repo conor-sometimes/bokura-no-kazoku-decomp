@@ -14,6 +14,7 @@ struct CRand {
         m_seed = m_seed * 0x19660D + 1;
         return (m_seed >> 12) & 0xFFFF;
     }
+    u32 Rand(u32 n) { return ((Next() << 16) | Next()) % n; }
 };
 struct CMiniGame4Pair {
     f32 a;
@@ -29,6 +30,7 @@ public:
     void Release1D4C68();
     int Parse1D5360();
     int ParseCfg1D4FA8();
+    void Shuffle1D5420();
     u8 pad0[0x10];
     CMiniGame4Layout m_unk10; // 0x10
     u8 m_unk34[0x24];         // 0x34

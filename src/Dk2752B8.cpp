@@ -93,6 +93,13 @@ void func_00275A48();
 void func_00275E10();
 void func_00276020();
 void func_00275B58();
+
+typedef struct { int sema; void *buf; int size; int mC; int m10; } W2RpcReq;
+extern W2RpcReq D_41EC40;
+extern u8 D_41F880[];
+extern u8 D_420340[];
+s32 func_002760B0(void *, s32, s32, void *, s32, void *, s32, void *, void *);
+s32 W2Lock(s32) __asm__("func_00276D38");
 // @decl-end
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
@@ -158,7 +165,32 @@ E *func_00275A08(P2 *p, int i)
     return &p->m1C[i];
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275A48);
+void func_00275A48(Rq *q)
+{
+    RC *c;
+    switch (q->m20) {
+    case 0x8000000A:
+        c = q->m1C;
+        if (c->m1C) {
+            void *gp, *t;
+            asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(gp) : "r"(c->m18) : "memory");
+            c->m1C(c->m20);
+            asm volatile("move %0, $28\n\tmove $28, %1" : "=&r"(t) : "r"(gp));
+        }
+        break;
+    case 0x80000009:
+        c = q->m1C;
+        c->m24 = q->m24;
+        c->m14 = q->m28;
+        break;
+    case 0x8000000B:
+        break;
+    }
+    c = q->m1C;
+    if (c->m8 >= 0) func_002731D0(c->m8);
+    func_002759B8((P *)c->m0);
+    c->m0 = 0;
+}
 
 int func_00275B18(int a, int b, int c, Req *r)
 {
@@ -432,7 +464,48 @@ int func_00277100(void)
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00277138);
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002773C0);
+int func_002773C0(u32 id)
+{
+    W2RpcReq *rq = &D_41EC40;
+    Slot *s;
+    SemaParam sp;
+    int ret;
+    int sema, r;
+    s = func_002768C0(id);
+    W2Lock(1);
+    if (D_002BDB34 == 0) {
+        func_00276D68();
+        return -1;
+    }
+    if (s == 0 || s->m4 == 0) {
+        func_00276D68();
+        return -9;
+    }
+    rq->mC = s->m0;
+    rq->m10 = s - D_420140;
+    sp.max_count = 1;
+    sp.init_count = 0;
+    sp.option = 0;
+    sema = func_002731A0(&sp);
+    rq->sema = sema;
+    rq->buf = &ret;
+    rq->size = 4;
+    if (func_002760B0(D_420340, 1, 0, rq, 0x14, D_41F880, 4, 0, 0) < 0) {
+        func_002731B0(sema);
+        func_00276D68();
+        return -11;
+    }
+    s->m4 = 0;
+    r = *(int *)((u32)D_41F880 | 0x20000000);
+    func_00276D68();
+    if (r == 0) {
+        func_002731B0(sema);
+        return -11;
+    }
+    func_002731E0(sema);
+    func_002731B0(sema);
+    { int v = 0; if (ret < 0) v = ret; return v; }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00277540);
 

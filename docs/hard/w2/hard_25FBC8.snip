@@ -1,0 +1,32 @@
+//@decl
+extern "C" s32 W2SndType(s32, s32) asm("func_0020E488");
+extern "C" s32 func_0020E4B8(s32, s32);
+extern "C" s32 func_0020E4E8(s32, s32);
+extern "C" s32 func_0020E548(s32, s32);
+//@func 0x25FBC8
+extern "C" s32 func_0025FBC8(s32 id, s32 b, f32 rate)
+{
+    s32 type, x, y, z, n;
+    if (id < 0) return 0;
+    if (rate == 0.0f) return 0;
+    type = W2SndType(id, b);
+    x = func_0020E4B8(id, b);
+    y = func_0020E4E8(id, b);
+    z = func_0020E548(id, b);
+    n = (s32)(rate * (f32)x);
+    switch (type) {
+    case 0: {
+        s32 m = z / (y * 16) * 28 - 16;
+        if (n >= m) n = m;
+        return n / (y * 28) * y * 16;
+    }
+    case 1: {
+        s32 m = z / (y * 2) - 2;
+        if (n >= m) n = m;
+        return n / y * y * 2 & ~3;
+    }
+    case 2:
+        return n;
+    }
+    return 0;
+}

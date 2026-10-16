@@ -62,11 +62,7 @@ public:
 
 //@sym Update18D8B8__20CMenuCommonSub18E0E0 0x18D8B8
 #include "CFlagWork.h"
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern char D_002DB9D0[];
 extern char D_002DB8F8[];
@@ -287,10 +283,7 @@ public:
     void SetUnk44(u32 v);
     u8 pad[0xB0];
 };
-class CStatusWinSub1A40B8 {
-public:
-    void SetUnk80(f32 x, f32 y);
-};
+#include "CStatusWinSub1A40B8.h"
 
 extern CFlagWork *D_002A4B60;
 extern "C" void func_001B6570(CMenuMgrSub1B6418 *p);

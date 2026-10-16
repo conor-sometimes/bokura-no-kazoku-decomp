@@ -90,6 +90,14 @@ extern "C" s32 func_0020F948(s32);
 extern "C" s32 func_0020F998(s32);
 extern "C" s32 func_0020E5C0(s32, s32, s32);
 extern "C" void func_00212A30(void *);
+
+#include "libc.h"
+struct Rec3 { u8 pad[0x20]; s32 m20; s32 m24; };
+struct Play2 { u8 pad0[8]; Rec3 *m8; u8 padC[0x1C]; s32 m28; PtHdr hdr; s32 m34, m38, m3C; s16 m40; s16 m42; s32 m44, m48, m4C; };
+extern "C" s32 func_0020E458(s32);
+extern "C" const char *func_0020E470(s32, s32);
+extern "C" s32 func_00212CF8(s32);
+extern const char D_002E3960[], D_002E3998[];
 // @decl-end
 
 extern "C" u8 func_00215A38(Play *e) {
@@ -606,7 +614,43 @@ extern "C" void func_00217C30(Play *e) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit215A38", func_00217CC0);
+extern "C" s32 func_00217CC0(Play2 *e) {
+    Rec3 *r = e->m8;
+    PtHdr *h = &e->hdr;
+    s32 n, i, v;
+    h->m1 = 6;
+    h->m2 = 0;
+    h->m0 = 0;
+    e->m42 = -1;
+    e->m44 = 0;
+    e->m48 = 0;
+    e->m4C = 0;
+    e->m40 = func_00212E90(r->m20);
+    if (e->m40 < 0) return 0;
+    v = r->m24;
+    if (v <= 0xFFFF) {
+        n = func_0020E458(func_00212F20(e->m40));
+        if (r->m24 < 0 || n - 1 < r->m24) {
+            if (func_00212918() & 1) Func235DE0(D_002E3960, r->m24, n);
+            return 0;
+        }
+        e->m3C = r->m24;
+    } else {
+        n = func_0020E458(func_00212F20(e->m40));
+        for (i = 0; i < n; i++) {
+            if (!strcmp((const char *)v, func_0020E470(func_00212F20(e->m40), i))) break;
+        }
+        if (i < 0 || n - 1 < i) {
+            if (func_00212918() & 1) Func235DE0(D_002E3998, v);
+            return 0;
+        }
+        e->m3C = i;
+    }
+    e->m28 = func_00212CF8(e->m40);
+    if (!e->m28) return 0;
+    if (D_336F40.m1408 && !func_002130D8(e->m40, 0)) return 0;
+    return 1;
+}
 
 extern "C" void func_00217E88(Play *e) {
     func_00217C30(e);

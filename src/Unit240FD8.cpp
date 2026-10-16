@@ -92,7 +92,29 @@ extern "C" void func_002416D0(s32 id, s32 a, s32 b, s32 c, s32 d, s32 e) {
     return func_00241398(p, p->m38, p->m30, a, b, c, d, e);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00241778);
+extern "C" void func_00241778(void *p, s32 ve, s32 n, s32 k0, s32 k1, s32 mode) {
+    Glyph18 *e = (Glyph18 *)ve;
+    s32 i = GlyphIdx(e, n, k0);
+    for (; i < n; i++) {
+        Glyph18 *g = &e[i];
+        s32 c = g->m0;
+        if (c > k1) break;
+        if (c >= k0) {
+            s32 r = ((s8 *)g)[2] + mode;
+            ((s8 *)g)[2] = r % 4;
+            if (mode == 1 || mode == 3) {
+                s32 w = (s8)g->mE - (s8)g->mC;
+                s32 h = (s8)g->mF - (s8)g->mD;
+                s32 x = g->mC + w / 2 - h / 2;
+                s32 y = g->mD + h / 2 - w / 2;
+                g->mE = x + h;
+                g->mF = y + w;
+                g->mC = x;
+                g->mD = y;
+            }
+        }
+    }
+}
 
 extern "C" void func_002418E8(s32 id, s32 a, s32 b, s32 c) {
     FontEnt *p = (FontEnt *)func_0023FD90(id);

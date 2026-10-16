@@ -29,16 +29,8 @@ public:
 
     u8 pad0[0x10];
 };
-class CMenuMgrSub1B6BA8 {
-public:
-    ~CMenuMgrSub1B6BA8();
-    void Release1B6F00();
-};
-class CUnk2A55B0 {
-public:
-    ~CUnk2A55B0();
-    void Free1B7E28();
-};
+#include "CMenuMgrSub1B6BA8.h"
+#include "CUnk2A55B0.h"
 extern CMenuMgrSub1B6BA8 *D_002A55AC;
 extern CUnk2A55B0 *D_002A55B0;
 
@@ -82,10 +74,7 @@ public:
     u8 pad0[0x20];
     s32 m_state;              // 0x20
 };
-class CStatusWin {
-public:
-    CStatusItem *Func1A0CF0(const char *name);
-};
+#include "CStatusWin.h"
 extern CStatusWin *D_002A5408;
 
 class CMenuLoadMemorialSub178778 {
@@ -266,11 +255,7 @@ inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.
 extern char D_002DA938[], D_002DA948[], D_002DA958[], D_002DAA20[];
 extern "C" void func_001A40C8(CStatusItem *p);
 extern "C" void func_001A3DC8(void *p, s32 i, s32 v);
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-    void Func1A3740(s32 i, const char *s);
-};
+#include "CMenuRecordWin.h"
 // Calendar window part (0x17DD28; the class is not identified yet).
 class CMenuLoadMemorialCal {
 public:
@@ -283,28 +268,9 @@ public:
 
 extern "C" int func_001A4060(CStatusItem *p, s32 k);
 extern "C" int func_00178B30(CMenuLoadMemorialSub178778 *p, s32 i);
-class CMenuMgrSub1B4768 {
-public:
-    void SetUnk4C(f32 v);
-    s32 GetEntry0(s32 i);
-    void Reset1B4D28();
-    void SetUnk54(u32 v);
-    void SetUnk30(f32 a, f32 b, f32 c, f32 d);
-    void SetUnk40(f32 a, f32 b, f32 c, f32 d);
-    void SetUnk20(f32 a, f32 b, f32 c);
-    void SetUnk58(u32 v);
-};
+#include "CMenuMgrSub1B4768.h"
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
-class CMenuMgrSub1B5BF8 {
-public:
-    void Reset();
-    void SetUnk30(s32 v);
-    void SetUnk10(f32 a, f32 b, f32 c);
-    void SetUnk1C(f32 v);
-    void SetUnk34(s32 v);
-    void SetUnk0(f32 a, f32 b);
-    void SetUnk5C(s32 v);
-};
+#include "CMenuMgrSub1B5BF8.h"
 extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);
 extern CMenuMgrSub1B5BF8 *D_002A5534;
 extern char D_002DA9A0[];

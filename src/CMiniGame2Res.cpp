@@ -11,10 +11,7 @@ public:
     u8 pad[0x20];
     // vptr 0x20
 };
-class CResMgr24F {
-public:
-    void Func24F5C0(void *res, int v);
-};
+#include "CResMgr24F.h"
 void *Func24F2E8(int size);
 extern void *D_002A59FC;
 extern void (*D_002B91B0)(void *p);
@@ -56,11 +53,7 @@ struct CMiniGame2Pos {
     u8 pad[8];
     void Move();
 };
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-    void SetUnkDC(u32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 inline void CMiniGame2Pos::Move() { D_002A5538->Move1B6488(x, y); }
 // Member classes (layout objects, sound handles; library / CLayoutObj code): their destructors
 // are called explicitly.

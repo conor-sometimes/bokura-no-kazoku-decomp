@@ -1,0 +1,5 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+typedef int W2u128 __attribute__((mode(TI)));
+//@func 0x289DFC
+extern "C" void *memcpy(void *dst0, const void *src0, u32 len0) { char *dst = (char *)dst0; const char *src = (const char *)src0; W2u128 *ad; const W2u128 *as; if (len0 >= 32 && !(((u32)src | (u32)dst) & 15)) { ad = (W2u128 *)dst; as = (const W2u128 *)src; while (len0 >= 32) { *ad++ = *as++; *ad++ = *as++; len0 -= 32; } while (len0 >= 8) { *(s64 *)ad = *(const s64 *)as; ad = (W2u128 *)((char *)ad + 8); as = (const W2u128 *)((const char *)as + 8); len0 -= 8; } dst = (char *)ad; src = (const char *)as; } while (len0--) *dst++ = *src++; return dst0; }

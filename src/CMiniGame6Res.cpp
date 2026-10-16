@@ -249,15 +249,7 @@ class CUnk237E90 {
 public:
     int Func237E90(int v);
 };
-class CMenuMgrSub1B4768 {
-public:
-    int GetEntry0(int k);
-    int Func1B4ED0(int v);
-    void Reset1B4D28();
-    void SetUnk20(f32 x, f32 y, f32 z);
-    void SetUnk30(f32 x, f32 y, f32 z, f32 w);
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B4768.h"
 // Func1B4ED0 is a CMenuMgr method on the same object (D_002A5530).
 class CMenuMgr {
 public:
@@ -270,6 +262,9 @@ struct CMg6Main {
     CUnk237E90 m_unk90;       // 0x90
 };
 extern CMg6Main *D_002A5BC0;
+
+#define RGBAQ6(r, g, b, a, q) (((u64)(r) & 0xFF) | (((u64)(g) & 0xFF) << 8) | (((u64)(b) & 0xFF) << 16) | (((u64)(a) & 0xFF) << 24) | ((u64)(q) << 32))
+extern u64 *D_2EC1E4;
 // @decl-end
 
 CMiniGame6Res *CreateMiniGame6Res() {
@@ -457,7 +452,37 @@ void CallMiniGame6Hook() {
     D_002B91B0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E7ED8);
+extern "C" void func_001E7ED8(u32 c, f32 x0, f32 y0, f32 x1, f32 y1) {
+    s32 v[4];
+    u64 *p;
+    u64 col;
+    v[0] = (s32)(x0 * 16.0f) + 0x6C00;
+    v[1] = (s32)(y0 * 16.0f) + 0x7200;
+    v[2] = (s32)(x1 * 16.0f) + 0x6C00;
+    v[3] = (s32)(y1 * 16.0f) + 0x7200;
+    col = RGBAQ6(c >> 24, c >> 16, c >> 8, c, 0);
+    p = D_2EC1E4;
+    *p++ = 0x1000000000000004;
+    D_2EC1E4 = p;
+    p[0] = 0xE;
+    D_2EC1E4 = p + 1;
+    p[1] = 0x46;
+    D_2EC1E4 = p + 2;
+    p[2] = 0;
+    D_2EC1E4 = p + 3;
+    p[3] = col;
+    D_2EC1E4 = p + 4;
+    p[4] = 1;
+    D_2EC1E4 = p + 5;
+    p[5] = (u64)v[0] | ((u64)v[1] << 16);
+    D_2EC1E4 = p + 6;
+    p[6] = 5;
+    D_2EC1E4 = p + 7;
+    p[7] = (u64)v[2] | ((u64)v[3] << 16);
+    D_2EC1E4 = p + 8;
+    p[8] = 5;
+    D_2EC1E4 = p + 9;
+}
 
 void Func1E8030() {
     if (D_002A5BB8) {

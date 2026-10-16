@@ -1,0 +1,6 @@
+//@decl
+extern "C" void func_0026296C(void *, void *, void *, void *);
+extern "C" void func_00262448(void *, void *, s32);
+extern "C" void func_0026228C(void *);
+//@func 0x2612F0
+extern "C" void func_002612F0(u8 *p) { u8 buf[0x8C0]; s32 i; for (i = 0; i < 35; i++) { func_0026296C(p + i * 32, p + i * 32 + 0x660, buf + i * 16, buf + i * 16 + 0x460); func_0026296C(p + i * 32 + 0x1320, p + i * 32 + 0xCC0, buf + i * 16 + 0x230, buf + i * 16 + 0x690); } for (i = 0; i < 32; i++) { func_00262448(p + 0x2ABC + i * 0x40, buf + i * 16, 0); func_00262448(p + 0x2AC0 + i * 0x40, buf + 0x460 + i * 16, 1); } for (i = 0; i < 128; i++) func_0026228C(p + 0x2A60 + i * 16); }

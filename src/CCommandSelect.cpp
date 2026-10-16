@@ -67,11 +67,7 @@ public:
     f32 GetWinValueA();
     f32 GetWinValueB();
 };
-class CMenuRecordWin {
-public:
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-    void Func1A3B58(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 
 extern CFlagWork *D_002A5358;
 extern "C" void func_00196938(void *p, s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
@@ -112,21 +108,12 @@ class CUnk1A4298 {
 public:
     int Func1A4298();
 };
-class CMenuMgrSub1B4768 {
-public:
-    int GetEntry0(s32 i);
-    void Reset1B4D28();
-    void SetUnk20(f32 x, f32 y, f32 z);
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B4768.h"
 class CMenuMgr {
 public:
     int Func1B4ED0(s32 e);
 };
-class CMenuMgrSub1B6418 {
-public:
-    void SetUnk4C(f32 v);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern void *D_002A5534;
 extern CMenuMgrSub1B6418 *D_002A5538;

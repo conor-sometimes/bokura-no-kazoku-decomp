@@ -127,6 +127,13 @@ struct SrcGlyph { u16 m0; u8 m2, m3; u16 m4; u16 m6; u8 m8, m9; u8 padA[2]; };
 struct FEnt3 { u8 pad[0x30]; s32 m30; Glyph *m34; };
 struct FontCtx { u8 pad[0x50]; u8 m50; };
 extern const char D_002E5BE0[];
+
+extern "C" HEnt *func_0023FAF0(s32 key);
+extern "C" void func_0023FA98(s32 key);
+extern "C" void func_0023FA58(HEnt *e);
+struct GEnt { GEnt *m0; GEnt *m4; GEnt *m8; u32 mC; s32 m10; s16 m14; s16 m16; Ch14 *m18; };
+inline void GIns(GEnt *h, GEnt *e) { e->m0 = h; e->m4 = h->m4; h->m4 = e; e->m4->m0 = e; }
+inline void GUnl(GEnt *e) { e->m0->m4 = e->m4; e->m4->m0 = e->m0; }
 // @decl-end
 
 extern "C" void func_0023E868(void) {
@@ -378,7 +385,28 @@ extern "C" HEnt *func_0023FAF0(s32 key) {
     return e;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023FB60);
+extern "C" s32 func_0023FB60(s32 a, Ch14 *c) {
+    s32 key = (a << 16) | (u16)c->m0;
+    GEnt *e = (GEnt *)func_0023FAF0(key);
+    GEnt *h;
+    if (!e) {
+        e = (GEnt *)D_38EF58.m0;
+        if (e->mC & 1) return 0;
+        if (e->mC & 4) func_0023FA98(e->m10);
+        e->m10 = key;
+        func_0023FA58((HEnt *)e);
+        e->m16 = a;
+        e->mC = (e->mC | 4) & ~2;
+        e->m18 = c;
+        s32 odd = c->m14;
+        c->m4 = (e->m14 % D_002B9CE8) * D_002B9CEC + (odd & 1);
+        c->m6 = (e->m14 / D_002B9CE8) * D_002B9CF0;
+    }
+    e->mC |= 1;
+    GUnl(e);
+    GIns((GEnt *)&D_38EF58, e);
+    return (s32)e;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023FCB8);
 

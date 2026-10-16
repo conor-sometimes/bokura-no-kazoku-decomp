@@ -10,6 +10,7 @@ public:
     ~CPushBuf();
     void Func248E00();
     int Func248EB0();
+    void *Func248CC8(s32 size, s32 a, s32 b);
     s32 GetUsed() { return *(s32 *)(m_data + 4); }
 
     u8 m_data[0xC];

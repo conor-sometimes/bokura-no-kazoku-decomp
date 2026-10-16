@@ -34,10 +34,7 @@ void Func238158(void *p, int v);
 void Func225240(int v);
 
 // CMenuSysscr31's constructor (CMenuSysscr31.cpp); this factory is the start of its unit.
-class CChrBodyWin {
-public:
-    void Func188BA8();
-};
+#include "CChrBodyWin.h"
 extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);

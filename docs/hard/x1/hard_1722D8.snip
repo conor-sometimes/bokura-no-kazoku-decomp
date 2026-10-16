@@ -1,0 +1,27 @@
+//@func 0x1722D8
+s32 CResortDBMgr::Func1722D8(void *data) {
+    char line[256];
+    const char *p;
+    const char *q;
+    CPushBuf *buf;
+    s32 i, j;
+    p = Func24AF10(data, "GET");
+    if (!*p) return 0;
+    m_numNames = func_0024B040(p, 1);
+    buf = &m_buf;
+    m_names = (CResortNameRec *)buf->Func248CC8(m_numNames * sizeof(CResortNameRec), 1, 1);
+    for (i = 0; i < m_numNames; i++) {
+        CResortNameRec *r = &m_names[i];
+        p = Func24AFE8(p, line, 1, 0x100);
+        r->m_id = i + 0x10;
+        r->m_count = 8;
+        r->m_values = (s32 *)buf->Func248CC8(0x40, 1, 1);
+        q = Func24A570(line, 0, D_002DA0D8, D_002DA0E0);
+        for (j = 0; j < r->m_count; j++) {
+            s32 *v = &r->m_values[j * 2];
+            q = func_0024A710(q, v, 0, D_002DA0D8, D_002DA0E0);
+            q = func_0024A710(q, v + 1, 0, D_002DA0D8, D_002DA0E0);
+        }
+    }
+    return 1;
+}

@@ -1,0 +1,12 @@
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+//@decl
+struct W2Bg { W2Bg *next; s32 k; s32 maxwds; s32 sign; s32 wds; u32 x[1]; };
+extern "C" void *memcpy(void *, const void *, unsigned int);
+extern "C" void func_00291A28(W2Re *, W2Big *);
+struct W2Glue { W2Glue *next; s32 niobs; u8 *iobs; };
+//@func 0x291D10
+extern "C" s32 func_00291D10(u32 *y) { s32 k; u32 x = *y; if (x & 7) { if (x & 1) return 0; if (x & 2) { *y = x >> 1; return 1; } *y = x >> 2; return 2; } k = 0; if (!(x & 0xffff)) { k = 16; x >>= 16; } if (!(x & 0xff)) { k += 8; x >>= 8; } if (!(x & 0xf)) { k += 4; x >>= 4; } if (!(x & 0x3)) { k += 2; x >>= 2; } if (!(x & 1)) { k++; x >>= 1; if (!x) return 32; } *y = x; return k; }
+//@func 0x291A58
+extern "C" W2Bg *func_00291A58(void *ptr, W2Bg *b, s32 m, s32 a) { s32 i, wds; u32 *x, y; u32 xi, z; wds = b->wds; x = b->x; i = 0; do { xi = *x; y = (xi & 0xffff) * m + a; z = (xi >> 16) * m + (y >> 16); a = (s32)(z >> 16); *x++ = (z << 16) + (y & 0xffff); } while (++i < wds); if (a) { if (wds >= b->maxwds) { W2Bg *b1 = (W2Bg *)func_00291980(ptr, b->k + 1); memcpy(&b1->sign, &b->sign, b->wds * 4 + 8); func_00291A28((W2Re *)ptr, (W2Big *)b); b = b1; } b->x[wds++] = a; b->wds = wds; } return b; }
+//@func 0x291590
+extern "C" int func_00291590(void *ptr, void *fnv) { s32 (*function)(void *) = (s32 (*)(void *))fnv; u8 *fp; s32 n, ret = 0; W2Glue *g; for (g = (W2Glue *)((u8 *)ptr + 0x1D8); g != 0; g = g->next) for (fp = g->iobs, n = g->niobs; --n >= 0; fp += 0x58) if (FLD(s16, fp, 0xC) != 0) ret |= (*function)(fp); return ret; }

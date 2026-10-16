@@ -28,19 +28,13 @@ public:
     u8 pad0[0x7DC0];
 };
 
-class CMenuMgrSub1B6BA8 {
-public:
-    int Check1B7428(u32 i);
-};
+#include "CMenuMgrSub1B6BA8.h"
 extern CMenuMgrSub1B6BA8 *D_002A55AC;
 class CMenuTutorSelectedSub182108 {
 public:
     void GetCursorPos(f32 *x, f32 *y);
 };
-class CMenuMgrSub1B6418 {
-public:
-    void Move1B6488(f32 x, f32 y);
-};
+#include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern "C" void func_001829E8(void *p, s32 v);
 // CMenuLoadMemorial's unit starts here (its text starts before its first vtable function).

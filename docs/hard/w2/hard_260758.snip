@@ -1,0 +1,37 @@
+//@decl
+typedef struct { s32 m0; u8 *m4; s32 m8; u8 *mC; s32 m10; } W2Dec;
+extern "C" int func_00262108(u8 *);
+extern "C" void func_00262AF0(void *, void *);
+//@func 0x260758
+extern "C" int func_00260758(W2Dec *p)
+{
+    u8 *c = p->mC;
+    int m, i, k = 0;
+    u8 *s0, *s1;
+    *(s32 *)(c + 0x68C4) = p->m10;
+    *(s32 *)(c + 0x6800) = p->m0;
+    m = p->m8 == 1 || p->m8 == 2;
+    if (func_00262108(c) == -1) return -1;
+    s0 = p->m4;
+    s1 = s0 + 0x200;
+    if (p->m8 == 1 || p->m8 == 2) {
+        u8 *d0 = c + 0x2A90;
+        u8 *d1 = c + m * 0x33E0 + 0x2A90;
+        for (i = 4; i != 0; i--) {
+            func_00262AF0(d0, s0);
+            d0 += 0x200;
+            s0 += 0x400;
+            func_00262AF0(d1, s1);
+            s1 += 0x400;
+            d1 += 0x200;
+        }
+    } else {
+        for (i = 4; i != 0; i--) {
+            func_00262AF0((s16 *)(c + 0x2A90) + k, s0);
+            k += 0x100;
+            s0 = s1;
+            s1 += 0x200;
+        }
+    }
+    return 0;
+}

@@ -25,14 +25,8 @@ class CStatusWinSub1A0A10 {
 public:
     void Clear();
 };
-class CMenuLoadMemorialSub17B3A0 {
-public:
-    void Func17B3E8();
-};
-class CChrBodyWin {
-public:
-    void CallFunc188BA8();
-};
+#include "CMenuLoadMemorialSub17B3A0.h"
+#include "CChrBodyWin.h"
 class CChrBodyWinSub188748 {
 public:
     u64 SwapUnk188(u64 v);

@@ -1,0 +1,22 @@
+//@decl
+extern char D_vt5CList[] asm("_vt$5CList");
+extern char D_vt8CListTag[] asm("_vt$8CListTag");
+extern void *D_002A039C;
+inline CTexCacheList *TcFirst(CTexCacheList *l) { return l->m_next->m_isHead == 0 ? l->m_next : 0; }
+inline void TcUnlink(CTexCacheList *n) { n->m_prev->m_next = n->m_next; n->m_next->m_prev = n->m_prev; n->m_next = n; n->m_prev = n; }
+//@func 0x10CF40
+CTexCacheMgr::~CTexCacheMgr() {
+    CTexCacheList *l;
+    CTexCacheList *e;
+    CTexCacheMgr::Release10D200();
+    D_002A039C = 0;
+    l = &m20;
+    l->m_vt = D_vt5CList;
+    do {
+        e = TcFirst(l);
+        if (!e) break;
+        TcUnlink(e);
+    } while (e);
+    l->m_vt = D_vt8CListTag;
+    TcUnlink(l);
+}

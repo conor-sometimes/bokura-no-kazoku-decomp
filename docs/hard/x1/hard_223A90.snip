@@ -1,0 +1,28 @@
+//@decl
+inline u32 *PutQs(s64 hi, s64 lo) {
+    u32 *q = PKT;
+    PKT = q + 4;
+    q[0] = lo;
+    q[1] = lo >> 32;
+    q[2] = hi;
+    q[3] = hi >> 32;
+    return q;
+}
+//@func 0x223A90
+extern "C" void func_00223A90(u64 t) {
+    u64 w = (t & 0x3FFF) >> 5;
+    u64 h = ((t >> 14) & 0x3F) << 16;
+    u64 f = ((t >> 32) & 0x3F) << 24;
+    s32 i;
+    D_002B8AE0[7].lo = f | h | w | 0x7FFFFFFF00000000ULL;
+    D_002B8AE0[4].lo = w | h | f;
+    PUT(0x11000000);
+    PUT(0x1000404);
+    PUT(0x5000000);
+    PUT(0x300019C);
+    PUT(0x2000020);
+    PUT(0x6C098000);
+    for (i = 0; i < 9; i++) PutQs(D_002B8AE0[i].hi, D_002B8AE0[i].lo);
+    PUT(MSCAL(0));
+    PUT(0x10000000);
+}

@@ -1,0 +1,4 @@
+//@func 0x27BD20
+int func_0027BD20(void) { unsigned int st; int r; asm volatile("mfc0 %0, $12" : "=r"(st)); st &= 0x10000; r = st != 0; if (!st) { r = 0; return r; } loop: asm volatile("di"); asm volatile("sync.p"); asm volatile("mfc0 %0, $12" : "=r"(st)); if (st & 0x10000) goto loop; return r; }
+//@func 0x27BD20
+int func_0027BD20(void) { unsigned int st; int r; asm volatile("mfc0 %0, $12" : "=r"(st)); st &= 0x10000; r = st != 0; if (st) { loop: asm volatile("di"); asm volatile("sync.p"); asm volatile("mfc0 %0, $12" : "=r"(st)); if (st & 0x10000) goto loop; } else r = 0; return r; }

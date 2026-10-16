@@ -124,6 +124,11 @@ extern void (*D_002B91B0)(void *p);
 extern u8 TArrLightPos_vt[] asm("_vt$t6TArray3Z16CMapAttrLightPosi_16_Zt10TAllocator1Z16CMapAttrLightPos");
 extern "C" void func_00294CC0(TArrB *a, s32 pos, TArrB *src);
 extern "C" void func_00294D70(TArrB *a, s32 pos, s32 n);
+extern const char D_002D41C0[];
+
+extern "C" void W2Fill(TArrB *, CMapAttrLightPos *, const CMapAttrLightPos &, s32) asm("func_002949A0");
+extern "C" s32 W2Cnt(TArrB *) throw() asm("func_002943C8");
+extern const char D_002D3B60[];
 // @decl-end
 
 extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n) {
@@ -160,7 +165,20 @@ extern "C" void func_00294CC0(TArrB *a, s32 pos, TArrB *src) {
     for (i = 0; i < func_002943C8(src); i++) a->m_data[pos + i] = src->m_data[i];
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_00294D70);
+extern "C" void func_00294D70(TArrB *a, s32 i, s32 n)
+{
+    if (i < 0 || W2Cnt(a) < i) {
+        Func235DE0(D_002D3B60, i, W2Cnt(a));
+        return;
+    }
+    s32 end = i + n;
+    func_00294620(a, W2Cnt(a) + n, 0);
+    u8 *d = (u8 *)(a->m_data + end);
+    u8 *s = (u8 *)(a->m_data + i);
+    for (s32 k = (W2Cnt(a) - end) * sizeof(*a->m_data) - 1; k >= 0; k--)
+        d[k] = s[k];
+    W2Fill(a, a->m_data + i, CMapAttrLightPos(), n);
+}
 
 extern "C" void func_00294E90(TArrB *a, s32 flags) {
     func_002943E8(a, 0);
@@ -308,7 +326,22 @@ extern "C" void func_00295218(TArrC *a, s32 n, s32 init) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002953A8);
+extern "C" void func_002953A8(TArrC *a, s32 i, s32 n)
+{
+    if (i < 0 || func_00295110(a) < i) {
+        Func235DE0(D_002D41C0, i, func_00295110(a));
+        return;
+    }
+    s32 end = i + n;
+    func_00295218(a, func_00295110(a) + n, 0);
+    u8 *d = (u8 *)(a->m_data + end);
+    u8 *s = (u8 *)(a->m_data + i);
+    for (s32 k = (func_00295110(a) - end) * sizeof(*a->m_data) - 1; k >= 0; k--)
+        d[k] = s[k];
+    MapEffInfo *tmp;
+    tmp = 0;
+    func_00295528(a, a->m_data + i, &tmp, n);
+}
 
 extern "C" void func_002954B8(TArrC *a, s32 pos, MapEffInfo * *v) {
     a->m_data[pos] = *v;

@@ -10,11 +10,7 @@ public:
     static CMenuSysscr26 *Create();
 };
 
-class CMenuRecordWin {
-public:
-    void Func1A3740(s32 v, const char *s);
-    void Func1A39A8(f32 *v, s32 *n, s32 k);
-};
+#include "CMenuRecordWin.h"
 extern "C" const char *func_001A36B0(CMenuRecordWin *w, s32 v);
 extern "C" s32 func_0024BA08(char *buf, s32 v);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
