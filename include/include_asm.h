@@ -6,8 +6,10 @@
  * registers) into the unit at its original place. The unit is assembled by ee-gcc's
  * own GNU as 2.10-ee, as in the original build; that assembler only knows numeric
  * register names, hence named_regs_for_c_funcs: False in the splat yaml.
+ * PERMUTER and SKIP_ASM drop them. SKIP_ASM is the objdiff "base" build (make objdiff,
+ * tools/bk/objdiff.py): the unit's C functions only, so objdiff counts the INCLUDE_ASM'd ones unmatched.
  */
-#ifndef PERMUTER
+#if !defined(PERMUTER) && !defined(SKIP_ASM)
 #define INCLUDE_ASM(FOLDER, NAME)                                                 \
     __asm__(".section .text\n"                                                    \
             "\t.set noat\n"                                                       \

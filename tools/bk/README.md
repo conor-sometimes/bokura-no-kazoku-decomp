@@ -63,3 +63,27 @@ Units whose data comes from their object (docs/units.md "Data: vtables and .roda
   section each falls in.
 - `bk perm`/`bk show` need the function in `build/bk/ctx.json`, i.e. still INCLUDE_ASM'd: to
   permute a C++ function, put it back to INCLUDE_ASM (by its symbol_addrs name) and re-run mk.sh.
+
+## Progress report (bytematch.dev)
+
+- `python3 -I tools/bk/progress_report.py [-o build/progress/report.json]`: the progress report in
+  objdiff's report format (version 2), from committed files only (no build, no ELF, stock Python): the
+  .text units from the yaml, function starts and sizes from `config/functions.txt` (size = up to the
+  next start, padding included), the INCLUDE_ASM lines of `src/*.cpp` as the unmatched functions, names
+  from `config/symbol_addrs.txt`/`config/vtables.txt`. Since `make` proves the whole ELF matches, C
+  means matched. Its totals are `progress.py`'s (all of .text; crt0 counts as unmatched, outside the
+  categories). Categories: `game` (`game_cpp` + `game_c`, CAppMain on), `dklib`, `libs`, as in the
+  README's table. Names, addresses, sizes and percentages only: no game bytes.
+- `.github/workflows/progress.yml` runs it on every push and pull request, validates it with
+  objdiff-cli v3.8.2 (SHA-256 pinned, `report changes r.json r.json`) and uploads it as artifact
+  `SCPS_150.88_report`, which bytematch.dev reads from main. Nothing to set up on GitHub.
+- `tools/bk/bytematch_upload.sh [report.json]` (optional): POST the report to bytematch.dev's upload
+  API instead; token from `$BYTEMATCH_TOKEN` or `~/.config/bytematch/token`.
+- `make objdiff` (optional, hokkaido, inside bokura-env): objdiff on real objects, for the objdiff
+  GUI or to cross-check the tree-derived report. `scripts/fetch_objdiff.sh` fetches objdiff-cli
+  (pinned) into `tools/objdiff/`; `tools/bk/objdiff.py` writes `objdiff.json` (gitignored), with
+  target = the build's own objects (`build/src/*.cpp.o`, retail by the SHA-1 check) and base = the same
+  compiles with `-DSKIP_ASM` (no INCLUDE_ASM'd functions) in `build/objdiff/base/`; then
+  `objdiff-cli report generate -o build/objdiff/report.json`. Its numbers are measured code only
+  (function `.size`s, no padding, plus 88 weak `__tf*` typeinfo functions the units' objects emit in
+  `.gnu.linkonce.t` sections, which the tree report counts once, at their linked address), so it reads a little lower (48.43% vs 48.72% on 2026-10-16).

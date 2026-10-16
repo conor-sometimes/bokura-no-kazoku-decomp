@@ -1,0 +1,46 @@
+# Progress report for bytematch.dev, in objdiff's report format, on every push and pull request.
+#
+# Nothing here builds the game (the ELF is never on GitHub). The build matches retail byte for
+# byte by rule, so progress follows from the tree alone: a function written in C is matched, an
+# INCLUDE_ASM'd one is not. tools/bk/progress_report.py writes build/progress/report.json from
+# committed files (config/SCPS_150.88.yaml, config/functions.txt, src/*.cpp, the symbol files);
+# objdiff-cli (pinned, SHA-256 checked) validates it, and it is uploaded as SCPS_150.88_report,
+# the artifact bytematch.dev reads from main. The report holds unit and function names,
+# addresses, sizes and percentages only: no game bytes. (After lombyte-project/Lombyte.)
+name: progress
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Generate the report
+        run: python3 -I tools/bk/progress_report.py -o build/progress/report.json
+
+      - name: Validate the report with objdiff
+        run: |
+          curl --fail --location --retry 3 -o "$RUNNER_TEMP/objdiff-cli" \
+            https://github.com/encounter/objdiff/releases/download/v3.8.2/objdiff-cli-linux-x86_64
+          echo "e5445089a6f707e30cb5e02992451b604619cedfd2660ee2373a86bfefd9e718  $RUNNER_TEMP/objdiff-cli" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/objdiff-cli"
+          "$RUNNER_TEMP/objdiff-cli" report changes build/progress/report.json build/progress/report.json \
+            -o "$RUNNER_TEMP/validation.json"
+          python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1]))["measures"]; print("## Progress\n\n%.2f%% of .text matched (%s / %s bytes), %d / %d functions\n" % (m["matched_code_percent"], m["matched_code"], m["total_code"], m["matched_functions"], m["total_functions"]))' \
+            build/progress/report.json >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the progress report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: SCPS_150.88_report
+          path: build/progress/report.json
+          if-no-files-found: error

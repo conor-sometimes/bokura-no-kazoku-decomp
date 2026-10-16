@@ -53,6 +53,8 @@ extern const char D_002E96D0[];
 extern "C" void func_00268F50(MpegSys *d, s32 x, s32 y, s32 mbtype, s32 mtype, s32 a, s32 b, s32 c);
 extern "C" void func_0026DB60(MpegSys *d);
 #define W2B(d) (((W2MSys *)(d))->buf[(d)->m828])
+
+extern "C" void func_00273420(s32);
 // @decl-end
 
 extern "C" s32 func_00268138(SceMpeg *p) { MpegSys *o = p->sys; s32 r = 0; if (o->m4 && o->m8) { func_002681B0(o); r = 1; p->frameCount = o->m130 - o->mC4; o->m4 = 0; } return r; }
@@ -86,7 +88,31 @@ extern "C" s32 func_002683A0(MpegSys *s, const char *msg) {
     func_00268358(msg);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk268138", func_002683F8);
+extern "C" void func_002683F8(MpegSys *s, u32 data, s32 size)
+{
+    u64 *tag = (u64 *)((((u32)s + 0x88F) >> 4) << 4);
+    u64 *p = tag;
+    s32 n, id;
+    u64 addr;
+    while (size > 0) {
+        n = size > 0xFFF40 ? 0xFFF40 : size;
+        addr = data & 0x0FFFFFFF;
+        size -= n;
+        id = size ? 3 : 0;
+        *p = (addr << 32) | ((u64)id << 28) | (u32)((n + 15) / 16);
+        asm volatile("sync");
+        data += n;
+        p += 2;
+    }
+    func_00273420(0);
+    {
+        s32 intr = func_0027BD20();
+        *(volatile u32 *)0x1000B430 = (u32)tag & 0x0FFFFFFF;
+        *(volatile u32 *)0x1000B420 = 0;
+        *(volatile u32 *)0x1000B400 = 0x105;
+        if (intr) func_0027BD78();
+    }
+}
 
 extern "C" s32 func_002684F8(Q4 *p, s32 a, s32 b) { p->m4 = a; p->m8 = b; p->mC = a >> 4; p->m10 = b >> 4; return 1; }
 

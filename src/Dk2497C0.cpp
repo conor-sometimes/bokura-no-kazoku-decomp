@@ -197,6 +197,26 @@ extern const char D_002E6638[];
 extern "C" char *strcpy(char *d, const char *s);
 struct Y1XapHdr { s32 m0, m4, m8, mC; };
 static inline void Y1PushFree(CXapLink *l) { CXapGlobal *g = &D_38F2D8; func_001F15F0v(); l->m_next = g->m_free; g->m_free = l; func_001F1610(); }
+
+const char *Func24ADE0(const char *s, char *dst, int max);
+
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max);
+extern "C" s32 func_0024D288(const char **tbl, const char *s);
+extern "C" s32 func_0024D2F8(const char *s);
+extern "C" s32 func_0024D3D0(CExpr *e, const char *name, CValue *v);
+extern "C" int atoi(const char *);
+extern const char *D_002B9E60[];
+typedef s32 (*CExprUnaryFn)(CValue *dst, CValue *src, CExpr *e);
+extern CExprUnaryFn D_002B9F78[], D_002B9F84[], D_002B9F6C[];
+
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max);
+extern "C" s32 func_0024D340(CExpr *e, const char *name, CValue *v);
+extern "C" s32 func_0024D3D0(CExpr *e, const char *name, CValue *v);
+extern const char *D_002BA028[];
+extern s32 D_002BA048[];
+typedef s32 (*CExprAssignFn)(CValue *dst, CValue *src, CExpr *e);
+extern CExprAssignFn D_002B9EB8[][3];
+extern "C" int strcmp(const char *, const char *);
 // @decl-end
 
 extern "C" CXapEntry *func_002497C0(CXapDir *d, const char *name) {
@@ -586,9 +606,34 @@ extern "C" s32 func_0024AD80(const char *src, s32 skip) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", Func24ADE0__FPCcPci);
+const char *Func24ADE0(const char *s, char *dst, int max)
+{
+    while (*s) {
+        if (*s == '[') {
+            s++;
+            while (*s && *s != ']') {
+                if (max-- >= 2) *dst++ = *s;
+                s += (*s < 0) ? 2 : 1;
+            }
+            *dst = 0;
+            return func_0024AB30(s);
+        }
+        if (*s == '#') s = func_0024AB30(s);
+        else s += (*s < 0) ? 2 : 1;
+    }
+    *dst = 0;
+    return s;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", Func24AF10__FPvPCc);
+const char *Func24AF10(void *src, const char *key)
+{
+    char buf[0x100];
+    const char *s = (const char *)src;
+    while (*(s = Func24ADE0(s, buf, 0x100)) && buf[0]) {
+        if (strcmp(buf, key) == 0) return s;
+    }
+    return s;
+}
 
 extern "C" s32 func_0024AF90(const char *src, const char *key) {
     s32 n = 0;
@@ -759,7 +804,29 @@ s32 Func24B998(const char **tbl, const char *s) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024BA08);
+extern "C" char *func_0024BA08(char *buf, s32 v)
+{
+    s32 n, t, i;
+    s32 neg = v < 0;
+    t = v < 0 ? -v : v;
+    v = t;
+    n = 0;
+    for (; t > 0; t /= 10) n++;
+    n = n < 1 ? 1 : n;
+    n += neg;
+    t = v;
+    for (i = 0; i < n; i++) {
+        s32 d = t % 10 + 0x824F;   /* SJIS full-width digit */
+        t /= 10;
+        if (buf) {
+            buf[(n - i) * 2 - 2] = d >> 8;
+            buf[(n - i) * 2 - 1] = d;
+        }
+    }
+    if (neg) { buf[0] = 0x81; buf[1] = 0x7C; }   /* full-width minus, even when buf is NULL */
+    if (buf) buf[n * 2] = 0;
+    return buf;
+}
 
 extern "C" void func_0024BAE0(CValue *v) {
     v->m_type = -1;
@@ -805,9 +872,23 @@ INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6760);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6768);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6770);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6778);
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024BB58);
+extern "C" void func_0024BB58(CValue *v, f32 f)
+{
+    switch (v->m_type) {
+    case 0: v->u.i = (s32)f; break;
+    case 1: default: v->u.f = f; v->m_type = 1; break;
+    case 2: { char *p = v->u.s; sprintf(p, D_002E6678, f); } break;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024BC00);
+extern "C" void func_0024BC00(CValue *v, const char *s)
+{
+    switch (v->m_type) {
+    case 0: v->u.i = atoi(s); break;
+    case 1: v->u.f = func_002890E8(s); break;
+    case 2: default: v->m_type = 2; { char *p = v->u.s; strcpy(p, s); } break;
+    }
+}
 
 extern "C" s32 func_0024BC88(CValue *v) {
     switch (v->m_type) {
@@ -865,7 +946,20 @@ extern "C" void func_0024BE38(CValue *d, CValue *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024BF80);
+extern "C" s32 func_0024BF80(CValue *v, CValue *o)
+{
+    switch (v->m_type) {
+    case 0: return v->u.i - func_0024BC88(o);
+    case 1: {
+        f32 f = func_0024BD00(o);
+        if (v->u.f < f) return -1;
+        if (f < v->u.f) return 1;
+        return 0;
+    }
+    case 2: return strcmp(v->u.s, func_0024BD78(o));
+    default: return 0;
+    }
+}
 
 extern "C" s32 func_0024C048(CValue *d, CValue *s, CExpr *e) {
     d->u.i = func_0024D868(e, d->u.i, func_0024BC88(s));
@@ -1189,14 +1283,71 @@ extern "C" s32 func_0024D288(const char **tbl, const char *s) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D2F8);
+extern "C" s32 func_0024D2F8(const char *s)
+{
+    if (!*s) return 0;
+    while (*s) {
+        if ((u8)*s < '0' || (u8)*s > '9') return 0;
+        s++;
+    }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D340);
+extern "C" s32 func_0024D340(CExpr *e, const char *name, CValue *val)
+{
+    if (!e->m_obj || !e->m_get) return 0;
+    return (e->m_obj->*e->m_get)(name, val);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D3D0);
+extern "C" s32 func_0024D3D0(CExpr *e, const char *name, CValue *val)
+{
+    if (!e->m_obj || !e->m_set) return 0;
+    return (e->m_obj->*e->m_set)(name, val);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6780);
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D460);
+extern "C" s32 func_0024D460(CExpr *e, CValue *v, const char **pp) {
+    char tok[0x100];
+    s32 k;
+    *pp = Func24A840(*pp, tok, (const char *)D_002B9E60, D_002E6780, 0x100);
+    k = func_0024D288(D_002B9E60, tok);
+    if (k >= 0) {
+        switch (k) {
+        case 0x12:
+            if (!func_0024D6A0(e, v, pp, 0)) return 0;
+            if (**pp != ')') {
+                func_0024D948(e, "back brace error");
+                return 0;
+            }
+            (*pp)++;
+            break;
+        case 0xD:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F78[v->m_type](v, v, e)) return 0;
+            break;
+        case 0xE:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F84[v->m_type](v, v, e)) return 0;
+            break;
+        case 0xF:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F6C[v->m_type](v, v, e)) return 0;
+            break;
+        case 0x13:
+            func_0024D948(e, "brace error");
+            return 0;
+        default:
+            func_0024D948(e, "unknown symbol '%s'", tok);
+            return 0;
+        }
+    } else if (func_0024D2F8(tok)) {
+        func_0024BAF0(v, atoi(tok));
+    } else if (!func_0024D3D0(e, tok, v)) {
+        func_0024D948(e, "unknown '%s'", tok);
+        return 0;
+    }
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6800);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D6A0);
@@ -1270,7 +1421,46 @@ s32 CExpr::Func24DB98(int isrc, const char *delim, int cont) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024DC40);
+asm(".p2align 3");
+extern "C" s32 func_0024DC40(CExpr *e, const char *s) {
+    CValue val;
+    char name[0x100];
+    char op[0x100];
+    char rhs[0x100];
+    const char *p;
+    s32 i, kind;
+
+    func_0024BAE0(&val);
+    p = s;
+    p = Func24A840(p, name, 0, D_002E6780, 0x100);
+    p = Func24A840(p, op, (const char *)D_002BA028, D_002E6780, 0x100);
+    p = Func24A570(p, rhs, ",", D_002E6780);
+    p = rhs;
+    if (!func_0024D6A0(e, &val, &p, 0)) return 0;
+    for (i = 0; D_002BA028[i] && strcmp(D_002BA028[i], op); i++)
+        ;
+    if (!D_002BA028[i]) {
+        func_0024D948(e, "*** unknown assignment symbol '%s'\n", op);
+        return 0;
+    }
+    kind = D_002BA048[i];
+    if (kind == 3) goto s1;
+    if (kind < 0) goto s2;
+    {
+        CValue cur;
+        func_0024BAE0(&cur);
+        if (!func_0024D3D0(e, name, &cur)) return 0;
+        if (!D_002B9EB8[kind][cur.m_type](&cur, &val, e)) return 0;
+    }
+s1:
+    if (!func_0024D340(e, name, &val)) return 0;
+    goto ok;
+s2:
+    if (!func_0024D340(e, name, &val)) return 0;
+ok:
+    return 1;
+
+}
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6848);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6870);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6878);

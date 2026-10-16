@@ -344,7 +344,13 @@ extern "C" u64 func_0023F1B0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F1C0);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F458);
+extern "C" void *func_0023F458(s32 n)
+{
+    void *p = D_002B91A4(n);
+    if (p == 0) return 0;
+    memset(p, 0, n);
+    return p;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5908);
 INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5930);

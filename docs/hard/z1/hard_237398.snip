@@ -1,0 +1,10 @@
+//@func 0x237398
+
+extern "C" void func_00237398(s32 n, u32 *src)
+{
+    u8 **pp = &D_002B94E4;
+    u32 *d = (u32 *)*pp;
+    s32 i;
+    for (i = n; i > 0; i--) *d++ = *src++;
+    *pp += n * 4;
+}

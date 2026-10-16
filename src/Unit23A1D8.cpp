@@ -134,7 +134,19 @@ extern "C" u64 func_0023AA40(s32 i) {
     return D_382E10[i].m0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023AA80);
+
+extern "C" void func_0023AA80(s32 i, u64 h)
+{
+    if (i < 0) return;
+    i = D_380E10[i];
+    if (i < 0) return;
+    func_001F1190();
+    if (D_382E10[i].m0 != h) {
+        func_0023E088(func_0023DB28(D_382E10[i].m0, -1));
+        D_382E10[i].m0 = func_0023DB28(h, 1);
+    }
+    return func_001F11C8();
+}
 
 extern "C" void func_0023AB48(s32 i, s32 v) {
     if (i >= 0) {
@@ -157,7 +169,28 @@ extern "C" char *func_0023ABC8(s32 i) {
     return D_382E10[i].name;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023AC10);
+extern const u8 D_002EAE79[];
+
+extern "C" void func_0023AC10(char *dst, const char *s, s32 n)
+{
+    char *d = dst;
+    s32 i = 0;
+    s32 c;
+    if (n > 0) {
+        c = *s;
+        goto test;
+    loop:
+        if (D_002EAE79[c] & 1) c += 0x20;
+        *d++ = c;
+        if (++i >= n) goto end;
+        c = *s;
+    test:
+        s++;
+        if (c) goto loop;
+    }
+end:
+    *d = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023AC68);
 
@@ -200,7 +233,14 @@ INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023B948);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BA10);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BC28);
+extern "C" s32 func_0023BC28(s32 k, s32 n)
+{
+    s32 i;
+    func_001F1190();
+    for (i = 0; i < n - 1 && k != -1; i++) k = D_382E18[k];
+    func_001F11C8();
+    return k;
+}
 
 extern "C" u64 func_0023BCB8(s32 i, s32 f) {
     s32 k;
@@ -248,7 +288,18 @@ extern "C" u64 func_0023BFC8(s32 n, u32 *x) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023C048);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023C0F8);
+
+extern "C" void func_0023C0F8(u64 a, s32 n, u32 *src)
+{
+    u32 buf[516];
+    s32 i;
+    u32 *b;
+    if (!src) return;
+    asm("" : "=r"(b) : "0"(buf));
+    for (i = 511; i >= 0; i--) b[i] = 0;
+    func_0023C048(n, b, src);
+    func_0023A0F8(a, 0, 0, 0x10, (n + 31) / 32 * 2, b);
+}
 
 extern "C" s32 func_0023C198(s32 r, s32 g, s32 b, s32 a) {
     s32 v;

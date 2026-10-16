@@ -1,0 +1,11 @@
+//@func 0x227FD8
+static inline u64 GetQ(PEnt *e) { PEnt *f = e; return f->lo | (u64)e->hi << 32; }
+static inline u64 GetQ2(PEnt *e) { return e->lo | (u64)e->hi << 32; }
+
+extern "C" u64 func_00227FD8(PTbl *p, s32 i)
+{
+    s32 o = i * 12 + 0x10;
+    PEnt *e = (PEnt *)((u8 *)p + o);
+    PEnt *f = e;
+    return f->lo | (u64)e->hi << 32;
+}

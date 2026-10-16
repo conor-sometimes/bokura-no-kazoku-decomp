@@ -462,7 +462,16 @@ INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FDB8);
 
 extern "C" void func_0022FE80(s32 a, s32 b) { if (a == -1) a = func_00234938(); FsOps *f = func_00230460(a); if (f) ((FsFn1)f->f[7])(b); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FED0);
+typedef s32 (*FsFnR)(void);
+
+extern "C" s32 func_0022FED0(s32 a)
+{
+    FsOps *f;
+    if (a == -1) a = func_00234938();
+    f = func_00230460(a);
+    if (!f) return 0;
+    return ((FsFnR)f->f[8])();
+}
 
 extern "C" s32 func_0022FF18(void *a, void *b) { return ((Fn22FF2)func_00232F38())(a, b); }
 

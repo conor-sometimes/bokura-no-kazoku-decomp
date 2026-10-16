@@ -1,0 +1,150 @@
+//@decl
+int Func235DE0(const char *fmt, ...) throw();
+extern char D_002E7828[], D_002E7840[];
+extern "C" s32 func_00209F50(s32 x, s32 y, s32 z, s32 a, s32 b, s32 c);
+extern "C" s32 func_0020A098(s32 x, s32 y, s32 z, s32 a, s32 b, s32 c);
+extern "C" s32 func_0020A310(s32 i);
+// state.h's machine with this unit's copies of its literals.
+struct CSndSm {
+    u16 m_flags;              // 0x00
+    u16 m_depth;              // 0x02
+    s32 m_state;              // 0x04
+    s32 m_stack[16];          // 0x08
+    void Check(s32 v, const char *file, s32 line) {
+        if (!((u32)v < 16)) Func235DE0(D_002E7840, m_depth, file, line);
+    }
+    void Push(s32 n = 1) {
+        Check(m_depth + n, D_002E7828, 68);
+        m_depth += n;
+    }
+    void Pop(s32 n = 1) {
+        Check(m_depth - n, D_002E7828, 70);
+        m_depth = (s16)m_depth - n;
+    }
+    s32 &Var(s32 k = 0) {
+        s32 *p;
+        Check(m_depth - k, D_002E7828, 72);
+        p = m_stack;
+        return p[m_depth - k];
+    }
+    s32 Get(s32 k = 0) {
+        Check(m_depth - k, D_002E7828, 76);
+        return m_stack[m_depth - k];
+    }
+};
+inline void SndSetVar(CSndSm *sm, s32 k, s32 v) { sm->Var(k) = v; }
+inline f32 SndGetF(CSndSm *sm, s32 k) { s32 v = sm->Get(k); return *(f32 *)&v; }
+inline void SndInc(CSndSm *sm) { SndSetVar(sm, 0, sm->Get(0) + 1); }
+class CSndUnitBase {
+public:
+    u8 pad0[0xC];
+    virtual ~CSndUnitBase();      // vptr 0xC
+};
+// A sound unit as its update sees it (vtable at 0xC; slot 0 is the deleting destructor).
+class CSndUnitU : public CSndUnitBase {
+public:
+    u8 pad10[0xC];
+    u8 m1C;                   // 0x1C
+    s8 m1D;                   // 0x1D
+    u8 pad1E;
+    s8 m1F;                   // 0x1F
+    u8 m20;                   // 0x20
+    u8 pad21[0x2B];
+    s16 m4C;                  // 0x4C
+    s16 m4E;                  // 0x4E
+    u8 pad50;
+    u8 m51;                   // 0x51
+    u8 pad52[2];
+    s32 m54;                  // 0x54
+    s32 m_num;                // 0x58
+    s32 m_h[2];               // 0x5C
+    s32 m64;                  // 0x64
+    CSndSm m_sm;              // 0x68
+    s32 mB0;                  // 0xB0
+    s32 mB4;                  // 0xB4
+    s32 mB8;                  // 0xB8
+};
+inline s32 SndNumCh(CSndUnitU *u) { return (u->m54 & 4) ? 2 : 1; }
+//@func 0x25E590
+// CSndUnitTg's update: start the voices, follow them, fade out over m4E frames, then delete itself.
+extern "C" void func_0025E590(CSndUnitU *u, const CSndPrm *prm) {
+    CSndSm *sm = &u->m_sm;
+    s32 i;
+    s32 done;
+    if (u->m1D && !u->m64) {
+        sm->m_depth = 0;
+        sm->m_flags = 0;
+        sm->m_state = 0;
+        u->m64 = 1;
+    }
+    done = 0;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_state) {
+    case -1:
+    start:
+        Func25E3B0((CSndUnitH *)u, 0);
+        for (i = 0; i < SndNumCh(u); i++) {
+            if (u->m54 & 0x1000000) {
+                if ((u->m_h[i] = func_0020A098(u->mB0, u->mB4, u->mB8, 0x80, 0x80, 1)) < 0) goto stop;
+            } else {
+                if ((u->m_h[i] = func_00209F50(u->mB0, u->mB4, u->mB8, 0x80, 0x80, 1)) < 0) goto stop;
+            }
+            u->m_num++;
+        }
+        u->m1C = 1;
+        do {
+    case -0xD9:
+        u->m20 = (func_0020A310(u->m_h[0]) >> 1) & 1;
+        if (func_0020A310(u->m_h[0]) & 4) {
+            u->m51 = 1;
+            if (u->m54 & 1) goto start;
+            if (!(u->m54 & 8)) goto stop;
+        }
+        func_0025E438((u8 *)u, prm);
+        sm->m_state = -0xD9; done = 1; goto loop;
+        } while (0);
+    case 0:
+    stop:
+        if (u->m_num >= 0 && u->m4E > 0) {
+            sm->Push(4);
+            SndSetVar(sm, 1, u->m4E);
+            SndSetVar(sm, 0, 0);
+            {
+                f32 o = 1.0f;
+                SndSetVar(sm, 2, *(s32 *)&o);
+            }
+            {
+                f32 z = 0.0f;
+                SndSetVar(sm, 3, *(s32 *)&z);
+            }
+            for (; sm->Get(0) < sm->Get(1); SndInc(sm)) {
+                s32 v3, a2, b3, c2;
+                if (sm->Get(1) == 1) {
+                    v3 = sm->Get(3);
+                    u->m4C = (s32)(*(f32 *)&v3 * 128.0f);
+                } else {
+                    f32 a, b, c;
+                    a2 = sm->Get(2);
+                    a = *(f32 *)&a2;
+                    b3 = sm->Get(3);
+                    b = *(f32 *)&b3;
+                    c2 = sm->Get(2);
+                    c = *(f32 *)&c2;
+                    u->m4C = (s32)((a + (b - c) * (f32)sm->Get(0) / (f32)(sm->Get(1) - 1)) * 128.0f);
+                }
+                u->m1C = 1;
+                func_0025E438((u8 *)u, prm);
+                sm->m_state = -0xEB; done = 1; goto loop;
+    case -0xEB:;
+            }
+            sm->Pop(4);
+        }
+        if (u->m_num >= 0 && u->m1D && u->m1F) Func25E3B0((CSndUnitH *)u, 1);
+        delete u;
+    }
+}

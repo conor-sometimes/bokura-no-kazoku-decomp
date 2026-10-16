@@ -1172,3 +1172,192 @@ end:;
 - `bk port` prints `ported 1 into ...`: check for it. When the snippet's standalone compile fails (a
   callee defined only in the unit, not declared in the snippet) port silently does nothing and mk.sh
   still says OK.
+- **CMenuMgr's McSys machine (0x1B7EF8)**, the things that mattered: (1) `Func235DE0` called with its
+  real `int` return (`McPrint` asm alias): a void call leaves `$2` free, so constants stored right
+  after it move from `$3` to `$2` and the shared error tail stops cross-jumping; (2) waits as
+  `while (f(1, &res)) { yield; case L:; }` (the kept yield copy sits before the last test, which is
+  reached by a `b`); (3) the END states as `sm->m_state = X; case X: done = 1; goto loop;` with the
+  inner `switch (request)`'s default jumping to a `case -0x208: e208: done = 1; goto loop;` placed right
+  after that switch (elsewhere `done` lost `$4` or the range check became `beqzl`); (4) the inner switch
+  written as `case n: goto rn;` with the request code after it, since a case label inside the inner
+  switch belongs to it, not to the state switch. Its jump table comes from our object: drop the
+  `jtbl` INCLUDE_RODATA and move the INCLUDE_RODATA lines after it below the function. *(bokura)*
+
+- **Early `return 0` exits and cross-jumping** (CEventObj 0x13D6D8, 0x13C2D0): retail's
+  `if (!x) return 0;` exits branch to the *first* `return 0` block in the function (a Log path, case
+  0), ours to a later copy that jump2 kept. Writing those exits as `goto ret0;` with `ret0:` on the first
+  `return 0` copies retail where that copy is not itself cross-jumped away (0x13D6D8: DIFF 71 to 35).
+  jump2 runs after sched2 in this compiler (`-dR` is .25, `-dJ` .27), so cross-jumping sees scheduled
+  insns. *(bokura)*
+- **`while ((f & 0x60) ? (f &= ~0x60, 0) : --n >= 0) { yield; case L:; }`** gives retail's two copies
+  of a countdown wait's test (jump copies a `while` exit test to the entry when it has no label in it)
+  with one shared clear block (CEventObj 0x137DC8). *(bokura)*
+- **Push(4) fade frames that read their floats back** (`s32 v = Get(k); f32 f = *(f32 *)&v;`, sound
+  unit 0x25E590): retail reloads `m_depth` after each temp store, ours CSE/PREs it: the stack temp
+  cannot alias the machine (an argument-based pointer) for our alias analysis. Not solved; it is the
+  remaining wall of CLogoMain/CTitleMain/CEndingMain-style fades too. *(bokura)*
+- `tools/bk` side helpers used in this lane (scratch, not committed): an aligned diff of `ushow.py`
+  output that normalizes `li`/`move`/`%lo` spellings and drops branch targets made the near-miss
+  hunting much faster than the raw `!!` lines; worth turning into a `ushow.py --align` mode.
+
+### Finds
+- **McSys debug overlay** (CMenuMgr): the memory-card request machine 0x1B7EF8 prints a progress
+  line for every request ("Get Card Infomation" [sic], format, save, load, user-data checks) and
+  CMenuMgr::DebugPrint1B85D8 (0x1B85D8) draws the card state (working flag, info type, free blocks) on
+  screen; developer tracing left in retail.
+- **A scripting language with a print command**: CSvmWork::Func131720 (0x131720) is the event
+  script's expression evaluator, a stack machine over tagged int/float/string values with an operator
+  table indexed by [opcode][type] (D_002A0A2C); event command 3 in 0x13C2D0 writes a script-supplied
+  string to the event log, and command 1's frame wait goes through SkipTime (event fast-forward).
+- **Inconsistent error text**: CMenuReviewResult::Update (0x190160) has "***Can't Get %s Window" for
+  its first window and "*** Can't Get %s Window" for the second, two copies of the same message.
+- **Self-deleting sounds**: the CSndUnitTg/Seq/Str updates (0x25E590 ...) fade out over m4E frames and
+  then `delete this` from inside their own update.
+## lb (structural blockers, 2026-10-16)
+- **A function-static (or file-static) const table comes after the object's RTTI names**: CMiniGame4Res's
+  func_001D5550 table (0x2E15C8) and CMenuInputKanji's kana/romaji tables follow "13CMiniGame4Res" /
+  "15CMenuInputKanji". unit_literals.py reports such a function as "uses the next unit's literals"; check
+  what the literal is before moving code: a table used only by the previous unit's code means the next
+  piece starts after it (rocheck then names the true boundary: CMiniGame5Res's own table starts at
+  0x2E1630). An object's RTTI names also include its bases' (11CStatusBase ends CChrBodyWin's). *(bokura)*
+- **Merging two .cpp files that saw one class differently**: keep each side's codegen with a view class
+  whose methods are asm-labelled to the real symbols (`class CCommandBaseV { int RowOf(int) asm("RowOf__12CCommandBasei"); }`),
+  an asm-labelled alias for a callee declared with another return type (`void CbPrint(...) asm("Func235DE0__FPCce")`),
+  and real member classes with ctors/dtors where one side built the object (CAlbumMgr: ~CAlbumMgr's
+  explicit `Dtor(p, 2)` calls become the implicit member destructors and still match). A tiny script
+  (scratch dedupe.py) dropped duplicate class definitions whose members were a subset of the other's. *(bokura)*
+- **splat only emits a global label for a function start inside another function when another unit
+  calls it**: after CCommandSelect's tail moved into CCommandIncDec, func_001995F0 (inside func_00199500)
+  lost its label and the C caller failed to link; naming it in symbol_addrs.txt splits it out. *(bokura)*
+- **cc1plus 2.96 -O2 can ICE on a merged unit that compiles fine in two halves** (CStatusBase.cpp +
+  CStatusWin.cpp: segfault in a function that only reads `m_item->m_unk34`; no -fno-* flag avoided it,
+  -O1 did). Keep two units cut at the literal boundary instead. *(bokura)*
+- **libgcc's exception.cc was built with -fexceptions** (its own unit Lib287920): the compiler then calls
+  __eh_alloc, __throw, __rethrow(label in .gcc_except_table), __cp_push_exception, __start_cp_handler by
+  name (aliases.ld), and the object's .gcc_except_table is the retail table byte for byte (yaml piece with
+  `linker_section: .gcc_except_table`). Still 4 words off (HARD ## lb). *(bokura)*
+- **A void sibcall that retail did not make**: `f(); asm(""); break;` keeps `jal` + shared epilogue where
+  2.96 would turn the last call of a switch case into `j f` (CStatusItem 0x1A1AA0/0x1A1B38, as other lanes
+  found for C; main had matched these two meanwhile). A ternary `return c ? a : f()` gave retail's `c.le.s`/`bc1t` where every if/else form gave
+  `c.lt.s`/`bc1f` (0x297D20). *(bokura)*
+## z1 (overnight grind 2026-10-16: game units, C-style units)
+- VU vector loads (VU_VEC) in the CMapEffObjRes draws: the pointer goes through `register void *r asm("$2")` (0x124888, 0x126C48); 0x117668 (CCharaObj) still differs.
+- Inlined ~CList / ~TList: `l->vptr = CList_vt; while (Remove(First(l))); l->vptr = CListTag_vt; unlink(l)` with `Remove(t) { if (t) {unlink} return t; }` (y1's helper) gives retail's top-tested drain loop with `bnez e`; CEventMesMgr::Remove(0) is `while (EvRemove(EvFirst(&m_head)));`.
+- Inlined TList ctor: `vptr; isHead = 1; prev = l; next = l;` (prev before next in the source gives retail's next-then-prev stores).
+- Destructors with the vtable still in asm need no #pragma interface when written as `extern "C" void func_X(T *p, s32 flags)` with the vptr store, asm-labelled member dtors (`asm("_$_8CSvmWork")`) and `if (flags & 1) return (void)::operator delete(p);` (or CTask::operator delete). Six matched first try (0x169128, 0x12C4F0, 0x19D0A8, 0x13F390, 0x1327F8, 0x1E95C0).
+- Do not declare `extern "C" void __builtin_delete(void *)` in a unit: cc1plus segfaulted on a later function (CUserFlagMgr); use `::operator delete(p)`.
+- Store-order rule again: a run of stores comes out [first, last, second, third...] or [last, first, second...] depending on context; for CEvWait's 5-field reset the source m8, m14, m18, m10, mC gave retail's two different orders.
+- A jump table at a 16-byte boundary in the object moves the unit's .rodata start: CTexCacheMgr's piece starts at 0x1D3040, not 0x1D3038 (the 8 zero bytes are CEFontWork's padding).
+- `__asm__("");` after a final debug print keeps retail's `jal` + epilogue instead of a sibcall (0x10D360's default case).
+- lq/sq copies: an `unsigned int __attribute__((mode(TI)))` member assignment, sources non-const externs (const ones get hoisted out of the loop).
+- Loop givs whose base is the list header (retail `daddu $4, list`): address the element as `(Item *)((u8 *)h + i * size)` with the header inside the item struct's first bytes (0x1EAE70, 0x1EAF10).
+- Float literal 1/36: `0.027777777f` assembles to retail's 0x3CE38E38 (0.027777778f gives ...39).
+- `*(s16 *)p &= ~1` gives retail's `and` with a -2 register (u16 gives andi 0xFFFE) (0x1EB0C0).
+- Early return is a lever in the C-style units: retail's `daddu $3,$2` copy of a returned pointer (or of the argument, `daddu $5,$4`) with the result built in $2 comes from `if (!p) return K; return p->m;` / `if ((u32)i >= 2) return 0; return D[i].m0;` (0x212D40, 0x213238, 0x215270, 0x2155F8, 0x215628, 0x21BCC0); ternaries and result variables put p in $2 and the result in $3. `(u8)(x & 1) && (x & 2)` reproduces the `andi 1; andi 0xFF` test.
+- CEventObj's queue writers/readers and CMiniGame6's ring: one ring-buffer class {alloc fn, free fn, buf, wr, rd, size, num} (CEventObj's CEvWait members are the same class). Writers: `if (m_size - m_num < n) {print; return 0;}` then a pre-tested `while (done < n)` copy with `c = m_size - pos; if (n - done < c) c = n - done;`, then `w = (m_wr + n) % m_size; m_num = m_num - n... ; m_wr = w;`. Readers cap the other way (`c = n - done; if (m_size - pos <= c) c = m_size - pos;`) and skip a null destination. Value pushes take the parameter's own address (`Push(&v, 4)`, the param gets a stack home); a float result through `f32 r; *(s32 *)&r = v;` with r declared first (stack slot order follows declaration order). (0x133140..0x134768)
+- Success-path goto: `if (e->m0 & 1) goto ok; if (dbg() & 1) print(fmt, i); return 0; ok: return e->m4;` gives retail's `bnel cond, epilogue` with the result load in the slot; `if (cond) return e->m4;` puts the return in the fall-through (0x2087E8..0x209058).
+- Level-2 units: a function's string literals are written out when the *next* function is compiled, so an INCLUDE_RODATA right after the function lands before them; put it after the following function (Unit20CBF0 "DI error\n", an unreferenced literal kept with rodata_syms force_not_migration).
+- VU0 `vcallms` as `asm volatile("vcallms %0" : : "i"(0x30))` (immediate operand), not a literal string: the operand form lets the scheduler put the call-argument moves before it and changes the parameter register allocation (0x2042C0 matched only this way).
+- **Copy of a parameter (`daddu $8, $4, $0` at entry)**: write a local alias, `Blk *t = l;`, use
+  it for the accesses and pass the original to the call (0x23E720, 0x23E788; also gives the copy in
+  0x23E620/0x23E690). Retail's copy shows the parameter and the alias were separate variables.
+- **Loop entered at its test with no invariant hoisting** (`b test` with the load in the slot, the
+  `lui` of a table recomputed inside the loop): build the loop from labels and gotos
+  (`c = *s; goto test; loop: ...; c = *s; test: s++; if (c) goto loop;`); `for`/`while` get the
+  exit test duplicated and the table base hoisted (0x23AC10, also the shape of 0x23E620).
+- **u64 functions that `jal` a u64 callee and return its value**: `u64 r = 0; if (e) { if (bit)
+  return other(); if (e->m18 < 0) return 0; r = f(e->m18); } return r;` gives retail's
+  "preset $2 = 0, jal, fall into the epilogue" while the other call stays a sibcall (0x240D68,
+  0x240DF0).
+- `if (p == 0) return 0; memset(p, 0, n); return p;` and `if (p) memset(p, 0, n); return p;` give
+  different register assignments for p; the first is retail's for the alloc+clear helpers (0x23F458).
+- The simplest loop is worth a try before clever ones: 0x23BC28 (HARD: "n copied then decremented")
+  matched as `for (i = 0; i < n - 1 && k != -1; i++) k = D_382E18[k];`.
+- Float temporaries' registers follow declaration order: `bk perm` over the four `f32 a = x * y;`
+  lines fixed 0x243AB8's $f20-$f24 assignment (MATCH from DIFF 10).
+- `while (1) { ...; if (n <= 0 || i >= 2) break; }` instead of `do { } while (n > 0 && i < 2)`
+  removes the rotated duplicate test (0x244EE8).
+- In C units, an `extern "C"` callee that is INCLUDE_ASM'd *earlier in the same .cpp* was nothrow in
+  retail too: `throw()` on its declaration fixed 0x23F8E0's bnez/bnezl (tools/bk/ntprobe.py must run
+  inside bokura-env: `.bokura-env/bin/bokura-env -c "python3 -I tools/bk/ntprobe.py SNIP ADDR"`).
+- A "rest of unit differs" line from `bk utest` (seen at 0x23AF30 after 0x23BC28) was a false alarm:
+  mk.sh matched with the function ported by hand. `bk port` refuses on that line, so check with
+  mk.sh before giving up.
+- `bk perm` compiles the function alone with only the snippet's declarations: a snippet that relies
+  on the unit's types or a `volatile` global from the unit scores 1000000 for every order. Put the
+  needed declarations in the snippet (they must agree with the unit's, volatile included), or permute
+  with whole-unit utests.
+
+- **An inlined helper can change loop-invariant motion**: 0x22BC70/0x22BDF0 matched only with the
+  heap `Unlink(h, n)` inline written out by hand (the inline version hoisted `&h->m14` out of the
+  search loop and lost retail's `daddu $6,$4` heap copy); its two `n->m8 = 0; n->m4 = 0;` stores come
+  out reversed as usual.
+- **A copy of a returned pointer before `beqz`, then `jalr`**: the function returns the callback's
+  value: `o = get(id); if (!o) return 0; return o->fn(a);` (0x22FED0, 0x22DB68, 0x22DBB8). A call
+  through a pointer in tail position stays a `jalr`.
+- **`jal` + return where GCC would sibcall**: `r = f(x); asm(""); return r;` (0x228EA0; also a
+  `s64` return type works, the mode mismatch blocks the sibcall).
+- **A stack buffer's address kept in a callee-saved register from the prologue** (`daddu $17,$29`):
+  `asm("" : "=r"(b) : "0"(buf));` and use b; the frame size then tells the real buffer size
+  (0x23C0F8 needed `u32 buf[516]` for retail's 0x830 frame).
+- **Pointer walks with separate count-down counters**: `for (c = tbl, i = 63; i >= 0; i--, c++)`
+  and an explicit `e++` next to an up-counting `i` reproduce loops where retail keeps both the
+  counter and the pointer (0x22D9F0, 0x232840); give each loop its own counter variable.
+- **GNU as lui bug, again both ways**: matching 0x228EA0 broke 0x228658 (a `lui` assembled as `sw`);
+  removing the existing `asm(".p2align 3")` before 0x228618 fixed it.
+- `bk port` refuses when the standalone `bk test` differs even if `bk utest` and mk.sh match
+  (0x22BC70); port such a function by hand and trust mk.sh.
+
+### Finds
+- **On-screen debug console** (Unit236130): a 75-column by 26-row text buffer at 0x379BF4 written by
+  the putc 0x236E48 (newline and column 75 wrap via 0x236DB0) and drawn with an 8x8 1bpp font by
+  0x236BC8; 0x2365C8 is an exception handler that dumps the CPU registers to it. A crash screen the
+  retail build still carries.
+- **Debug text printer** 0x243AB8 / printf wrapper 0x243CF0 (Unit243AB8): lays out glyphs with the
+  font's advance widths and handles newlines; developer overlay text.
+- **"ready" print in the sound stream feeder** 0x244EE8: once the first buffers are queued it calls
+  the debug printf with "ready\n" (a leftover trace).
+- **Allocator diagnostics carry source line numbers**: the heap first-fit/last-fit searches
+  0x22BC70/0x22BDF0 print a corruption warning with the constants 0x88D / 0x8A7 (lines 2189 and
+  2215 of the allocator's source file) when a free block is larger than the heap's limit, with the block and heap counters;
+  a flag makes it print only the first time.
+## dl (Dk*/Lib* retry, 2026-10-16)
+- **`bnel v0, ret; li v0, 1` after a call is a `return 1` reached by a jump**: the CExpr parser's
+  `if (!f()) return 0; return 1;` turned into `sltu` (store-flag) in every spelling, but with the
+  success paths written as `break` / `goto ok` to one final `return 1;` at the end of the function,
+  reorg steals the end block's `li v0,1` into a likely delay slot and the `return 0` path reuses the
+  call's zero in v0 (0x24D460, 0x24DC40). The copy that falls straight into the final `return 1`
+  keeps the `beqz v0, ret; li v0,1` shape, which is why retail had two different-looking copies. *(bokura)*
+- **Hoisted loop invariants come out in the order the loop first uses them**: a hoisted `li 3`
+  landing between `lui`/`ori` pairs moved after them once the masked value got its own temp,
+  assigned between the two statements that use the other constants (`addr = data & 0x0FFFFFFF;`
+  between `n = ...` and `size -= n`, 0x2683F8). *(bokura)*
+- **`while (*(s = f(s, buf)) && buf[0]) { if (!strcmp(buf, key)) return s; } return s;`** gave the
+  jump-to-test layout with the call in the test; `break`, `for (;;)` and do-while spellings all came
+  out as a top-tested loop with no entry jump (0x24AF10). *(bokura)*
+- **CValue switches** (`switch (m_type)`): the case whose code doubles as the default is `case 1:
+  default:` (or `case 2: default:`), cases written in retail's block order, and a final `sprintf`
+  that must stay `jal` is called through a block-scoped pointer copy (`{ char *p = v->u.s;
+  sprintf(p, ...); } break;`) (0x24BB58/0x24BC00/0x24BF80). *(bokura)*
+- **PMF hooks**: `if (!e->m_obj || !e->m_get) return 0;` (one `||`) gave the `bnez index; nop; b ret`
+  layout that two separate ifs did not (0x24D340/0x24D3D0). *(bokura)*
+
+## rep (objdiff progress report, 2026-10-16)
+
+- **A byte-matching build makes progress a function of the tree.** With the ELF's SHA-1 checked on
+  every build, "written in C" is "matched", so the objdiff-format report for bytematch.dev comes from
+  the yaml, `config/functions.txt` and the INCLUDE_ASM lines (tools/bk/progress_report.py) and CI
+  never needs the game (after lombyte-project/Lombyte). It agrees with tools/bk/progress.py to the
+  byte (828,500 of 1,700,400, 6,327 / 7,223 functions) and, function by function, with a real objdiff
+  run on target/base objects (`make objdiff`).
+- **The SKIP_ASM base build is not quite the real layout.** Dropping the INCLUDE_ASM'd functions
+  (sly1-decomp's way to make objdiff count them unmatched) moves the C functions, and GNU as 2.10's
+  lui bug depends on alignment: 3 matched functions (0x1863F0, 0x2810A8, 0x1EF700) show 93-99.9% in
+  base. Keeping the asm in place without its labels fails instead: asm tail branches to other
+  functions' labels (`b func_X`) need the label in the same section (BFD_RELOC_16_PCREL_S2 errors).
+  `bk utest` stays the authoritative in-unit test.
+- **`build/SCPS_150.88` is the rebuilt ELF (a file)**, so nothing can live under
+  `build/SCPS_150.88/`: reports go to `build/progress/` and `build/objdiff/`.
+- **objdiff counts linkonce code twice over**: the units' objects carry 88 weak `__tf*` typeinfo
+  functions (`.gnu.linkonce.t`), counted per object by objdiff; the tree report counts each function
+  once, at its linked address in `config/functions.txt`.

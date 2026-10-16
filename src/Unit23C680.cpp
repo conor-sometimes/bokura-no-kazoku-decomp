@@ -399,13 +399,38 @@ INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023E620);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023E690);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023E720);
+
+extern "C" void func_0023E720(Blk *l, s32 i)
+{
+    Blk *t = l;
+    if (i < 0) return;
+    i++;
+    t[i].next = -1;
+    return func_0023E438(l, i, t[i].size);
+}
 
 extern "C" s32 func_0023E768(Blk *l, s32 i) {
     if (i < 0) return 0;
     return l[i + 1].size;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023E788);
+
+extern "C" s32 func_0023E788(Blk *l, s32 i, s32 n)
+{
+    Blk *t = l;
+    s32 s;
+    if (i < 0) return -1;
+    if (n <= 0) return i;
+    i++;
+    s = t[i].size;
+    if (s < n) n = s;
+    s -= n;
+    t[i].size = n;
+    i += n;
+    if (s <= 0) return -1;
+    t[i].size = s;
+    t[i].next = 0;
+    return i - 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023E7E8);

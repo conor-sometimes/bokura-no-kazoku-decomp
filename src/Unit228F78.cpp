@@ -826,9 +826,75 @@ extern "C" void func_0022BBF8(HL *h, NL *n) {
     h->m14--;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022BC70);
+extern "C" Blk *func_0022BC70(Heap *hp, s32 size)
+{
+    HL *h = (HL *)hp;
+    NL *n;
+    for (n = h->m4; n; n = n->m8) {
+        BL *b = (BL *)((u8 *)n->m0 - 0x10);
+        u32 sz = b->m8 - 0x10;
+        if (sz < (u32)size) continue;
+        if (h->m2C < sz) {
+            if (!D_002B8C44) {
+                u32 a = func_0022A7D8();
+                s32 c = func_002293D0();
+                Func235DE0(D_002E4478, 0x88D, b, D_002B8C40->m10, D_002B8C40->mC, a, D_002B8C40->m14, c);
+            }
+            D_002B8C44 = 1;
+            return 0;
+        }
+        {
+            NL *p;
+            if ((p = n->m4)) p->m8 = n->m8;
+            if ((p = n->m8)) p->m4 = n->m4;
+            if (h->m4 == n) h->m4 = n->m8;
+            if (h->m4) h->m4->m4 = 0;
+            if (h->m8 == n) h->m8 = n->m4;
+            if (h->m8) h->m8->m8 = 0;
+            n->m8 = 0;
+            n->m4 = 0;
+            h->m14--;
+        }
+        b->mC &= 0xAFFFFFFF;
+        return (Blk *)b;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022BDF0);
+extern "C" Bk *func_0022BDF0(Heap *hp, s32 size)
+{
+    HL *h = (HL *)hp;
+    NL *n;
+    for (n = h->m8; n; n = n->m4) {
+        BL *b = (BL *)((u8 *)n->m0 - 0x10);
+        u32 sz = b->m8 - 0x10;
+        if (sz < (u32)size) continue;
+        if (h->m2C < sz) {
+            if (!D_002B8C44) {
+                u32 a = func_0022A7D8();
+                s32 c = func_002293D0();
+                Func235DE0(D_002E4478, 0x8A7, b, D_002B8C40->m10, D_002B8C40->mC, a, D_002B8C40->m14, c);
+            }
+            D_002B8C44 = 1;
+            return 0;
+        }
+        {
+            NL *p;
+            if ((p = n->m4)) p->m8 = n->m8;
+            if ((p = n->m8)) p->m4 = n->m4;
+            if (h->m4 == n) h->m4 = n->m8;
+            if (h->m4) h->m4->m4 = 0;
+            if (h->m8 == n) h->m8 = n->m4;
+            if (h->m8) h->m8->m8 = 0;
+            n->m8 = 0;
+            n->m4 = 0;
+            h->m14--;
+        }
+        b->mC = (b->mC & 0xEFFFFFFF) | 0x40000000;
+        return (Bk *)b;
+    }
+    return 0;
+}
 
 extern "C" Nd *func_0022BF70(HeapX *hh) {
     HL *h = (HL *)hh;

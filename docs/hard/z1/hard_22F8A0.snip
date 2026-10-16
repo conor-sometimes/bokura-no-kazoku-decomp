@@ -1,0 +1,19 @@
+//@func 0x22F8A0
+
+extern "C" void func_0022F8A0(FEnt *f, s32 a, s32 b)
+{
+    FEnt *g = f;
+    u32 st = DisableIntr();
+    DL *n = D_3401E0.m4E08;
+    if (n) {
+        DL *h = &g->mB4;
+        D_3401E0.m4E08 = n->m4;
+        n->m8 = a;
+        n->mC = b;
+        n->m4 = h;
+        n->m0 = h->m0;
+        n->m0->m4 = n;
+        n->m4->m0 = n;
+    }
+    RestoreIntr(st);
+}

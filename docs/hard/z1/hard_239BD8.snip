@@ -1,0 +1,25 @@
+//@func 0x239BD8
+
+extern "C" void func_00239BD8(u64 *p)
+{
+    DmaTag buf[16];
+    DmaTag *b, *old, *t;
+    u64 v;
+    s32 n;
+    u32 *q;
+    asm("" : "=r"(b) : "0"(buf));
+    v = *p;
+    old = func_002390A0();
+    func_00239088(b);
+    func_002375C0();
+    n = (s32)(v & 0x7FFF) + 1;
+    func_00237350(0xC);
+    q = (u32 *)D_002B94E4;
+    *q = n | 0x50000000;
+    D_002B94E4 = (u8 *)(q + 1);
+    func_00237860(n, (u32)p);
+    t = func_002377D8();
+    func_00239088(old);
+    func_002393A0(1, (u32)t);
+    func_00239698(1, 0);
+}

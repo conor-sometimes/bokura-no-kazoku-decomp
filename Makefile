@@ -1,6 +1,7 @@
 # Round-trip build of SCPS_150.88 from assembly.
 #   ./setup.sh path/to/bokura.iso   (once; inside bokura-env)
 #   make                            (split if needed, assemble, link, rebuild ELF, check SHA-1)
+#   make objdiff                    (optional: objdiff.json + target/base objects for the objdiff GUI, and its report)
 # Run inside bokura-env: .bokura-env/bin/bokura-env -c make
 
 TARGET   := SCPS_150.88
@@ -68,7 +69,7 @@ CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
 
-.PHONY: all split check clean distclean
+.PHONY: all split check objdiff clean distclean
 all: check
 
 # splat writes asm/, assets/ and the linker script; re-run it when the yaml or symbols change.
@@ -129,6 +130,17 @@ build/$(TARGET).img: build/$(TARGET).elf
 
 build/$(TARGET): build/$(TARGET).img scripts/mkelf.py
 	python3 -I scripts/mkelf.py $< $@
+
+# Optional: objdiff on real objects (the GUI, or a measured report). target = the build's own objects,
+# base = the same compiles without the INCLUDE_ASM'd functions (-DSKIP_ASM, tools/bk/objdiff.py).
+# The published progress report needs no build: tools/bk/progress_report.py (tools/bk/README.md).
+REPORT := build/objdiff/report.json
+objdiff: check
+	scripts/fetch_objdiff.sh
+	python3 -I tools/bk/objdiff.py
+	@mkdir -p $(dir $(REPORT))
+	tools/objdiff/objdiff-cli report generate -o $(REPORT)
+	@python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1]))["measures"]; print("report: %s, matched code %.2f%% (%s of %s bytes), %s of %s functions" % (sys.argv[1], m.get("matched_code_percent",0), m.get("matched_code","0"), m.get("total_code","0"), m.get("matched_functions",0), m.get("total_functions",0)))' $(REPORT)
 
 clean:
 	rm -rf build

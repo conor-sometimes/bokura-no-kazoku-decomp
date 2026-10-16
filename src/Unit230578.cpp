@@ -726,7 +726,37 @@ INCLUDE_RODATA("asm/nonmatchings/Unit230578", D_002E4A00);
 INCLUDE_RODATA("asm/nonmatchings/Unit230578", D_002E4A28);
 INCLUDE_RODATA("asm/nonmatchings/Unit230578", D_002E4A48);
 INCLUDE_RODATA("asm/nonmatchings/Unit230578", D_002E4A68);
-INCLUDE_ASM("asm/nonmatchings/Unit230578", func_00232840);
+
+extern "C" void func_00232840(void)
+{
+    s32 i;
+    D_3574C0.m0 = 0;
+    FsEnt *e = D_3574C0.e;
+    for (i = 0; i < 4; i++, e++) {
+        e->m0 = -1;
+        e->m4[0] = D_002E49F8[0];
+        {
+            FsSub *s = e->sub;
+            s32 j;
+            for (j = 1; j >= 0; j--) {
+                s->m0[0] = D_002E49F8[0];
+                s->m880 = 0x7FF;
+                s->m884[0] = D_002E49F8[0];
+                s++;
+            }
+        }
+    }
+    {
+        FsSlot *t = D_3574C0.m4;
+        s32 k;
+        for (k = 1; k >= 0; k--) {
+            t->m0 = 0;
+            t->m4 = (void *)func_002300B8;
+            t->m8 = (void *)func_00230018;
+            t++;
+        }
+    }
+}
 
 extern "C" void func_002328E8(void) {
 }

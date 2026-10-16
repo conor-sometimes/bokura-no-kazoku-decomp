@@ -1,0 +1,19 @@
+//@func 0x23E690
+
+extern "C" s32 func_0023E690(Blk *l, s32 n)
+{
+    Blk *t = l;
+    s32 p = 0;
+    Blk *b;
+    if (t[0].next == -1) return -1;
+    b = &t[t[0].next];
+    goto test;
+loop:
+    p = t[p].next;
+    if (t[p].next == -1) return -1;
+    b = &t[t[p].next];
+test:
+    if (b->size < n) goto loop;
+    if (t[p].next == -1) return -1;
+    return func_0023E510(t, p, n);
+}

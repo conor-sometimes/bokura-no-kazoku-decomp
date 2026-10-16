@@ -1,0 +1,11 @@
+//@func 0x23E7E8
+
+extern "C" s32 func_0023E7E8(void)
+{
+    s32 *pv = &D_002B9CD0;
+    D_002B9CD8++;
+    if (func_0026E888()->m0 == 1) *pv = (*(volatile u64 *)0x12001000 >> 13) & 1;
+    else *pv = 1;
+    asm volatile("sync\n\tei");
+    return 0;
+}

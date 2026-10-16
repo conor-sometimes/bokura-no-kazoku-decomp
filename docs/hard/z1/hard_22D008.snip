@@ -1,0 +1,12 @@
+//@func 0x22D008
+
+s32 Func22D008(s32 id)
+{
+    s32 p = id & 0xFF, s = (id >> 8) & 0xFF;
+    s32 port = p, slot = s;
+    if (p < 0) port = 0;
+    else if (p >= 2) port = 1;
+    if (s < 0) slot = 0;
+    else if (s >= 4) slot = 3;
+    return D_33FE90[port][slot].m4;
+}

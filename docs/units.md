@@ -212,11 +212,15 @@ calls, other virtual functions) can be written in any unit now.
   Lib286B20 (tinfo C++ out of Lib285F80), Lib287F98 (C fp-bit helpers), Lib288388.
 - **Key methods no longer need level 3**: `#pragma interface` at the top of the unit (lanes g5/y1)
   keeps the vtables in asm; ~25 key methods were matched that way here.
-- Still to convert: the CStatusBase literals live in CStatusWin's piece (merge CStatusBase.cpp into
-  CStatusWin.cpp; CCommandSelect.cpp's tail likewise belongs to CCommandIncDec), CPhotoEventObj
-  with IAlbumMgr, CMapResObj with IMapResMgr, CCharaResObj with ICharaResMgr, CEnvResObj with
-  IEnvResMgr, CFadeMgr with IFadeMgr, CInterfRes with IInterfMgr, CCommandIncDec with CStatusBase's
-  vtable; CEventObj's tail belongs to CEventMesRes (sm's functions there); CChrBodyWin's tail to
-  CMenuChildStatus, CMenuRecord's to CCommandBase, CMenuInputKanji's to CMenuSysscr32,
-  CMenuTutorSelected's to CMenuExam, CMenuAsksavequit's to CMenuRecord, CMiniGame4Res's last
-  function to CMiniGame5Res (scripts/unit_literals.py).
+- Converted by lane lb (2026-10-16): the six interface pairs are merged and at level 2 (CFadeMgr,
+  CCharaResObj, CMapResObj, CEnvResObj, CInterfRes with one CInterfMgr class, CPhotoEventObj with one
+  CAlbumMgr class); the tails moved: CCommandSelect.cpp's (0x198C70-) into CCommandIncDec.cpp (level 2),
+  CMenuRecord.cpp's (0x196938-) into CCommandBase.cpp, CMenuAsksavequit.cpp's (0x1932B8-) into
+  CMenuRecord.cpp, CMenuTutorSelected.cpp's (0x182070-) into CMenuExam.cpp, CChrBodyWin.cpp's (0x187610-)
+  into CMenuChildStatus.cpp, CMenuInputKanji.cpp's (0x1A7038-) into CMenuSysscr32.cpp. Pieces re-cut
+  without moving code (data after an object's RTTI names that only its own code uses): CMiniGame4Res
+  keeps func_001D5550's const table (CMiniGame5Res from 0x2E1630), CMenuInputKanji keeps the kana and
+  romaji tables and 15IMenuInputKanji (CMenuSysscr32 from 0x2DF0B8), CChrBodyWin ends with 11CStatusBase
+  (CMenuChildStatus from 0x2DB038). CStatusBase has its own .rodata (0x2DDA38-0x2DDDE8) and vtable pieces
+  rather than being merged into CStatusWin.cpp: the merged file crashes cc1plus -O2 (ICE in
+  CStatusWinV::V5; each half compiles alone). Left: CEventObj's tail belongs to CEventMesRes (sm's).

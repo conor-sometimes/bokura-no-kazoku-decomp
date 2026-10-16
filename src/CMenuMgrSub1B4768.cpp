@@ -596,6 +596,23 @@ extern const char D_002E05C0[], D_002E05D0[], D_002E05D8[], D_002E05E0[], D_002E
 struct CMenuEnt20 { u8 pad0[0x14]; };
 struct CMenuTbl1B4E70 { u8 pad0[0x14]; CMenuEnt20 *m_ents; u8 pad18[0x4]; s32 m_num; };
 extern char D_002E07A8[], D_002E07D8[];
+
+#include "state.h"
+extern "C" int func_001ED830(s32 a, s32 *res);
+extern "C" void func_001ED908(s32 port);
+extern "C" void func_001EEB10(void *p);
+extern "C" void func_001EEA80(void *fn, s32 a, s32 b, s32 c, s32 d);
+extern "C" void func_001EED28();
+extern "C" void func_001EED88(char *path, s32 a);
+extern "C" void func_001EEDE8(char *path, s32 a, s32 b);
+void *Func245D00(s32 size);
+int CallFunc1B76D0(void *p);
+int CallFunc1B7910();
+extern char D_002E0800[], D_002E0820[], D_002E0840[], D_002E0860[], D_002E0888[], D_002E08A0[];
+extern char D_002E08B0[], D_002E08D0[], D_002E08E0[], D_002E0900[], D_002E0910[], D_002E0928[];
+extern char D_002E0950[], D_002E0980[], D_002E06E0[];
+// Func235DE0 with its real int return (the void declaration above changes register choice after calls).
+extern "C" int McPrint(const char *fmt, ...) throw() asm("Func235DE0__FPCce");
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002DFF50);
@@ -681,8 +698,6 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E0910);
 INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E0928);
 INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E0950);
 INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E0980);
-INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", jtbl_002E09A0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E09C0);
 
 CMenuMgrSub1B4768 *CMenuMgrSub1B4768::Create() {
     CMenuMgrSub1B4768 *p = (CMenuMgrSub1B4768 *)operator new(0x60);
@@ -1377,7 +1392,211 @@ int CUnk2A55B0::Start1B7E70(s32 a, s32 b) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgrSub1B4768", func_001B7EF8);
+// GNU as 2.10 assembles the jump-table lui as a lw without this (docs/lessons.md).
+asm(".p2align 3");
+// The memory card system's request machine (McSys); returns whether it is still working.
+extern "C" int func_001B7EF8(CUnk2A55B0 *p) {
+    CStateMachine *sm = (CStateMachine *)p;
+    s32 res = 0;
+    char buf[0x100];
+    s32 done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        switch (p->m_unk50) {
+        case 0: goto r0;
+        case 1: goto r1;
+        case 2: goto r2;
+        case 3: goto r3;
+        case 4: goto r4;
+        case 5: goto r5;
+        case 6: goto r6;
+        default:
+            McPrint(D_002E0800, p->m_unk50);
+            sm->m_state = -0x208;
+            goto e208;
+        }
+    case -0x208:
+    e208:
+        done = 1; goto loop;
+    r0:
+        for (;;) {
+            sm->m_state = -0x210; done = 1; goto loop;
+    case -0x210:;
+        }
+    r1:
+        McPrint(D_002E0820);
+        func_001ED908(p->m_unk5C);
+        func_001EEB10(p->m_unk60);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x21F; done = 1; goto loop;
+    case -0x21F:;
+        }
+        p->m_unk4C = 0;
+        p->m_unk48 = 0;
+        sm->m_state = -0x226;
+    case -0x226:
+        done = 1; goto loop;
+    r2:
+        func_001ED908(p->m_unk5C);
+        func_001EEB10(p->m_unk60);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x233; done = 1; goto loop;
+    case -0x233:;
+        }
+        p->m_unk4C = 0;
+        if (*(s32 *)p->m_unk60 != 2) {
+            p->m_unk58 = 0;
+            p->m_unk48 = -2;
+        } else {
+            p->m_unk48 = 0;
+        }
+        sm->m_state = -0x242;
+    case -0x242:
+        done = 1; goto loop;
+    r3:
+        McPrint(D_002E0840);
+        if (!(p->m_unk274 = Func245D00(0x3C4))) {
+            McPrint(D_002E0860, 0x3C4);
+            p->m_unk48 = -1;
+            D_002A55AC->Init1B6DA8();
+            p->m_unk58 = 0;
+            goto free;
+        }
+        if (!(p->m_unk278 = Func245D00(p->m_unk6C))) {
+            McPrint(D_002E0860, p->m_unk6C);
+            p->m_unk48 = -1;
+            D_002A55AC->Init1B6DA8();
+            p->m_unk58 = 0;
+            goto free;
+        }
+        McPrint(D_002E0888);
+        func_001ED908(p->m_unk5C);
+        func_001EEA80((void *)CallFunc1B7910, 0, 0, 0, 0);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x262; done = 1; goto loop;
+    case -0x262:;
+        }
+        if (res == -0xC8) {
+            p->m_unk58 = 0;
+            p->m_unk48 = -2;
+        } else {
+            p->m_unk48 = 0;
+        }
+    free:
+        p->m_unk4C = 0;
+        if (p->m_unk274) {
+            D_002B91B0(p->m_unk274);
+            p->m_unk274 = 0;
+        }
+        if (p->m_unk278) {
+            D_002B91B0(p->m_unk278);
+            p->m_unk278 = 0;
+        }
+        sm->m_state = -0x27D;
+    case -0x27D:
+        done = 1; goto loop;
+    r4:
+        McPrint(D_002E08A0);
+        func_001ED908(p->m_unk5C);
+        func_001EED28();
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x28A; done = 1; goto loop;
+    case -0x28A:;
+        }
+        p->m_unk4C = 0;
+        if (res == 0) {
+            p->m_unk48 = 0;
+        } else {
+            p->m_unk58 = 0;
+            p->m_unk48 = -1;
+        }
+        McPrint(D_002E08B0, res);
+        sm->m_state = -0x29A;
+    case -0x29A:
+        done = 1; goto loop;
+    r5:
+        McPrint(D_002E08D0);
+        func_001ED908(p->m_unk5C);
+        func_001EEA80((void *)CallFunc1B76D0, p->m_unk54, 0, 0, 0);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x2A7; done = 1; goto loop;
+    case -0x2A7:;
+        }
+        if (res >= 0) {
+            p->m_unk48 = 0;
+        } else {
+            p->m_unk58 = 0;
+            p->m_unk48 = -1;
+        }
+        McPrint(D_002E08E0, res);
+        p->m_unk4C = 0;
+        sm->m_state = -0x2B9;
+    case -0x2B9:
+        done = 1; goto loop;
+    r6:
+        McPrint(D_002E0900);
+        sprintf(buf, D_002E0668, p->m_unk54);
+        sprintf((char *)p->pad74, D_002E06E0, p->m_unk174, buf);
+        func_001ED908(p->m_unk5C);
+        func_001EED88((char *)p->pad74, 1);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x2C8; done = 1; goto loop;
+    case -0x2C8:;
+        }
+        if (res == -0xC8) {
+            McPrint(D_002E0910, -0xC8);
+            p->m_unk48 = -2;
+            p->m_unk58 = 0;
+            goto fin;
+        }
+        if (res < 0 || res != D_002A55AC->m_unk8 * 3) {
+            McPrint(D_002E0928, res);
+            p->m_unk48 = -1;
+            p->m_unk58 = 0;
+            goto fin;
+        }
+        p->m_unk27C = D_002A55AC->GetUnkC(p->m_unk54);
+        func_001ED908(p->m_unk5C);
+        func_001EEDE8((char *)p->pad74, p->m_unk27C, 1);
+        while (func_001ED830(1, &res)) {
+            sm->m_state = -0x2DF; done = 1; goto loop;
+    case -0x2DF:;
+        }
+        if (res == -0xC8) {
+            McPrint(D_002E0910, -0xC8);
+            p->m_unk48 = -2;
+            p->m_unk58 = 0;
+            goto fin;
+        }
+        if (res < 0) {
+            McPrint(D_002E0950, p->m_unk54, res);
+            p->m_unk48 = -1;
+            p->m_unk58 = 0;
+        } else {
+            p->m_unk48 = 0;
+            p->m_unk27C = 0;
+        }
+    fin:
+        p->m_unk4C = 0;
+        McPrint(D_002E0980, p->m_unk48);
+        sm->m_state = -0x2F8;
+    case -0x2F8:
+        done = 1; goto loop;
+    case -0x212:
+        done = 1; goto loop;
+    }
+out:
+    return p->m_unk4C;
+}
+
+// The switch table (jtbl_002E09A0) comes from the function above.
+INCLUDE_RODATA("asm/nonmatchings/CMenuMgrSub1B4768", D_002E09C0);
 
 s32 CUnk2A55B0::Size1B8500() {
     s32 total = (m_unk6C + 0x3FF) / 0x400 + 1;

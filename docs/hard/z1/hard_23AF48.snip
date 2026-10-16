@@ -1,0 +1,13 @@
+//@func 0x23AF48
+// needs D_37CDE8 = 0x0037CDE8; in config/aliases.ld (removed again)
+extern LNode D_37CDE8[];
+
+extern "C" s32 func_0023AF48(void)
+{
+    s32 k = D_37CDE8[D_386E24].b;
+    if (D_37CDE0[k].b != -1) return k;
+    k = func_0023E690(D_382E20, 1);
+    if (k < 0) return -1;
+    k += 8;
+    return k;
+}

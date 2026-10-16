@@ -1,0 +1,145 @@
+//@decl
+extern char D_002D5428[], D_002D5448[];
+extern void (*D_002A0A2C[][3])(CValue *a, CValue *b, CSvmWork *w);
+// state.h's machine over CSvmWork::m_unk5A4, with this unit's copies of its literals.
+struct CSvSm {
+    u16 m_flags;              // 0x00
+    u16 m_depth;              // 0x02
+    s32 m_state;              // 0x04
+    s32 m_stack[16];          // 0x08
+    void Check(s32 v, const char *file, s32 line) {
+        if (!((u32)v < 16)) Func235DE0(D_002D5448, m_depth, file, line);
+    }
+    void Push(s32 n = 1) {
+        Check(m_depth + n, D_002D5428, 68);
+        m_depth += n;
+    }
+    void Pop(s32 n = 1) {
+        Check(m_depth - n, D_002D5428, 70);
+        m_depth = (s16)m_depth - n;
+    }
+    s32 &Var(s32 k = 0) {
+        s32 *p;
+        Check(m_depth - k, D_002D5428, 72);
+        p = m_stack;
+        return p[m_depth - k];
+    }
+    s32 Get(s32 k = 0) {
+        Check(m_depth - k, D_002D5428, 76);
+        return m_stack[m_depth - k];
+    }
+};
+inline void SvSetVar(CSvSm *sm, s32 k, s32 v) { sm->Var(k) = v; }
+//@func 0x131720
+// Evaluates one expression of the script (a stack machine over CValues); 0 when done.
+int CSvmWork::Func131720() {
+    CSvSm *sm = (CSvSm *)&m_unk5A4;
+    CValue a;
+    CValue b;
+    s32 slot;
+    s32 done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        sm->Push();
+        SvSetVar(sm, 0, -0x51A);
+        goto sub;
+    case -0x51A:
+        if (!IsVarZero(1)) Pop12EC18(1, &m_unk5F4);
+        return 0;
+    sub:
+        if (*(u8 *)m_unk5A0 == 0x20) {
+            a.Reset();
+            Push12EB68(1, &a);
+        }
+    next:
+        m_unk5EC = ReadVarInt12EED0((u8 **)&m_unk5A0);
+        if (m_unk5EC == 0x20) {
+            sm->m_state = sm->Get();
+            sm->Pop();
+            goto loop;
+        }
+        m_unk5F0 = 0;
+        switch (m_unk5EC) {
+        case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B: case 0x2C: case 0x2D:
+        case 0x2E: case 0x2F: case 0x30: case 0x31: case 0x32: case 0x33: case 0x34:
+        case 0x38:
+            Pop12EC18(1, &b);
+            Pop12EC18(1, &a);
+            if (m_unk290C != 1 && b.m_type == 0) b.m_value *= m_unk290C;
+            if (m_unk2910 == -1 && b.m_type == 0) b.m_value = -b.m_value;
+            D_002A0A2C[m_unk5EC][a.m_type](&a, &b, this);
+            Push12EB68(1, &a);
+            goto next;
+        case 0x35: case 0x36: case 0x37:
+            Pop12EC18(1, &a);
+            D_002A0A2C[m_unk5EC][a.m_type](&a, &a, this);
+            Push12EB68(1, &a);
+            goto next;
+        case 0x40:
+            a.m_type = 0;
+            a.m_value = ReadVarInt12EED0((u8 **)&m_unk5A0);
+            Push12EB68(1, &a);
+            goto next;
+        case 0x41:
+            a.m_type = 1;
+            a.m_value = ReadVarInt12EED0((u8 **)&m_unk5A0);
+            Push12EB68(1, &a);
+            goto next;
+        case 0x42:
+            a.m_type = 2;
+            ReadStr12EF08((u8 **)&m_unk5A0, a.m_u.s, 0x100);
+            Push12EB68(1, &a);
+            goto next;
+        case 0x52:
+            LoadSlot(ReadVarInt12EED0((u8 **)&m_unk5A0), &a);
+            goto push;
+        }
+        if (m_unk5EC == 0x51) {
+            CallFunc12E9D8(1, ReadVarInt12EED0((u8 **)&m_unk5A0));
+            sm->Push();
+            SvSetVar(sm, 0, -0x5A4);
+            goto sub;
+    case -0x5A4:
+            Pop12EC18(1, &a);
+            CallFunc12EA98(1, (s32)&slot);
+            StoreSlot(slot, &a);
+        push:
+            Push12EB68(1, &a);
+            goto next;
+        }
+        if (m_unk5EC == 0x50) {
+            Save12FE60();
+            m_unk6FC = ReadVarInt12EED0((u8 **)&m_unk5A0);
+            m_numSlots = ReadVarInt12EED0((u8 **)&m_unk5A0);
+            for (m_unk700 = 0; m_unk700 < m_numSlots; m_unk700++) {
+                m_unk708[m_unk700] = m_unk5A0;
+                m_slots[m_unk700].Reset();
+                sm->Push();
+                SvSetVar(sm, 0, -0x5BE);
+                goto sub;
+    case -0x5BE:
+                Pop12EC18(1, &m_slots[m_unk700]);
+            }
+            m_result.Reset();
+            m_unk6F8 = 1;
+            while (Callback130048(m_unk6FC, m_unk6F8)) {
+                m_unk6F8 = 0;
+                sm->m_state = -0x5CB; done = 1; goto loop;
+    case -0x5CB:;
+            }
+            Restore12FF48();
+            Push12EB68(1, &m_result);
+            goto next;
+        }
+        Fatal("svm : *** unknown calc code (%d)\n", m_unk5EC);
+        return 0;
+    }
+out:
+    return 1;
+}

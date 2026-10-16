@@ -1,0 +1,167 @@
+//@decl
+extern void *D_002A0CE0;
+extern "C" CEventItem *SceneFindB(CSceneSet *s, int i) asm("FindB__9CSceneSeti");
+// The message window (D_002A3568 seen through its message slots).
+class CEvMsg {
+public:
+    s32 m0;
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8();
+    virtual void V9(char *s);
+    virtual void V10(s32 a, char *s, s32 b, s32 c, s32 d);
+    virtual void V11(char *s, s32 n);
+    virtual void V12();
+    virtual void V13(s32 n);
+    virtual int V14();
+    virtual int V15();
+    virtual void V16();
+    virtual int V17();
+    virtual void V18();
+    virtual void V19();
+    virtual void V20();
+    virtual void V21();
+    virtual void V22();
+    virtual void V23();
+    virtual void V24();
+    virtual void V25(s32 a, char *s, s32 b);
+    virtual void V26();
+    virtual void V27();
+    virtual int V28();
+};
+#define MSG ((CEvMsg *)D_002A3568)
+#define YIELD(st) { sm->m_state = st; done = 1; goto loop; }
+//@func 0x137DC8
+// Message window commands 0x48-0x4F of the event script.
+extern "C" int func_00137DC8(CEventObj *p, CSvmWork *w) {
+    CStateMachine *sm;
+    char buf[0x200];
+    s32 done;
+    if (!D_002A0CE0 || !D_002A3568) return 0;
+    done = 0;
+    sm = (CStateMachine *)((u8 *)p + 0xF804);
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0x48:
+    case -0x26:
+        do {
+            if (MSG->V14()) YIELD(-0x26);
+            w->SlotGetStr(0, buf, 0x100, D_002D5920);
+            w->SlotAsInt(1, 0);
+            p->Call132F40(3, (int)buf, 0);
+            MSG->V9(buf);
+        } while (0);
+        return 0;
+    case 0x4E:
+    case -0x3F:
+        do {
+            if (MSG->V14()) YIELD(-0x3F);
+            w->SlotGetStr(0, buf, 0x100, D_002D5920);
+            MSG->V11(buf, w->SlotAsInt(1, 0x96));
+        } while (0);
+    case -0x4F:
+        do {
+            if (MSG->V14()) YIELD(-0x4F);
+        } while (0);
+        return 0;
+    case 0x49:
+    case -0x5D:
+        do {
+            s32 id, b, c, d, s;
+            if (MSG->V14()) YIELD(-0x5D);
+            s = 0;
+            id = w->SlotAsInt(0, 0);
+            w->SlotGetStr(1, buf, 0x100, D_002D5920);
+            b = w->SlotAsInt(2, 0x78);
+            c = w->SlotAsInt(3, 0x72);
+            d = w->SlotAsInt(4, 0);
+            if (p->m8) {
+                CEventItem *e = SceneFindB(p->m8, id);
+                if (e) s = e->m24;
+            }
+            p->Call132F40(3, (int)buf, 0);
+            MSG->V10(s, buf, b, c, d);
+        } while (0);
+    case -0x81:
+        do {
+            if (!MSG->V15()) YIELD(-0x81);
+        } while (0);
+        return 0;
+    case 0x4A:
+    case -0x8F:
+        do {
+            if (!MSG->V15()) YIELD(-0x8F);
+            p->m_FB4C[0] = w->SlotAsInt(0, 0x96);
+        } while (0);
+        while ((p->m_FC60 & 0x60) ? (p->m_FC60 &= ~0x60, 0) : --p->m_FB4C[0] >= 0) {
+            YIELD(-0xA0);
+    case -0xA0:;
+        }
+        return 0;
+    case 0x4C:
+        if (p->m_FC20) return 0;
+        p->m_FB4C[0] = w->SlotAsInt(0, 0);
+        p->m_FB4C[0] = p->SkipTime(15, 30, p->m_FB4C[0]);
+        MSG->V13(p->m_FB4C[0]);
+        if (p->m_FB4C[0]) {
+            while ((p->m_FC60 & 0x60) ? (p->m_FC60 &= ~0x60, 0) : --p->m_FB4C[0] >= 0) {
+                YIELD(-0xC7);
+    case -0xC7:;
+            }
+            return 0;
+        }
+        do {
+    case -0xD4:
+            if (!(p->m_FC60 & 0x60)) YIELD(-0xD4);
+            p->m_FC60 &= ~0x60;
+        } while (0);
+        return 0;
+    case 0x4B:
+    case -0xE4:
+        do {
+            if (!MSG->V15()) YIELD(-0xE4);
+    case -0xEB:
+            if (MSG->V14()) YIELD(-0xEB);
+            if (!MSG->V17()) return 0;
+            p->m_FC20 = 1;
+        } while (0);
+        return 0;
+    case 0x4D:
+    case -0x100:
+        do {
+            if (!MSG->V15()) YIELD(-0x100);
+            MSG->V12();
+        } while (0);
+        return 0;
+    case 0x4F: {
+        s32 a, b;
+        a = w->SlotAsInt(0, 0);
+        w->SlotGetStr(1, buf, 0x100, D_002D5920);
+        b = w->SlotAsInt(2, 0);
+        MSG->V25(a, buf, b);
+        sm->m_state = -0x11D;
+        done = 1;
+        goto loop;
+    }
+    case -0x11D:
+    case -0x121:
+        if (MSG->V28()) YIELD(-0x121);
+        YIELD(-0x124);
+    case -0x124:
+        return 0;
+    }
+    return 0;
+r1:
+    return 1;
+}

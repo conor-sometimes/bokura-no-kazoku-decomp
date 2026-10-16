@@ -332,7 +332,27 @@ extern "C" s32 func_0022D9D8(void) {
     return func_0022DB50();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22BFD0", func_0022D9F0);
+
+
+extern "C" s32 func_0022D9F0(void)
+{
+    s32 i, j;
+    FEnt *f = D_3401E0.f;
+    L18 *c;
+    M10 *d;
+    L10 *b;
+    for (j = 63; j >= 0; j--) { f->m4 = 0; f++; }
+    D_3401E0.m3E04 = 0;
+    for (c = D_3401E0.m3804, i = 63; i >= 0; i--, c++) { c->m0 = D_3401E0.m3E04; D_3401E0.m3E04 = c; }
+    D_3401E0.m4E08 = 0;
+    for (d = D_3401E0.m3E08, i = 255; i >= 0; i--, d++) { d->m4 = D_3401E0.m4E08; D_3401E0.m4E08 = d; }
+    D_3401E0.m3800 = 0;
+    for (b = D_3401E0.m3400, i = 63; i >= 0; i--, b++) { b->m0 = D_3401E0.m3800; D_3401E0.m3800 = b; }
+    func_00230400();
+    func_002331B8();
+    func_00232840();
+    return func_001F10C8((void *)func_0022D9D8);
+}
 
 extern "C" s32 func_0022DAE0(void) {
     s32 i;
@@ -353,9 +373,21 @@ extern "C" s32 func_0022DB50(void) {
     return func_002328F0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22BFD0", func_0022DB68);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22BFD0", func_0022DBB8);
+extern "C" s32 func_0022DB68(s32 id, s32 a, s32 b)
+{
+    DevOps *o = func_00230460(id);
+    if (!o) return 0;
+    return o->m8(a, b);
+}
+
+
+extern "C" s32 func_0022DBB8(s32 id, s32 a)
+{
+    DevOps *o = func_00230460(id);
+    if (!o) return 0;
+    return o->m4(a);
+}
 
 extern "C" s32 func_0022DBF8(void) {
     return func_00232958();
