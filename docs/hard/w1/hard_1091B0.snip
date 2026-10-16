@@ -1,0 +1,2 @@
+//@func 0x1091B0
+s32 CFlagWork::Func1091B0(s32 id) { s32 v; CFlagDef *d; if (id < 0) return 0; if (m_numDefs - 1 < id) return 0; d = &m_defs[id]; if ((d->m_type & 0xF) == 0) goto ok; return 0; ok: memcpy(&v, m_data + d->m_off, d->m_size); v = (v << ((4 - d->m_size) * 8)) >> ((4 - d->m_size) * 8); return v; }

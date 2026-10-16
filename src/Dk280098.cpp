@@ -11,9 +11,9 @@ extern "C" s32 func_00280170(void) { return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280178);
 
-extern "C" double fmod(double x, double y) { return func_00280290(x, y); }
+extern "C" double fmod(double a, double b) { return func_00280290(a, b); }
 
-extern "C" double func_00280278(double x) { return func_002806B0(x); }
+extern "C" double func_00280278(double a) { return func_002806B0(a); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00280290);
 

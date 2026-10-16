@@ -42,6 +42,16 @@ extern char _vt$8ISysFlag[];
 void _$_9CFlagWork(void *, s32);
 extern char _vt$8ICurFlag[];
 }
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void UFM_Func13F488(void *, s32) asm("Func13F488__12CUserFlagMgri");
+extern "C" s32 UFM_SingleBit(void *, u32, s32) asm("SingleBit__12CUserFlagMgrUii");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" s32 FW_Func1091B0(void *, s32) asm("Func1091B0__9CFlagWorki");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" s32 Func1456A8__Fi(s32);
 // @decl-end
 
 extern "C" f32 func_00298A78(void *p) { return FLD(f32, p, 0x16C); }
@@ -65,11 +75,11 @@ extern "C" void func_00298AE8(VDel_298AE8 *p) { delete p; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298B20);
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298B48);
+extern "C" void func_00298B48(void *p) { UFM_Func13F488(p, 0); }
 
 extern "C" void func_00298B68(void *p) { FLD(s32, p, 0x58DC) = 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298B70);
+extern "C" void func_00298B70(void *p, s32 a) { s32 b = Func1456A8__Fi(a); if (b >= 0) FLD(u32, p, 0x58DC) |= 1 << b; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298BB0);
 
@@ -79,7 +89,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298C20);
 
 INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298CC0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00298D48);
+extern "C" s32 func_00298D48(void *p) { return UFM_SingleBit(p, FLD(u32, p, 0x58DC), 0); }
 
 extern "C" void func_00298D68(void *p, s32 a) { FLD(s32, p, 0x5908) = a; FLD(s32, p, 0x590C) = 1; }
 
@@ -163,11 +173,11 @@ extern "C" TypeInfo *__tf8CCurFlag()
 
 extern "C" void func_00299178(VDel_299178 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_002991B0);
+extern "C" s32 func_002991B0(void *p) { return FW_Func1091B0(p, 0x17) % 4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_002991E8);
+extern "C" s32 func_002991E8(void *p) { return FW_Func1091B0(p, 0x17) / 4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00299218);
+extern "C" s32 func_00299218(void *p) { return FW_Func1091B0(p, 0x17) / 4 + 0x19; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib298A78", func_00299248);
 

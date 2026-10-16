@@ -1,0 +1,4 @@
+//@func 0x241238
+extern "C" s32 func_00241238(s32 font, Glyph18 **out, const u8 *s, s32 len) { FontEnt *f = FontAt(font); if (!f || !f->m38) return 0; Glyph18 *e = (Glyph18 *)f->m38; const u8 *end = s + len; s32 n = f->m30; s32 cnt = 0;
+    while (*s && s != end) { u32 c = *s++; if ((s8)c < 0) c = (c << 8) | *s++; if (out) *out = GlyphGet(e, n, c); out++; cnt++; }
+    return cnt; }

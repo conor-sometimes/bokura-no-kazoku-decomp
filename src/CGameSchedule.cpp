@@ -256,6 +256,8 @@ struct CSchedSortEnt {
     s32 m_state5;             // 0x14
 };
 void SortSchedules15DAB0();
+
+struct SchedPair { s32 m0; s32 m4; };
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159850);
@@ -654,7 +656,17 @@ int Func15F080(int v) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F0D8);
+extern "C" int func_0015F0D8(const void *pa, const void *pb) {
+    const SchedPair *a = (const SchedPair *)pa, *b = (const SchedPair *)pb;
+    if (a->m4 == b->m4) {
+        CResortEntry *ea = D_002A36E8->GetEntryA(a->m0);
+        if (ea) {
+            CResortEntry *eb = D_002A36E8->GetEntryA(b->m0);
+            if (eb) return Func15F080(ea->m_unk4) - Func15F080(eb->m_unk4);
+        }
+    }
+    return a->m4 - b->m4;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F1B0);
 

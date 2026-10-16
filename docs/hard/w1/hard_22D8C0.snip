@@ -1,0 +1,5 @@
+//@decl
+inline PadSt *PadAt(s32 port, s32 slot) { port = port < 0 ? 0 : (port < 2 ? port : 1); slot = slot < 0 ? 0 : (slot < 4 ? slot : 3); return &D_33FE90[port][slot]; }
+inline PadSt *PadAt2(s32 port, s32 slot) { port = port < 0 ? 0 : (port > 1 ? 1 : port); slot = slot < 0 ? 0 : (slot > 3 ? 3 : slot); return &D_33FE90[port][slot]; }
+//@func 0x22D8C0
+extern "C" s32 func_0022D8C0(s32 v) { return PadAt(v & 0xFF, (v >> 8) & 0xFF)->m17; }

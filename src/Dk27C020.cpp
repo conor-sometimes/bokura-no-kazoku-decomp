@@ -60,6 +60,15 @@ extern void func_0027CB00(AlarmEnt *);
 extern unsigned long long func_002828C0(unsigned long long, unsigned long long);
 extern int func_0027D5C8(int, unsigned long long, void *, void *);
 #define ENT(id) ((AlarmEnt *)(((unsigned int)(id) >> 10) << 6))
+
+int func_0027D188(int);
+int func_0027D288(int);
+int func_0027D470(int);
+int func_0027D508(int);
+
+typedef struct FreeEnt { struct FreeEnt *next; int p[3]; } FreeEnt;
+extern FreeEnt D_423B00[64];
+extern FreeEnt *D_423F00;
 // @decl-end
 
 SYSCALL(func_0027C020, 0x74)
@@ -286,21 +295,21 @@ int func_0027D128(int *a, int *b)
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D188);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D238);
+int func_0027D238(int a) { int s = func_0027BD20(); int r = func_0027D188(a); if (s) func_0027BD78(); return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D288);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D350);
+int func_0027D350(int a) { int s = func_0027BD20(); int r = func_0027D288(a); if (s) func_0027BD78(); return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D3A0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D470);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D4B8);
+int func_0027D4B8(int a) { int s = func_0027BD20(); int r = func_0027D470(a); if (s) func_0027BD78(); return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D508);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D578);
+int func_0027D578(int a) { int s = func_0027BD20(); int r = func_0027D508(a); if (s) func_0027BD78(); return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D5C8);
 
@@ -335,7 +344,7 @@ unsigned long long func_0027D8B0(float x)
     return (unsigned long long)(147456000.0f / x);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D8E8);
+int func_0027D8E8(void) { int i; D_423F00 = D_423B00; for (i = 0; i < 64; i++) D_423B00[i].next = &D_423B00[i + 1]; D_423B00[63].next = 0; return 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D938);
 

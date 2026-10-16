@@ -18,10 +18,10 @@ extern "C" s32 func_0022E2C8(s32, s32);
 extern "C" s32 func_0022F6D0(FEnt *);
 extern "C" void func_0022F860(FEnt *, s32, s32);
 extern "C" s32 func_0022F000(FEnt *);
-extern "C" s32 func_0022FB30(FEnt *);
+extern "C" s32 func_0022FB30(FEnt *, s32);
 extern "C" s32 func_0022FBF8(FEnt *);
-extern "C" s32 func_0022FD78(FEnt *);
-extern "C" s32 func_0022FDB8(FEnt *);
+extern "C" void func_0022FD78(FEnt *, s32, s32);
+extern "C" s32 func_0022FDB8(FEnt *, u32 *, u32, s32);
 #define FDOK(fd, f) ((u32)((fd) - 1) < 0x3F && ((f) = &D_3401E0.f[fd])->m4)
 #define CHECK_INTR() do { \
     u32 st_; \
@@ -58,6 +58,57 @@ extern "C" void func_00230928(char *, const char *);
 extern "C" s32 func_00230280(s32, void *(*)(u32));
 extern void *(*D_002B91A4)(u32 n);
 extern void *(*D_002B91A8)(u32 n);
+
+extern "C" void func_00230528(void);
+struct FsOps { void *f[9]; };
+struct S344FF0 { u8 m0[0x24]; FsOps m24; FsOps m48; u8 m6C[4]; };
+extern S344FF0 D_344FF0;
+extern "C" void func_002304A0(S344FF0 *);
+extern "C" void func_00230A48(FsOps *);
+extern "C" char *func_002321F8(void *);
+extern "C" void func_00230AD8(void);
+extern "C" s32 func_00232280(void);
+
+extern "C" s32 func_00232F38(void);
+extern "C" void func_00232F58(void *);
+extern "C" s32 func_00232F88(void);
+extern "C" void func_00232FA8(void *);
+extern "C" s32 func_002300B8(const char *, u8 *);
+extern "C" s32 func_00230018(const char *);
+
+typedef s32 (*Fn22FF)(void *);
+typedef s32 (*Fn22FF2)(void *, void *);
+
+extern "C" s32 func_0022E230(s32, s32, s32);
+extern "C" s32 func_0022DF28(s32, u8 *, u32);
+extern "C" s32 func_0022E0E8(s32, u8 *, s32);
+extern "C" void func_00230530(char *, const char *);
+extern "C" s32 func_00230548(void);
+extern "C" s32 func_00234938(void);
+extern "C" FsOps *func_00230460(s32);
+typedef void (*FsFn0)(void);
+typedef void (*FsFn1)(s32);
+extern "C" void func_00273420(s32);
+extern "C" s32 func_0022DD78(const char *, s32);
+extern "C" void func_0022DDE8(s32);
+extern const char D_002E4850[], D_002E4868[], D_002E4888[];
+extern volatile u32 D_002B8C58;
+extern "C" s32 func_00230550(s32);
+extern "C" s32 func_00230578(void);
+extern "C" s32 func_00230638(void);
+extern "C" s32 func_002306E8(void);
+extern "C" s32 func_00230808(void);
+extern "C" s32 func_00230970(void);
+extern "C" s32 func_00230980(s32);
+
+extern "C" long func_0022DB38(s32);
+extern "C" s32 func_0022DD20(void);
+extern char D_002E48A8[];
+extern "C" s32 func_0022FF58(void *a);
+extern "C" s32 func_0022FF18(void *a, void *b);
+extern void (*D_002B91B0)(void *p);
+extern void *(*D_002B91AC)(void *p, u32 n);
+typedef long (*FnL)(void *);
 // @decl-end
 
 extern "C" void func_0022DE48(s32 fd) {
@@ -210,9 +261,9 @@ extern "C" s32 func_0022E5A8(s32 fd) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022E618);
 
-extern "C" s32 func_0022E770(s32 fd) {
+extern "C" s32 func_0022E770(s32 fd, s32 off) {
     FEnt *f;
-    if (FDOK(fd, f)) return func_0022FB30(f);
+    if (FDOK(fd, f)) return func_0022FB30(f, off);
     return -1;
 }
 
@@ -224,15 +275,15 @@ extern "C" s32 func_0022E7C8(s32 fd) {
     return r;
 }
 
-extern "C" void func_0022E828(s32 fd) {
+extern "C" void func_0022E828(s32 fd, s32 a, s32 b) {
     FEnt *f;
-    if (FDOK(fd, f)) return (void)func_0022FD78(f);
+    if (FDOK(fd, f)) return func_0022FD78(f, a, b);
 }
 
-extern "C" s32 func_0022E880(s32 fd) {
+extern "C" s32 func_0022E880(s32 fd, u32 *out, u32 max, s32 len) {
     FEnt *f;
     s32 r;
-    if (FDOK(fd, f)) r = func_0022FDB8(f);
+    if (FDOK(fd, f)) r = func_0022FDB8(f, out, max, len);
     else r = 0;
     return r;
 }
@@ -348,45 +399,98 @@ INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022F958);
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FA70);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FB30);
+extern "C" s32 func_0022FB30(FEnt *f, s32 off) {
+    u32 st = DisableIntr();
+    s32 r = -1;
+    DL *n = f->mB4.m4;
+    DL *h = &f->mB4;
+    for (; n != h; n = n->m4) { if (off < n->mC) { r = n->m8 + off; break; } off -= n->mC; }
+    RestoreIntr(st);
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FBF8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FD78);
+extern "C" void func_0022FD78(FEnt *f, s32 a, s32 b) { CN *c; for (c = (CN *)f->mC4; c; c = c->m0) if (c->m9 == a) c->m8 = b; }
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FDB8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FE80);
+extern "C" void func_0022FE80(s32 a, s32 b) { if (a == -1) a = func_00234938(); FsOps *f = func_00230460(a); if (f) ((FsFn1)f->f[7])(b); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FED0);
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FF18);
+extern "C" s32 func_0022FF18(void *a, void *b) { return ((Fn22FF2)func_00232F38())(a, b); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FF58);
+extern "C" s32 func_0022FF58(void *a) { return ((Fn22FF)func_00232F88())(a); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FF88);
+extern "C" s32 func_0022FF88(void *a) { s32 r = func_00232F38(); if (!a) a = (void *)func_002300B8; func_00232F58(a); return r; }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022FFD0);
+extern "C" s32 func_0022FFD0(void *a) { s32 r = func_00232F88(); if (!a) a = (void *)func_00230018; func_00232FA8(a); return r; }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230018);
+extern "C" s32 func_00230018(const char *name) {
+    s32 r;
+    if (!name) return -2;
+    r = -2;
+    func_00273420(0);
+    s32 fd = func_0022DD78(name, 1);
+    if (fd != -1) { r = func_0022E230(fd, 0, 2); func_0022DDE8(fd); }
+    if (D_002B8C50) Func235DE0(D_002E4850, name, r);
+    return r;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002300B8);
+extern "C" s32 func_002300B8(const char *name, u8 *buf) {
+    if (!name) return -2;
+    func_00273420(0);
+    s32 r = -2;
+    s32 fd = func_0022DD78(name, 1);
+    if (fd != -1) {
+        r = func_0022E230(fd, 0, 2);
+        func_0022E230(fd, 0, 0);
+        if (func_0022DF28(fd, buf, r) != r) { func_0022DDE8(fd); r = -1; }
+        else { func_0022DDE8(fd); func_00273420(0); }
+    }
+    if (D_002B8C50) Func235DE0(D_002E4868, name, buf, r);
+    return r;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002301B0);
+extern "C" s32 func_002301B0(const char *name, u8 *buf, s32 size) {
+    func_00273420(0);
+    s32 fd = func_0022DD78(name, 0x602);
+    if (fd == -1) size = -1;
+    else if (func_0022E0E8(fd, buf, size) != size) { func_0022DDE8(fd); size = -1; }
+    else func_0022DDE8(fd);
+    if (D_002B8C50) Func235DE0(D_002E4888, name, buf, size);
+    return size;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230280);
+extern "C" s32 func_00230280(s32 name, void *(*alloc)(u32)) {
+    long old = func_0022DB38(0);
+    long size = ((FnL)func_0022FF58)((void *)name);
+    func_0022DB38(old);
+    if (size <= 0) { if (old && D_002B8C50) Func235DE0(D_002E48A8, func_0022DD20()); return 0; }
+    s32 sz = size;
+    void *p = alloc((sz + 0x7FF) & ~0x7FF);
+    if (!p) { if (old && D_002B8C50) Func235DE0(D_002E48A8, func_0022DD20()); return 0; }
+    if (func_0022FF18((void *)name, p) <= 0) { D_002B91B0(p); return 0; }
+    D_002B91AC(p, sz);
+    return (s32)p;
+}
 
 extern "C" s32 func_002303C0(s32 a) { return func_00230280(a, D_002B91A4); }
 
 extern "C" s32 func_002303E0(s32 a) { return func_00230280(a, D_002B91A8); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230400);
+extern "C" char *func_00230400(void) { S344FF0 *p = &D_344FF0; func_002304A0(p); func_00230A48(&p->m24); return func_002321F8(p->m6C); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230438);
+extern "C" s32 func_00230438(void) { func_00230528(); func_00230AD8(); return func_00232280(); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230460);
+extern "C" FsOps *func_00230460(s32 i) { switch (i) { case 0: case 1: case 3: return &((FsOps *)&D_344FF0)[i]; } return 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_002304A0);
+extern "C" void func_002304A0(S344FF0 *pt) { FsOps *t = (FsOps *)pt;
+    t->f[0] = (void *)func_00230530; t->f[2] = (void *)func_00230548; t->f[1] = (void *)func_00230550; t->f[3] = (void *)func_00230578;
+    t->f[4] = (void *)func_00230638; t->f[5] = (void *)func_002306E8; t->f[6] = (void *)func_00230808; t->f[8] = (void *)func_00230970; t->f[7] = (void *)func_00230980;
+    return (void)func_00230980(0);
+}
 
 extern "C" void func_00230528(void) {
 }
@@ -395,4 +499,4 @@ extern "C" void func_00230530(char *a, const char *b) { return func_00230928(a, 
 
 extern "C" s32 func_00230548(void) { return 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_00230550);
+extern "C" s32 func_00230550(s32 a) { if (a == 1) return D_002B8C58 & 1; return 0; }

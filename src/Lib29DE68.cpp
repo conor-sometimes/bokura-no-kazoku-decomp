@@ -54,6 +54,18 @@ void func_0025C2C0(void *, s32);
 extern char _vt$16__user_type_info[];
 void func_00286B20(void *, s32);
 }
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void Func25DB88__FP7CSndObjP5CVec4(void *, void *);
+extern "C" int func_00286B58(void *, void *);
+struct W2Snd70 { u8 m0; u8 m1; u8 m2; u8 m3; };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" s32 SW_Func25CB90(void *, s32, s32, s32) asm("Func25CB90__8CSndWorkiii");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" TypeInfo *__tf8CSndWork()
@@ -67,25 +79,25 @@ extern "C" TypeInfo *__tf8CSndWork()
 
 extern "C" s32 func_0029DEB8(void *p) { return FLD(s32, p, 0x10); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DEC0);
+extern "C" void func_0029DEC0(void *p, s32 a, s32 b) { if (b >= 0) { SW_Func25CB90(p, a, b, b); return; } SW_Func25CB90(p, a, b, -b); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DEF8);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF48);
 
-extern "C" void func_0029DF80(void *p, s32 a) { FLD(u8, p, 0x36) = a; FLD(u8, p, 0x34) = 1; }
+extern "C" void func_0029DF80(void *p, u8 v) { FLD(u8, p, 0x36) = v; FLD(u8, p, 0x34) = 1; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DF90);
+extern "C" void func_0029DF90(void *p, s32 v) { if (v >= 0) { FLD(s16, p, 0x3E) = v; FLD(s16, p, 0x3C) = v; } else { FLD(s16, p, 0x3C) = v; FLD(s16, p, 0x3E) = -v; } FLD(u8, p, 0x34) = 1; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DFC0);
+extern "C" void func_0029DFC0(void *p, f32 f) { FLD(u8, p, 0x34) = 1; s32 v = (s32)(f * 128.0f); FLD(s16, p, 0x3E) = v; FLD(s16, p, 0x3C) = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029DFE8);
+extern "C" void func_0029DFE8(void *p, f32 f) { FLD(u8, p, 0x34) = 1; FLD(f32, p, 0x44) = f; FLD(f32, p, 0x40) = f; }
 
-extern "C" void func_0029E000(void *p, f32 a) { FLD(f32, p, 0x4C) = a; FLD(u8, p, 0x34) = 1; }
+extern "C" void func_0029E000(void *p, f32 f) { FLD(u8, p, 0x34) = 1; FLD(f32, p, 0x4C) = f; }
 
-extern "C" void func_0029E010(void *p, s32 a, s32 b) { FLD(s16, p, 0x3C) = a; FLD(s16, p, 0x3E) = b; FLD(u8, p, 0x34) = 1; }
+extern "C" void func_0029E010(void *p, s16 a, s16 b) { FLD(u8, p, 0x34) = 1; FLD(s16, p, 0x3E) = b; FLD(s16, p, 0x3C) = a; }
 
-extern "C" s32 func_0029E028(void) { return 0; }
+extern "C" s32 func_0029E028(void *p) { return 0; }
 
 extern "C" TypeInfo *__tf8CSndUnit()
 {
@@ -96,12 +108,12 @@ extern "C" TypeInfo *__tf8CSndUnit()
     return &D_424F40;
 }
 
-extern "C" s32 func_0029E080(void *p) { return FLD(s32, p, 0x54) & 4 ? 2 : 1; }
+extern "C" s32 func_0029E080(void *p) { return (FLD(s32, p, 0x54) & 4) ? 2 : 1; }
 
 extern "C" void func_0029E098(void) {
 }
 
-extern "C" s32 func_0029E0A0(void) { return 0; }
+extern "C" s32 func_0029E0A0(void *p) { return 0; }
 
 extern "C" TypeInfo *func_0029E0A8()
 {
@@ -137,15 +149,15 @@ extern "C" TypeInfo *__tf12CSndWorkReal()
     return &D_424F70;
 }
 
-extern "C" void func_0029E200(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; *q = (*q & 0x8F) | v; }
+extern "C" void func_0029E200(void *p, s32 v) { W2Snd70 *s = (W2Snd70 *)((u8 *)p + 0x70); s->m0 = (s->m0 & 0x8F) | v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E218);
+extern "C" void func_0029E218(void *p, void *v) { Func25DB88__FP7CSndObjP5CVec4((u8 *)p + 0x70, v); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E238);
+extern "C" void func_0029E238(void *p, u8 a, f32 b, f32 c, f32 d, f32 e) { u8 *s = (u8 *)p + 0x70;  s[1] = a; FLD(f32, s, 4) = b; FLD(f32, s, 8) = c; FLD(f32, s, 0xC) = d; FLD(f32, s, 0x10) = e; s[0] |= 0x10; }
 
-extern "C" void func_0029E260(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; q[2] = v; q[0] |= 0x20; }
+extern "C" void func_0029E260(void *p, u8 v) { W2Snd70 *s = (W2Snd70 *)((u8 *)p + 0x70); s->m2 = v; s->m0 |= 0x20; }
 
-extern "C" void func_0029E278(void *p, s32 v) { u8 *q = (u8 *)p + 0x70; q[3] = v; q[0] |= 0x40; }
+extern "C" void func_0029E278(void *p, u8 v) { W2Snd70 *s = (W2Snd70 *)((u8 *)p + 0x70); s->m3 = v; s->m0 |= 0x40; }
 
 extern "C" void *func_0029E290(void *p) { return p; }
 
@@ -233,7 +245,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E760);
 
 extern "C" s32 func_0029E778(void *p) { return FLD(s32, p, 0x0); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E780);
+extern "C" s32 func_0029E780(void *a, void *b) { return func_00286B58(a, b) ^ 1; }
 
 extern "C" TypeInfo *__tf8bad_cast()
 {
@@ -279,12 +291,12 @@ extern "C" TypeInfo *__tf16__user_type_info()
 
 INCLUDE_ASM("asm/nonmatchings/Lib29DE68", func_0029E988);
 
-extern "C" s32 func_0029E9A0(s32 a) { return a >= 4; }
+extern "C" s32 func_0029E9A0(s32 x) { return x >= 4; }
 
-extern "C" s32 func_0029E9B0(s32 a) { return a >= 6; }
+extern "C" s32 func_0029E9B0(s32 x) { return x >= 6; }
 
-extern "C" s32 func_0029E9C0(s32 a) { return (a & 6) == 4; }
+extern "C" s32 func_0029E9C0(s32 x) { return (x & 6) == 4; }
 
-extern "C" s32 func_0029E9D0(s32 a) { return (a & 5) == 4; }
+extern "C" s32 func_0029E9D0(s32 x) { return (x & 5) == 4; }
 
-extern "C" s32 func_0029E9E0(s32 a) { return (a & 5) == 5; }
+extern "C" s32 func_0029E9E0(s32 x) { return (x & 5) == 5; }

@@ -1,0 +1,2 @@
+//@func 0x13DFF8
+void CEventMesMgr::Remove(CEvNode *n) { CEvNode *h = &m_head; if (n) { EvUnlink(n); return; } do { n = EvCheck(h->m_next); if (!n) break; EvUnlink(n); } while (n); }

@@ -36,6 +36,29 @@ struct Blk128 { u64 d[16]; };
 extern Blk128 D_33DB90;
 
 extern "C" void func_0021FE48(void);
+
+extern "C" void func_00227AE8(void);
+extern "C" void func_002379D0(s32);
+extern "C" s32 func_0021BCF8(s32, s32);
+extern "C" s32 func_002375C0(void);
+extern "C" s32 func_002377D8(void);
+void Func225088();
+int Func2250C0();
+
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+extern "C" s32 func_00221008(void);
+typedef s32 (*FnI)(void);
+extern "C" s32 func_00220AE8(void);
+extern "C" void func_00221468(s32);
+extern "C" void func_00222258(void);
+extern "C" void func_00221B08(Blk128 *);
+extern "C" void func_00222050(s32, s32, s32, s32);
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+extern "C" void func_00237350(s32);
+extern "C" s32 func_00237860(s32, CVec4 *);
+inline s32 Chunk21F(s32 n, s32 max, s32 d) { s32 c = n; if (c > max) c = n / d; return c > max ? max : c; }
 // @decl-end
 
 extern "C" void func_0021F250(f32 a, f32 b) {
@@ -45,7 +68,15 @@ extern "C" void func_0021F250(f32 a, f32 b) {
     PUT((D_33D9A0 + 0xC) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_0021F2B8);
+extern "C" void func_0021F2B8(s64 a, s64 b, s64 c, s64 d) {
+    PUT(0x6C058000);
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 4; p[1] = 0x10000000; p[2] = 0xE; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = b; p[1] = b >> 32; p[2] = a; p[3] = a >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = d; p[1] = d >> 32; p[2] = c; p[3] = c >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x44; p[1] = 0; p[2] = 0x42; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x5000D; p[1] = 0; p[2] = 0x47; p[3] = 0; }
+    PUT2((D_33D9A0 + 0x10) | 0x14000000);
+}
 
 extern "C" void func_0021F400(f32 a, f32 b, f32 c, f32 d) {
     PUT(0x64028000);
@@ -56,7 +87,15 @@ extern "C" void func_0021F400(f32 a, f32 b, f32 c, f32 d) {
     PUT((D_33D9A0 + 0x12) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_0021F488);
+extern "C" void func_0021F488(s64 a, s64 b, s64 c, s64 d) {
+    PUT(0x6C058000);
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 4; p[1] = 0x10000000; p[2] = 0xE; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = b; p[1] = b >> 32; p[2] = a; p[3] = a >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = d; p[1] = d >> 32; p[2] = c; p[3] = c >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x44; p[1] = 0; p[2] = 0x42; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x53001; p[1] = 0; p[2] = 0x47; p[3] = 0; }
+    PUT2((D_33D9A0 + 0x14) | 0x14000000);
+}
 
 extern "C" void func_0021F5D0(f32 a, f32 b, f32 c, f32 d) {
     PUT(0x64028000);
@@ -67,7 +106,15 @@ extern "C" void func_0021F5D0(f32 a, f32 b, f32 c, f32 d) {
     PUT((D_33D9A0 + 0x16) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_0021F658);
+extern "C" void func_0021F658(s64 a, s64 b, s64 c, s64 d) {
+    PUT(0x6C058000);
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 4; p[1] = 0x10000000; p[2] = 0xE; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = b; p[1] = b >> 32; p[2] = a; p[3] = a >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = d; p[1] = d >> 32; p[2] = c; p[3] = c >> 32; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x44; p[1] = 0; p[2] = 0x42; p[3] = 0; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[0] = 0x5000D; p[1] = 0; p[2] = 0x47; p[3] = 0; }
+    PUT2((D_33D9A0 + 0x18) | 0x14000000);
+}
 
 extern "C" void func_0021F7A0(s32 a, s32 b, s32 c, s32 d) {
     PUT(0x6C018000);
@@ -118,9 +165,28 @@ extern "C" void func_0021FAA8(void) {
     PUT((D_33D9A0 + 0x28) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_0021FAD8);
+extern "C" void func_0021FAD8(void) {
+    PUT(0x11000000); PUT(0x1000404); PUT(0x5000000); PUT(0x300024F); PUT(0x2000036); PUT(0x6C018000);
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[3] = 0; p[0] = 1; p[1] = 0x10000000; p[2] = 1; }
+    PUT2(D_33D9A0 | 0x14000000); PUT(0x10000000);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_0021FBC0);
+extern "C" void func_0021FBC0(s32 addr, s32 n, s32 src, u32 last) {
+    while (n > 0) {
+        s32 c = Chunk21F(n, 0x35, 3);
+        func_00237350(0xC);
+        PUT2(((c + 1) << 16) | 0x6C008000);
+        n -= c;
+        PUT(c);
+        PUT(addr);
+        addr += c;
+        PUT(0);
+        PUT(0);
+        func_00237860(c, (CVec4 *)src);
+        src += c * 16;
+        PUT(last);
+    }
+}
 
 extern "C" void func_0021FD08(s32 a, s32 b, s32 c) {
     func_0021FBC0(a, b, c, (D_33D9A0 + 0x1E) | 0x14000000);
@@ -193,7 +259,12 @@ extern "C" void func_00220030(s32 a, s32 b, s32 c, s32 d) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_002200C8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_002201A0);
+extern "C" void func_002201A0(s32 n, s32 a, s32 b, s32 c, s32 d) {
+    PUT(0x6C028000); PUT(a); PUT(b); PUT(c); PUT(d);
+    { s64 t = ((s64)((n | 4) & ~0x10) << 47) | ((s64)0x8002 << 45); u32 *p = D_002B94E4; D_002B94E4 = p + 2; p[1] = t >> 32; p[0] = t; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 2; p[0] = 4; p[1] = 0; }
+    PUT2((D_33D9A0 + 0x2E) | 0x14000000);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220278);
 
@@ -329,14 +400,12 @@ extern "C" void func_00220AA8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220AE8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220D10);
+extern "C" void func_00220D10(void) { s32 a = func_00221008(); s32 b = ((FnI)func_00220AA8)(); s32 c = func_00220AE8(); func_002210E0(); func_00221468(a); func_00222258(); func_00221B08(&D_33DB90); func_00222050(D_33DCD0.m0, D_33DCD0.m4, D_33DCD0.m8, D_33DCD0.mC); func_00221468(b); func_00221468(c); return func_00221100(); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220DA8);
+extern "C" s32 func_00220DA8(void) { s32 a = func_0021BCF8(1, 0); Func225088(); func_00227AE8(); s32 b = Func2250C0(); func_002375C0(); func_002379D0(a); func_002379D0(b); return func_002377D8(); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220E08);
 
-/* GNU as 2.10 corrupts the lui of the next lw macro here without this (docs/lessons.md) */
-asm(".p2align 3");
 extern "C" s32 func_00220FB8(u32 i) {
     s32 r = 0;
     if (i < 7) r = D_002B8AA0[i].a;

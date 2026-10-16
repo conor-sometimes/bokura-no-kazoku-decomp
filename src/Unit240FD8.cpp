@@ -38,9 +38,39 @@ extern "C" void *func_002377D8(void);
 struct PsmInfo { u32 m0; u32 m4; u32 m8; u32 mC; };
 extern PsmInfo D_002B9D08[];
 struct Tim2Pic { u32 m0; u32 m4; u32 m8; u16 mC; u16 mE; u8 m10, m11, m12, m13; u16 m14; u16 m16; };
+
+struct Glyph18 { u16 m0; u8 pad2[0xA]; u8 mC, mD, mE, mF; u8 pad10[8]; };
+extern FontEnt **D_38EF74;
+extern s32 D_38EF78;
+inline FontEnt *FontAt(s32 i) { if (i >= 0 && i <= D_38EF78 - 1) { FontEnt *v = D_38EF74[i]; if (v) return v; } return 0; }
+inline s32 GlyphFind(Glyph18 *e, s32 n, s32 key) {
+    s32 lo = 0, hi = n - 1;
+    while (lo < hi) { s32 mid = (lo + hi) >> 1; if (key >= e[mid].m0) lo = mid + 1; else hi = mid; }
+    if (lo > 0) lo -= key < e[lo].m0;
+    return lo;
+}
+inline Glyph18 *GlyphGet(Glyph18 *e, s32 n, s32 key) {
+    s32 lo = 0, hi = n - 1;
+    while (lo < hi) { s32 mid = (lo + hi) >> 1; if (key >= e[mid].m0) lo = mid + 1; else hi = mid; }
+    if (lo > 0) lo -= key < e[lo].m0;
+    if (lo >= 0 && lo < n) { Glyph18 *r = (Glyph18 *)(lo * 24 + (s32)e); if (r->m0 == key) return r; }
+    return 0;
+}
+inline s32 GlyphIdx(Glyph18 *e, s32 n, s32 key) {
+    s32 lo = 0, hi = n - 1;
+    while (lo < hi) { s32 mid = (lo + hi) >> 1; if (key >= e[mid].m0) lo = mid + 1; else hi = mid; }
+    if (lo > 0) lo -= key < e[lo].m0;
+    return lo;
+}
+
+extern s32 D_38EF90;
+
+#define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
+extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
+extern "C" void func_00243080(char *);
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00240FD8);
+extern "C" Glyph18 *func_00240FD8(s32 i, s32 key) { FontEnt *f = FontAt(i); if (!f || !f->m38) return 0; return GlyphGet((Glyph18 *)f->m38, f->m30, key); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_002410D8);
 
@@ -78,7 +108,7 @@ extern "C" void func_00241968(s32 id, s32 a, s32 b, s32 c) {
     return func_00241778(p, p->m38, p->m30, a, b, c);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_002419E8);
+extern "C" void func_002419E8(void *p, s32 ve, s32 n, s32 k0, s32 k1, s32 dx, s32 dy) { Glyph18 *e = (Glyph18 *)ve; s32 i = GlyphIdx(e, n, k0); for (; i < n; i++) { Glyph18 *g = &e[i]; s32 c = g->m0; if (c > k1) break; if (c >= k0) { g->mC += dx; g->mD += dy; g->mE += dx; g->mF += dy; } } }
 
 extern "C" void func_00241AE0(s32 id, s32 a, s32 b, s32 c, s32 d) {
     FontEnt *p = (FontEnt *)func_0023FD90(id);
@@ -132,7 +162,12 @@ extern "C" void func_00241D38(void) {
 extern "C" void func_00241D60(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00241D68);
+extern "C" void func_00241D68(void) {
+    D_38EF88 = 16.0f; D_38EF8C = 16.0f; D_38EF90 = -1; D_38EF98 = 0; D_38EF9C = 16.0f;
+    D_38EFA0 = 0; D_38EFA4 = 0; D_38EFA8 = 0; D_38EFAC = 0; D_38EFB0 = 1.0f; D_38EFB4 = 1.0f;
+    D_38EFB8 = 1.0f; D_38EFBC = 1.0f; D_38EFC0 = 1.0f; D_38EFC4 = 1.0f; D_38EFC8 = 0; D_38EFCC = 0;
+    D_38EFD0[0] = 0x80; D_38EFD0[1] = 0x80; D_38EFD0[2] = 0x80; D_38EFD0[3] = 0x80;
+}
 
 extern "C" void func_00241E60(f32 a, f32 b) {
     D_38EF88 = a;
@@ -262,6 +297,6 @@ INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00242918);
 
 INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00243080);
 
-INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_002432C8);
+extern "C" void func_002432C8(const char *fmt, ...) { char buf[0x1000]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_00243080(buf); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit240FD8", func_00243338);

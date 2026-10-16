@@ -409,3 +409,5 @@ func_0025DBB8 = 0x0025DBB8; /* old name still called from another unit (merge in
 func_00280260 = 0x00280260; /* old name still called from another unit (merge interim 8) */
 /* lane L2: soft-float subtract the compiler calls by name (func_00284E90, lane L1's unit); __fixdfdi's -a */
 dpsub = 0x00284E90;
+D_423F00 = 0x00423F00; /* Dk27C020 free-list head after D_423B00[64] (lane w1) */
+D_423F00 = 0x00423F00; /* lane w2: free-list head after the 64-entry pool D_423B00 (Dk27C020 0x27D8E8), not a splat symbol */

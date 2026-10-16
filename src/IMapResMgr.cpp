@@ -52,7 +52,7 @@ CMapResMgr::~CMapResMgr() {
     D_002A0BE8 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/IMapResMgr", func_0012D818);
+s32 *CMapResMgr::FindRes(s32 id) { CResCacheUnit *u = (CResCacheUnit *)Find250B08(id); if (u) return &u->m_res; return 0; }
 
 void CMapResMgr::Func12D848(s32 size, s32 n) {
     if (size < 0) size = 0x100000;

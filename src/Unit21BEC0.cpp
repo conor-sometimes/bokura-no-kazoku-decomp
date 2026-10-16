@@ -59,6 +59,29 @@ struct Blk128 { u64 d[16]; };
 extern Blk128 D_33D5B0blk asm("D_33D5B0");
 
 #define PUTB(v) { u8 *_p = (u8 *)D_002B94E4; D_002B94E4 = (u32 *)(_p + 1); *_p = (v); }
+
+typedef s32 (*F398)(s32, CVec4 *);
+
+typedef s32 (*F860)(s32, CVec4 *);
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+#define PUTF2(v) { f32 _v = (v); f32 *_p = (f32 *)D_002B94E4; D_002B94E4 = (u32 *)(_p + 1); *_p = _v; }
+struct S50 { u8 b[0x50]; };
+extern S50 D_33D720[3];
+extern s32 D_33D6F4;
+extern const char D_002E3CF8[];
+extern u8 D_002C3D00[], D_002C51D0[];
+extern "C" s32 func_0021C468(void);
+extern "C" s32 func_0021BDD0(s32, s32);
+extern "C" s32 func_0021BC88(s32, s32);
+extern "C" s32 func_0021BAC0(s32, void *, s32);
+void Func235DE0(const char *, ...);
+struct P21EFB0 { f32 m0, m4, m8, mC; u8 pad[0x40]; f32 m50, m54, m58, m5C; };
+
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+
+#define PUT2(v) { u32 _v = (v); u32 *_p = D_002B94E4; D_002B94E4 = _p + 1; *_p = _v; }
+typedef s32 (*F860c)(s32, s32);
+inline s32 Chunk21D(s32 n, s32 max, s32 d) { s32 c = n; if (c > max) c = n / d; return c > max ? max : c; }
 // @decl-end
 
 extern "C" void func_0021BEC0(void) {
@@ -223,23 +246,29 @@ INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C7C8);
 
 INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C838);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C8B8);
+extern "C" void func_0021C8B8(CVec4 *m, f32 s) {
+    func_00237350(0xC);
+    PUT(0x6C048000);
+    u32 *p = D_002B94E4; D_002B94E4 = p + 16;
+    asm volatile("mfc1 $8, %0\n\tqmtc2.ni $8, $vf2\n\tlqc2 $vf4, 0x0(%1)\n\tlqc2 $vf5, 0x10(%1)\n\tlqc2 $vf6, 0x20(%1)\n\tlqc2 $vf7, 0x30(%1)\n\tvmulx.xyzw $vf4, $vf4, $vf2x\n\tvmulx.xyzw $vf5, $vf5, $vf2x\n\tvmulx.xyzw $vf6, $vf6, $vf2x\n\tvmulx.xyzw $vf7, $vf7, $vf2x\n\tsqc2 $vf4, 0x0(%2)\n\tsqc2 $vf5, 0x10(%2)\n\tsqc2 $vf6, 0x20(%2)\n\tsqc2 $vf7, 0x30(%2)" : : "f"(s), "r"(m), "r"(p) : "$8", "memory");
+    PUT2((D_33D6F0 + 4) | 0x14000000);
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C978);
 
 INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C9E8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CA68);
+extern "C" void func_0021CA68(CVec4 *a) { PUT(0x6C048000); ((F398)func_00237398)(0x10, a); u32 v = D_33D6F0 + 8; PUT(v | 0x14000000); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CAD8);
+extern "C" void func_0021CAD8(CVec4 *a) { func_00237350(0xC); PUT(0x6C048000); ((F860)func_00237860)(4, a); u32 v = D_33D6F0 + 8; PUT(v | 0x14000000); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CB58);
+extern "C" void func_0021CB58(CVec4 *pv) { P21EFB0 *p = (P21EFB0 *)pv; f32 s = 1536.0f; f32 a = p->m50, b = p->m54; PUTF2(p->m0 * a / s); PUTF2(p->m4 * b / s); PUTF2(p->m8); PUTF2(p->mC); PUTF2(s); PUTF2(s); PUTF2(p->m58); PUTF2(p->m5C); }
 
 INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CC30);
 
 INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CCB0);
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CD38);
+extern "C" void func_0021CD38(s32 i) { i = i < 0 ? 0 : (i > 2 ? 2 : i); func_00237350(0xC); PUT2(0x6C058000); ((F860)func_00237860)(5, (CVec4 *)&D_33D720[i]); u32 v = D_33D6F0 + 0x10; PUT(v | 0x14000000); }
 
 extern "C" void func_0021CDF8(f32 a, f32 b) {
     PUT(0x64018000);
@@ -257,7 +286,7 @@ extern "C" void func_0021CE60(f32 a, f32 b, f32 c, f32 d) {
     PUT((D_33D6F0 + 0xE) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CEE8);
+extern "C" void func_0021CEE8(s32 a, s32 b, s32 c, s32 d) { PUT(0x6C018000); PUTF2((f32)a * 0.0078125f); PUTF2((f32)b * 0.0078125f); PUTF2((f32)c * 0.0078125f); PUTF2((f32)d * 0.0078125f); PUT2((D_33D6F0 + 0xA) | 0x14000000); }
 
 extern "C" void func_0021CFA8(u32 a, u32 b) {
     PUT(0x64018000);
@@ -290,9 +319,28 @@ extern "C" void func_0021D130(void) {
     PUT((D_33D6F0 + 0x1E) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021D160);
+extern "C" void func_0021D160(void) {
+    PUT(0x11000000); PUT(0x1000404); PUT(0x5000000); PUT(0x3000270); PUT(0x200003A); PUT(0x6C018000);
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 4; p[3] = 0; p[0] = 1; p[1] = 0x10000000; p[2] = 1; }
+    PUT2(D_33D6F0 | 0x14000000); PUT(0x10000000);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021D248);
+extern "C" void func_0021D248(s32 addr, s32 n, s32 src, u32 last) {
+    while (n > 0) {
+        s32 c = Chunk21D(n, 0x39, 3);
+        func_00237350(0xC);
+        PUT2(((c + 1) << 16) | 0x6C008000);
+        n -= c;
+        PUT(c);
+        PUT(addr);
+        addr += c;
+        PUT(0);
+        PUT(0);
+        ((F860c)func_00237860)(c, src);
+        src += c * 16;
+        PUT(last);
+    }
+}
 
 extern "C" void func_0021D390(s32 a, s32 b, s32 c) {
     func_0021D248(a, b, c, (D_33D6F0 + 0x14) | 0x14000000);
@@ -363,4 +411,9 @@ extern "C" void func_0021D6B8(s32 a, s32 b) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021D750);
+extern "C" void func_0021D750(s32 n, s32 a, s32 b, s32 c, s32 d) {
+    PUT(0x6C028000); PUT(a); PUT(b); PUT(c); PUT(d);
+    { s64 t = ((s64)(n | 0x14) << 47) | ((s64)0x8001 << 46); u32 *p = D_002B94E4; D_002B94E4 = p + 2; p[1] = t >> 32; p[0] = t; }
+    { u32 *p = D_002B94E4; D_002B94E4 = p + 2; p[0] = 0x42; p[1] = 0; }
+    PUT2((D_33D6F0 + 0x22) | 0x14000000);
+}

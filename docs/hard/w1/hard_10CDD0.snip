@@ -1,0 +1,5 @@
+//@decl
+inline s32 ClampK(s32 v, s32 lo, s32 hi) { return v < lo ? lo : (v <= hi ? v : hi); }
+inline s32 ClampL(s32 v, s32 lo, s32 hi) { return v >= lo ? (v <= hi ? v : hi) : lo; }
+//@func 0x10CDD0
+extern "C" s32 func_0010CDD0(s32 a, s32 b) { a = a < -128 ? -128 : (a <= 128 ? a : 128); b = b < -128 ? -128 : (b <= 128 ? b : 128); return (a * (b > 0 ? 128 - b : 128)) >> 7; }

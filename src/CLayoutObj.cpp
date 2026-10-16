@@ -220,6 +220,8 @@ extern "C" void func_001BB438(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 
 extern "C" void func_001BBDE8(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
 extern "C" void func_001BC360(CLayoutObj *o, CLayoutEntry *e, int a, f32 x, f32 y, f32 z, f32 w);
 extern "C" void func_001BBD08(CLayoutObj *o, CLayoutEntry *e, int a);
+
+struct CLayoutTbl { u32 m0; CLayoutEntry *m_entries; s32 m_count; };
 // @decl-end
 
 CLayoutObj::CLayoutObj() {
@@ -252,7 +254,7 @@ s32 CLayoutObjSub1B9E60::GetPartUnk8() {
     return m_part ? m_part->m_unk8 : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001B9E78);
+extern "C" CLayoutEntry *func_001B9E78(CLayoutObj *o, s32 i) { CLayoutTbl *t = *(CLayoutTbl **)((u8 *)o + 4); if (!t || i < 0 || t->m_count - 1 < i) return 0; return &t->m_entries[i]; }
 
 CLayoutEntry *CLayoutObj::FindEntry(const char *name) {
     int i;
@@ -498,7 +500,7 @@ void CLayoutObj::Text1BC6A8(CLayoutObjSub1BC320 *st, const char *s, s32 flags, f
     LF(st->m3C) = h;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutObj", func_001BC870);
+extern "C" const char *func_001BC870(const char *s, CLayoutGlyph *g) { s16 *d = (s16 *)g; while (*s && *s != '@' && *s != '\n') { if (*s >= 0) *d++ = *s++; else { *d++ = *s++; *d++ = *s++; } } *d = 0; return s; }
 
 const char *CLayoutObj::Text1BC900(CLayoutObjSub1BC320 *st, const char *s, s32 flags, f32 x, f32 y) {
     const char *p;

@@ -64,8 +64,13 @@ struct VDel_29D640 { virtual void v0(); virtual void v1(); virtual void v2(); vi
 #include "linkonce.h"
 extern "C" void *__nw__8CHeapObjUi(u32 n);
 
-inline void *Get24(void *p) { void *q = FLD(void *, p, 0x24); return *(s32 *)q ? 0 : q; }
-extern "C" s32 func_00245818(void *);
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+struct W2Tbl48 { u8 pad[0x48]; s8 m[4][3]; };
+struct W2ListHead { s32 head; W2ListHead *First() { return head ? 0 : this; } };
+extern "C" char *strcpy(char *, const char *);
+extern "C" int func_00245818(void *);
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" TypeInfo *__tf8CAppMain()
@@ -146,9 +151,9 @@ extern "C" s32 func_0029CF68(void *p) { return FLD(s32, p, 0x10); }
 
 extern "C" s32 func_0029CF70(void *p) { return FLD(s32, p, 0x14); }
 
-extern "C" void *func_0029CF78(void *p) { void *q = FLD(void *, p, 0x5C); return *(s32 *)q ? 0 : q; }
+extern "C" void *func_0029CF78(void *p) { void *n = FLD(void *, p, 0x5C); return FLD(s32, n, 0) ? 0 : n; }
 
-extern "C" void *func_0029CF88(void *p) { void *q = FLD(void *, p, 0x58); return *(s32 *)q ? 0 : q; }
+extern "C" void *func_0029CF88(void *p) { void *n = FLD(void *, p, 0x58); return FLD(s32, n, 0) ? 0 : n; }
 
 extern "C" void func_0029CF98(void *p, s32 v) { FLD(s32, p, 0x14) = v; }
 
@@ -156,7 +161,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CFA0);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CFE8);
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D018);
+extern "C" s32 func_0029D018(W2Tbl48 *p, s32 a, s32 b) { return p->m[a][b] > 0; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D038);
 
@@ -206,19 +211,19 @@ extern "C" TypeInfo *__tf9CResCache()
     return &D_2EB8C0;
 }
 
-extern "C" s32 func_0029D2D8(void *p) { return *(s32 *)p != 0; }
+extern "C" s32 func_0029D2D8(void *p) { return FLD(s32, p, 0) != 0; }
 
-extern "C" s32 func_0029D2E8(void *p) { return Get24(p) == 0; }
+extern "C" s32 func_0029D2E8(void *p) { return FLD(W2ListHead *, p, 0x24)->First() == 0; }
 
 extern "C" s32 func_0029D300(void *p) { return FLD(s32, p, 0x4); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D308);
+extern "C" s32 func_0029D308(void *p) { s32 n = 0; for (W2ListHead *q = FLD(W2ListHead *, p, 0x14); (q = q->First()) != 0; q = FLD(W2ListHead *, q, 8)) n++; return n; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D340);
+extern "C" s32 func_0029D340(void *p) { s32 n = 0; for (W2ListHead *q = FLD(W2ListHead *, p, 0x24); (q = q->First()) != 0; q = FLD(W2ListHead *, q, 8)) n++; return n; }
 
 extern "C" s32 func_0029D378(void *p) { return FLD(s32, p, 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D380);
+extern "C" void func_0029D380(void *p, const char *s) { strcpy((char *)p + 0x3C, s); }
 
 extern "C" void *func_0029D3A0(void *p) { return (u8 *)p + 0x3C; }
 
@@ -239,15 +244,15 @@ extern "C" s32 func_0029D418(void *p) { return FLD(s32, p, 0x50); }
 
 extern "C" s32 func_0029D420(void *p) { return FLD(s32, p, 0x1C); }
 
-extern "C" void func_0029D428(void *p) { FLD(s32, p, 0x58)++; }
+extern "C" void func_0029D428(void *p) { FLD(s32, p, 0x58) = FLD(s32, p, 0x58) + 1; }
 
-extern "C" void func_0029D438(void *p) { s32 n = FLD(s32, p, 0x58) - 1; if (n < 0) n = 0; FLD(s32, p, 0x58) = n; }
+extern "C" void func_0029D438(void *p) { s32 v = FLD(s32, p, 0x58) - 1; if (v < 0) v = 0; FLD(s32, p, 0x58) = v; }
 
 extern "C" void func_0029D450(void *p, s32 v) { FLD(s32, p, 0x58) = v; }
 
 extern "C" s32 func_0029D458(void *p) { return FLD(s32, p, 0x58); }
 
-extern "C" s32 func_0029D460(void *p) { return func_00245818((u8 *)p + 0x10); }
+extern "C" int func_0029D460(void *p) { return func_00245818((u8 *)p + 0x10); }
 
 extern "C" TypeInfo *func_0029D478()
 {
@@ -298,9 +303,9 @@ extern "C" void func_0029D640(VDel_29D640 *p) { delete p; }
 
 extern "C" s32 func_0029D678(void *p) { return FLD(s32, p, 0x4); }
 
-extern "C" s64 func_0029D680(void *p) { return FLD(s64, p, 8); }
+extern "C" u64 func_0029D680(void *p) { return FLD(u64, p, 0x8); }
 
-extern "C" s64 func_0029D688(void *p) { return FLD(s64, p, 0x10); }
+extern "C" u64 func_0029D688(void *p) { return FLD(u64, p, 0x10); }
 
 extern "C" TypeInfo *func_0029D690()
 {

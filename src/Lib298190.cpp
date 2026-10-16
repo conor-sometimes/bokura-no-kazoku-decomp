@@ -84,7 +84,17 @@ void func_0029AB00(TArrMapDBExprReg *a, MapDBExprReg *p);
 void Func29A558__10CUnk29A558i(TArrMapDBExprReg *a, s32 n);
 }
 
-inline void Set2928(void *p, s32 a, s32 b) { FLD(s32, p, 0x2928) = a; FLD(s32, p, 0x292C) = b; FLD(s32, p, 0x2930) = 0; }
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" char *strncpy(char *, const char *, unsigned int);
+struct W2Sub2928 { u8 pad[0x2928]; s32 m2928; s32 m292C; s32 m2930; void Set(s32 a, s32 b) { m2928 = a; m292C = b; m2930 = 0; } };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void EvClearScene(void *) asm("ClearScene__9CEventObj");
+extern "C" void EvFunc132D30(void *) asm("Func132D30__9CEventObj");
+extern "C" void MovFunc13E888(void *) asm("Func13E888__9CMovieObj");
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+extern "C" void *memset(void *, int, unsigned int);
 // @decl-end
 
 extern "C" void func_00298190(TArrEventCharaResName *a, EventCharaResName *p) { if (p) D_002B91B0(p); }
@@ -128,21 +138,21 @@ extern "C" s32 func_00298398(void *p) { return FLD(s32, p, 0x4); }
 
 extern "C" s32 func_002983A0(void *p) { return FLD(s32, p, 0x8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002983A8);
+extern "C" void func_002983A8(void *p) { EvClearScene(p); EvFunc132D30(p); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002983D8);
+extern "C" void func_002983D8(void *p) { FLD(s32, p, 0xFD18) = 0; memset((u8 *)p + 0xFD1C, 0, 8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_00298410);
+extern "C" void func_00298410(void *p) { FLD(s32, p, 0xFD24) = 0; memset((u8 *)p + 0xFD28, 0, 8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_00298448);
+extern "C" void func_00298448(void *p) { FLD(s32, p, 0xFD30) = 0; memset((u8 *)p + 0xFD34, 0, 8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_00298480);
+extern "C" void func_00298480(void *p) { FLD(s32, p, 0xFD3C) = 0; memset((u8 *)p + 0xFD40, 0, 8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002984B8);
+extern "C" void func_002984B8(void *p) { FLD(s32, p, 0xFD48) = 0; memset((u8 *)p + 0xFD4C, 0, 8); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002984F0);
+extern "C" void func_002984F0(void *p, s32 i, s32 v) { i = i < 0 ? 0 : (i >= 4 ? 3 : i); ((s32 *)((u8 *)p + 0xFD08))[i] = v; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_00298530);
+extern "C" s32 func_00298530(void *p, s32 i) { i = i < 0 ? 0 : (i >= 4 ? 3 : i); return ((s32 *)((u8 *)p + 0xFD08))[i]; }
 
 extern "C" s32 func_00298570(void *p) { return FLD(s32, p, 0x488); }
 
@@ -150,7 +160,7 @@ extern "C" s32 func_00298578(void *p) { return FLD(s32, p, 0xFB48); }
 
 extern "C" s32 func_00298590(void *p) { return FLD(s32, p, 0xFB2C); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002985A8);
+extern "C" void func_002985A8(void *p) { MovFunc13E888((u8 *)p + 0xF9D0); }
 
 extern "C" void func_002985D0(void *p, s32 v) { FLD(s32, p, 0xFC04) = v; }
 
@@ -182,7 +192,7 @@ extern "C" void func_002986C8(void *p, s32 v) { FLD(s32, p, 0xFC50) = v; }
 
 extern "C" s32 func_002986E0(void *p) { return FLD(s32, p, 0xFC50); }
 
-extern "C" void func_002986F8(void *p, s32 a, s32 b) { Set2928((u8 *)p + 0xC, a, b); }
+extern "C" void func_002986F8(void *p, s32 a, s32 b) { ((W2Sub2928 *)((u8 *)p + 0xC))->Set(a, b); }
 
 extern "C" s32 func_00298710(void *p) { return FLD(s32, p, 0xFC54); }
 
@@ -223,7 +233,7 @@ extern "C" TypeInfo *__tf12CEventMesMgr()
 
 extern "C" void func_00298910(VDel_298910 *p) { delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_00298948);
+extern "C" void func_00298948(void *p, const char *s) { strncpy((char *)p + 0x14, s, 0x100); }
 
 extern "C" void *func_00298968(void *p) { return (u8 *)p + 0x14; }
 

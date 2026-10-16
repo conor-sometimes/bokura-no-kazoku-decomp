@@ -600,6 +600,9 @@ struct CMapEffLeafNode2 {
     f32 m38;                  // 0x38
     s32 m3C;                  // 0x3C
 };
+
+#define MIN123(a, b) ((a) < (b) ? (a) : (b))
+#define MAX123(a, b) ((a) < (b) ? (b) : (a))
 // @decl-end
 
 CMapEffObjRes::CMapEffObjRes() {
@@ -1143,7 +1146,7 @@ void CMapEffAquariumWork::CirclePos(CVec4 *out, CVec4 *c, f32 ang, f32 r) {
     out->w = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00123670);
+extern "C" f32 func_00123670(f32 a, f32 b, f32 lim) { f32 d = b - a; f32 t = MAX123(MIN123(d, lim), -lim); return a + t; }
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001236C8);
 

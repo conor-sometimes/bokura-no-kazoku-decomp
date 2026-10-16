@@ -20,6 +20,27 @@ unit. All run on hokkaido from the repo root; scratch files live in `build/bk/` 
   worse, random restarts) and prints the best order if none matches. Objects are read directly
   (tools/bk/bk.py `read_obj`), no objdump per candidate.
   `bk vtest SNIP`: every `//@func` section is a variant of one function, test each.
+- `tools/bk/bk utest SNIP`: the test the full build would give. Splices the snippet into a copy of
+  its unit (replacing the INCLUDE_ASMs, adding the decls), compiles the whole unit with the unit's
+  own compiler and flags, and compares each function at its real offset, including where every
+  relocation points (retail's call targets and %hi/%lo symbols). Catches what `bk test` can't:
+  effects of the functions before it in the .cpp (delay-slot filling, the GNU as `lui` bug) and
+  swapped globals or callees behind masked address bits. `bk port` refuses a snippet that fails
+  it (`BK_NO_UTEST=1` to skip).
+- `tools/bk/bk hard [--port] [-j N]`: re-test every saved stuck function. When a function goes to
+  HARD.md, save its best attempt as `docs/hard/<lane>/hard_<ADDR>.snip` (a normal snippet); after
+  any discovery (a flag, a header, a trick), `bk hard` re-runs them all through utest and lists
+  the ones that now match (`--port` ports them).
+- `python3 -I tools/bk/rank.py [--prefix Unit|Dk|Lib|C] [--units A,B] [--skip-hard] [-n N]`: what to
+  try next, ranked by readiness (share of a function's callees already in C), size, blockers and
+  fan-in (unmatched callers it unlocks). Better than smallest-first once the small ones are gone.
+- `python3 -I tools/bk/hoist.py list` / `hoist.py CLASS...`: move classes declared locally in many
+  units into `include/CLASS.h` (method-only copies), build, and give a unit its own copy back if it
+  stops compiling with the header.
+- `tools/bk/luibug.py`: run by mk.sh when the build fails: finds GNU as 2.10's `lui` bug (retail
+  `lui`, ours a load to the same register) and names the function to put `asm(".p2align 3");` before.
+- Lanes: `BK_UNITS_FILE=lane.units` (or `BK_UNITS=a,b`) makes `bk port` refuse to name functions in
+  other lanes' units (declare those `extern "C" func_XXXXXXXX` instead).
 - `tools/bk/portall.sh NAME...`: port (replace the INCLUDE_ASM, add renames to
   `config/symbol_addrs.txt`, refuse name conflicts), then build.
 - `python3 -I tools/bk/progress.py`: matched count and bytes.

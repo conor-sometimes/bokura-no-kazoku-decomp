@@ -1,0 +1,4 @@
+//@decl
+inline u32 RandMod(CMapEffRand *r, u32 n) { return r->Next32() % n; }
+//@func 0x123D88
+void CMapEffAquariumWork::Func123D88(s32 i) { if ((u32)i < 8) { CMapEffAquariumSlot *s = &m_slots[i]; if (!s->m_busy) { if (RandMod((CMapEffRand *)&m_seed, 501) == 100) Func1236C8(i); } } }

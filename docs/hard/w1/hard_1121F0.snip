@@ -1,0 +1,33 @@
+//@decl
+extern "C" void *memset(void *, s32, u32);
+//@func 0x1121F0
+void CCharaRes::Init1121F0() {
+    m_data = 0;
+    memset(m_unk4, 0, 0x10);
+    m_unk14 = 0; //@p
+    m_unk20 = D_002D3400[0]; //@p
+    m_unk50 = 0x10; //@p
+    m_unk7C = 128.0f; //@p
+    m_cur = -1; //@p
+    m_unk18 = 0; //@p
+    m_unk44 = 0; //@p
+    m_unk48 = 0; //@p
+    m_unk4C = 0; //@p
+    m_unk98 = 0x50; //@p
+    m_unk84 = -1; //@p
+    m_unk60 = 0x80; //@p
+    m_unk64 = 0x80; //@p
+    m_unk80 = -1; //@p
+    m_unk88 = -1; //@p
+    m_unk68 = 0x80; //@p
+    m_unk6C = 0x80; //@p
+    m_unk9C = 0x50; //@p
+    m_unk70 = 0; //@p
+    m_unk74 = 0; //@p
+    m_unk78 = 0; //@p
+    m_unk90 = 0; //@p
+    m_unk94 = 0; //@p
+    m_unkA0 = 0; //@p
+    memset(&m_unkA8, 0, 0xC);
+    m_unkB8 = 0;
+}

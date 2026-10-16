@@ -1,0 +1,8 @@
+//@func 0x1B4418
+void CMenuMgr::Start1B4418(u32 id, s32 arg) {
+    if (id > 0x2A) { Func235DE0(D_002DFEA0, id); m_unk64 = 0; return; }
+    m_unk64 = id; m_unk68 = 1;
+    m_proc = D_002A5470[id](this, id);
+    m_proc->SetUnk50(arg);
+    Func235DE0(D_002DFEB8, id, arg);
+}

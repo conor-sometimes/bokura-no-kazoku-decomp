@@ -175,6 +175,12 @@ void Func25D270(CSndTree *t, s32 b);
 extern u8 D_41A788[];
 extern "C" void func_0025C230(void *w);
 extern "C" void func_0025C2C0(void *w, s32 c);
+
+void *Func25DBF8(CSndObj2 *o);
+extern "C" void func_0025D608(void *, void *, s32);
+extern "C" void func_0025C230(void *);
+extern "C" void func_0025C2C0(void *, s32);
+extern "C" u8 D_41A788[];
 // @decl-end
 
 void CSndWork::Func25C438(CSndUnitN *u) {
@@ -481,7 +487,7 @@ void CSndWork::Func25DEF0(s32 id, s32 v) {
 
 s32 CSndWorkReal::Func25DF80(s32 i) { return D_002BA780[i]; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025DF98);
+extern "C" void func_0025DF98(void *p, s32 x) { void *r = Func25DBF8((CSndObj2 *)p); if (r) func_0025D608((u8 *)p + 0x70, r, x); }
 
 void *Func25DFE0(s32 n) {
     if (D_002BA248) return D_002BA248->Alloc(n);

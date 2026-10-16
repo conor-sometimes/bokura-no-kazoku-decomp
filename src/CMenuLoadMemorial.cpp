@@ -556,7 +556,13 @@ int CMenuLoadMemorialSub179568::Create() {
 CMenuLoadMemorialSub1792B0::~CMenuLoadMemorialSub1792B0() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuLoadMemorial", Reset__26CMenuLoadMemorialSub179568);
+int CMenuLoadMemorialSub179568::Reset() {
+    m_unk50 = 0; m_unk84 = 0.25f; m_unk54 = 0; m_unk44 = 0; m_unk60 = 0;
+    for (s32 i = 0; i < 8; i++) { m_unk4[i] = 0; m_unk64[i] = 1.0f; }
+    for (s32 j = 0; j < 4; j++) { m_unk34[j] = 0; m_unk24[j] = 0; m_unk88[j] = 0; m_unk98[j] = 0; }
+    m_unkAC = 1;
+    m_unkA8 = m_unkB0 = m_unkB4 = 0.0f;
+}
 
 void CMenuLoadMemorialSub179568::SetUnk44(u32 v) {
     if (v >= 3) {

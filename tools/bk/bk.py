@@ -2,6 +2,7 @@
 # bk.py test|port SNIP : scratch-test or port C++ snippets.
 # SNIP: '//@decl' sections (declarations) and '//@func 0xADDR' sections (one function each).
 import re,sys,os,subprocess,json,struct
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))  # utest.py next to it (python3 -I drops the script dir)
 R=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 W=R+'/build/bk'
 os.makedirs(W,exist_ok=True)
@@ -12,6 +13,8 @@ SDK_RANGES=[(0x262D28,0x26CFB0)]
 # Sony SDK libraries (Makefile SDKC_OBJS): C through 2.9's cc1, assembled by the 2.96 GNU as (-B)
 SDKC_RANGES=[(0x26CFB0,0x27FC30)]
 SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
+# libgcc and newlib built without -fno-strict-aliasing (Makefile LIBC_OBJS, lane w2)
+LIBC_RANGES=[(0x283858,0x292E20)]
 OD='mips-ps2-decompals-objdump'
 ctx=json.load(open(W+'/ctx.json'))
 rom=open(R+'/disc/SCPS_150.88','rb').read()
@@ -49,12 +52,10 @@ def unit_decl(funcs):
     m=re.search(r'^// @decl-begin[^\n]*\n(.*?)^// @decl-end\n',open(p).read(),re.M|re.S)
     return m.group(1) if m else ''
 class CompileError(Exception): pass
-def compile_(decl,funcs,out,tag='t'):
-    # tag: per-process scratch name so parallel compiles don't share t.cpp
-    decl=unit_decl(funcs)+'\n'+decl
-    src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
-    cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
+def flags_for(funcs):
+    # the unit's compiler and flags, as the Makefile sets them per unit (ASG, SDK_OBJS, SDKC_OBJS)
     cc,base=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions']
+    if funcs and all(any(lo<=a<hi for lo,hi in LIBC_RANGES) for a,b in funcs): base=['-O2','-G0','-fno-exceptions']  # Makefile LIBC_OBJS
     if funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs):  # Makefile SDK_OBJS
         cc,base=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS]
     sdk=funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs)
@@ -62,6 +63,18 @@ def compile_(decl,funcs,out,tag='t'):
     if sdkc:  # Makefile SDKC_OBJS
         cc,base=R+'/tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc',['-x','c','-O2','-G0','-B'+SDKAS]
     asg=['-Wa,-g'] if not sdkc and not sdk and any(a<0x1E91B8 or a>=0x245648 for a,b in funcs) else []  # Makefile ASG
+    mode=os.environ.get('BK_MODE')  # experiments: force a compiler setup (sdk, sdkc, 296, 296c)
+    if mode=='sdk': cc,base,asg=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS],[]
+    elif mode=='sdkc': cc,base,asg=R+'/tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc',['-x','c','-O2','-G0','-B'+SDKAS],[]
+    elif mode=='296': cc,base,asg=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions'],['-Wa,-g']
+    elif mode=='296c': cc,base,asg=CC,['-x','c','-O2','-G0','-fno-strict-aliasing'],['-Wa,-g']
+    return cc,base,asg
+def compile_(decl,funcs,out,tag='t'):
+    # tag: per-process scratch name so parallel compiles don't share t.cpp
+    decl=unit_decl(funcs)+'\n'+decl
+    src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
+    cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
+    cc,base,asg=flags_for(funcs)
     r=subprocess.run([cc]+base+['-I'+R+'/include','-Wa,-I'+R+'/include']+asg+['-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)
@@ -122,6 +135,12 @@ def port(path):
     res=test(path,quiet=True)
     bad=[r for r in res if r[2]]
     if bad: print('not all match:',[(hex(r[0]),r[2]) for r in bad]); sys.exit(1)
+    # and the way the full build sees it: in its unit, with relocation targets (tools/bk/utest.py)
+    if not os.environ.get('BK_NO_UTEST'):
+        import utest
+        ubad=[r for r in utest.utest(path,quiet=True) if r[2]]
+        if ubad:
+            print('matches alone but not in its unit (bk utest SNIP for details):',[(hex(r[0]),r[1],r[2]) for r in ubad]); sys.exit(1)
     units={ctx[hex(a)]['unit'] for a,b in funcs}
     assert len(units)==1, units
     unit=units.pop(); p=f'{R}/src/{unit}.cpp'; s=open(p).read()
@@ -161,6 +180,24 @@ def port(path):
         if a in have and have[a]!=n: print(f'NAME CONFLICT at {a:#x}: have {have[a]}, snippet wants {n}'); sys.exit(1)
         if a not in have: keep.append(l)
     syms=keep
+    # lanes: only name addresses inside your own units (BK_UNITS=a,b or BK_UNITS_FILE=lane.units);
+    # naming another lane's function renames its INCLUDE_ASM and clashes at merge
+    owned=set(filter(None,os.environ.get('BK_UNITS','').split(',')))
+    uf=os.environ.get('BK_UNITS_FILE')
+    if uf: owned|=set(open(uf).read().split())
+    if owned:
+        starts=sorted((int(m.group(1),16)+0xFF000,m.group(2)) for m in re.finditer(r'\[0x([0-9A-Fa-f]+), (?:cpp|c|asm|data|\.data|rodata|\.rodata|bss|\.bss), (\w+)\]',open(R+'/config/SCPS_150.88.yaml').read()))
+        def owner(a):
+            u=None
+            for st,n in starts:
+                if st<=a: u=n
+                else: break
+            return u
+        foreign=[l for l in syms if 'type:func' in l and owner(int(l.split(' = ')[1].split(';')[0],16)) not in owned]
+        if foreign:
+            print('refusing to name functions in other lanes\' units (declare them extern "C" func_XXXXXXXX instead):')
+            for l in foreign: print('  '+l+'  ('+str(owner(int(l.split(' = ')[1].split(';')[0],16)))+')')
+            sys.exit(1)
     open(p,'w').write(s)
     if syms:
         with open(R+'/config/symbol_addrs.txt','a') as f: f.write('\n'.join(syms)+'\n')
@@ -208,6 +245,10 @@ if __name__=='__main__':
     elif cmd=='port': port(sys.argv[2])
     elif cmd=='show': show(sys.argv[2],sys.argv[3])
     elif cmd=='fix': fix_includes()
+    elif cmd=='hard':
+        import hardretry; hardretry.main(sys.argv[2:]); sys.exit(0)
+    elif cmd=='utest':
+        import utest; r=utest.utest(sys.argv[2]); sys.exit(1 if any(x[2] for x in r) else 0)
 _P={}
 def _perm_init(decl,addr,head,idx,body):
     _P.update(decl=decl,addr=addr,head=head,idx=idx,body=body,tag=f'perm{os.getpid()}')

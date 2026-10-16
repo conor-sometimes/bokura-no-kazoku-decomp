@@ -1,0 +1,20 @@
+//@decl
+extern s32 D_002B6810[];
+
+//@func 0x21B280
+extern "C" void func_0021B280(void *pm, Quat *q) { f32 *m = (f32 *)pm;
+    f32 x2 = q->x + q->x, y2 = q->y + q->y, z2 = q->z + q->z, w2 = q->w + q->w;
+    f32 xx = x2 * q->x, yy = y2 * q->y, zz = z2 * q->z;
+    f32 xy = x2 * q->y, xz = x2 * q->z, yz = y2 * q->z;
+    f32 wx = w2 * q->x, wy = w2 * q->y, wz = w2 * q->z;
+    m[12] = 0.0f; m[15] = 1.0f; m[13] = 0.0f; m[14] = 0.0f; m[3] = 0.0f; m[7] = 0.0f; m[11] = 0.0f;
+    m[0] = 1.0f - (yy + zz); //@p
+    m[1] = xy + wz; //@p
+    m[2] = xz - wy; //@p
+    m[4] = xy - wz; //@p
+    m[5] = 1.0f - (xx + zz); //@p
+    m[6] = yz + wx; //@p
+    m[8] = xz + wy; //@p
+    m[9] = yz - wx; //@p
+    m[10] = 1.0f - (xx + yy); //@p
+}

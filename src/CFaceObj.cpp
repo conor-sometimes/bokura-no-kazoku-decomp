@@ -224,7 +224,7 @@ void CFaceObj::Func10DC80(s32 *ids, s32 n) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFaceObj", Func10DD38__17CFaceObjSub10DC60);
+s32 CFaceObjSub10DC60::Func10DD38() { if (!m_unk0) return -1; s32 k = m_unk10; if (k < 0 || m_item->m_unk14 - 1 < k) return m_item->m_unk14 > 0 ? 0 : -1; return k; }
 
 int CFaceTrack::Step(int loop) {
     CFaceAnim *a = m_anim;

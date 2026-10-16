@@ -1,0 +1,22 @@
+//@decl
+#define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
+extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
+extern "C" void func_001F1190(void);
+extern "C" void func_001F11C8(void);
+extern "C" s32 func_0022DD78(const char *, s32);
+extern "C" s32 func_0022E0E8(s32, char *, s32);
+extern s32 D_002B9500, D_002B9504;
+extern char D_002E54C0[];
+extern "C" unsigned int strlen(const char *);
+//@func 0x23CF18
+extern "C" void func_0023CF18(const char *fmt, ...) {
+    char buf[0x100];
+    char *ap;
+    func_001F1190();
+    EE_VA_START(ap, fmt);
+    vsprintf2(buf, fmt, ap);
+    if (D_002B9500 & 4) { if (D_002B9504 == -1) D_002B9504 = func_0022DD78(D_002E54C0, 0x602); }
+    if (D_002B9500 & 3) Func235DE0(buf);
+    if ((D_002B9500 & 4) && D_002B9504 >= 0) func_0022E0E8(D_002B9504, buf, strlen(buf));
+    func_001F11C8();
+}

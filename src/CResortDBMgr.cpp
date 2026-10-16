@@ -339,7 +339,7 @@ int CResortDBMgr::Func172968(const char *name, s32 idx, CVec4 *out) {
 // Func172A60: `for (i < m_numNames) if (Func1456A8(name_i) == Func1456A8(name)) { s32 *row =
 // e->m_values + a * 2; return row[b]; } return -1;` is DIFF 2: retail adds `a*8 + base` with the
 // operands the other way round (tried four commutations).
-INCLUDE_ASM("asm/nonmatchings/CResortDBMgr", Func172A60__12CResortDBMgrPCcii);
+int CResortDBMgr::Func172A60(const char *name, s32 a, s32 b) { s32 i; for (i = 0; i < m_numNames; i++) { CResortNameRec *e = &m_names[i]; if (Func1456A8((int)e->m_id) == Func1456A8((int)name)) return *(s32 *)((a << 3) + (s32)e->m_values + (b << 2)); } return -1; }
 
 int CResortDBMgr::Func172B28(s32 id) {
     s32 i;

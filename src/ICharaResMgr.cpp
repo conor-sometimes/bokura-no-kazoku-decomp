@@ -24,7 +24,7 @@ extern "C" void func_0012D1C8();
 
 INCLUDE_ASM("asm/nonmatchings/ICharaResMgr", func_0012D440);
 
-INCLUDE_ASM("asm/nonmatchings/ICharaResMgr", func_0012D4B8);
+s32 *CCharaResMgr::FindRes(s32 id) { CResCacheUnit *u = (CResCacheUnit *)Find250B08(id); if (u) return &u->m_res; return 0; }
 
 void CCharaResMgr::InitCache(s32 size, s32 n) {
     if (size < 0) size = 0x64000;

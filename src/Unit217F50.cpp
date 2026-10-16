@@ -48,6 +48,9 @@ extern "C" s32 func_0020F948(s32);
 extern "C" s32 func_0020F998(s32);
 extern "C" const char *func_0020E668(s32, s32, s32);
 extern "C" void func_00212A30(void *);
+
+extern "C" void func_00270A98(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 VuSqrt217(f32 x) { f32 r; asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8"); return r; }
 // @decl-end
 
 extern "C" s32 func_00217F50(s32 strm, s32 x) {
@@ -97,7 +100,15 @@ extern "C" void func_002184D0(CVec4 *out) {
     return;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_002184F0);
+extern "C" void func_002184F0(Work3 *w, CVec4 *v) {
+    CVec4 d;
+    w->m18 = 1;
+    w->m9 |= 0x14;
+    Func270C50(&w->m20, v);
+    w->m64 = w->m60;
+    func_00270A98(&d, v, &D_338360);
+    w->m60 = w->m60 + (VuSqrt217(d.x * d.x + d.y * d.y + d.z * d.z) - w->m64) * 0.5f;
+}
 
 extern "C" void func_002185B0(Work3 *w, CVec4 *a, CVec4 *b) {
     w->m18 = 2;
@@ -270,7 +281,7 @@ extern "C" const char *func_002194A8(s32 i) {
     return p ? p->m4 : D_002E3A28;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_002194D8);
+extern "C" s32 func_002194D8(s32 i) { Rec4 *p = func_00219B68(i); if (p) return p->m2; return -1; }
 
 extern "C" s32 func_00219508(const char *name) {
     s32 i;

@@ -1,0 +1,13 @@
+//@decl
+extern s32 D_002B6810[];
+
+//@func 0x21BCF8
+extern "C" s32 func_0021BCF8(u32 a, u32 b) {
+    if (a >= 2) return 0;
+    if (b >= 32) return 0;
+    GItem *it = (GItem *)&D_002B6818[a].rest[b * 128];
+    s32 n = D_002B6818[a].b[b];
+    func_002375C0();
+    for (s32 i = 0; i < n; i++, it++) func_0021B8E8(it->p, it->y, it->x);
+    return Func238158((void *)func_002377D8(), 1);
+}

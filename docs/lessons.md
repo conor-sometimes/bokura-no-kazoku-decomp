@@ -630,3 +630,21 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **Accessors over an array of 0xD9B0-byte slots**: `if (i < 8) { CAt3 *a = &D[i]; if (a->m_active) return a; }`
   produced retail's `la $3, D($3)` ($at expansion) where `D[i].m_active` folded `D+8` first; error-printing
   accessors were one inline `GetAt3(i, fn)` with nested ifs. *(bokura)*
+
+## head (tools, 2026-10-16)
+- `bk test` alone gave false passes: it masks relocated fields and compiles the snippet without the
+  rest of its unit. `bk utest` (whole unit, real flags, relocation targets compared) is now what
+  `bk port` checks. Reverting one matched C++ function back to INCLUDE_ASM in Unit204500 broke a
+  later function there through the GNU as `lui` bug: same-unit effects are real.
+- Save every stuck function's best snippet in docs/hard/<lane>/hard_<ADDR>.snip; `bk hard` re-tests
+  them all in seconds after any discovery.
+- Once the small functions are gone, pick by readiness (tools/bk/rank.py), not size.
+## w1 (overnight grind 2026-10-15/16: small functions across the game units and libraries)
+- **EE `va_start` is the va-mips.h macro, not `__builtin_stdarg_start`**: retail passes `sp + (a1 save slot)` straight to vsprintf with no va_list object; `#define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))` with `char *ap` reproduces it (0x2432C8); `__builtin_stdarg_start` adds a stack slot for ap (frame +0x10) and `__builtin_next_arg` alone points past the GPR save area. *(bokura)*
+- **Sized vs unsized extern arrays**: `extern s32 D_002B6810[2]` made each `D[a]` a `lui; addu; lw %lo` like retail, where `D[]` let GCC keep the computed address in a register (0x21BDD0). *(bokura)*
+- **Operand order of an address sum**: `*(s32 *)((a << 3) + (s32)e->m_values + (b << 2))` gave retail's `addu a8, base`; every pointer-typed form canonicalised to `base + a8` (CResortDBMgr 0x172A60, an old HARD entry). *(bokura)*
+- **VIF packet writers**: the register-setting callees (func_00237398, func_00237860, func_00237350) return values (`lui $3` right after the call), and the closing `PUT((D + k) | 0x14000000)` loads the base before bumping the packet pointer: a value-first macro or `u32 v = D + k; PUT(v | ...)` (20+ functions in Unit21BEC0/21D820/21F250). *(bokura)*
+- **`!x ? 10 : 20` vs `x ? 20 : 10`** decides which constant is the default before the `movn`/`movz` (0x1932B8). *(bokura)*
+- **Hidden pass-through arguments**: callers matched earlier with too few parameters (0x22E770, 0x22E828, 0x21B4A8, 0x21ACA8) got the extra parameter added so the callee can take its real arguments; the caller's code does not change. *(bokura)*
+- **Store order of independent field resets** again: bk perm (hill climb) found 0x1B47E8, 0x1B6300, 0x1B7C10 quickly; when it stalls at DIFF 2 the remaining swap is usually two constants in registers (0x1121F0). *(bokura)*
+- **GNU as lui bug moves with the code**: utest reported "the rest of Unit21F250 differs from 0x220FF0" and mk.sh/luibug.py then named func_00220FB8, which already had `asm(".p2align 3")`; after the code before it changed, *removing* that line fixed it (and 0x21BDD0 in Unit219970 needed a new one). Re-check every `.p2align` workaround when the code above it changes. *(bokura)*

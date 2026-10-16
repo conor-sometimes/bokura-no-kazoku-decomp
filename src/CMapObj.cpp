@@ -195,8 +195,7 @@ void CSndOwner::Func11B118(void *p, s32 v) {
     if (v) func_00128868(m_unk8, p);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CMapObj", D_002D3D88);
-INCLUDE_ASM("asm/nonmatchings/CMapObj", func_0011B268);
+extern "C" s32 func_0011B268(s32 psm) { switch (psm) { case 0: return 32; case 1: return 24; case 2: case 10: return 16; case 19: case 27: return 8; case 20: case 36: case 44: return 4; } return 0; }
 
 void Blit11B2C0(u64 tex, s32 a, s32 b, s32 w, s32 y, s32 h, u8 *base) {
     func_00227BF0(tex, a, b, w, h, base + y * func_0011B268((s32)((tex >> 32) & 0x3F)) * w / 8);

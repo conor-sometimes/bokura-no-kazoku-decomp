@@ -404,7 +404,7 @@ segments:
       - [0x1D4780, .rodata, CModelAccResMgr]
       - [0x1D4820, rodata, ro_CMapAttr]
       - [0x1D4C28, .rodata, CMapRes]
-      - [0x1D4D88, .rodata, CMapObj]
+      - [0x1D4D90, .rodata, CMapObj]
       - [0x1D4E58, rodata, ro_CMapEffRes]
       - [0x1D5240, rodata, ro_CMapEffObjRes]   # also CMapEffObj
       - [0x1D5A08, .rodata, CMapSndRes]

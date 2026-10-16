@@ -1,0 +1,14 @@
+//@decl
+extern "C" u64 func_0023AA40(s32, s32);
+extern "C" u64 func_0023BCB8(s32, s32);
+struct U64x2 { u64 a, b; };
+extern U64x2 D_33D950;
+#define TEX0(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) ((u64)(tbp) & 0x3fff) | (((u64)(tbw) & 0x3f) << 14) | (((u64)(psm) & 0x3f) << 20) | (((u64)(tw) & 0xf) << 26) | (((u64)(th) & 0xf) << 30) | (((u64)(tcc) & 1) << 34) | (((u64)(tfx) & 3) << 35) | (((u64)(cbp) & 0x3fff) << 37) | (((u64)(cpsm) & 0x3f) << 51) | (((u64)(csm) & 1) << 55) | (((u64)(csa) & 0x1f) << 56) | (((u64)(cld) & 7) << 61)
+#define CLAMP(wms, wmt, minu, maxu, minv, maxv) ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+//@func 0x21DD08
+extern "C" void func_0021DD08(s32 a, s32 b, s32 c, s32 d) {
+    u64 t = func_0023AA40(a, b);
+    u64 k = func_0023BCB8(a, b);
+    D_33D950.b = CLAMP(2, 2, c, c, d, d);
+    D_33D950.a = TEX0(t, t >> 14, t >> 32, 10, 10, 1, 0, k, k >> 32, 0, 0, 1);
+}

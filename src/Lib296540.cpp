@@ -89,8 +89,7 @@ extern char _vt$10IEnvResMgr[];
 }
 extern "C" void *__nw__8CHeapObjUi(u32 n);
 
-extern "C" s32 func_00296568(void *);
-extern "C" s32 Func296570__7CDkList(void *);
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" void func_00296540(void *p, f32 v) { FLD(f32, p, 0x54) = v; }

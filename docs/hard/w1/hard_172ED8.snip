@@ -1,0 +1,8 @@
+//@decl
+extern "C" s32 atoi(const char *);
+extern "C" s32 func_0024DA00(void *, const char *);
+inline s32 IsNumA(const char *s) { if (*s) { u32 c = (u8)*s; do { if (c - '0' >= 10) return 0; c = (u8)*++s; } while (c); } return 1; }
+inline s32 IsNumB(const char *s) { while (*s) { if ((u32)((u8)*s - '0') >= 10) return 0; s++; } return 1; }
+inline s32 IsNumC(const char *s) { const char *p = s; while (*p) { if ((u8)*p - '0' >= 10U) return 0; p++; } return 1; }
+//@func 0x172ED8
+s32 CMapDBExpr::Func172ED8(const char *s) { if (IsNumB(s)) return atoi(s); return func_0024DA00(this, s); }

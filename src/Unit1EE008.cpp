@@ -202,7 +202,7 @@ INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE4F8);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE668);
 
-INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE8D8);
+extern "C" s32 func_001EE8D8(CRxMcReq *r) { s32 v = 0; if (r->m_fn) { do { v = r->m_fn(r->m_a, r->m_b, r->m_c, r->m_d); r++; if (v < 0) break; } while (r->m_fn); } return v; }
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE940);
 

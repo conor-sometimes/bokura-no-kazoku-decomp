@@ -1,0 +1,17 @@
+//@decl
+extern f32 D_002A6800[0x4000];
+extern s16 D_33A5A8[];
+extern const double D_002E3BF8;
+extern "C" f32 func_00280178(f32);
+extern "C" f32 func_0027FC30(f32);
+//@func 0x21ACD8
+extern "C" s32 func_0021ACD8(f32 a, f32 b) {
+    f32 bb = __builtin_fabsf(b), aa = __builtin_fabsf(a);
+    s32 r;
+    if (bb == aa) { if (bb == 0.0f) return 0; r = 0x800; }
+    else if (aa < bb) { s16 *t = D_33A5A8; r = t[(s32)(aa * 4096.0f / bb)]; }
+    else r = 0x1000 - D_33A5A8[(s32)(bb * 4096.0f / aa)];
+    if (a < 0.0f) r = 0x4000 - r;
+    if (b < 0.0f) r = 0x2000 - r;
+    return r & 0x3FFF;
+}

@@ -1,0 +1,20 @@
+//@decl
+extern "C" void InitB__9CSceneSeti(void *p, s32 n);
+extern "C" s32 SetSnd__9CSceneSetP12CSndWorkReal(void *p, void *q);
+//@func 0x16D660
+void CAlbumMgr::Init16D660() {
+    CAlbumScene *sc = &m_scene;
+    CAlbumSceneSet *ss = &m_sceneSet;
+    Term16D768();
+    m_buf = func_00250D28(D_002A0BE8);
+    s32 need = 0xDF200;
+    if (!m_buf || D_002A0BE8->m_free < need) Func235DE0(D_002D9D50, m_buf, D_002A0BE8->m_free, 0xDF200);
+    m_bufA = m_buf;
+    m_bufB = (u8 *)m_buf + 0x6F900;
+    ss->m_unk2C = 2;
+    InitB__9CSceneSeti(sc, 0x80);
+    func_0012C578(sc, 1);
+    SetSnd__9CSceneSetP12CSndWorkReal(sc, ss);
+    sc->m_unk38 = 1;
+    m_event = CNameDBMgr::Create((void *)1);
+}

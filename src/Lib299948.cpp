@@ -133,6 +133,8 @@ void func_0029A7A0(TArrMapDBExprReg *a, s32 i, s32 n);
 void func_0029A8E8(TArrMapDBExprReg *a, s32 i, const MapDBExprReg &v);
 extern const char D_002DA2F0[];
 }
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" s32 func_00299948(void *p) { return FLD(s32, p, 0x23C); }

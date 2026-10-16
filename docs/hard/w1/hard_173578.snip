@@ -1,0 +1,23 @@
+//@decl
+extern "C" void *func_00248CC8(void *b, s32 n, s32 a, s32 c);
+char *Func24A4C0(const char *path);
+extern "C" void func_0028A140(void *base, s32 n, s32 size, int (*cmp)(const char **, const char **));
+extern void (*D_002B91B0)(void *p);
+extern char D_002DA298[], D_002DA2A8[];
+int Func235DE0(const char *fmt, ...);
+inline void FreeIf173(void *p) { if (p) D_002B91B0(p); }
+//@func 0x173578
+int CMapDBMgr::Load173578() {
+    int ok = 0;
+    char *buf = Func24A4C0(D_002DA298);
+    if (buf) {
+        ok = 1;
+        m_count = Parse173648(buf, 0);
+        m_table = func_00248CC8(&m_buf, m_count * 8, 1, 1);
+        Parse173648(buf, (CMapDBPair *)m_table);
+        func_0028A140(m_table, m_count, 8, CompareMapDBNames2);
+    }
+    if (buf) D_002B91B0(buf);
+    Func235DE0(D_002DA2A8, ok);
+    return ok;
+}

@@ -77,6 +77,10 @@ extern TypeInfo D_424E00;
 extern const char D_002E1C10[];
 }
 struct VDel_29BD90 { virtual void v0(); virtual void v1(); virtual void v2(); virtual void v3(); virtual void v4(); virtual void v5(); virtual void v6(); virtual void v7(); virtual void v8(); virtual void v9(); virtual void v10(); virtual void v11(); virtual void v12(); virtual void v13(); virtual void v14(); virtual void v15(); virtual void v16(); virtual void v17(); virtual void v18(); virtual void v19(); virtual ~VDel_29BD90(); };
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" TypeInfo *__tf13CMenuSysscr22()
@@ -270,13 +274,13 @@ extern "C" TypeInfo *__tf10CLayoutObj()
 
 extern "C" s32 func_0029BEA0(void *p) { return FLD(s32, p, 0x0); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BEA8);
+extern "C" void func_0029BEA8(void *p, f32 a, f32 b, f32 c, f32 d) { FLD(f32, p, 0x20) = a; FLD(f32, p, 0x24) = b; FLD(f32, p, 0x28) = c; FLD(f32, p, 0x2C) = d; }
 
-extern "C" void func_0029BEC0(void *p, f32 x, f32 y) { FLD(f32, p, 0x30) = x; FLD(f32, p, 0x34) = y; }
+extern "C" void func_0029BEC0(void *p, f32 a, f32 b) { FLD(f32, p, 0x30) = a; FLD(f32, p, 0x34) = b; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029BED0);
+extern "C" void func_0029BED0(void *p, f32 a, f32 b, f32 c, f32 d) { FLD(f32, p, 0x40) = a; FLD(f32, p, 0x44) = b; FLD(f32, p, 0x48) = c; FLD(f32, p, 0x4C) = d; }
 
-extern "C" void func_0029BEE8(void *p, f32 x, f32 y) { FLD(f32, p, 0x50) = x; FLD(f32, p, 0x54) = y; }
+extern "C" void func_0029BEE8(void *p, f32 a, f32 b) { FLD(f32, p, 0x50) = a; FLD(f32, p, 0x54) = b; }
 
 extern "C" void func_0029BEF8(void *p, f32 v) { FLD(f32, p, 0x58) = v; }
 
@@ -292,7 +296,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C050);
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C0F0);
 
-extern "C" s32 func_0029C190(void *p, void *q, s32 v) { return FLD(s32, q, 4) | v | FLD(s32, p, 0x60); }
+extern "C" u32 func_0029C190(void *p, void *q, u32 f) { return FLD(u32, q, 4) | f | FLD(u32, p, 0x60); }
 
 INCLUDE_ASM("asm/nonmatchings/Lib29B7F0", func_0029C1A8);
 

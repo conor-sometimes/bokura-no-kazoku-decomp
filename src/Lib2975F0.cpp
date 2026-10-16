@@ -77,6 +77,10 @@ void func_00297AA8(TArrConstPtr *a, s32 i, s32 n);
 void func_00297BB8(TArrConstPtr *a, s32 i, const ConstPtr &v);
 extern const char D_002D5598[];
 }
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
+
+#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 // @decl-end
 
 extern "C" void func_002975F0(VDel_2975F0 *p) { delete p; }
@@ -219,7 +223,7 @@ extern "C" void func_00297DA8(void *p, s32 v) { FLD(s32, p, 0x291C) = v; }
 
 extern "C" f32 func_00297DB0(void *p) { return FLD(f32, p, 0x2920); }
 
-extern "C" void func_00297DB8(void *p, s32 v) { FLD(f32, p, 0x2920) = (f32)v; }
+extern "C" void func_00297DB8(void *p, s32 v) { FLD(f32, p, 0x2920) = v; }
 
 extern "C" void func_00297DC8(void *p, s32 v) { FLD(s32, p, 0x2924) = v; }
 
@@ -253,7 +257,7 @@ extern "C" s32 func_00297E80(void *p) { return FLD(s32, p, 0x484); }
 
 extern "C" void func_00297E88(void *p, s32 a, s32 b) { FLD(s32, p, 0x2928) = a; FLD(s32, p, 0x292C) = b; FLD(s32, p, 0x2930) = 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297E98);
+extern "C" s32 func_00297E98(void *p) { return FLD(s32, p, 0x2928) && FLD(s32, p, 0x292C) > 0; }
 
 extern "C" TypeInfo *__tf9CEventRes()
 {

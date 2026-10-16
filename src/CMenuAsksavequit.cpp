@@ -83,6 +83,7 @@ extern "C" int func_001B66E8(void *p);
 void Func225240(s32 v);
 class CMenuAsksavequitWin {
 public:
+    CMenuAsksavequitWin(int n);
     int Func193D68();
     u8 pad0[0x48];
     CUnk1A4298 *m_unk48;     // 0x48
@@ -226,6 +227,11 @@ struct CAqSprPkt {
 inline void PutRGBA2(CAqSprPkt *p) { func_00226DF8(1, (u64)p->r | ((u64)p->g << 8) | ((u64)p->b << 16) | ((u64)p->a << 24)); }
 inline void PutXYZ2(s32 x, s32 y) { func_00226DF8(5, (u64)x | ((u64)y << 16)); }
 inline void PutUV2(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
+
+struct AsqWinV { s16 m0; s16 m2; s32 m4; u8 pad8[0x44]; s32 m4C; s32 m50; s32 m54; s32 m58; s32 m5C; };
+extern char D_002DBEB0[];
+#include "CFlagWork.h"
+extern CFlagWork *D_002A5358;
 // @decl-end
 
 CMenuAsksavequit::CMenuAsksavequit() {
@@ -261,7 +267,17 @@ s32 CMenuAsksavequit::Draw() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", __19CMenuAsksavequitWini);
+CMenuAsksavequitWin::CMenuAsksavequitWin(int n) {
+    AsqWinV *v = (AsqWinV *)this;
+    v->m4 = -1; v->m2 = 0; v->m0 = 0;
+    if ((u32)n >= 3) { Func235DE0(D_002DBEB0, n); n = 0; }
+    v->m50 = n;
+    s32 f = D_002A5358->Func1091B0(0xF);
+    s32 lim = !v->m50 ? 10 : 20;
+    s32 c = f < lim ? f : lim;
+    v->m5C = -1; v->m4C = 0; v->m58 = 0;
+    v->m54 = c < 1 ? 1 : c;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", Func193358__19CMenuAsksavequitWin);
 

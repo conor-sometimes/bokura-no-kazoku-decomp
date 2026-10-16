@@ -141,6 +141,7 @@ struct CMenuMgrKey {
 };
 class CMenuMgr : public IMenuMgr {
 public:
+    void Update1B45E8();
     CMenuMgr();
     virtual ~CMenuMgr();
     virtual s32 GetPad(s32 *a, s32 *b, s32 *c);
@@ -585,6 +586,11 @@ void *NewChrBodyWin();
 int GetFontTable(u32 i);
 extern "C" void *func_0025C230(void *p);
 extern "C" void func_0025C438(s32 a, void *b);
+
+extern "C" char *strcpy(char *, const char *);
+inline void StrAdd1B7(char *d, const char *s) { strcpy(d + strlen(d), s); }
+
+class CMenuProcV { public: u8 pad[0x54]; virtual ~CMenuProcV(); virtual void Update(); };
 // @decl-end
 
 CMenuMgr::CMenuMgr() {
@@ -732,7 +738,23 @@ int CMenuMgr::SndFunc25C990(s32 a) {
     return m_snd.Func25C990(a);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B45E8);
+void CMenuMgr::Update1B45E8() {
+    if (!m_unk68) return;
+    if (!m_proc) return;
+    ((CMenuProcV *)m_proc)->Update();
+    CMenuProcess *p = m_proc;
+    m_unk6C = p->m_unk4C;
+    s32 st = p->m_state;
+    if (st == 1) { m_unk68 = 2; return; }
+    if (st == 3) goto three;
+    if (st == 2) { three: m_unk68 = 3; return; }
+    if (st == 4) { m_unk68 = 4; return; }
+    if (st != 5) return;
+    m_unk68 = 5;
+    delete p;
+    m_proc = 0;
+    Func235DE0(D_002DFF10, m_unk6C);
+}
 
 s32 CMenuMgr::DrawProc() {
     if (m_proc && m_unk68 != 0 && m_unk68 != 5) {
@@ -761,7 +783,7 @@ CMenuMgrSub1B4768::~CMenuMgrSub1B4768() {
     D_002A5530 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", Reset1B47E8__17CMenuMgrSub1B4768);
+void CMenuMgrSub1B4768::Reset1B47E8() { m_unk30 = 1.0f; m_unk34 = 1.0f; m_unk38 = 0.0f; m_unk3C = 0.0f; m_unk40 = 1.0f; m_unk44 = 1.0f; m_unk48 = 1.0f; m_unk50 = 1; m_unk4C = 1.0f; }
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B4820);
 
@@ -1012,7 +1034,7 @@ CMenuMgrSub1B6418::~CMenuMgrSub1B6418() {
     D_002A5538 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", Reset1B6300__17CMenuMgrSub1B6418);
+void CMenuMgrSub1B6418::Reset1B6300() { m_unk0 = 0; m_unk4 = 0; m_unk30 = 24.0f; m_unk34 = 24.0f; m_unk40 = 1.0f; m_unk44 = 1.0f; m_unk48 = 1.0f; m_unk4C = 1.0f; m_unk58 = 0; m_unk54 = 0; m_unk50 = 0; m_unk5C = 0; m_unkDC = 0; m_unkE0 = 0; }
 
 int CMenuMgrSub1B6418::AllReady1B6350() {
     for (s32 i = 0; i < 3; i++) {
@@ -1342,7 +1364,15 @@ INCLUDE_ASM("asm/nonmatchings/CMenuMgr", Func1B76D0__10CUnk2A55B0Pv);
 
 INCLUDE_ASM("asm/nonmatchings/CMenuMgr", Func1B7910__10CUnk2A55B0);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", Init__10CUnk2A55B0);
+void CUnk2A55B0::Init() {
+    m_unk4 = -1; m_unk2 = 0; m_unk0 = 0;
+    if (D_002A55B0) Func235DE0(D_002E0740);
+    D_002A55B0 = this;
+    strcpy(m_unk174, func_00235D80());
+    StrAdd1B7(m_unk174, D_002E0760);
+    func_001ED960(m_unk60);
+    m_unk5C = 0; m_unk274 = 0; m_unk278 = 0; m_unk27C = 0; m_unk4C = 0; m_unk50 = 0; m_unk54 = 0; m_unk48 = 0; m_unk6C = 0; m_unk70 = 0; m_unk58 = 0;
+}
 
 CUnk2A55B0::~CUnk2A55B0() {
     if (m_unk274) {

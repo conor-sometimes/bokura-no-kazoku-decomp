@@ -14,6 +14,8 @@ int Func1456A8(int name);
 int Func24B998(const char **table, const char *s);
 void Func205FE0(int v);
 void Func251388(int v);
+extern "C" void func_00205FE0(int v);
+extern "C" void func_00251388(int v);
 extern "C" void func_00108448(CFlagWork *w, void *src, s32 n) throw();
 extern u8 D_002A1D40[];
 extern char D_002D7968[];
@@ -167,7 +169,7 @@ void CSysFlag::Merge144440(CFlagWork *w) {
     for (i = 0; i < 0x12C; i++) OrBits(i + 0x2500, w->Func1091B0(i + 0x2500));
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_001446D8);
+void CSysFlag::Vf2932F0(s32 a) { if (a < 0 || a == 1) { s32 v = Func1091B0(a); if (v != 0) { if (v == 1) func_00205FE0(0); } else func_00205FE0(1); } if (a < 0 || a == 6) func_00251388(Func1091B0(a)); }
 
 CCurFlag *NewSysFlag() {
     return new CCurFlag;
@@ -341,7 +343,7 @@ int CCurFlag::GetBit1454F0(u32 idx, u32 bit) {
     return ((u32)Func1091B0(idx + 0x306A) >> bit) & 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00145558);
+int CCurFlag::Get145558(u32 a, int name) { s32 k; if (a >= 0x24 || (k = Func1456A8(name)) < 0) return 0; return Func1091B0(k * 36 + a + 0x308E); }
 
 s32 CCurFlag::Get1455D0() {
     return D_002A2988->Vf150680(1.4f);

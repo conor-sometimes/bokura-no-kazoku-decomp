@@ -111,11 +111,14 @@ extern SndAvail D_002B9DE0[];
 extern SndWrite D_002B9DE8[];
 extern SndSet1 D_002B9DF0[];
 extern SndSet2 D_002B9DF8[];
+
+#define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
+extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00243AB8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00243CF0);
+extern "C" void func_00243CF0(const char *fmt, ...) { char buf[0x1000]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_00243AB8(buf); }
 
 extern "C" s32 func_00243D60(s32 a, s32 b, s32 c, s32 d) {
     return func_0020AD90(a, c, d);

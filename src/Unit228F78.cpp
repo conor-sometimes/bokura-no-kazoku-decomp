@@ -127,6 +127,9 @@ inline void Unlink(HL *h, NL *n) {
     n->m4 = 0;
     h->m14--;
 }
+
+#define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
+extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
 // @decl-end
 
 extern "C" u8 *func_00228F78(s32 i) {
@@ -467,7 +470,7 @@ extern "C" s32 func_0022A710(s32 x) {
     return func_001F11C8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022A758);
+extern "C" void func_0022A758(const char *fmt, ...) { char buf[0x100]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf + 2, fmt, ap); buf[0] = '!'; buf[1] = '-'; func_0022B6F0(buf); }
 
 extern "C" u32 func_0022A7D8(void) {
     return func_0022A7F0();
@@ -545,9 +548,9 @@ INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B138);
 
 INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B390);
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B510);
+extern "C" void func_0022B510(const char *fmt, ...) { char buf[0x100]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_001F1190(); if (D_002B8C3C & 4) func_0022B660(buf); if (D_002B8C3C & 1) Func235DE0(buf); func_001F11C8(); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B5C8);
+extern "C" void func_0022B5C8(const char *fmt, ...) { char buf[0x100]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_001F1190(); if (D_002B8C3C & 4) func_0022B660(buf); Func235DE0(buf); func_001F11C8(); }
 
 extern "C" void func_0022B660(const char *s) {
     s32 fd = D_002B8C4C;

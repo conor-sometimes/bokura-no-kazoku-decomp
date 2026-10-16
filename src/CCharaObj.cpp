@@ -26,6 +26,8 @@ extern "C" void func_0010FC98(CDiffMotionObj *p);
 // CFaceObj.cpp: vptr at 0x50.
 class CFaceObj {
 public:
+    void Func10DC80(s32 *p, s32 n);
+    void SetSet(s32 set);
     CFaceObj();
     virtual ~CFaceObj();
     void Release();
@@ -93,6 +95,7 @@ extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
 
 class CCharaObj {
 public:
+    void Func114C78(s32 set);
     void Part24Func10DC80();
     void Part24Func10DBD8();
     void Part24Func10DB70();
@@ -669,7 +672,7 @@ u32 ReadVarint(u8 **pp) {
     return v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00114C78);
+void CCharaObj::Func114C78(s32 set) { if (m_part24) { m_part24->SetSet(set); m_part24->Func10DC80((s32 *)0, 0); } }
 
 void CCharaObj::Part24Func10DB70() {
     if (m_part24) {

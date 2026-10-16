@@ -1,0 +1,30 @@
+//@decl
+extern "C" s32 func_0022E230(s32, s32, s32);
+extern "C" s32 func_0022DF28(s32, u8 *, u32);
+extern "C" s32 func_0022E0E8(s32, u8 *, s32);
+extern "C" void func_00230530(char *, const char *);
+extern "C" s32 func_00230548(void);
+extern "C" s32 func_00234938(void);
+extern "C" FsOps *func_00230460(s32);
+typedef void (*FsFn0)(void);
+typedef void (*FsFn1)(s32);
+extern "C" void func_00273420(s32);
+extern "C" s32 func_0022DD78(const char *, s32);
+extern "C" void func_0022DDE8(s32);
+extern const char D_002E4850[], D_002E4868[], D_002E4888[];
+extern volatile u32 D_002B8C58;
+extern "C" s32 func_00230550(s32);
+extern "C" s32 func_00230578(void);
+extern "C" s32 func_00230638(void);
+extern "C" s32 func_002306E8(void);
+extern "C" s32 func_00230808(void);
+extern "C" s32 func_00230970(void);
+extern "C" s32 func_00230980(s32);
+//@func 0x22FA70
+extern "C" void func_0022FA70(FEnt *f) {
+    u32 st = DisableIntr();
+    DL *n = f->mB4.m4;
+    DL *h = &f->mB4;
+    if (n != h) { DL *e = n; do { n = n->m4; e->m0->m4 = e->m4; e->m4->m0 = e->m0; e->m4 = D_3401E0.m4E08; D_3401E0.m4E08 = e; e = n; } while (n != h); }
+    RestoreIntr(st);
+}

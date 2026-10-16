@@ -1,0 +1,10 @@
+//@func 0x14FA08
+s32 CGameDBMgr::Find14FA08(s32 a, s32 chk) {
+    if (a < 0) a = D_002A26E4->Func1091B0(0x17);
+    s32 v = a / 4 + 0x19;
+    s32 n = m_num250;
+    s32 r = -1;
+    for (s32 i = 0; i < n; i++) if (v >= m_tbl250[i].m_id) r = i;
+    if (chk) { CGameDBRec20 *e = &m_tbl250[r]; if (e->m_id != v) return -1; if (!e->m8[0]) return -1; }
+    return r;
+}
