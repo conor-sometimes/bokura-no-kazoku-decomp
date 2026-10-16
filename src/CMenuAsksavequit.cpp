@@ -93,7 +93,7 @@ class CMenuAsksavequit : public CMenuProcess {
 public:
     CMenuAsksavequit();
     virtual ~CMenuAsksavequit();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;      // 0x58
@@ -246,7 +246,7 @@ CMenuAsksavequit::CMenuAsksavequit() {
 CMenuAsksavequit::~CMenuAsksavequit() {
 }
 
-s32 CMenuAsksavequit::Update() {
+void CMenuAsksavequit::Update() {
     s32 a, b, c;
     s32 done;
     D_002A5468->F7(&a, &b, &c);
@@ -264,7 +264,7 @@ loop:
     switch (m_unk4) {
     case -1:
         m_unk58 = (CUnk1A4298 *)D_002A5408->Find("asksavequit");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "asksavequit");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "asksavequit"); return; }
         if (0) {
     c3:
             D_002A5468->Play(3);

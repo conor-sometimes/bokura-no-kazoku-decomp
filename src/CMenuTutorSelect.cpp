@@ -15,7 +15,7 @@ class CMenuTutorSelect : public CMenuProcess {
 public:
     CMenuTutorSelect();
     virtual ~CMenuTutorSelect();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Init17FD50();
 

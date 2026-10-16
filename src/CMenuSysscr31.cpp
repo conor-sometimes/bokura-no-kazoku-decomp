@@ -21,7 +21,7 @@ class CMenuSysscr31 : public CMenuProcess {
 public:
     CMenuSysscr31();
     virtual ~CMenuSysscr31();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Release1A7AF8();
     void Release1A8DC0();

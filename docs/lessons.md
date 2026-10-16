@@ -1106,3 +1106,35 @@ end:;
   (`void *Y1NewEhContext(void) asm("func_002838D8")`) kept the caller as retail. *(bokura)*
 - **utest vs mk.sh after a compiler-group change**: tools/bk/bk.py keeps its own LIBC_C_RANGES; until that is
   updated utest compiles the unit with the old front end (DIFF 85 in utest, OK in mk.sh). *(bokura)*
+- **CEventObj command handlers** (`int CmdXXXX(CSvmWork *w, int id, int reset)`, one `m_sm[i]` each;
+  Cmd13A100/13A508/13AA80/138610/13C120): the shape that matches is
+  ```
+  if (reset) SmInit(&m_sm[i], id);              // inline: m_depth = 0; m_flags = 0; m_state = st;
+  if ((u32)(id - 0x80) < 0x80) {                 // script ids 0x80-0xFF go to the host callback
+      int r = 0;
+      if (m_FD30 && m_FD34) r = (m_FD30->*m_FD34)(w, id, reset);   // PMF takes (w, id, reset)
+      return r;
+  }
+  done = 0;                                      // (inside or before the block, per function)
+  { CStateMachine *sm = &m_sm[i];
+  loop: if (done) goto r1; ...busy test...; switch (sm->m_state) { ... } }
+  return 0;
+  r1: return 1;
+  ```
+  The `int r` redirect is what keeps if-conversion (IF-CASE-2) from hoisting `done = 0` and the
+  machine pointer above the range test (with `return call; return 0;` it hoists them, done loses $2
+  and the pointer's s-register swaps with `this`); an empty `asm volatile("")` there also works but
+  is not needed. The pointer is set up outside `loop:` (inside, its def counts as a loop ref and
+  wins `$16` from `this`). Every exit is its own `return 0;` (`if (!buf[0]) return 0; f(); return 0;`,
+  not `if (buf[0]) f(); return 0;`), or a shared return-0 block survives in front of the epilogue.
+  Waits are `while (<int>) { yield; case L:; }`: an int-valued test (`EvREmpty(mgr)`, a virtual
+  `int`) gives the rotated loop with the yield block before the test; a pointer test
+  (`!RFirst(...)`) gets its exit test copied to the loop entry (duplicate_loop_exit_test). Two
+  yields share retail's `li $3,1; b loop; sw $2,4(sm)` tail by cross-jumping. *(bokura)*
+- **Branch-likely vs plain branch with a `$2` slot is decided by reorg's liveness of `$2` on the
+  other path**, not by the source branch: an `s32` function that falls off its end still has
+  `(use $2)` before the epilogue, so a `goto end` path counts `$2` as live and a slot insn that sets
+  `$2` gets annulled (`bnel`). CMenuSysscr26::Update matches only with a `void` Update (the base
+  CMenuProcess::Update is probably `void` in retail; not changed here, see HARD.md 0x1AA1B8). Use
+  `ushow.py` (under `.bokura-env/bin/bokura-env -c`) for exact per-word diffs, and the `-da` dumps'
+  `REG_BR_PRED` notes to see what reorg predicted. *(bokura)*

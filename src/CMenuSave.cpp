@@ -39,7 +39,7 @@ class CMenuSave : public CMenuProcess {
 public:
     CMenuSave();
     virtual ~CMenuSave();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CBgWork m_bg;             // 0x58

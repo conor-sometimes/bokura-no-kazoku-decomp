@@ -1,0 +1,45 @@
+//@decl
+struct S30F500u { u8 buf[2][32]; };
+extern "C" s32 func_00206508(void);
+extern "C" s32 func_00273420(s32 a);
+extern "C" s32 func_00275C28(void *p, u8 *s, u8 *d, s32 n, s32 m);
+extern "C" s32 func_00206A18(u8 *dst, u8 *src, s32 n);
+
+//@func 0x206A18
+extern "C" s32 func_00206A18(u8 *dst, u8 *src, s32 n) {
+    u8 tmp[0x20];
+    s32 a = (u32)dst & 0xF;
+    s32 b = (u32)src & 3;
+    s32 m, head, k, t, c;
+    if (a == 0 && (n & 0xF) == 0 && b == 0 && (n & 3) == 0) {
+        func_00273420(0);
+        while (func_00275C28(tmp, src, dst, n, 0) < 0);
+        func_00273420(0);
+        goto out;
+    }
+    m = n;
+    head = -b & 3;
+    if (m > 0 && head > 0) {
+        k = head < m ? head : m;
+        func_00206A18(((S30F500u *)&D_30F500)->buf[func_00206508()], src - b, 32);
+        func_00206588(dst, ((S30F500u *)&D_30F500)->buf[func_00206508()] + b, k);
+        m -= k;
+    }
+    if (m >= 4) {
+        t = -a & 0xF;
+        c = (m - t < 0 ? 0 : m - t) & ~0xF;
+        if (c > 0) {
+            u8 *d2 = dst + head;
+            u8 *d3 = d2 + t;
+            func_00206A18(d3, src + head, c);
+            if (t > 0) func_00206588(d2, d3, c);
+            m -= c;
+        }
+    }
+    if (m > 0) {
+        func_00206A18(((S30F500u *)&D_30F500)->buf[func_00206508()], src + n - m, (m + 15) & ~15);
+        func_00206588(dst + n - m, ((S30F500u *)&D_30F500)->buf[func_00206508()], m);
+    }
+out:
+    return 1;
+}

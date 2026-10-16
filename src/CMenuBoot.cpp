@@ -37,7 +37,7 @@ class CMenuBoot : public CMenuProcess {
 public:
     CMenuBoot();
     virtual ~CMenuBoot();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CBgWork m_bg;             // 0x58

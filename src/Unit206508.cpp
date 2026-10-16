@@ -5,7 +5,7 @@ extern "C" s32 func_0020DC98(s32 cmd, void *rbuf, s32 rsize, void *sbuf, s32 ssi
 extern "C" void *memset(void *dst, int c, unsigned int n);
 int Func235DE0(const char *, ...);
 extern "C" s32 func_00206088(void);
-extern "C" void func_00206808(void *dst, void *src, s32 n);
+extern "C" s32 func_00206808(void *dst, void *src, s32 n);
 extern "C" void func_00207B80(s32);
 extern "C" s32 func_00207530(s32, s32, s32);
 extern "C" s32 func_00207960(s32);
@@ -48,6 +48,25 @@ extern SndDummy D_3121A0;
 extern "C" void func_00206F50(u32 i);
 extern "C" SndNode *func_00207C90(void);
 extern const char D_002E2C60[];
+
+extern "C" S310DA0 *func_002074F8(u32 i);
+inline u32 GetSR() { u32 r; __asm__ volatile("sync.p"); __asm__ volatile("mfc0 %0, $12" : "=r"(r)); __asm__ volatile("sync.p"); return r; }
+inline void SetSR(u32 v) { __asm__ volatile("sync.p"); __asm__ volatile("mtc0 %0, $12" : : "r"(v)); __asm__ volatile("sync.p"); }
+inline void SetSRWait(u32 v) { do SetSR(v); while (GetSR() != v); }
+inline u32 DisableIntr() { u32 st; __asm__ volatile("sync.p"); __asm__ volatile("sync"); st = GetSR(); SetSRWait(st & ~1); return st; }
+inline void RestoreIntr(u32 st) { __asm__ volatile("sync.p"); __asm__ volatile("sync"); SetSRWait(st); }
+
+extern SndNode D_310D80;
+extern "C" void func_00207CB8(SndNode *n);
+
+extern "C" s32 func_00206508(void);
+extern "C" s32 func_00273420(s32 a);
+extern "C" s32 func_00273560(void *p, s32 n);
+extern "C" s32 func_00273540(s32 id);
+extern "C" s32 func_00206D40(s32 a, s32 b, s32 c);
+struct DdDma { u8 *s; u8 *d; s32 n; s32 attr; };
+struct S30F500t { u8 pad0[0x40]; u8 *tmp[2]; };
+#define DDTMP() (((S30F500t *)&D_30F500)->tmp[func_00206508()])
 // @decl-end
 
 extern "C" s32 func_00206508(void) { return D_002A5DE8; }
@@ -127,7 +146,49 @@ extern "C" s32 func_002067B8(s32 size) { return D_002A6110(size); }
 
 void Func2067E0(void *p) { D_002A6114(p); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00206808);
+extern "C" s32 func_00206808(void *dstv, void *srcv, s32 n) {
+    u8 *dst = (u8 *)dstv;
+    u8 *src = (u8 *)srcv;
+    DdDma dma;
+    s32 a = (u32)src & 0xF;
+    s32 m, head, k, t, c, id;
+    if (a == 0 && (n & 0xF) == 0 && ((u32)dst & 3) == 0 && (n & 3) == 0) {
+        func_00273420(0);
+        dma.s = src;
+        dma.d = dst;
+        dma.n = n;
+        dma.attr = 0;
+        id = func_00273560(&dma, 1);
+        while (func_00273540(id) >= 0);
+        func_00273420(0);
+        goto out;
+    }
+    m = n;
+    head = -a & 0xF;
+    if (m > 0 && a > 0) {
+        k = head < m ? head : m;
+        func_00206808(DDTMP(), src - a, 32);
+        func_00206D40((s32)(dst), (s32)(DDTMP() + a), (s32)(k));
+        m -= k;
+    }
+    if (m >= 16) {
+        t = -((u32)dst & 3) & 3;
+        c = (m - t < 0 ? 0 : m - t) & ~0xF;
+        if (c > 0) {
+            u8 *d2 = dst + head;
+            u8 *d3 = d2 + t;
+            func_00206808(d3, src + head, c);
+            if (t > 0) func_00206D40((s32)(d2), (s32)(d3), (s32)(c));
+            m -= c;
+        }
+    }
+    if (m > 0) {
+        func_00206808(DDTMP(), src + n - m, (m + 15) & ~15);
+        func_00206D40((s32)(dst + n - m), (s32)(DDTMP()), (s32)(m));
+    }
+out:
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00206A18);
 
@@ -333,9 +394,68 @@ INCLUDE_RODATA("asm/nonmatchings/Unit206508", D_002E2C38);
 INCLUDE_RODATA("asm/nonmatchings/Unit206508", D_002E2C60);
 INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00207530);
 
-INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00207960);
+extern "C" s32 func_00207960(s32 addr) {
+    u32 st = DisableIntr();
+    SndNode *n;
+    SndNode *p;
+    s32 a = 0x5010;
+    for (n = D_30F580.m1800.m4; n != &D_30F580.m1800; n = n->m4) {
+        if (n->mC == 1 && a == addr) goto found;
+        a += n->m14;
+    }
+    if (func_00206088() & 2) Func235DE0("rxsnd : can't found SPU heap address %08X\n", addr);
+    goto out;
+found:
+    n->mC = 0;
+    ((S310DA0 *)n->m8)->m10--;
+    D_30F580.m181C += n->m14;
+    p = n->m0;
+    if (p != &D_30F580.m1800 && !p->mC) {
+        SndNode *x = n->m4;
+        p->m4 = x;
+        x->m0 = p;
+        p->m14 += n->m14;
+        func_00207CB8(n);
+        n = p;
+    }
+    p = n->m4;
+    if (p != &D_310D80 && !p->mC) {
+        SndNode *x = n->m0;
+        x->m4 = p;
+        p->m0 = x;
+        p->m14 += n->m14;
+        func_00207CB8(n);
+        n = p;
+    }
+    if (!n->mC && !n->m14) {
+        SndNode *x = n->m0;
+        SndNode *y = n->m4;
+        x->m4 = y;
+        y->m0 = x;
+        func_00207CB8(n);
+    }
+    if (func_00206088() & 4) Func235DE0("rxsnd : SPU heap free (%d / %d)\n", D_30F580.m181C, 0x1BAFF0);
+out:
+    RestoreIntr(st);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00207B80);
+extern "C" void func_00207B80(s32 i) {
+    S310DA0 *c = func_002074F8(i);
+    u32 st;
+    SndNode *n;
+    SndNode *next;
+    s32 addr;
+    if (!c->m4) return;
+    st = DisableIntr();
+    addr = 0x5010;
+    next = D_30F580.m1800.m4;
+    for (n = next; next != &D_30F580.m1800; n = next) {
+        next = next->m4;
+        if (n->m8 == (s32)c) func_00207960(addr);
+        addr += n->m14;
+    }
+    RestoreIntr(st);
+}
 
 extern "C" SndNode *func_00207C90(void) {
     SndNode *p = D_30F580.m1818;

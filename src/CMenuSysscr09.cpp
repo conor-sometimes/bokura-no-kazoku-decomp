@@ -19,7 +19,7 @@ class CMenuSysscr09 : public CMenuProcess {
 public:
     CMenuSysscr09();
     virtual ~CMenuSysscr09();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CMenuAsksavequitWin *m_unk58; // 0x58
@@ -46,7 +46,7 @@ CMenuSysscr09::~CMenuSysscr09() {
     }
 }
 
-s32 CMenuSysscr09::Update() {
+void CMenuSysscr09::Update() {
     s32 done;
     if (m_state == 6) {
         if (m_unk58) {

@@ -1,0 +1,52 @@
+//@decl
+struct S318DC0 { Node20 *free; VoiceEnt e[48]; };
+extern S318DC0 D_318DC0;
+inline s32 VCmp64(Node20 *a, Node20 *b) {
+    u32 ah = a->m4, bh = b->m4;
+    if (ah < bh) return -1;
+    if (ah > bh) return 1;
+    {
+        u32 al = a->m8, bl = b->m8;
+        if (al < bl) return -1;
+        return al > bl;
+    }
+}
+
+//@func 0x20CDF0
+extern "C" s32 func_0020CDF0(u32 i, s32 off, s32 x, s32 y) {
+    VoiceEnt *e;
+    Node20 *nd;
+    Node20 *cur;
+    Node20 **pp;
+    s32 t;
+    u32 lo;
+    if (i < 48) {
+        e = &D_318DC0.e[i];
+        if (Used(e) && (nd = D_318DC0.free)) goto found;
+    }
+    return 0;
+found:
+    t = e->m4;
+    switch (t) {
+    case 1:
+    case 2:
+    case 3:
+        off /= 2;
+        break;
+    case 0x1000000:
+        off /= *(u8 *)&e->mC;
+        break;
+    }
+    lo = *(u32 *)((u8 *)e + 0x3C);
+    nd->m4 = *(s32 *)((u8 *)e + 0x38) + ((((lo & 1) + ((u32)off & 1)) >> 1) + (lo >> 1) + ((u32)off >> 1) >> 31);
+    nd->m8 = *(u32 *)((u8 *)e + 0x3C) + off;
+    nd->mC = x;
+    nd->m10 = y;
+    D_318DC0.free = nd->m0;
+    for (pp = (Node20 **)((u8 *)e + 0x40); (cur = *pp); pp = &cur->m0) {
+        if (VCmp64(nd, cur) == -1) break;
+    }
+    nd->m0 = cur;
+    *pp = nd;
+    return 1;
+}

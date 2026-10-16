@@ -4,7 +4,7 @@
 extern "C" char *strcpy(char *dst, const char *src);
 extern "C" void *memset(void *dst, int c, unsigned int n);
 extern "C" s32 func_0020C338(s32, s32, s32, s32, s32);
-extern "C" void func_002731A0(void *);
+extern "C" s32 func_002731A0(void *);
 extern "C" s32 func_002731B0(s32);
 extern "C" void func_002731D0(s32);
 extern "C" s32 func_0020DA30(void *, s32);
@@ -55,6 +55,17 @@ extern S3179C0 D_3179C0;
 
 extern "C" int strcmp(const char *, const char *);
 struct Pkt3h { s16 m0; s16 m2; s32 m4; s32 m8; };
+
+extern "C" s32 func_002762A8(void *cl);
+extern "C" s32 func_00273420(s32 a);
+extern "C" s32 func_002760B0(void *cl, s32 fno, s32 mode, void *send, s32 ssize, void *recv, s32 rsize, void *end, void *para);
+extern "C" s32 func_00275EE0(void *cl, s32 id, s32 mode);
+extern "C" s32 func_00206088(void);
+extern "C" void func_00206548(void);
+extern "C" s32 func_0020D9E0(s32 a, s32 b);
+int Func235DE0(const char *fmt, ...);
+
+struct PktVP { s16 m0; s16 m2; s32 m4; s16 m8; s16 mA; };
 // @decl-end
 
 extern "C" s32 func_0020CBF0(s32 a, s32 b, s32 c, s32 d) { return func_0020C338(a, b, c, d, 0); }
@@ -123,7 +134,25 @@ extern "C" void func_0020D078(u32 i, s32 v) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit20CBF0", func_0020D118);
 
-INCLUDE_ASM("asm/nonmatchings/Unit20CBF0", func_0020D2B8);
+extern "C" void func_0020D2B8(u32 i, s32 k, s32 a, s32 b) {
+    VoiceEnt *e;
+    if (i < 48) {
+        e = &D_318DC4.m0[i];
+        if (Used(e) && k >= 0 && k <= *(u8 *)&e->mC - 1) {
+            PktVP *p;
+            a = a < -128 ? -128 : (a > 128 ? 128 : a);
+            b = b < -128 ? -128 : (b > 128 ? 128 : b);
+            func_0020DE28(0xA4, 0, 0xC);
+            p = (PktVP *)func_0020DED8();
+            p->m0 = e->m8;
+            p->m2 = k;
+            p->m4 = 3;
+            p->m8 = a;
+            p->mA = b;
+            return (void)func_0020DEF0();
+        }
+    }
+}
 
 extern "C" void func_0020D3F0(u32 i, f32 v) {
     if (i < 48) {
@@ -225,15 +254,29 @@ extern "C" s16 func_0020D9C0(void) { return D_318DC4.mCCC; }
 
 extern "C" s16 func_0020D9D0(void) { return D_318DC4.mCCE; }
 
-extern "C" void func_0020D9E0(s32 a, s32 b) {
+extern "C" s32 func_0020D9E0(s32 a, s32 b) {
     s32 buf[6];
     memset(buf, 0, sizeof(buf));
     buf[1] = a;
     buf[2] = b;
-    func_002731A0(buf);
+    return func_002731A0(buf);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20CBF0", func_0020DA30);
+extern "C" s32 func_0020DA30(void *cl, s32 id) {
+    s32 k;
+    if (func_00206088() & 4) Func235DE0("binding IOP module %08X ...\n", id);
+    do {
+        if (func_00275EE0(cl, id, 0) < 0) {
+            if (func_00206088() & 1) Func235DE0("bind error '%08X'\n", id);
+            return 0;
+        }
+        for (k = 9999; k >= 0; k--) func_00206548();
+    } while (*(s32 *)((u8 *)cl + 0x24) == 0);
+    func_00273420(0);
+    if (func_00206088() & 4) Func235DE0("... binding completed\n");
+    D_002A6180 = func_0020D9E0(1, 1);
+    return 1;
+}
 
 extern "C" s32 func_0020DB28(void *p) { return func_002731B0(D_002A6180); }
 
@@ -243,7 +286,19 @@ extern "C" void func_0020DB48(void) {
     __asm__ volatile("ei");
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20CBF0", func_0020DB78);
+extern "C" void func_0020DB78(void *cl, s32 fno, void *send, s32 ssize, void *recv, s32 rsize) {
+    while (func_002762A8(cl) == 1);
+    func_00273420(0);
+    func_001F15F0();
+    func_002760B0(cl, fno, 1, send, ssize, recv, rsize, 0, 0);
+    func_001F1610();
+    while (func_002762A8(cl) == 1);
+    return (void)func_00273420(0);
+}
+
+// "DI error\n": no code in this unit refers to it any more.
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E3338);
+
 
 extern "C" void func_0020DC40(void) {
     while (!func_0020DA30(D_322AC0, 0xD000));

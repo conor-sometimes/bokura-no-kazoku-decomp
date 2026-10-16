@@ -38,7 +38,7 @@ class CMenuContinue : public CMenuProcess {
 public:
     CMenuContinue();
     virtual ~CMenuContinue();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CMenuSub1A7658 *m_unk58;  // 0x58
@@ -66,7 +66,7 @@ CMenuContinue::~CMenuContinue() {
     }
 }
 
-s32 CMenuContinue::Update() {
+void CMenuContinue::Update() {
     s32 done = 0;
     CMenuSub1A7658 *k;
     s32 st;
@@ -89,7 +89,7 @@ loop:
     switch (st) {
     case -1:
         m_unk5C = D_002A5408->Find("savequit");
-        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window.\n", "savequit");
+        if (!m_unk5C) { Func235DE0("*** Can't Get %s Window.\n", "savequit"); return; }
         m_unk5C->Func1A3378();
         m_unk5C->SetUnkF0(0x5, 0);
         m_unk5C->SetUnkF0(0x6, 0x1);

@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -38,19 +39,29 @@ public:
 };
 
 //@sym __builtin_new 0x245648
-// CCharaResMgr (ICharaResMgr.cpp): its factory and constructor sit at the end of this file (unit
-// text starts late). CResCache is the library base (0x24FFE0); ICharaResMgr introduces the
+// CCharaResMgr: its factory and constructor sit before its methods. CResCache is the library base (0x24FFE0); ICharaResMgr introduces the
 // virtuals after its 0x13C bytes.
+class CResCacheUnit {
+public:
+    u8 pad0[0x10];
+    s32 m_res;                // 0x10
+};
 class CResCache {
 public:
     CResCache();
+    void Init250208(void (*f)(), s32 a, s32 b, s32 c);
+    void *Find250B08(s32 id);
+    void Func250368();
     ~CResCache();
 
     u8 pad0[0x13C];
 };
+// ICharaResMgr.cpp was part of this object (merged by lane lb). #pragma interface (top) keeps the
+// unit from emitting the vtables (asm data), so the key method ~CCharaResMgr can be C++;
+// ~ICharaResMgr is inline in retail. vptr at 0x13C, after CResCache.
 class ICharaResMgr : public CResCache {
 public:
-    virtual ~ICharaResMgr();
+    virtual ~ICharaResMgr() {}
     virtual void V1() = 0;
 };
 class CCharaResMgr : public ICharaResMgr {
@@ -58,6 +69,9 @@ public:
     CCharaResMgr();
     virtual ~CCharaResMgr();
     virtual void V1();
+    void InitCache(s32 size, s32 n);
+    s32 *FindRes(s32 id);
+    void CallFunc250368();
 };
 extern CCharaResMgr *D_002A0BE4;
 
@@ -81,7 +95,15 @@ void Func249348();
 int Func235DE0(const char *fmt, ...) throw();
 extern const char D_002D4ED8[], D_002D4EE0[], D_002D4EE8[], D_002D4EF8[], D_002D4F10[];
 extern const char D_002D4F18[], D_002D4F28[];
+extern "C" void func_0012D1C8();
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4ED8);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4EE0);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4EE8);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4EF8);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F10);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F18);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F28);
 
 CCharaResObj *NewCharaResObj() {
     return new CCharaResObj;
@@ -126,3 +148,22 @@ CCharaResMgr *CreateCCharaResObjSub12D408() {
 CCharaResMgr::CCharaResMgr() {
     D_002A0BE4 = this;
 }
+
+CCharaResMgr::~CCharaResMgr() {
+    D_002A0BE4 = 0;
+}
+
+s32 *CCharaResMgr::FindRes(s32 id) { CResCacheUnit *u = (CResCacheUnit *)Find250B08(id); if (u) return &u->m_res; return 0; }
+
+void CCharaResMgr::InitCache(s32 size, s32 n) {
+    if (size < 0) size = 0x64000;
+    if (n < 0) n = 0x18;
+    Init250208(func_0012D1C8, n, size, 0x80);
+}
+
+void CCharaResMgr::CallFunc250368() {
+    Func250368();
+}
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F40);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F50);
+INCLUDE_RODATA("asm/nonmatchings/CCharaResObj", D_002D4F60);

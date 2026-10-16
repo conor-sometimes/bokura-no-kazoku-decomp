@@ -14,7 +14,7 @@ class CMenuSysscr00 : public CMenuProcess {
 public:
     CMenuSysscr00();
     virtual ~CMenuSysscr00();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Init1AE800();
     CStatusItem *Item() { return (CStatusItem *)m_unk58; }        // CMenuSave's constructor (that unit's name for it)
@@ -89,7 +89,7 @@ CMenuSysscr00::CMenuSysscr00() {
 CMenuSysscr00::~CMenuSysscr00() {
 }
 
-s32 CMenuSysscr00::Update() {
+void CMenuSysscr00::Update() {
     s32 done;
     s32 a, b, c;
     D_002A5468->V7(&a, &b, &c);
@@ -107,7 +107,7 @@ loop:
     switch (m_unk4) {
     case -1:
         m_unk58 = (CUnk1A4298 *)D_002A5408->Find("sysscr00");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "sysscr00");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "sysscr00"); return; }
         Item()->Func1A3378();
         D_002A5538->SetUnkE0(0);
         m_unk5C = 0.25f;

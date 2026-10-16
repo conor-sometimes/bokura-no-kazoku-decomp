@@ -55,7 +55,7 @@ class CMenuExGetMoney : public CMenuProcess {
 public:
     CMenuExGetMoney();
     virtual ~CMenuExGetMoney();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CStatusItem *m_unk58;     // 0x58
@@ -127,7 +127,7 @@ CMenuExGetMoney::CMenuExGetMoney() {
 CMenuExGetMoney::~CMenuExGetMoney() {
 }
 
-s32 CMenuExGetMoney::Update() {
+void CMenuExGetMoney::Update() {
     s32 a, b, c;
     char buf[0x200];
     s32 done;
@@ -148,7 +148,7 @@ loop:
     case -1:
         w = D_002A5408->Find("exgetmoney");
         m_unk58 = w;
-        if (!w) return Func235DE0("*** Can't Get %s Window\n", "exgetmoney");
+        if (!w) { Func235DE0("*** Can't Get %s Window\n", "exgetmoney"); return; }
         w->Func1A3378();
         D_002A5538->SetUnkE0(0);
         m_unk58->Select(-1);

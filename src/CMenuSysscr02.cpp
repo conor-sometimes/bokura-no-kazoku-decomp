@@ -58,7 +58,7 @@ class CMenuSysscr02 : public CMenuProcess {
 public:
     CMenuSysscr02();
     virtual ~CMenuSysscr02();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void LoadFlags();
 
@@ -149,7 +149,7 @@ void CMenuSysscr02::LoadFlags() {
     }
 }
 
-s32 CMenuSysscr02::Update() {
+void CMenuSysscr02::Update() {
     CStateMachine *sm;
     s32 a, b, c;
     char buf[0x100];
@@ -182,7 +182,7 @@ loop:
     switch (sm->m_state) {
     case -1:
         m_unkB0 = (CUnk1A4298 *)D_002A5408->Find("sysscr02");
-        if (!m_unkB0) return Func235DE0("*** Can't Get %s Window.\n", "sysscr02");
+        if (!m_unkB0) { Func235DE0("*** Can't Get %s Window.\n", "sysscr02"); return; }
         W->Func1A3378();
         func_002457A0(&m_bg, this, &CMenuSysscr02::LoadFlags, 0);
         while (BgBusy(&m_bg, 0)) {

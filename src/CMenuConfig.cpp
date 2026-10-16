@@ -23,7 +23,7 @@ class CMenuConfig : public CMenuProcess {
 public:
     CMenuConfig();
     virtual ~CMenuConfig();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;      // 0x58

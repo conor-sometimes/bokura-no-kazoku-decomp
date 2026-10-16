@@ -1,0 +1,12 @@
+//@decl
+union Sz8u { u64 v; struct { u32 w; u32 h; } s; };
+struct Sz8b { u64 w : 32; u64 h : 32; };
+
+//@func 0x205DE0
+extern "C" u64 func_00205DE0(u8 *p) {
+    Sz8u u;
+    p += 0x10;
+    u.s.w = *(u16 *)(p + 0x16);
+    u.s.h = *(u16 *)(p + 0x14);
+    return u.v;
+}

@@ -32,7 +32,7 @@ class CMenuReviewStart : public CMenuProcess {
 public:
     CMenuReviewStart();
     virtual ~CMenuReviewStart();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;      // 0x58
@@ -108,7 +108,7 @@ CMenuReviewStart::CMenuReviewStart() {
 CMenuReviewStart::~CMenuReviewStart() {
 }
 
-s32 CMenuReviewStart::Update() {
+void CMenuReviewStart::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     char buf[0x200];
@@ -138,10 +138,10 @@ loop:
     switch (sm->m_state) {
     case -1: {
         m_unk58 = (CUnk1A4298 *)D_002A5408->Find("reviewstart");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "reviewstart");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "reviewstart"); return; }
         W(m_unk58)->Func1A3378();
         m_unk5C = (CUnk1A4298 *)D_002A5408->Find("reviewask");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "reviewask");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "reviewask"); return; }
         W(m_unk5C)->Func1A3378();
         D_002A5538->SetUnkE0(1);
         sprintf(buf, W(m_unk58)->GetUnkE4(6), D_002A5358->GetStr(0x242));

@@ -53,7 +53,7 @@ class CMenuReviewResult : public CMenuProcess {
 public:
     CMenuReviewResult();
     virtual ~CMenuReviewResult();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Init191338();        // CMenuReviewSelect's constructor (that unit's name for it)
 

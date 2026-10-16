@@ -8,7 +8,7 @@ class CMenuExam : public CMenuProcess {
 public:
     CMenuExam();
     virtual ~CMenuExam();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     s32 m_unk58;              // 0x58
@@ -209,7 +209,7 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAC50);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAC90);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DACB8);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DACE0);
-s32 CMenuExam::Update() {
+void CMenuExam::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     char buf[0x100];
@@ -230,7 +230,7 @@ loop:
     switch (sm->m_state) {
     case -1:
         m_unk58 = (s32)D_002A5408->Find("exam");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "exam");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "exam"); return; }
         W->Func1A3378();
         W->Select(-1);
         D_002A5538->SetUnkE0(0);

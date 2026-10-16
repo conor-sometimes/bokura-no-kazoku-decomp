@@ -12,7 +12,7 @@ class CMenuSysscr32 : public CMenuProcess {
 public:
     CMenuSysscr32();
     virtual ~CMenuSysscr32();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void FreeBuf();
 

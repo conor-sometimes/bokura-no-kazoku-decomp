@@ -19,7 +19,7 @@ class CMenuSysscr03 : public CMenuProcess {
 public:
     CMenuSysscr03();
     virtual ~CMenuSysscr03();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Init1AD668();        // CMenuSysscr02's constructor (that unit's name for it)
 
@@ -62,7 +62,7 @@ CMenuSysscr03::~CMenuSysscr03() {
     }
 }
 
-s32 CMenuSysscr03::Update() {
+void CMenuSysscr03::Update() {
     s32 done = 0;
     CMenuSub1A7658 *k;
     s32 st;
@@ -86,7 +86,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Find("sysscr03");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "sysscr03");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "sysscr03"); return; }
         m_win->Func1A3378();
         k = new CMenuSub1A7658((CUnk1A4298 *)m_win);
         m_unk58 = k;

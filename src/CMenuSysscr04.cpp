@@ -19,7 +19,7 @@ class CMenuSysscr04 : public CMenuProcess {
 public:
     CMenuSysscr04();
     virtual ~CMenuSysscr04();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CMenuSub1A7658 *m_unk58; // 0x58
@@ -58,7 +58,7 @@ CMenuSysscr04::~CMenuSysscr04() {
     }
 }
 
-s32 CMenuSysscr04::Update() {
+void CMenuSysscr04::Update() {
     s32 done = 0;
     CMenuSub1A7658 *k;
     s32 st;
@@ -81,7 +81,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Find("sysscr04");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "sysscr04");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "sysscr04"); return; }
         m_win->Func1A3378();
         k = new CMenuSub1A7658((CUnk1A4298 *)m_win);
         m_unk58 = k;

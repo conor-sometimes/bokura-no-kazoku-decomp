@@ -19,7 +19,7 @@ class CMenuSysscr22 : public CMenuProcess {
 public:
     CMenuSysscr22();
     virtual ~CMenuSysscr22();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CMenuSub1A7658 *m_unk58; // 0x58
@@ -79,7 +79,7 @@ CMenuSysscr22::~CMenuSysscr22() {
     }
 }
 
-s32 CMenuSysscr22::Update() {
+void CMenuSysscr22::Update() {
     char buf[0x100];
     CEFontWork font;
     s32 done;
@@ -105,7 +105,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Find("sysscr22");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "sysscr22");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "sysscr22"); return; }
         m_win->Func1A3378();
         font.SetUnk0(0);
         {

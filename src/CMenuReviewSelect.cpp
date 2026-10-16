@@ -63,7 +63,7 @@ class CMenuReviewSelect : public CMenuProcess {
 public:
     CMenuReviewSelect();
     virtual ~CMenuReviewSelect();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CStatusItem *m_unk58;     // 0x58
@@ -116,7 +116,7 @@ CMenuReviewSelect::CMenuReviewSelect() {
 CMenuReviewSelect::~CMenuReviewSelect() {
 }
 
-s32 CMenuReviewSelect::Update() {
+void CMenuReviewSelect::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     char buf[0x200];
@@ -138,11 +138,11 @@ loop:
     case -1: {
         const char *name = "reviewselect1";
         m_unk58 = (CStatusItem *)D_002A5408->Find(name);
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", name);
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", name); return; }
         W(m_unk58)->Func1A3378();
         name = "reviewselect2";
         m_unk5C = (CStatusItem *)D_002A5408->Find(name);
-        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window\n", name);
+        if (!m_unk5C) { Func235DE0("*** Can't Get %s Window\n", name); return; }
         W(m_unk5C)->Func1A3378();
         D_002A5538->SetUnkE0(1);
         m_unk64 = m_unk50 < 0 ? 0 : m_unk50;

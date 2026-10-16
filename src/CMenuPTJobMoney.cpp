@@ -20,7 +20,7 @@ class CMenuPTJobMoney : public CMenuProcess {
 public:
     CMenuPTJobMoney();
     virtual ~CMenuPTJobMoney();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     s32 m_unk58;              // 0x58
@@ -122,7 +122,7 @@ CMenuPTJobMoney::~CMenuPTJobMoney() {
 }
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuPTJobMoney", D_002DBA30);
-s32 CMenuPTJobMoney::Update() {
+void CMenuPTJobMoney::Update() {
     s32 a, b, c;
     char name[0x200];
     char buf[0x100];
@@ -144,11 +144,11 @@ loop:
     case -1:
         sprintf(name, "ptjob%da", m_childNum);
         m_unk58 = (s32)D_002A5408->Find(name);
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", name);
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", name); return; }
         ((CStatusItem *)m_unk58)->Func1A3378();
         sprintf(name, "ptjob%db", m_childNum);
         m_unk5C = (s32)D_002A5408->Find(name);
-        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window\n", name);
+        if (!m_unk5C) { Func235DE0("*** Can't Get %s Window\n", name); return; }
         ((CStatusItem *)m_unk5C)->Func1A3378();
         for (i = 0; i < m_childNum; i++) {
             Func185AA0(buf, D_002A5358->Func1091B0(0x252 + i), -1, -1, -1, -1, -1);

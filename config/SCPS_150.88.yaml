@@ -47,7 +47,6 @@ segments:
       - [0x9320, cpp, CFlagWork]
       - [0xA508, cpp, CPadMgr]   # starts with CFlagWork.cpp-looking code (its literals are this unit's)
       - [0xC068, cpp, CFadeMgr]
-      - [0xC108, cpp, IFadeMgr]
       - [0xC840, cpp, CSnapMgr]
       - [0xCF88, cpp, CEFontWork]
       - [0xD710, cpp, CTexCacheMgr]   # also t5TList1Z10CCacheInfo CList CListTag CCacheInfo; starts with the font code after 10CEFontWork (lane cv)
@@ -71,12 +70,9 @@ segments:
       - [0x29110, cpp, CMapSndObj]
       - [0x29870, cpp, CSndWorkReal]   # also CSceneObj t5TList1Z9CCharaObj
       - [0x2D4A8, cpp, CSceneSet]
-      - [0x2E1C8, cpp, CCharaResObj]   # also CCharaResMgr
-      - [0x2E440, cpp, ICharaResMgr]
-      - [0x2E550, cpp, CMapResObj]   # also CMapResMgr
-      - [0x2E7A0, cpp, IMapResMgr]
-      - [0x2E8E8, cpp, CEnvResObj]   # also CEnvResMgr
-      - [0x2EC48, cpp, IEnvResMgr]
+      - [0x2E1C8, cpp, CCharaResObj]   # also CCharaResMgr (ICharaResMgr.cpp merged in, lane lb)
+      - [0x2E550, cpp, CMapResObj]   # also CMapResMgr (IMapResMgr.cpp merged in, lane lb)
+      - [0x2E8E8, cpp, CEnvResObj]   # also CEnvResMgr (IEnvResMgr.cpp merged in, lane lb)
       - [0x2ED80, cpp, CSvmRes]
       - [0x2F0B8, cpp, CSvmWork]   # starts with CSvmRes.cpp-looking code (its literals are this unit's)
       - [0x32F10, cpp, CEventRes]
@@ -94,11 +90,9 @@ segments:
       - [0x5A850, cpp, CGameSchedule]   # also CGameScheduleUnit t5TList1Z17CGameScheduleUnit
       - [0x60E28, cpp, CGameEventObj]
       - [0x677D8, cpp, CGameResort]
-      - [0x69DC8, cpp, CInterfRes]   # also CInterfMgr
-      - [0x6A128, cpp, IInterfMgr]
+      - [0x69DC8, cpp, CInterfRes]   # also CInterfMgr (IInterfMgr.cpp merged in, lane lb)
       - [0x6D778, cpp, CNameDBMgr]
-      - [0x6DF98, cpp, CPhotoEventObj]   # also CAlbumMgr
-      - [0x6E548, cpp, IAlbumMgr]
+      - [0x6DF98, cpp, CPhotoEventObj]   # also CAlbumMgr (IAlbumMgr.cpp merged in, lane lb)
       - [0x714F8, cpp, CPhotoDBMgr]
       - [0x72D18, cpp, CResortDBMgr]
       - [0x73C30, cpp, CMapDBExpr]   # also CMapDBMgr
@@ -228,6 +222,7 @@ segments:
       - [0x169138, cpp, Dk268138]
       - [0x16B870, cpp, Dk26A870]
       - [0x16DFB0, cpp, Dk26CFB0]
+      - [0x16FDE8, cpp, Dk26EDE8]   # libgraph object with sceGsSetDefLoadImage (.rodata from 0x2E9A00), split off Dk26CFB0 (lane lb)
       - [0x170C10, cpp, Dk26FC10]
       - [0x172AF8, cpp, Dk271AF8]
       - [0x173E50, cpp, Dk272E50]
@@ -278,7 +273,7 @@ segments:
       - {start: 0x1C0BA0, type: .data, name: CEndingMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0BF8, type: .data, name: CFlagWork, linker_section: .gnu.linkonce.d.*}
       - [0x1C0C20, data, vt_CPadMgr]   # also IPadMgr (merged into CPadMgr.cpp)
-      - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr
+      - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr (merged into CFadeMgr.cpp)
       - [0x1C0E10, data, vt_CSnapMgr]   # also ISnapMgr
       - [0x1C0F10, data, vt_CEFontWork]
       - [0x1C0F30, data, vt_CTexCacheMgr]   # also CList (merged into CTexCacheMgr.cpp)
@@ -301,9 +296,9 @@ segments:
       - {start: 0x1C1440, type: .data, name: CMapSndObj, linker_section: .gnu.linkonce.d.*}
       - [0x1C1458, data, vt_CSndWorkReal]
       - [0x1C1488, data, vt_CSceneSet]
-      - [0x1C14D0, data, vt_CCharaResObj]   # also ICharaResMgr
-      - [0x1C1568, data, vt_CMapResObj]   # also IMapResMgr
-      - [0x1C1600, data, vt_CEnvResObj]   # also IEnvResMgr
+      - [0x1C14D0, data, vt_CCharaResObj]   # also ICharaResMgr (merged into CCharaResObj.cpp)
+      - [0x1C1568, data, vt_CMapResObj]   # also IMapResMgr (merged into CMapResObj.cpp)
+      - [0x1C1600, data, vt_CEnvResObj]   # also IEnvResMgr (merged into CEnvResObj.cpp)
       - {start: 0x1C16A8, type: .data, name: CSvmRes, linker_section: .gnu.linkonce.d.*}
       - [0x1C16C0, data, vt_CSvmWork]
       - {start: 0x1C16F0, type: .data, name: CEventRes, linker_section: .gnu.linkonce.d.*}
@@ -320,9 +315,9 @@ segments:
       - [0x1C2088, data, vt_CGameSchedule]
       - {start: 0x1C2110, type: .data, name: CGameEventObj, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C2128, type: .data, name: CGameResort, linker_section: .gnu.linkonce.d.*}
-      - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr
+      - [0x1C2180, data, vt_CInterfRes]   # also IInterfMgr (merged into CInterfRes.cpp)
       - [0x1C2398, data, vt_CNameDBMgr]
-      - [0x1C23D8, data, vt_CPhotoEventObj]   # also IAlbumMgr
+      - [0x1C23D8, data, vt_CPhotoEventObj]   # also IAlbumMgr (merged into CPhotoEventObj.cpp)
       - {start: 0x1C2510, type: .data, name: CPhotoDBMgr, linker_section: .gnu.linkonce.d.*}
       - [0x1C2570, data, vt_CResortDBMgr]
       - [0x1C25F0, data, vt_CMapDBExpr]
@@ -397,7 +392,7 @@ segments:
       - [0x1D2B38, .rodata, CEndingMain]
       - [0x1D2BC8, .rodata, CFlagWork]
       - [0x1D2CB0, .rodata, CPadMgr] # also IPadMgr (merged into CPadMgr.cpp)
-      - [0x1D2F08, rodata, ro_CFadeMgr]   # also IFadeMgr
+      - [0x1D2F08, .rodata, CFadeMgr] # also IFadeMgr (merged into CFadeMgr.cpp)
       - [0x1D2F30, .rodata, CSnapMgr]   # also ISnapMgr (merged into CSnapMgr.cpp)
       - [0x1D3008, .rodata, CEFontWork]
       - [0x1D3040, .rodata, CTexCacheMgr] # also CList (merged into CTexCacheMgr.cpp)
@@ -420,9 +415,9 @@ segments:
       - [0x1D5C38, .rodata, CMapSndObj]
       - [0x1D5CB8, .rodata, CSndWorkReal]
       - [0x1D5E10, .rodata, CSceneSet]
-      - [0x1D5ED8, rodata, ro_CCharaResObj]   # also ICharaResMgr
-      - [0x1D5F70, rodata, ro_CMapResObj]   # also IMapResMgr
-      - [0x1D6040, rodata, ro_CEnvResObj]   # also IEnvResMgr
+      - [0x1D5ED8, .rodata, CCharaResObj] # also ICharaResMgr (merged into CCharaResObj.cpp)
+      - [0x1D5F70, .rodata, CMapResObj] # also IMapResMgr (merged into CMapResObj.cpp)
+      - [0x1D6040, .rodata, CEnvResObj] # also IEnvResMgr (merged into CEnvResObj.cpp)
       - [0x1D6160, .rodata, CSvmRes]
       - [0x1D6200, .rodata, CSvmWork]
       - [0x1D6600, .rodata, CEventRes]
@@ -439,9 +434,9 @@ segments:
       - [0x1D9F20, .rodata, CGameSchedule]
       - [0x1DA590, .rodata, CGameEventObj]
       - [0x1DA8F8, .rodata, CGameResort]
-      - [0x1DAAD0, rodata, ro_CInterfRes]   # also IInterfMgr
+      - [0x1DAAD0, .rodata, CInterfRes] # also IInterfMgr (merged into CInterfRes.cpp)
       - [0x1DAC30, .rodata, CNameDBMgr]
-      - [0x1DAD10, rodata, ro_CPhotoEventObj]   # also IAlbumMgr
+      - [0x1DAD10, .rodata, CPhotoEventObj] # also IAlbumMgr (merged into CPhotoEventObj.cpp)
       - [0x1DAEC8, .rodata, CPhotoDBMgr]
       - [0x1DB058, .rodata, CResortDBMgr]
       - [0x1DB200, .rodata, CMapDBExpr]
@@ -566,6 +561,7 @@ segments:
       - [0x1EA588, .rodata, Dk268138]
       - [0x1EA770, .rodata, Dk26A870]
       - [0x1EA928, .rodata, Dk26CFB0]
+      - [0x1EAA00, .rodata, Dk26EDE8]
       - [0x1EAD30, .rodata, Dk26FC10]
       - [0x1EADA0, .rodata, Dk271AF8]
       - [0x1EADD8, .rodata, Dk2735D0]

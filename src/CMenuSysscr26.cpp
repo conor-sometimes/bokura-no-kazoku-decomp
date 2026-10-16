@@ -16,7 +16,7 @@ public:
     CMenuSysscr26();
     static CMenuSysscr26 *Create();
     virtual ~CMenuSysscr26();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;    // 0x58
@@ -83,7 +83,7 @@ class CMenuSysscr27 : public CMenuProcess {
 public:
     CMenuSysscr27();
     virtual ~CMenuSysscr27();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CBgWork m_bg;             // 0x58

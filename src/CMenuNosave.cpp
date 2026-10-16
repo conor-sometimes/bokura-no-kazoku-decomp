@@ -19,7 +19,7 @@ class CMenuNosave : public CMenuProcess {
 public:
     CMenuNosave();
     virtual ~CMenuNosave();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     union {
@@ -65,7 +65,7 @@ CMenuNosave::~CMenuNosave() {
 }
 
 #if 0 // DIFF 56, same length (g1): goto-loop recipe from docs/lessons.md; left: s1/s2 swap (this vs the state), done in a1 vs a0, the m_state==6 store order, and the -0xB0 wait's then-block placement (retail before the test)
-s32 CMenuNosave::Update() {
+void CMenuNosave::Update() {
     s32 done = 0;
     CMenuInputKanji *k;
     s32 st;
@@ -88,7 +88,7 @@ loop:
     switch (st) {
     case -1: {
         m_win = D_002A5408->Func1A0CF0("nosave");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "nosave");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "nosave"); return; }
         m_win->Func1A3378();
         k = (CMenuInputKanji *)operator new(0x5C);
         func_001A72D8(k, m_win);
@@ -135,7 +135,7 @@ out:
 end:;
 }
 #endif
-s32 CMenuNosave::Update() {
+void CMenuNosave::Update() {
     s32 done = 0;
     CMenuSub1A7658 *k;
     s32 st;
@@ -158,7 +158,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Find("nosave");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "nosave");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "nosave"); return; }
         m_win->Func1A3378();
         k = new CMenuSub1A7658((CUnk1A4298 *)m_win);
         m_unk58 = k;

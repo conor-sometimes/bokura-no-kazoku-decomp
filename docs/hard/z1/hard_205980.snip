@@ -1,0 +1,26 @@
+//@decl
+struct Hd205 { u64 m0; s32 m8; s32 mC; };
+
+//@func 0x205980
+extern "C" void func_00205980(u8 *p, u8 **o1, u64 *o2, s32 *o3, s32 *o4, u8 **o5, u64 *o6, s32 *o7, s32 *o8) {
+    Hd205 *q = (Hd205 *)(p + 0x10);
+    s32 off;
+    Hd205 *r;
+    *o2 = func_002057C0((u64 *)p);
+    *o6 = func_002057D0((u64 *)p);
+    if (*o2 >= 16) {
+        *o7 = q->mC;
+        off = (s32)q->m0;
+        *o8 = q->m8;
+        *o5 = p + 0x20;
+    } else {
+        off = 0;
+        *o7 = 0;
+        *o8 = 0;
+        *o5 = 0;
+    }
+    r = (Hd205 *)((u8 *)q + off);
+    *o1 = (u8 *)r + 0x10;
+    *o3 = r->mC;
+    *o4 = r->m8;
+}

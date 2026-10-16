@@ -14,7 +14,7 @@ class CMenuSysscr11 : public CMenuProcess {
 public:
     CMenuSysscr11();
     virtual ~CMenuSysscr11();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     union {
@@ -75,7 +75,7 @@ CMenuSysscr11::~CMenuSysscr11() {
     }
 }
 
-s32 CMenuSysscr11::Update() {
+void CMenuSysscr11::Update() {
     s32 done = 0;
     CMenuInputKanji *k;
     s32 st;
@@ -99,7 +99,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Func1A0CF0("sysscr11");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "sysscr11");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "sysscr11"); return; }
         m_win->Func1A3378();
         k = (CMenuInputKanji *)operator new(0x5C);
         func_001A72D8(k, m_win);

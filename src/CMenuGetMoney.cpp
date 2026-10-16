@@ -57,7 +57,7 @@ class CMenuGetMoney : public CMenuProcess {
 public:
     CMenuGetMoney();
     virtual ~CMenuGetMoney();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CStatusItem *m_unk58;     // 0x58
@@ -130,7 +130,7 @@ CMenuGetMoney::CMenuGetMoney() {
 CMenuGetMoney::~CMenuGetMoney() {
 }
 
-s32 CMenuGetMoney::Update() {
+void CMenuGetMoney::Update() {
     s32 a, b, c;
     char buf[0x200];
     s32 done;
@@ -149,10 +149,10 @@ loop:
     switch (m_unk4) {
     case -1: {
         m_unk58 = D_002A5408->Find("getmoney1");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "getmoney1");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "getmoney1"); return; }
         m_unk58->Func1A3378();
         m_unk5C = D_002A5408->Find("getmoney2");
-        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window\n", "getmoney2");
+        if (!m_unk5C) { Func235DE0("*** Can't Get %s Window\n", "getmoney2"); return; }
         m_unk5C->Func1A3378();
         D_002A5538->SetUnkE0(0);
         m_unk58->Select(-1);

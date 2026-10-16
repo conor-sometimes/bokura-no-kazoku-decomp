@@ -1,0 +1,48 @@
+//@decl
+//@func 0x13A790
+int CEventObj::Cmd13A790(CSvmWork *w, int id, int reset) {
+    s32 done;
+    if (reset) SmInit(&m_sm[2], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        int r = 0;
+        if (m_FD30 && m_FD34) r = (m_FD30->*m_FD34)(w, id, reset);
+        return r;
+    }
+    done = 0;
+    {
+    CStateMachine *sm = &m_sm[2];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0xC:
+    case 0xE:
+        if (m_FC58) return 0;
+        if (m_FC10) return 0;
+        while (EvREmpty(D_002A0BEC)) {
+            sm->m_state = -0x3D1; done = 1; goto loop;
+    case -0x3D1:;
+        }
+        w->SlotGetStr(0, (char *)m_FB5C, 0x20, D_002D5928);
+        w->SlotGetStr(1, (char *)m_FB5C + 0x20, 0x20, D_002D5928);
+        if (D_002A3AC0 && !((char *)m_FB5C)[0x20])
+            D_002A3AC0->Func173828((char *)m_FB5C, -1, (char *)m_FB5C + 0x20, 0, 0);
+        Call132F40(6, (int)(m_FB5C + 0x20), 0);
+        if (!IsNotDefault((char *)m_FB5C + 0x20)) return 0;
+        func_00250828(D_002A0BEC, (char *)m_FB5C + 0x20);
+        if (m_FC50) return 0;
+        Func235DE0(D_002D5A58, (char *)m_FB5C + 0x20);
+        return 0;
+    case 0x58:
+        sm->m_state = -0x3F0;
+    case -0x3F0:
+        done = 1; goto loop;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}

@@ -1,0 +1,21 @@
+//@decl
+extern f32 D_30E470[4];
+extern u64 D_30E450[2];
+extern "C" u64 func_0023AA40(s32 a, s32 b);
+extern "C" u64 func_0023BCB8(s32 a, s32 b);
+#define TXLOW(x, n) (((x) << (64 - (n))) >> (64 - (n)))
+#define TXBITK(x, sh, m, k) ((((x) >> ((sh) - (k))) & ((u64)(m) << (k))) >> (k))
+#define TXBITS(h, sh, m) (((h) & ((u64)(m) << (sh))) >> (sh))
+
+//@func 0x202040
+extern "C" void func_00202040(s32 a, s32 b, s32 r, s32 g, s32 bl, s32 al) {
+    u64 t, u;
+    D_30E470[0] = ((f32)r + 0.5f) * 0.0009765625f;
+    D_30E470[1] = ((f32)g + 0.5f) * 0.0009765625f;
+    D_30E470[2] = ((f32)bl + 0.5f) * 0.0009765625f;
+    D_30E470[3] = ((f32)al + 0.5f) * 0.0009765625f;
+    t = func_0023AA40(a, b);
+    u = func_0023BCB8(a, b);
+    D_30E450[0] = TXLOW(t, 14) | (TXBITS(u, 32, 0x3F) << 51) | ((t & 0xFC000) | (1ULL << 34)) | ((TXBITK(t, 32, 0x3F, 1) << 20) | (TXLOW(u, 14) << 37)) | 0x20000002A8000000ULL;
+    D_30E450[1] = 6;
+}

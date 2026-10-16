@@ -13,7 +13,7 @@ class CMenuMemorial : public CMenuProcess {
 public:
     CMenuMemorial();
     virtual ~CMenuMemorial();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;      // 0x58
@@ -95,7 +95,7 @@ CMenuMemorial::CMenuMemorial() {
 CMenuMemorial::~CMenuMemorial() {
 }
 
-s32 CMenuMemorial::Update() {
+void CMenuMemorial::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     s32 done;
@@ -114,7 +114,7 @@ loop:
     switch (sm->m_state) {
     case -1:
         m_unk58 = (CUnk1A4298 *)D_002A5408->Find("memorial");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "memorial");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "memorial"); return; }
         ((CStatusItem *)m_unk58)->Func1A3378();
         ((CStatusItem *)m_unk58)->Func1A3628();
         do {

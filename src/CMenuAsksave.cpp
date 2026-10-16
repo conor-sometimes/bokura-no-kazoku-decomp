@@ -19,7 +19,7 @@ class CMenuAsksave : public CMenuProcess {
 public:
     CMenuAsksave();
     virtual ~CMenuAsksave();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
     void Init192D38();        // CMenuAsksavequit's constructor (that unit's name for it)
 
@@ -57,7 +57,7 @@ CMenuAsksave::~CMenuAsksave() {
     }
 }
 
-s32 CMenuAsksave::Update() {
+void CMenuAsksave::Update() {
     s32 done = 0;
     CMenuSub1A7658 *k;
     s32 st;
@@ -80,7 +80,7 @@ loop:
     switch (st) {
     case -1:
         m_win = D_002A5408->Find("savequit");
-        if (!m_win) return Func235DE0("*** Can't Get %s Window.\n", "savequit");
+        if (!m_win) { Func235DE0("*** Can't Get %s Window.\n", "savequit"); return; }
         m_win->Func1A3378();
         m_win->SetUnkF0(0x5, 0x1);
         m_win->SetUnkF0(0x6, 0);

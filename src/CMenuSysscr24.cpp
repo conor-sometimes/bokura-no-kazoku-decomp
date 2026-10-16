@@ -21,7 +21,7 @@ class CMenuSysscr24 : public CMenuProcess {
 public:
     CMenuSysscr24();
     virtual ~CMenuSysscr24();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CMenuInputKanji *m_win;   // 0x58
@@ -56,7 +56,7 @@ CMenuSysscr24::CMenuSysscr24() {
 CMenuSysscr24::~CMenuSysscr24() {
 }
 
-s32 CMenuSysscr24::Update() {
+void CMenuSysscr24::Update() {
     s32 done = 0;
     s32 i, n;
     char buf[0x100];

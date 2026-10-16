@@ -1,0 +1,29 @@
+//@decl
+extern SndNode D_310D80;
+
+//@func 0x207CD8
+extern "C" void func_00207CD8(void) {
+    SndNode *n;
+    s32 addr;
+    s32 used;
+    s32 nfree;
+    if (func_00206088() & 4) Func235DE0("-------- < SPU heap status > --------\n");
+    used = 0;
+    nfree = 0;
+    for (n = D_30F580.m1800.m4, addr = 0x5010; n != &D_310D80; n = n->m4, used++) {
+        if (n->mC) {
+            S310DA0 *c = (S310DA0 *)n->m8;
+            if (c == (S310DA0 *)&D_3121A0) {
+                if (func_00206088() & 4) Func235DE0("[o] %08X - %08X (%07d) in global\n", addr, addr + n->m14 - 1, n->m14);
+            } else {
+                if (func_00206088() & 4) Func235DE0("[o] %08X - %08X (%07d) in ( BLOCK %03d : %08X - %08X )\n", addr, addr + n->m14 - 1, n->m14, c->m0, c->m8, c->m8 + c->mC - 1);
+            }
+        } else {
+            if (func_00206088() & 4) Func235DE0("[x] %08X - %08X (%07d)\n", addr, addr + n->m14 - 1, n->m14);
+        }
+        addr += n->m14;
+    }
+    for (n = D_30F580.m1818; n; n = n->m4) nfree++;
+    if (func_00206088() & 4) Func235DE0("use slot  %d\nfree slot %d\n", used, nfree);
+    if (func_00206088() & 4) return (void)Func235DE0("-------------------------------------\n");
+}

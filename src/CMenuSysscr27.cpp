@@ -55,7 +55,7 @@ class CMenuSysscr27 : public CMenuProcess {
 public:
     CMenuSysscr27();
     virtual ~CMenuSysscr27();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CBgWork m_bg;             // 0x58

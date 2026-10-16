@@ -44,6 +44,14 @@ extern "C" s32 func_00227AA8(void);
 extern "C" s32 func_00202C08(s32, void *, s32);
 struct Ent2A5D0C { char *m0; s32 m4; s32 m8; u8 padC[0x34 - 0xC]; };
 extern Ent2A5D0C *D_002A5D0C;
+
+extern "C" void func_00203A18(s32 a, s32 b, s32 r, s32 e, s32 f, s32 g);
+extern "C" s32 func_00203978(s32 i, s32 a, void *b);
+void Func225088();
+int Func2250C0();
+
+extern "C" void func_002705A0(void *d, CVec4 *m, void *s);
+void *Func237570(int size);
 // @decl-end
 
 extern "C" void func_00201DB0(f32 *v) {
@@ -193,7 +201,18 @@ extern "C" s32 func_00203978(s32 i, s32 a, void *b) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit201DB0", func_00203A18);
 
-INCLUDE_ASM("asm/nonmatchings/Unit201DB0", func_002042C0);
+extern "C" void func_002042C0(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g) {
+    s32 r;
+    asm volatile("vcallms %0" : : "i"(0x30));
+    r = func_00203978(a, c, (void *)d);
+    if (!r) {
+        Func225088();
+        asm volatile("vcallms %0" : : "i"(0x40));
+        return (void)Func2250C0();
+    }
+    func_00203A18(a, b, r, e, f, g);
+    asm volatile("vcallms %0" : : "i"(0x40));
+}
 
 extern "C" void func_00204380(s32 a, s32 b, s32 c, s32 d) {
     func_002042C0(a, b, c, d, 0, 0, 0);
@@ -205,4 +224,15 @@ extern "C" void func_002043A0(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
     return;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit201DB0", func_002043B8);
+extern "C" void func_002043B8(s32 idx, s32 b, s32 c, s32 d, s32 e, s32 f) {
+    Ent2A5D0C *ent = &D_002A5D0C[idx];
+    s32 n;
+    u8 *buf;
+    s32 k;
+    if (ent && ent->m0 && (n = *(s32 *)ent->m0) > 0 && (buf = (u8 *)Func237570(n << 6))) {
+        for (k = 0; k < n; k++) func_002705A0(buf + k * 64, &D_30E2C0, (u8 *)c + k * 64);
+        return (void)func_00203A18(idx, b, (s32)buf, d, e, f);
+    }
+    Func225088();
+    return (void)Func2250C0();
+}

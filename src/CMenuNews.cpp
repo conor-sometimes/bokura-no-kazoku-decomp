@@ -13,7 +13,7 @@ class CMenuNews : public CMenuProcess {
 public:
     CMenuNews();
     virtual ~CMenuNews();
-    virtual s32 Update();
+    virtual void Update();
     virtual s32 Draw();
 
     CUnk1A4298 *m_unk58;      // 0x58
@@ -96,7 +96,7 @@ CMenuNews::CMenuNews() {
 CMenuNews::~CMenuNews() {
 }
 
-s32 CMenuNews::Update() {
+void CMenuNews::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     char buf[0x100];
@@ -118,7 +118,7 @@ loop:
         CStatusItem *item;
         s32 n, k;
         m_unk58 = (CUnk1A4298 *)D_002A5408->Find("news");
-        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "news");
+        if (!m_unk58) { Func235DE0("*** Can't Get %s Window\n", "news"); return; }
         ((CStatusItem *)m_unk58)->Func1A3378();
         n = D_002A5358->Func1091B0(0x2C8) - 1;
         if (!((u32)n < 3)) {

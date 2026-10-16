@@ -894,9 +894,6 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
 - **0x19F6C0** (228 insns): CStatusWin update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x131720** (388 insns): CSvmWork update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x1AA1B8** (314 insns): CMenuSysscr26 update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x191400** (396 insns): CMenuReviewSelect update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x191EC8** (420 insns): CMenuReviewStart update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x184D98** (418 insns): CMenuExam update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x12EF68** (630 insns): CSvmWork update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x18B080** (460 insns): CMenuCommon update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x190160** (832 insns): CMenuReviewResult update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
@@ -1213,11 +1210,6 @@ Lane sm (state.h machines, 2026-10-16). Recipe in docs/lessons.md ## sm; best at
   natural tests, `m_cmd->Update()` through a `void` view class). FreeBuf declared `throw()` (its call
   then has REG_EH_REGION 0) did not change it. Needs `void Open(); void Select198290(s32);` and
   `s32 m_state; // 0x4C` in include/CCommandBase.h (not committed).
-- **0x13C120** CEventObj command 0x51 (sm m_sm[4] at 0xF96C, pointer-to-member redirect for ids
-  0x80-0xFF): aligned diff 26 words: the `sm = &m_sm[4]; done = 0;` block after the redirect test is
-  hoisted above it by ifcvt (IF-CASE-2, branch probability 5000), so the busy test and the PMF call
-  use other registers. Same family: the other CEventObj command handlers. Needs `int Cmd13C120(CSvmWork *,
-  int, int);`, `SlotGetStr`, `SlotAsFloat` in the unit's decl block.
 - **0x13D518** CEventObj commands 0x5C-0x60 (no machine loop: busy test, then a switch on the state):
   matches in utest (docs/hard/sm/hard_13D518.snip: four identical cases written out so GCC uses a jump
   table; `on = SlotAsInt(7, 1) != 0` before the m4 test; `goto busy` to a `return 1` at the end).
@@ -1421,6 +1413,29 @@ idiom once (it recurs in this parser) and both functions should fall.
   keeps the Play(4) copy, the PMF is `&CMenuSysscr02::LoadFlags` (a .rodata constant between the
   literals), func_00245818's int return through an asm-named declaration. Needs `s32 m_unkAC;
   s32 m_unkB4[3];` in the unit's class.
+- **0x1AA1B8** CMenuSysscr26::Update: DIFF 1, the same branch as 0x1A7818: the `m_state == 6` test
+  (before the V7 pad call) is `bnel` with `lui $2,%hi(D_002A5468)` from the target (reorg marks it
+  annulled; REG_BR_PROB 6001), retail `bne`. The fall-through is identical
+  (`m_state = 5; m_unk4C = -1;` in that order). Tried: return instead of goto end, an empty 6-path,
+  local order, done init. Needs `s32 m_unk5C..m_unk74` in the unit's CMenuSysscr26 (size 0x78).
+  **Matches if CMenuProcess::Update returns void** (tested: `virtual void Update() = 0;` in
+  include/CMenuProcess.h plus `void` in the unit's class and the snippet gives MATCH): with `s32`
+  the epilogue's `(use $2)` makes reorg think `$2` is live on the `goto end` path, so the `lui $2`
+  slot gets annulled. Not applied: every CMenuProcess screen's Update (≈45 units, several with
+  `return Func235DE0(...)`) would change with it; left for a cross-lane header pass.
+- **0x19F6C0** CStatusWin::Update19F6C0 (mode machine on m_state 0..5, states in do-while loops as
+  0x19A9D8): DIFF 3, one register: retail compares `m_unk64 != 3` (in the moved `c3` block) with the
+  register that already holds 3 for the `m_state == 3` test (`$4`); ours uses `m_state`'s register
+  (`$3`): cse1 follows the jump to c3 and the m_state pseudo becomes the class's canonical register
+  (make_regs_eqv). Tried `3 == m_state`, a local copy, `m_unk64 != m_state`, a switch. Needs
+  `void Update19F6C0();` in the unit's CStatusWin (`bk addm`).
+- **0x1831A0** CMenuTutorSelectedSub182108::Update1831A0 (three windows, a Push(4) counting frame as
+  CMenuMemorial): DIFF 18, all one register swap in the Push(4) frame: retail keeps the stack base
+  (`sm + 8`, a GCSE pseudo) in `$16` and the slot values in `$18`; ours the other way round (global
+  alloc gives the base `$18`). The snippet also needs `asm volatile("")` after `Pop(4)` so the depth
+  store stays before the `m_unk50` load (as CMenuMemorial before its fix). Wait shapes that work here:
+  the -0x248 wait as `while (m_state != 1) { yield; case -0x248:; }` (the -1 code then jumps over the
+  deleted yield as retail's `b`), the three-window wait as one `||` condition, the color loop indexed
   (`GetColor(&c[i], i + 12)`). Needs `void Update1831A0();` in the unit's class (`bk addm`).- **0x18B080** CMenuCommon::Update (three sub-objects created with operator new, three PMF background
   loads, two gosubs into a refresh sub): DIFF 9, one register swap: `done` and the D_002A5468 hi part
   are `$20`/`$21` in retail and the other way round here (global alloc priority: done 36 refs over the
@@ -1463,3 +1478,17 @@ idiom once (it recurs in this parser) and both functions should fall.
   `_$_8bad_cast` 0x29E800, `_$_10bad_typeid` 0x29E898, `_$_13bad_exception` 0x29ECE8, and
   `D_002EB680 = 0x002EB680` (.data refers to the table's start). With all that the image differs in those 4
   words only.
+- **0x13A2C8 / 0x13A790 / 0x13AC58** CEventObj command handlers (m_sm[1] / m_sm[2] / m_sm[0]): DIFF 1
+  each, one branch-likely choice. 0x13A2C8 and 0x13A790: the `if (m_FC50)` test before the
+  Func235DE0 log call is `bnel $3,$0,ret; daddu $2,0` in retail, ours `bnez` (same slot, not
+  annulled); the same bnel shows in 0x139440. 0x13AC58: its second wait (`while
+  (EvREmpty(D_002A0BE4))`) is `beqz $2,yield; li $2,-0x480` in retail, ours `beqzl`. Everything else
+  matches with the recipe in docs/lessons.md ## sm (Cmd13A100 family). Tried: return forms, shared
+  return labels, void/int callees, `!m_FC50` vs `== 0`, logging inlines; reorg's delay-slot liveness
+  (mark_target_live_regs) decides these, not the source shape found so far. Snippets:
+  docs/hard/sm/hard_13A2C8.snip, hard_13A790.snip, hard_13AC58.snip.
+- **0x13D6D8** CEventObj::Func13D6D8 (runs the m_FCB8 command queued by Cmd13D518: map flag /
+  map-effect enable / sound fade / map-effect apply on two func_00134100 values): DIFF 71, same
+  length; the busy test's temps (`ori $3` + flags in `$2` after `daddu $19,$2`) and the
+  `if (!e) return 0;` exits that retail cross-jumps onto the Log path's `b; daddu $2,0` differ.
+  Snippet: docs/hard/sm/hard_13D6D8.snip (CSceneSet::FindA, CSndWorkReal::FadeTo declared in the unit).

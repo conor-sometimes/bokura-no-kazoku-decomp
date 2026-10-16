@@ -13,7 +13,7 @@
 class CMenuProcess {
 public:
     virtual ~CMenuProcess();
-    virtual s32 Update() = 0;
+    virtual void Update() = 0;
     virtual s32 Draw() = 0;
     void SetUnk50(s32 v);
     void SetState4();
