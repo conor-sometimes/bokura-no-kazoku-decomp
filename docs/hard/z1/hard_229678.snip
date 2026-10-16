@@ -1,0 +1,48 @@
+//@decl
+struct HiNd { void *m0; HiNd *m4; HiNd *m8; void *mC; };
+struct HiHp { HiNd *m0; HiNd *m4; HiNd *m8; u32 mC; u32 m10; s32 m14; s32 pad18[4]; HiNd *m28; u32 m2C; s32 m30; s32 m34; s32 m38; s32 m3C; };
+
+//@func 0x229678
+extern "C" void func_00229678(u32 base, u32 size, u32 n) {
+    HiHp *h;
+    HiNd *nodes;
+    HiNd *e;
+    HiNd *last;
+    u32 i;
+    func_001F1190();
+    h = (HiHp *)((base + 0xF) & ~0xF);
+    size -= size & 0xF;
+    nodes = (HiNd *)(((u32)h + 0x4F) & ~0xF);
+    n = (n + 0xF) & ~0xF;
+    h->mC = n;
+    for (i = 0, e = nodes; i < n; i++, e++) {
+        e->m4 = e - 1;
+        e->m8 = e + 1;
+        e->mC = h;
+        e->m0 = 0;
+    }
+    e[-1].m8 = 0;
+    last = nodes + n;
+    h->m0 = nodes + 1;
+    h->m0->m4 = 0;
+    h->m2C = size - ((u32)last - (u32)h);
+    h->m10 = n - 1;
+    h->m28 = last;
+    last->m0 = nodes;
+    last->m4 = 0;
+    last->m8 = (HiNd *)h->m2C;
+    last->mC = (void *)0x10000000;
+    nodes->m0 = last + 1;
+    nodes->m8 = 0;
+    nodes->m4 = 0;
+    h->m4 = nodes;
+    h->m14 = 1;
+    h->m3C = -1;
+    h->m8 = nodes;
+    h->m38 = 0;
+    if (D_002B8C3C & 5) func_0022B510("Init MemMgr\n");
+    if (D_002B8C3C & 5) func_0022B510("Zone base %08X\n", h);
+    if (D_002B8C3C & 5) func_0022B510("Zone size %08X\n", h->m2C);
+    if (D_002B8C3C & 5) func_0022B510("Zone heap %08X\n", h->m28);
+    return (void)func_001F11C8();
+}

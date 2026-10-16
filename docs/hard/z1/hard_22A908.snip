@@ -1,0 +1,55 @@
+//@decl
+extern "C" void *func_00289EAC(void *d, const void *s, long n);
+extern "C" void func_0022B970(BL *b, BL *nx);
+
+//@func 0x22A908
+extern "C" s32 func_0022A908(Loc *loc) {
+    HL *h = (HL *)D_002B8C40;
+    BL *run = 0;
+    BL *b;
+    BL *end;
+    BL *first;
+    func_001F1190();
+    b = (BL *)h->m28;
+    end = (BL *)((u8 *)b + h->m2C);
+    first = b;
+    while (b < end) {
+        if (b->mC & 0x10000000) {
+            if (run) {
+                BL hdr;
+                BL *lim;
+                BL *nrun;
+                BL *prev;
+                BL *p;
+                s32 n = (u8 *)b - (u8 *)run;
+                lim = (BL *)((u8 *)b + b->m8);
+                nrun = (BL *)((u8 *)run + b->m8);
+                hdr = *b;
+                prev = 0;
+                if (run->m4) prev = (BL *)((u8 *)run - run->m4);
+                b = (BL *)((u8 *)b + b->m8);
+                func_00289EAC(nrun, run, (long)n);
+                *run = hdr;
+                for (p = run; p < lim; p = (BL *)((u8 *)p + p->m8)) {
+                    p->m4 = prev->m8;
+                    p->m0->m0 = (NL *)(p + 1);
+                    prev = p;
+                }
+                if (p < end) p->m4 = prev->m8;
+                if (first != run) {
+                    BL *pv = (BL *)((u8 *)run - run->m4);
+                    if (pv->mC & 0x10000000) func_0022B970(pv, run);
+                }
+                run = nrun;
+                continue;
+            }
+        } else if (b->mC & 0x20000000) {
+            run = 0;
+        } else if (!run) {
+            run = b;
+        }
+        b = (BL *)((u8 *)b + b->m8);
+    }
+    func_0022B7C0();
+    return func_001F11C8();
+}

@@ -109,6 +109,19 @@ extern "C" s32 func_0022FF18(void *a, void *b);
 extern void (*D_002B91B0)(void *p);
 extern void *(*D_002B91AC)(void *p, u32 n);
 typedef long (*FnL)(void *);
+
+#define RCMIN(a, b) ((a) < (b) ? (a) : (b))
+#define RCCLAMPZ(x) ((x) < 0 ? 0 : (x))
+extern "C" void func_0022F958(FEnt *, s32);
+
+extern "C" s32 func_00232A50(void);
+extern "C" void func_00232E98(s32 dev, const char *path);
+extern "C" char *func_00232D90(s32 dev);
+extern "C" char *func_00232C40(s32 dev);
+extern "C" char *strcpy(char *d, const char *s);
+extern "C" unsigned int strlen(const char *s);
+extern const char D_002E4800[];
+extern "C" s32 func_0022EA08(s32 dev, char *path, s32 a, s32 b, s32 c, s32 d);
 // @decl-end
 
 extern "C" void func_0022DE48(s32 fd) {
@@ -259,7 +272,19 @@ extern "C" s32 func_0022E5A8(s32 fd) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022E618);
+extern "C" void func_0022E618(s32 fd, s32 n) {
+    FEnt *f;
+    s32 k;
+    u32 st;
+    if (!FDOK(fd, f)) return;
+    k = RCCLAMPZ(RCMIN(n, *(volatile s32 *)&f->mA8));
+    f->mA4 = (u32)(f->mA4 + k) % (u32)f->m98;
+    st = DisableIntr();
+    f->mA8 -= k;
+    RestoreIntr(st);
+    func_0022F958(f, k);
+    return (void)func_0022F000(f);
+}
 
 extern "C" s32 func_0022E770(s32 fd, s32 off) {
     FEnt *f;
@@ -288,7 +313,19 @@ extern "C" s32 func_0022E880(s32 fd, u32 *out, u32 max, s32 len) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022E8E0);
+extern "C" s32 func_0022E8E0(const char *path, s32 a, s32 b, s32 c, s32 d) {
+    char buf[0x100];
+    s32 dev = func_00232A50();
+    func_00232E98(dev, path);
+    if (*func_00232D90(dev) != '/' && path[0] != '/') strcpy(buf, func_00232C40(dev));
+    else buf[0] = D_002E4800[0];
+    if (path[0] != '/') {
+        char *s = func_00232D90(dev);
+        strcpy(buf + strlen(buf), s);
+    }
+    strcpy(buf + strlen(buf), path);
+    return func_0022EA08(dev, buf, a, b, c, d);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E47F0);
 INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4800);

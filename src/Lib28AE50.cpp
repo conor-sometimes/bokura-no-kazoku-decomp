@@ -33,6 +33,11 @@ struct W2File5 { u8 *p; s32 r; s32 w; s16 flags; s16 file; u8 *base; s32 size; s
 extern s32 func_0028D9B0(W2File5 *, const char *, char *);
 extern unsigned long func_00282E40(unsigned long, unsigned long);
 extern unsigned long func_002828C0(unsigned long, unsigned long);
+struct Y1sbuf { unsigned char *_base; int _size; };
+struct Y1FILE { unsigned char *_p; int _r; int _w; short _flags; short _file; struct Y1sbuf _bf; int _lbfsize; void *_cookie; int (*_read)(void *, char *, int); int (*_write)(void *, const char *, int); long (*_seek)(void *, long, int); int (*_close)(void *); struct Y1sbuf _ub; unsigned char *_up; int _ur; unsigned char _ubuf[3]; unsigned char _nbuf[1]; struct Y1sbuf _lb; int _blksize; int _offset; struct _reent *_data; };
+extern s32 Y1fflush(struct Y1FILE *) asm("func_00290990");
+extern s32 func_0028CC40(W2F *, const char *, void *);
+s32 Y1sbprintf(struct Y1FILE *fp, const char *fmt, void *ap) asm("func_0028CB88");
 // @decl-end
 
 extern int func_0028AE50(int s) { return func_0028AD50(D_002BF5D0, s); }
@@ -639,7 +644,26 @@ extern long func_0028CB10(const char *s, char **e, int b) { return func_0028C8D8
 
 extern s32 func_0028CB40(void *fp, void *uio) { s32 err; if (FLD(s32, uio, 8) == 0) { FLD(s32, uio, 4) = 0; return 0; } err = func_002911B0(fp, uio); FLD(s32, uio, 8) = 0; FLD(s32, uio, 4) = 0; return err; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028CB88);
+s32 Y1sbprintf(struct Y1FILE *fp, const char *fmt, void *ap)
+{
+    int ret;
+    struct Y1FILE fake;
+    unsigned char buf[1024];
+    fake._data = fp->_data;
+    fake._flags = fp->_flags & ~0x0002;
+    fake._file = fp->_file;
+    fake._cookie = fp->_cookie;
+    fake._write = fp->_write;
+    fake._bf._base = fake._p = buf;
+    fake._bf._size = fake._w = sizeof(buf);
+    fake._lbfsize = 0;
+    ret = func_0028CC40((W2F *)&fake, fmt, ap);
+    if (ret >= 0 && Y1fflush(&fake))
+        ret = -1;
+    if (fake._flags & 0x0040)
+        fp->_flags |= 0x0040;
+    return ret;
+}
 
 extern s32 func_0028CC40(W2F *fp, const char *fmt, void *ap) { do { if (fp->data == 0) fp->data = (W2Re *)D_002BF5D0; if (!fp->data->sdidinit) func_00290CB8(fp->data); } while (0); return func_0028CCB8(fp->data, fp, fmt, ap); }
 

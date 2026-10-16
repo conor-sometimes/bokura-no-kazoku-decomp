@@ -339,7 +339,11 @@ extern "C" const char *func_00215240(s32 i) {
     return p ? p->m4 : D_002E3910;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit214938", func_00215270);
+extern "C" s32 func_00215270(s32 i) {
+    Rec2 *p = func_00215FC0(i);
+    if (!p) return -1;
+    return p->m2;
+}
 
 extern "C" s32 func_002152A0(const char *name) {
     s32 i;
@@ -416,9 +420,17 @@ extern "C" s32 func_002155D8(void) {
     return func_00216368() != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit214938", func_002155F8);
+extern "C" s32 func_002155F8(void) {
+    PlayBits *p = (PlayBits *)func_00216368();
+    if (!p) return 0;
+    return p->b1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit214938", func_00215628);
+extern "C" s32 func_00215628(void) {
+    PlayBits *p = (PlayBits *)func_00216368();
+    if (!p) return 0;
+    return p->b2;
+}
 
 extern "C" void func_00215658(Play *e, s32 *varg) {
     Arg3 *arg = (Arg3 *)varg;

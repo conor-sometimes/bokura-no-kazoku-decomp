@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -32,14 +33,7 @@ public:
 };
 //@sym Find__12CEventMesMgri 0x13E070
 
-class CPushBuf {
-public:
-    CPushBuf();
-    void Func248E00();
-    int Func248EB0();
-
-    u8 m_data[0xC];
-};
+#include "CPushBuf.h"
 class CEventMesResSub13DD98 : public CEvNode {
 public:
     void Init();
@@ -54,6 +48,7 @@ public:
 
 // The resource object proper (vtable _vt$12CEventMesRes; the methods above call it
 // CEventMesResSub13DD98 and see the CListTag fields as a CEvNode).
+#define CLISTTAG_INLINE_DTOR
 #include "CList.h"
 class CEventMesRes : public CListTag {
 public:
@@ -77,6 +72,16 @@ CEventMesRes13DE70 *NewEventMesRes13DE70();
 inline void EvUnlink(CEvNode *n) { n->m_prev->m_next = n->m_next; n->m_next->m_prev = n->m_prev; n->m_next = n; n->m_prev = n; }
 inline void EvInsert(CEvNode *n, CEvNode *h) { CEvNode *p = h->m_prev; n->m_next = h; n->m_prev = p; p->m_next = n; n->m_next->m_prev = n; }
 inline CEventMesResSub13DD98 *EvCheck(CEvNode *n) { return n->m0 == 0 ? (CEventMesResSub13DD98 *)n : 0; }
+
+struct EvTag { s32 isHead; EvTag *prev; EvTag *next; void *vptr; };
+extern u8 EvMgr_vt[] asm("_vt$12CEventMesMgr");
+extern u8 EvTList_vt[] asm("_vt$t5TList1Z12CEventMesRes");
+extern u8 EvCList_vt[] asm("_vt$5CList");
+extern u8 EvCListTag_vt[] asm("_vt$8CListTag");
+extern void *D_002A0CE0;
+extern "C" void __builtin_delete(void *);
+static inline EvTag *EvFirst(EvTag *l) { EvTag *n = l->next; return n->isHead ? 0 : n; }
+static inline EvTag *EvRemove(EvTag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 CEventMesRes::CEventMesRes() {
@@ -84,7 +89,10 @@ CEventMesRes::CEventMesRes() {
     m_unk20 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventMesRes", func_0013D958);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CEventMesRes::~CEventMesRes() {
+    ((CEventMesResSub13DD98 *)this)->Init();
+}
 
 int CompareEventMesNames(const char **a, const char **b) {
     return strcmp(*a, *b);
@@ -117,16 +125,38 @@ CEventMesRes13DE70 *NewEventMesRes13DE70() {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventMesRes", Init13DE70__18CEventMesRes13DE70);
+void CEventMesRes13DE70::Init13DE70() {
+    EvTag *l = (EvTag *)((u8 *)this + 4);
+    *(void **)this = EvMgr_vt;
+    l->vptr = EvTList_vt;
+    l->isHead = 1;
+    l->prev = l;
+    l->next = l;
+    D_002A0CE0 = this;
+    *((u8 *)this + 0x14) = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventMesRes", func_0013DEB0);
+extern "C" void func_0013DEB0(CEventMesMgr *m, s32 flags) {
+    EvTag *l = (EvTag *)((u8 *)m + 4);
+    *(void **)m = EvMgr_vt;
+    while (EvRemove(EvFirst(l)));
+    D_002A0CE0 = 0;
+    l->vptr = EvCList_vt;
+    while (EvRemove(EvFirst(l)));
+    l->vptr = EvCListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(m);
+}
 
 void CEventMesMgr::Append(CEvNode *n) {
     EvUnlink(n);
     EvInsert(n, &m_head);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventMesRes", func_0013DFF8);
+void CEventMesMgr::Remove(CEvNode *n) { if (n) EvRemove((EvTag *)n); else while (EvRemove(EvFirst((EvTag *)&m_head))); }
 
 CEventMesItem *CEventMesMgr::Find(s32 id) {
     CEventMesResSub13DD98 *p;

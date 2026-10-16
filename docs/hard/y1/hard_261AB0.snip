@@ -1,0 +1,16 @@
+//@decl
+extern "C" const s16 D_002E8ED0[];
+struct Y1AHist { s32 w[23]; };
+struct Y1ACh { s32 buf[279]; s32 in[128]; s32 pad; };
+//@func 0x261AB0
+extern "C" void func_00261AB0(Y1ACh *d, s32 ch)
+{
+    s32 i;
+    { Y1AHist *dst = (Y1AHist *)&d[ch]; *dst = *(Y1AHist *)((char *)dst + 0x400); }
+    for (i = 0; i < 128; i++) {
+        s32 v = d[ch].in[i];
+        d[ch].buf[23 + 127 - i] = v >> 4;
+        d[ch].in[i] = 0;
+        d[ch].buf[151 + i] = ((v >> 14) * D_002E8ED0[i]) >> 5;
+    }
+}

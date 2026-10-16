@@ -373,7 +373,11 @@ extern "C" const char *func_00212D10(s32 i) {
     return p ? p->m4 : D_002E3840;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit212790", func_00212D40);
+extern "C" s32 func_00212D40(s32 i) {
+    Rec *p = func_00213348(i);
+    if (!p) return -1;
+    return p->m2;
+}
 
 extern "C" s32 func_00212D70(const char *name) {
     s32 i;
@@ -460,7 +464,12 @@ extern "C" s32 func_00213218(s32 i) {
     return func_00213558(i, 0, 1, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit212790", func_00213238);
+extern "C" s32 func_00213238(s32 i) {
+    Rec *p = func_00213348(i);
+    if (!p) return 0;
+    if ((u8)(p->mA & 1) && (p->mA & 2)) return 1;
+    return 0;
+}
 
 extern "C" char *func_00213280(const char *s) {
     return strcpy(D_335D98, s);

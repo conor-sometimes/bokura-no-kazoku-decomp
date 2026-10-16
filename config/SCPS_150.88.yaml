@@ -243,7 +243,8 @@ segments:
       - [0x1838C0, cpp, Dk2828C0]
       - [0x184858, cpp, Lib283858]   # libgcc, Sony SDK, linkonce code: cut by size alone (text_units.py --size-only)
       - [0x186F80, cpp, Lib285F80]
-      - [0x187B20, cpp, Lib286B20]   # tinfo/exception C++ (split off Lib285F80, frame.c)
+      - [0x187B20, cpp, Lib286B20]   # tinfo C++ (split off Lib285F80, frame.c)
+      - [0x188920, cpp, Lib287920]   # exception.cc, C++ with -fexceptions (try/catch regions; split off Lib286B20, lane lb)
       - [0x188F98, cpp, Lib287F98]   # libgcc2/fp-bit, C (split off Lib285F80)
       - [0x189388, cpp, Lib288388]   # tinfo2, C++
       - [0x1898C0, cpp, Lib2888C0]
@@ -251,6 +252,7 @@ segments:
       - [0x18E8B0, cpp, Lib28D8B0]
       - [0x1904F8, cpp, Lib28F4F8]   # dtoa.c (split off Lib28D8B0)
       - [0x191990, cpp, Lib290990]
+      - [0x193E20, cpp, Lib292E20]   # libkernel dcache (SDK C, 991111), split off Lib290990 (lane lb)
       - [0x1940A0, cpp, Lib2930A0]
       - [0x194CB0, cpp, Lib293CB0]
       - [0x1950D0, cpp, Lib2940D0]
@@ -398,7 +400,7 @@ segments:
       - [0x1D2F08, rodata, ro_CFadeMgr]   # also IFadeMgr
       - [0x1D2F30, .rodata, CSnapMgr]   # also ISnapMgr (merged into CSnapMgr.cpp)
       - [0x1D3008, .rodata, CEFontWork]
-      - [0x1D3038, .rodata, CTexCacheMgr] # also CList (merged into CTexCacheMgr.cpp)
+      - [0x1D3040, .rodata, CTexCacheMgr] # also CList (merged into CTexCacheMgr.cpp)
       - [0x1D3DB0, .rodata, CFaceObj]
       - [0x1D3DC0, .rodata, CFaceRes]
       - [0x1D4030, .rodata, CDiffMotionObj]

@@ -38,7 +38,7 @@ SDKAS    := tools/compilers/ee-gcc2.96/ee/bin/
 SDK_OBJS := $(patsubst %,build/src/%.cpp.o,Dk262D28 Dk2631E0 Dk265918 Dk268138 Dk26A870)
 $(SDK_OBJS): EECC := $(SDKCC)
 $(SDK_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -B$(SDKAS) -Iinclude -Wa,-Iinclude
-SDKC_UNITS := Dk26CFB0 Dk26FC10 Dk271AF8 Dk272E50 Dk273210 Dk2735D0 Dk2752B8 Dk2779D8 Dk27A100 Dk27C020 Dk27DBB8
+SDKC_UNITS := Dk26CFB0 Dk26FC10 Dk271AF8 Dk272E50 Dk273210 Dk2735D0 Dk2752B8 Dk2779D8 Dk27A100 Dk27C020 Dk27DBB8 Lib292E20
 SDKC_OBJS := $(SDKC_UNITS:%=build/src/%.cpp.o)
 SDKC01CC := tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc
 $(SDKC_OBJS): EECC := $(SDKC01CC)
@@ -48,13 +48,18 @@ $(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
 #   0x285CA0 loads the mutex before the list stores, _init_signal_r 0x28AB88 hoists the table pointer
 #   out of its clear loop, only with strict aliasing). Written as C++ (`return;` after a final void call
 #   gives the C sibcall).
-LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib286B20 Lib287F98 Lib288388 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
+LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib286B20 Lib287920 Lib287F98 Lib288388 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
 $(LIBC_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+# Lib287920 (exception.cc) was built with -fexceptions: __check_eh_spec, __throw_bad_cast and __throw_bad_typeid
+#   have try/catch landing pads (__rethrow calls with .gcc_except_table labels) (lane lb).
+build/src/Lib287920.cpp.o: CXXFLAGS = -O2 -G0 -fexceptions -Iinclude -Wa,-Iinclude $(ASG)
 # LIBC_C_OBJS: the LIBC units that are C, compiled by the C front end (`-x c`): libgcc2's EH builtins
 #   (__builtin_dwarf_cfa, __builtin_eh_return in __throw/__rethrow) are C-only, and newlib's bnez/bnezl
-#   choices after calls only match as C. Lib285F80 and Lib288388 stay C++ (tinfo.cc classes); Lib287F98
+#   choices after calls only match as C. Lib286B20 and Lib288388 stay C++ (tinfo.cc classes); Lib287F98
 #   (__floatdidf, fp-bit helpers) is the C slice between them.
-LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib287F98 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
+#   Lib285F80 (frame.c, 0x285F80-0x286B20) is C (lane y1): init_object
+#   and __frame_state_for match only as C (C++ hoists &local stack addresses out of their call loops).
+LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib285F80 Lib287F98 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
 $(LIBC_C_OBJS): CXXFLAGS = -x c -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 # Lib28AE50 (vfiprintf.c), Lib28D8B0 (vfprintf.c), Lib28F4F8 (dtoa.c): built with -g, which changes cc1's delay-slot filling around the
 #   dpcmp libcalls in _vfprintf_r (lane cv).

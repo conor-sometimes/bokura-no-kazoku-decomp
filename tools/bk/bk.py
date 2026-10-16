@@ -11,11 +11,12 @@ CC=R+'/tools/compilers/ee-gcc2.96/bin/ee-gcc'
 SDKCC=R+'/tools/compilers/'+os.environ.get('BK_SDK','ee-gcc2.9-991111')+'/bin/ee-gcc'
 SDK_RANGES=[(0x262D28,0x26CFB0)]
 # Sony SDK libraries (Makefile SDKC_OBJS): C through 2.9's cc1, assembled by the 2.96 GNU as (-B)
-SDKC_RANGES=[(0x26CFB0,0x27FC30)]
+SDKC_RANGES=[(0x26CFB0,0x27FC30),(0x292E20,0x2930A0)]  # + Lib292E20 (libkernel dcache, lane lb)
 SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
 # libgcc and newlib built without -fno-strict-aliasing (Makefile LIBC_OBJS, lane w2)
 LIBC_RANGES=[(0x283858,0x292E20)]
-LIBC_C_RANGES=[(0x280098,0x2828C0),(0x283858,0x285F80),(0x287F98,0x288388),(0x2888C0,0x292E20)]  # Makefile LIBC_C_OBJS (compiled as C, lane w2)
+EXC_RANGES=[(0x287920,0x287F98)]  # Makefile: Lib287920 (exception.cc) built with -fexceptions (lane lb)
+LIBC_C_RANGES=[(0x280098,0x2828C0),(0x283858,0x286B20),(0x287F98,0x288388),(0x2888C0,0x292E20)]  # Makefile LIBC_C_OBJS (compiled as C, lane w2)
 OD='mips-ps2-decompals-objdump'
 ctx=json.load(open(W+'/ctx.json'))
 rom=open(R+'/disc/SCPS_150.88','rb').read()
@@ -57,6 +58,7 @@ def flags_for(funcs):
     # the unit's compiler and flags, as the Makefile sets them per unit (ASG, SDK_OBJS, SDKC_OBJS)
     cc,base=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions']
     if funcs and all(any(lo<=a<hi for lo,hi in LIBC_RANGES) for a,b in funcs): base=['-O2','-G0','-fno-exceptions']  # Makefile LIBC_OBJS
+    if funcs and all(any(lo<=a<hi for lo,hi in EXC_RANGES) for a,b in funcs): base=['-O2','-G0','-fexceptions']  # Makefile Lib287920
     if funcs and all(any(lo<=a<hi for lo,hi in LIBC_C_RANGES) for a,b in funcs): base=['-x','c','-O2','-G0','-fno-exceptions']  # Makefile LIBC_C_OBJS
     if funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs):  # Makefile SDK_OBJS
         cc,base=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS]

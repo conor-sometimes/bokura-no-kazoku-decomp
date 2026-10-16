@@ -1,0 +1,155 @@
+//@decl
+extern const char D_002D1990[];
+extern const char D_002D19B0[];
+extern "C" int SmPrintT(const char *fmt, ...) throw() asm("Func235DE0__FPCce");
+struct CSmT {
+    u16 m_flags;
+    u16 m_depth;
+    s32 m_state;
+    s32 m_stack[16];
+    void Check(s32 v, const char *file, s32 line) {
+        if (!((u32)v < 16))
+            SmPrintT(D_002D19B0, m_depth, file, line);
+    }
+    void Push(s32 n = 1) {
+        Check(m_depth + n, D_002D1990, 68);
+        m_depth += n;
+    }
+    void Pop(s32 n = 1) {
+        Check(m_depth - n, D_002D1990, 70);
+        m_depth = (s16)m_depth - n;
+    }
+    s32 &Var(s32 k = 0) {
+        s32 *p;
+        Check(m_depth - k, D_002D1990, 72);
+        p = m_stack;
+        return p[m_depth - k];
+    }
+    s32 Get(s32 k = 0) {
+        Check(m_depth - k, D_002D1990, 76);
+        return m_stack[m_depth - k];
+    }
+};
+class CTaskMgr398 : public CTask {
+public:
+    virtual void V7(s32 a, s32 b, s32 c);
+    virtual s32 V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11(s32 v);
+};
+extern CTaskMgr398 *D_0029F398;
+extern "C" void func_00250828(IResMgr *r, char *name);
+extern "C" s32 func_00250A48(IResMgr *r, char *name);
+extern "C" s32 func_00251BA8();
+extern "C" void func_00128E78(CSndWorkReal *s, CMapObj *m);
+class CMapObjSub11B070;
+class CMapObjV {
+public:
+    void Func11AF60();
+    void Init11AF00(CMapObjSub11B070 *p);
+};
+class CResCacheV {
+public:
+    void Func250840(void *p);
+};
+class CSndWorkRealV {
+public:
+    void Func129D90();
+};
+//@func 0x1056A8
+void CTitleMain::Func1056A8() {
+    CSmT *sm = (CSmT *)&m_sm2;
+    s32 done = 0;
+    s32 v;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+    case -0x562:
+    top:
+        if (m_name[0] && strcmp(m_name, m_name + 0x200)) goto cp;
+        do {
+            if (m_name[0x200] == 0) {
+                sm->m_state = -0x562; done = 1; goto loop;
+            }
+            if (m_name[0] == 0) goto fadeout;
+        } while (0);
+        sm->m_state = -0x562; done = 1; goto loop;
+        do {
+    cp:
+        strcpy(m_name + 0x100, m_name);
+        func_00250828(D_002A0BE8, m_name + 0x100);
+    case -0x571:
+            if (!func_00250A48(D_002A0BE8, m_name + 0x100)) {
+                sm->m_state = -0x571; done = 1; goto loop;
+            }
+            if (!m_name[0x200] || !m_unk7C4) goto nofade;
+        } while (0);
+        {
+            D_0029F398->V11(-1);
+            sm->Push();
+            sm->Var() = func_00251BA8();
+            for (;;) {
+    case -0x57A:
+                v = func_00251BA8();
+                if (v != sm->Get()) break;
+                sm->m_state = -0x57A; done = 1; goto loop;
+            }
+            sm->Pop();
+            D_0029F398->V7(1, 0, 1);
+            func_00128E78(&m_snd, 0);
+            ((CMapObjV *)&m_map)->Func11AF60();
+            ((CResCacheV *)D_002A0BE8)->Func250840(m_name + 0x200);
+            strcpy(m_name + 0x200, m_name + 0x100);
+            ((CMapObjV *)&m_map)->Init11AF00((CMapObjSub11B070 *)D_002A0BE8->FindRes((s32)(m_name + 0x200)));
+            func_00128E78(&m_snd, &m_map);
+            D_0029F398->V7(0, 0x2D, 1);
+            while (D_0029F398->V8()) {
+                sm->m_state = -0x58D; done = 1; goto loop;
+    case -0x58D:;
+            }
+            goto t1;
+        }
+    nofade:
+        strcpy(m_name + 0x200, m_name + 0x100);
+        ((CMapObjV *)&m_map)->Init11AF00((CMapObjSub11B070 *)D_002A0BE8->FindRes((s32)(m_name + 0x200)));
+        func_00128E78(&m_snd, &m_map);
+        if (m_unk7C4) {
+            while (m_unk7C0 < 1.0f) {
+                sm->m_state = -0x59F; done = 1; goto loop;
+    case -0x59F:
+                m_unk7C0 += 1.0f / 45.0f;
+            }
+        }
+        m_unk7C0 = 1.0f;
+        goto t1;
+    fadeout:
+        if (m_unk7C4 == 0) {
+            m_unk7C0 = 0.0f;
+            goto clear;
+        }
+        while (0.0f < m_unk7C0) {
+            sm->m_state = -0x5B7; done = 1; goto loop;
+    case -0x5B7:
+            m_unk7C0 -= 1.0f / 45.0f;
+        }
+        m_unk7C0 = 0.0f;
+    clear:
+        func_00128E78(&m_snd, 0);
+        ((CMapObjV *)&m_map)->Func11AF60();
+        ((CResCacheV *)D_002A0BE8)->Func250840(m_name + 0x200);
+        m_name[0] = 0;
+        m_name[0x200] = 0;
+    t1:
+        m_name[0x100] = 0;
+        m_unk7C8 = 0;
+        goto top;
+    }
+out:
+    ((CSndWorkRealV *)&m_snd)->Func129D90();
+}

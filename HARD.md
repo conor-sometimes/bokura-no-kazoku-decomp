@@ -899,7 +899,6 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
 - **0x184D98** (418 insns): CMenuExam update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x12EF68** (630 insns): CSvmWork update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x18B080** (460 insns): CMenuCommon update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x1AD800** (504 insns): CMenuSysscr02 update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x190160** (832 insns): CMenuReviewResult update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x1B2C30** (954 insns): CMenuBoot update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x1A50C8** (1282 insns): CMenuInputKanji update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
@@ -1270,16 +1269,13 @@ Lane y1 (Dk*/Lib* retry, 2026-10-16). Best attempts in docs/hard/y1/hard_<ADDR>.
   $8/$4 and picks the head with `bnel k`, ours folds the offsets into the loads.
 - 0x250978 (CResCache::Func250978, move idle units to the back of the used list): DIFF 37-41, same
   three-iterator shape as 0x25D008; retail also keeps the dead `n->next = n` store of the unlink.
-- 0x24F6A8 (task counter inc/dec): DIFF 13 (see the older note above); 0x24FA50: DIFF 4 (`r = 0; if (i < 4)
+- 0x24FA50: DIFF 4 (`r = 0; if (i < 4)
   r = m1C[i]` gets the address add before the branch in retail); 0x24F9B0: DIFF 5.
 - MMI string routines (strncmp 0x289D68, memset 0x289FB0, strcpy/strlen/strcmp 0x28B2D4/0x28B3E8/0x28B190 and
   the rest of the newlib EE ones): cc1 rejects TImode compares ("unsupported wide integer operation"), so the
   u128 loops need inline asm; not attempted.
 - 0x267E58 (Dk265918, w2 snippet): DIFF 3-4, the `ok` temp of `func_0026D110(s, 0) && func_0026CFB0(s)` lands
   in v0 (retail v1, copied to s2 in both branch slots); tried &&/?:/if forms and int/u32/u8 temps.
-- 0x286968 (__frame_state_for, w2 snippet): DIFF 3; retail recomputes `&pc` (sp+0x4A4) in the call's delay slot
-  every iteration and has a lone nop at the loop top; ours hoists `&pc` into s2. memcpy/struct copy, nothrow
-  probes no help.
 - 0x27D3A0 (Dk27C020, set alarm time): DIFF 4 after the 27D288 fixes (ENT before DI, volatile cur): retail stores
   `e->elapsed = t` before the dsubu, ours `e->start = now` first (u64 stores; statement orders tried).
 - 0x27CF30 (Dk27C020, alarm alloc, w2's volatile version): DIFF 17, all registers shifted by one ($7/$6/$5/$4
@@ -1293,7 +1289,6 @@ Lane y1 (Dk*/Lib* retry, 2026-10-16). Best attempts in docs/hard/y1/hard_<ADDR>.
 - 0x249428 (Dk2470E8, xap link by ini key): DIFF 12-16; the literal order needs "not found" first but retail's
   block order puts the link print last; if/else, goto and r-variable forms tried.
 - 0x247210 (Dk2470E8, range check): DIFF 13; s0/s1 roles swapped (retail p in s17) and the tail compare.
-- 0x24F6A8, 0x24FA50, 0x24F9B0: see above (DIFF 13/4/5).
 - 0x250C28 (Dk24FAF0, unit info switch): DIFF 13; case 5's index helper keeps the walker in $2 and the Next
   result in $3 (`daddu $2,$3` each step); RFirst/RNext and ternary helpers tried.
 - 0x2683F8 (Dk268138, IPU DMA ref tags): DIFF 2, only the order of the hoisted `li 3` and `ori 0x0FFFFFFF`
@@ -1302,28 +1297,60 @@ Lane y1 (Dk*/Lib* retry, 2026-10-16). Best attempts in docs/hard/y1/hard_<ADDR>.
   `one - tiny` folded, statement orders tried.
 - 0x25A098 (CSndMgr ctor): DIFF 6 with real member ctors (`CSndWorkM() asm("func_0025C230")`): only the
   0x80/-1 constant registers and the 0x1C/0x2C store order; 27 orders and chained forms tried.
-- 0x285728 (frame.c init_object/end_fde_sort, 350 insns) and the other frame.c leftovers: upstream frame.c
-  (-DDWARF2_UNWIND_INFO, FIRST_PSEUDO_REGISTER 123) compiles fde_split/end_fde_sort out of line; retail inlines
-  them, sizes do not line up; not pursued further.
-- **0x1AA1B8** CMenuSysscr26::Update: DIFF 1, the same branch as 0x1A7818: the `m_state == 6` test
-  (before the V7 pad call) is `bnel` with `lui $2,%hi(D_002A5468)` from the target (reorg marks it
-  annulled; REG_BR_PROB 6001), retail `bne`. The fall-through is identical
-  (`m_state = 5; m_unk4C = -1;` in that order). Tried: return instead of goto end, an empty 6-path,
-  local order, done init. Needs `s32 m_unk5C..m_unk74` in the unit's CMenuSysscr26 (size 0x78).
-- **0x19F6C0** CStatusWin::Update19F6C0 (mode machine on m_state 0..5, states in do-while loops as
-  0x19A9D8): DIFF 3, one register: retail compares `m_unk64 != 3` (in the moved `c3` block) with the
-  register that already holds 3 for the `m_state == 3` test (`$4`); ours uses `m_state`'s register
-  (`$3`): cse1 follows the jump to c3 and the m_state pseudo becomes the class's canonical register
-  (make_regs_eqv). Tried `3 == m_state`, a local copy, `m_unk64 != m_state`, a switch. Needs
-  `void Update19F6C0();` in the unit's CStatusWin (`bk addm`).
-- **0x1831A0** CMenuTutorSelectedSub182108::Update1831A0 (three windows, a Push(4) counting frame as
-  CMenuMemorial): DIFF 18, all one register swap in the Push(4) frame: retail keeps the stack base
-  (`sm + 8`, a GCSE pseudo) in `$16` and the slot values in `$18`; ours the other way round (global
-  alloc gives the base `$18`). The snippet also needs `asm volatile("")` after `Pop(4)` so the depth
-  store stays before the `m_unk50` load (as CMenuMemorial before its fix). Wait shapes that work here:
-  the -0x248 wait as `while (m_state != 1) { yield; case -0x248:; }` (the -1 code then jumps over the
-  deleted yield as retail's `b`), the three-window wait as one `||` condition, the color loop indexed
-  (`GetColor(&c[i], i + 12)`). Needs `void Update1831A0();` in the unit's class (`bk addm`).
+- 0x26F0D8 (Dk26CFB0, libgraph sceGsSetDefLoadImage): MATCHES in utest (docs/hard/y1/hard_26F0D8.snip: psm
+  switch with `qwc = 0` preset, giftag0 + the A+D registers, then giftag1 last), but the compiled jump table makes
+  the object's .rodata 16-aligned and Dk26CFB0's .rodata piece starts at 0x2E9928 (8-aligned), so the whole piece
+  shifts by 8. The libgraph code is its own object in retail (its .rodata starts at the 16-aligned 0x2E9A00 with
+  "sceGsSetDefLoadImage: too big size"); port after the unit is split there.
+- 0x25D3E0 note: matched (see below). 0x257DC8 (AT3 free-list init): DIFF 16 with `CAt3Node **fl =
+  &D_002BA1E4`; structure right, registers one off (retail fl in $2).
+- 0x246100 (memheap init): DIFF 2 again (utest hill-climb over the 12 header stores, list-insert helper and
+  `CMemGlobal *g` min/max form fixed the rest): retail stores free.next (0x38) right after the magic, ours
+  numNodes; docs/hard/y1/hard_246100.snip.
+- Hand-written MMI also at 0x26228C and 0x262448 (Dk260A60 polyphase filter, fixed $8-$15/$24/$25).
+- 0x2574B8 / 0x257B70 (CFontWork line layout, Dk2571C0): first draft of 0x2574B8 in docs/hard/y1/hard_2574B8.snip
+  (DIFF 75): logic decoded (per line: copy the 0xA0-byte context, measure with func_002571C0, align by ctx m70,
+  set colour/scale, draw with f | 2; width = max, height = sum + line gap); left: the shared 0.0 register (sum in
+  f22, the per-line zero copy in f21), right-to-left argument loads for the stack copy's colour calls.
+- 0x256DC8 (Dk254AA8, draw one glyph, optional shadow pass): docs/hard/y1/hard_256DC8.snip, DIFF ~70-86: the pass
+  loop is `for (i = 0; i < n; i++)` (loop.c turns it into the $19 down-counter copied from n in $6); left: the
+  CFontWork slot-1 vcall (vptr at 0x7C) loads the vtable before the float args and shares one call tail between
+  cases 0 and 1; tried (ch, l, x, y), (x, y, ch, l), (ch, x, y, l) slot signatures.
+- 0x24EF88 (CTaskTag tree run): logic in docs/hard/y1/hard_24EF88.snip (PMF calls on m_task, children walked by
+  prev or next with the next item fetched before the recursive call, delete when parentless and taskless);
+  retail recomputes `(t+8+i)+0x43` for m_count[1][i] where ours hoists `i+67` into one more s-register.
+- 0x2468F8 (Dk245648, memheap alloc; lane d1's DIFF-1 snippet is lost): reconstructed in
+  docs/hard/y1/hard_2468F8.snip (DIFF 133, every block present): left is the first/last test layout
+  (retail `beql first` then `bnez last; nop; b fail`) and the case-0/1 search loops' block order.
+- 0x261AB0 (Dk260A60, MPEG audio: 23-word history copy buf[256..278] -> buf[0..22] as a struct copy, then the
+  128-sample overlap split with D_002E8ED0): DIFF 79 (docs/hard/y1/hard_261AB0.snip); retail's EE block copy
+  tests `(src | dst) & 7` (no folding of the +0x400) and recomputes `ch * 0x660` after the copy.
+- 0x2883B0 (Lib288388, tinfo2 __throw_type_match_rtti_2, 324 insns): the 2.95 source with dynamic_cast spelled
+  as `p ? func_00288A88(vtbl[0].fn, __tfX, 0, p + vtbl[0].delta, __tf9type_info, p) : 0` gives the right calls
+  and blocks; DIFF 245 (retail uses s8 too and falls into the `beqz p` join); docs/hard/y1/hard_2883B0.snip.
+- 0x287C88 (__check_eh_spec + __check_null_eh_spec), 0x287E50 / 0x287EB8 (__throw_bad_cast / __throw_bad_typeid
+  with std::uncaught_exception merged): try/catch landing pads (func_00284A38 calls after the throw); Lib286B20 is
+  built -fno-exceptions, so these need their own -fexceptions object.
+- 0x2745B8 (sio putc, C 991111): DIFF 4-7 (docs/hard/y1/hard_2745B8.snip); retail copies the return value
+  before the volatile `sb` and leaves `jr` unfilled; asm barriers/`.set volatile` variants did not get both.
+- 0x297D20 (Lib2975F0, float CRand range): DIFF 2 still (docs/hard/y1/hard_297D20.snip): `mtc1 $0` before the
+  field load; member/FLD, compare-direction and early/late return forms tried.
+- 0x284558 (throw_helper): DIFF 215 with the frame_state typedef and inline get_reg/next_stack_level from this
+  unit; register allocation throughout (as w2 wrote).
+- 0x27CE60 / 0x27CEB0 (Dk27C020 timer read): retail's `lwu` reads and unfilled `jr` slot look like inline asm;
+  five C forms 17-20 off.
+- 0x27CBC0 (Dk27C020 alarm interrupt handler, 168 insns): 16-byte register save stride and `sync; ei` at the
+  end (not the 991111 SDKC prologue of the rest of the unit); not attempted.
+- 0x29189C (memchr), 0x28B000 / 0x28B570 / 0x28B728 (Lib28AE50): newlib EE MMI routines (pcpyld/psubb), as the
+  string ones above.
+- 0x292E20-0x293088 (Lib290990 tail, six functions): still need the SDKC (991111) split w2 described.
+
+Matched since (were on the w2/d1 lists above): 0x24F6A8, 0x24A128 (func_002496D0 declared throw()),
+0x279EF0 (`asm("")` after the store keeps `move v0,zero` behind it), 0x2838D8, 0x283D20 (abort noreturn),
+0x2843A8 (`if (c) do ... while (c)`), 0x2844A0 (inline get_reg), 0x285EF0, 0x285728 (2.96 end_fde_sort
+with fde_split's static marker = D_424594), 0x285FD8 / 0x286968 / 0x286518 (Lib285F80 as C), 0x286E20,
+0x287138, 0x287378, 0x2877B8 (convert_to_base inline), 0x287A70, 0x287B00, 0x288A00, 0x288F40, 0x28CB88 /
+0x28D8F8 (real FILE field types), 0x2926D0 (upstream d2b `if (d1)`), 0x24BAF0.
 ## cv
 Unit conversion lane (2026-10-16). Matched here (HARD.md entries above that name them are done): 0x288268,
 0x17D240, 0x10AF00, 0x10B108, 0x10B8B8, 0x12D440, 0x12DC48, 0x16D548, 0x126E38, 0x118248, 0x11BD20,
@@ -1394,3 +1421,45 @@ idiom once (it recurs in this parser) and both functions should fall.
   keeps the Play(4) copy, the PMF is `&CMenuSysscr02::LoadFlags` (a .rodata constant between the
   literals), func_00245818's int return through an asm-named declaration. Needs `s32 m_unkAC;
   s32 m_unkB4[3];` in the unit's class.
+  (`GetColor(&c[i], i + 12)`). Needs `void Update1831A0();` in the unit's class (`bk addm`).- **0x18B080** CMenuCommon::Update (three sub-objects created with operator new, three PMF background
+  loads, two gosubs into a refresh sub): DIFF 9, one register swap: `done` and the D_002A5468 hi part
+  are `$20`/`$21` in retail and the other way round here (global alloc priority: done 36 refs over the
+  whole loop vs the hi part 13 refs). Everything else matches with func_00245818 returning int, the
+  -0xE6 wait as the last statement of a do-while (its continuation then starts at the loop's exit label,
+  so reorg does not annul the branch), `case -0x158: goto out;`. Snippet: docs/hard/sm/hard_18B080.snip.
+- **0x1056A8** CTitleMain::Func1056A8 (title background map switcher: fade out/in, a Push/Var wait on
+  func_00251BA8, never ends): DIFF 20, one register swap: `&m_snd` is `$30` and D_0029F398's hi part
+  `$23` in retail, the other way round here (global alloc priority 0.58 vs 0.50). Layout matches with
+  the state.h literals taken from the unit's INCLUDE_RODATA symbols (D_002D1990/D_002D19B0 are shared
+  with the still-asm Func101480, so the snippet carries its own CStateMachine copy using them), the
+  waits as do-while/while forms, and the common tail behind a `t1:` label. Needs `f32 m_unk7C0;` in the
+  unit's CTitleMain (pad7B4 shrinks to 0xC).
+- **0x18A548** CMenuChildStatus::Update (child status screen, 15 states, PMF CChrBodyWin::Func1889F8):
+  same length (564 words), 104 differing lines, all block placement: the 6-check `bnel`/`bne` (as
+  0x1A7818); the -0xFB dispatch constant CSE'd into `$16` where retail rematerializes `li $2,-0xFB` in
+  the -0xF5 yield; -0xF0's `a & 0x20` block (Play(3); SetMode5; goto y112) and -0xFB's `m48 == 3`
+  then-block sit on the other side of their entries; the -0x12A else path and the shared Play(3)→s4
+  block, and -0x146's pad-test block, likewise. do-while wrappers around -0xFB made it worse (125-136).
+  Needs the CChrBodyWin.h method decls (committed) and the unit's CMenuChildStatus fields from the
+  snippet. Snippet: docs/hard/sm/hard_18A548.snip.
+
+## lb
+
+- **0x287C88 / 0x287E50 / 0x287EB8** (Lib287920, exception.cc: __check_eh_spec + __check_null_eh_spec,
+  __throw_bad_cast, __throw_bad_typeid + uncaught_exception): the 2.95 exception.cc source (with `p->value`,
+  `unexpected`/`terminate` declared noreturn, uncaught_exception without `throw()`) compiled with -fexceptions
+  gives the whole function set and the .gcc_except_table (0x2EB680, 0x7C bytes, byte for byte) except
+  **4 words**: in __check_eh_spec's third loop retail has `beql v0,zero` (ours `beqz`, same delay slot), and in
+  both __throw_bad_X retail keeps the vtable in s1 (`lui v0; addiu s1,v0`) and the eh_alloc result in s0
+  (ours the other way round). Flag sweeps (-g*, -G8, -fno-inline (beql right, rest wrong),
+  -fasynchronous-exceptions (beql right, bad_cast worse), -fno-elide-constructors, inline limits, vtable
+  thunks, honor-std, the SDK compilers) and class-definition variants (implicit/explicit ctors and dtors,
+  throw() specs, friend) did not get both. Full attempt: docs/hard/lb/Lib287920_eh.cpp (drop-in for
+  src/Lib287920.cpp). Porting it also needs: the yaml piece
+  `{start: 0x1EC680, type: .rodata, name: Lib287920, linker_section: .gcc_except_table}` in place of
+  ro_libtail, and aliases.ld lines for the names -fexceptions code calls: `__eh_alloc` 0x283D20, `__throw`
+  0x2848E8, `__rethrow` 0x284A38, `__start_cp_handler` 0x2879D8, `__cp_push_exception` 0x287A70,
+  `__cp_pop_exception` 0x287B00, `__uncatch_exception` 0x287C28, `terminate__Fv` 0x287920,
+  `_$_8bad_cast` 0x29E800, `_$_10bad_typeid` 0x29E898, `_$_13bad_exception` 0x29ECE8, and
+  `D_002EB680 = 0x002EB680` (.data refers to the table's start). With all that the image differs in those 4
+  words only.

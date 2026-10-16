@@ -611,6 +611,34 @@ struct CMapEffLeafNode2 {
 #define MAX123(a, b) ((a) < (b) ? (b) : (a))
 
 inline u32 RandMod(CMapEffRand *r, u32 n) { return r->Next32() % n; }
+
+struct CMat4E {
+    u8 m[0x40];
+} __attribute__((aligned(16)));
+extern "C" s32 func_00204E08();
+extern "C" s32 func_00204F78();
+extern "C" s32 func_00204380(s32 h, s32 a, CMat4E *m, void *p);
+#define VU_CALL(ms) asm volatile("vcallms %0" : : "i"(ms))
+#define VU_VEC(p, ms) asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tvnop\n\tvnop\n\tvcallms %1" : : "r"(p), "i"(ms))
+#define VU_ROT(a, ms) do { \
+    s32 i_ = (FtoI15(a) >> 1) & 0x3FFF; \
+    s32 s_ = ((s32 *)D_002A6800)[i_]; \
+    s32 c_ = ((s32 *)D_002A6800)[(i_ + 0x1000) & 0x3FFF]; \
+    asm volatile("qmtc2.i %0, $vf4\n\tqmtc2.ni %1, $vf5\n\tvnop\n\tvnop\n\tvcallms %2" : : "r"(c_), "r"(s_), "i"(ms)); \
+} while (0)
+#define VU_VEC2(p, ms) do { register void *r_ asm("$2") = (p); asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tvnop\n\tvnop\n\tvcallms %1" : : "r"(r_), "i"(ms)); } while (0)
+inline void VuGetMat(void *p) {
+    asm volatile("move $2, %0\n\tvcallms 0x0\n\tqmfc2.i $0, $vf0\n\tsqc2 $vf24, 0x0($2)\n\tsqc2 $vf25, 0x10($2)\n\tsqc2 $vf26, 0x20($2)\n\tsqc2 $vf27, 0x30($2)" : : "r"(p) : "$2", "memory");
+}
+struct CMapEffSwingDef2 {
+    s32 m0[4];                // 0x0
+    s32 m10[4];               // 0x10
+    s32 m20[4];               // 0x20
+    u8 pad30[0x18];
+};
+extern CMapEffSwingDef2 D_002A09A0[];
+extern CVec4 D_002A08E0[];
+extern f32 D_002A0970[];
 // @decl-end
 
 CMapEffObjRes::CMapEffObjRes() {
@@ -1341,7 +1369,30 @@ void CMapEffAquariumWork::Func1247F8() {
     Func201DE0(m_unk42A8, m_unk42AC, m_unk42B0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124888__19CMapEffAquariumWorkP17CMapEffAquaTargeti);
+void CMapEffAquariumWork::Func124888(CMapEffAquaTarget *t, s32 i) {
+    CUnk237E90 *q;
+    CMapEffAquaObj *o;
+    CMat4E m;
+    CVec4 s;
+    if (m_unk4220 < 0) return;
+    q = (CUnk237E90 *)((u8 *)t + 0xD0);
+    o = &m_objs[i];
+    Func201D78(&o->m_col);
+    q->Func237E90(func_00204E08());
+    s.x = o->m_scale;
+    s.y = o->m_scale;
+    s.z = o->m_scale;
+    s.w = 1.0f;
+    VU_CALL(0x20);
+    VU_VEC(&o->m_pos, 0x80);
+    VU_ROT(o->m_rot.y, 0xA0);
+    VU_ROT(o->m_rot.x, 0xB0);
+    VU_ROT(o->m_rot.z, 0x90);
+    VU_VEC2(&s, 0x70);
+    VuGetMat(&m);
+    q->Func237E90(func_00204380(m_unk4220, 0, &m, m_unk4218 ? (void *)(m_unk4218 + 0x10) : 0));
+    q->Func237E90(func_00204F78());
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func124AA0__19CMapEffAquariumWorkP17CMapEffAquaTarget);
 
@@ -1529,4 +1580,32 @@ void CMapEffSwingWork::Func126BD8() {
     Func201D18(2, &m_unk50[2]);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func126C48__16CMapEffSwingWorkii);
+void CMapEffSwingWork::Func126C48(s32 tgt, s32 i) {
+    CMapEffSwingDef2 *d;
+    s32 a;
+    s32 b;
+    s32 c;
+    s32 h;
+    s32 e;
+    CMat4E m;
+    if ((u32)i >= 4) return;
+    if (m_def == -1) return;
+    d = &D_002A09A0[m_def];
+    b = d->m10[i];
+    a = d->m0[i];
+    if ((u32)(b - 1) >= 6) return;
+    if ((u32)(a - 7) >= 6) return;
+    if (!D_002A06F0) return;
+    h = D_002A06F0->m_handles[a];
+    e = D_002A06F0->m_entries[b].m_unk8;
+    if (h < 0) return;
+    c = d->m20[i];
+    if ((u32)c >= 9) return;
+    ((CUnk237E90 *)(tgt + 0x180))->Func237E90(func_00204E08());
+    VU_CALL(0x20);
+    VU_VEC2(&D_002A08E0[c], 0x80);
+    VU_ROT(D_002A0970[c], 0xA0);
+    VuGetMat(&m);
+    ((CUnk237E90 *)(tgt + 0x180))->Func237E90(func_00204380(h, 0, &m, e ? (void *)(e + 0x10) : 0));
+    ((CUnk237E90 *)(tgt + 0x180))->Func237E90(func_00204F78());
+}

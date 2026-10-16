@@ -60,7 +60,8 @@ The Makefile builds Lib283858, Lib285F80, Lib2888C0, Lib28AE50, Lib28D8B0 and Li
 Evidence: __register_frame_info (mutex load hoisted above the list stores) and _init_signal_r (table
 pointer hoisted out of the clear loop) only match with strict aliasing; everything else in the range
 matches either way. The sources stay .cpp (C++ with `return;` after a final void call gives the C
-sibcall). Lib290990's tail from 0x292E20 (0x292E20-0x2930A0) is 991111 SDK C and needs its own unit.
+sibcall). Lib290990's tail from 0x292E20 (0x292E20-0x2930A0, libkernel's data-cache functions) is 991111 SDK C: it is
+its own unit Lib292E20 in the SDKC group (lane lb; bk.py SDKC_RANGES).
 
 Later the same day the C units moved to the C front end (`-x c`, Makefile `LIBC_C_OBJS`: Lib283858,
 Lib2888C0, Lib28AE50, Lib28D8B0, Lib290990; bk.py `LIBC_C_RANGES`). Evidence: libgcc2's __throw and
@@ -70,6 +71,11 @@ dpdiv, lo0bits) match as C. Every already-matched function stayed identical exce
 statement is a call that retail does not turn into a sibcall (__register_frame_info,
 __register_frame_info_table, abort with its noreturn exit): those end in `__asm__("");` after the call.
 Lib285F80 stays C++: it mixes frame.c with tinfo.cc (C++ classes) and fp-bit.
+Lib287920 (libgcc's exception.cc, 0x287920-0x287F98, split off Lib286B20 by lane lb) is C++ built with
+**`-fexceptions`** (Makefile rule, bk.py `EXC_RANGES`): __check_eh_spec and __throw_bad_cast/__throw_bad_typeid
+have try/catch landing pads that call __rethrow (0x284A38) with labels in .gcc_except_table (0x2EB680, whose
+whole 0x7C bytes are this object's). The already-matched functions of the file stayed identical with the flag.
+
 Dk280098 (newlib libm float functions plus libgcc2's __muldi3 at 0x281B20) joined `LIBC_C_OBJS`
 too (bk.py `LIBC_C_RANGES` 0x280098-0x2828C0): __muldi3 matches only as C (head's upstream match:
 libgcc2.c L_muldi3), and all the already-matched libm functions stayed identical as C with strict

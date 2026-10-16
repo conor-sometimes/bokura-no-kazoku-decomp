@@ -1,0 +1,66 @@
+//@decl
+extern "C" void func_0022EE38(FEnt *f, s32 x, s32 n);
+extern "C" void func_0022EEA8(FEnt *f, s32 x, s32 n);
+
+//@func 0x22EA08
+extern "C" s32 func_0022EA08(s32 dev, char *path, s32 mode, s32 p3, s32 p4, s32 p5) {
+    FEnt *f;
+    s32 fd;
+    u32 st;
+    st = DisableIntr();
+    for (fd = 1, f = &D_3401E0.f[1]; fd < 64; fd++, f++) {
+        if (!f->m4) {
+            f->m4 = 1;
+            break;
+        }
+    }
+    RestoreIntr(st);
+    if (fd == 64) {
+        if (D_002B8C50) {
+            Func235DE0("rxfile : failed to alloc slot\n");
+            return -1;
+        }
+        goto fail;
+    }
+    strcpy((char *)f + 8, path);
+    f->m5 = 1;
+    f->mA8 = 0;
+    f->mC8 = 0;
+    f->m94 = p3;
+    f->m98 = p4;
+    f->m9C = p5;
+    f->m6 = dev;
+    f->m88 = mode;
+    f->m8C = 0;
+    f->m90 = 0;
+    f->mA0 = 0;
+    f->mA4 = 0;
+    f->mAC = 0;
+    f->mB0 = 0;
+    f->mC4 = 0;
+    f->mCC = 0;
+    f->mB4.m0 = &f->mB4;
+    f->mB4.m4 = &f->mB4;
+    f->mB4.m8 = 0;
+    f->mB4.mC = 0;
+    if (mode & 0x200) {
+        while (!func_00233278(0, dev, (char *)f + 8, 0, (mode >> 10) & 1, 0, 0, (mode >> 15) & 1, (void *)func_0022EE38, f)) CHECK_INTR();
+        st = DisableIntr();
+        f->mCC++;
+        RestoreIntr(st);
+    }
+    if (!(mode & 0x200)) {
+        while (!func_00233278(0, dev, (char *)f + 8, 1, 0, 0, 0, (mode >> 15) & 1, (void *)func_0022EEA8, f)) CHECK_INTR();
+        st = DisableIntr();
+        f->mCC++;
+        RestoreIntr(st);
+    }
+    if (mode & 0x8000) return fd;
+    while (f->mCC > 0) CHECK_INTR();
+    if (f->mC8 & 4) {
+        f->m4 = 0;
+    fail:
+        return -1;
+    }
+    return fd;
+}

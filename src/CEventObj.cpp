@@ -94,6 +94,10 @@ public:
     virtual void V15();
     virtual void V16();
     virtual int V17();
+    virtual void V18();
+    virtual int V19(char *s);
+    virtual void V20();
+    virtual int V21();
 
     s32 m_unk0;               // 0x0
 };
@@ -102,7 +106,7 @@ int Func235DE0(const char *fmt, ...) throw();
 typedef int (CEvHost::*CEvCallback3)(int a, int b, int c);
 typedef void (CEvHost::*CEvCallback2)(int a, int b);
 class CSvmWork;
-typedef int (CEvHost::*CEvCallbackW)(CSvmWork *w, int id);
+typedef int (CEvHost::*CEvCallbackW)(CSvmWork *w, int id, int reset);
 extern char D_002D5968[];
 extern char D_002D5A78[];
 struct CEventItem {
@@ -116,6 +120,8 @@ struct CEventItem {
 class CSvmData;
 class CSvmWork {
 public:
+    f32 SlotAsFloat(s32 i, f32 def);
+    int SlotGetStr(s32 i, char *buf, s32 n, char *def);
     void Func12E858();
     void Unload12E968();
     int Load12E910(CSvmData *data);
@@ -129,14 +135,20 @@ public:
 extern "C" void func_0012EF68(CSvmWork *w);
 struct CEvWait {
     void Clear() { m18 = 0; m10 = 0; mC = 0; }
-    u8 pad0[0xC];
+    void *m0;                 // 0x0
+    void (*m4)(void *p);      // 0x4
+    void *m8;                 // 0x8
     s32 mC;                   // 0xC
     s32 m10;                  // 0x10
-    u8 pad14[0x4];
+    s32 m14;                  // 0x14
     s32 m18;                  // 0x18
 };
 class CEventObj {
 public:
+    int Cmd138610(CSvmWork *w, int id, int reset);
+    int Cmd13A2C8(CSvmWork *w, int id, int reset);
+    int Cmd13A100(CSvmWork *w, int id, int reset);
+    int Cmd13C120(CSvmWork *w, int id, int reset);
     void ClearScene();
     void Func132B78();
     void Func132D30();
@@ -199,7 +211,7 @@ public:
     u8 padFC28[0x20];
     s32 m_FC48;               // 0xFC48
     s32 m_FC4C;               // 0xFC4C
-    u8 padFC50[0x4];
+    s32 m_FC50;               // 0xFC50
     s32 m_FC54;               // 0xFC54
     s32 m_FC58;               // 0xFC58
     u8 padFC5C[0x4];
@@ -324,11 +336,114 @@ public:
 extern CTaskMgr390 *D_0029F390;
 extern "C" int func_00138908(CEventObj *o, char *buf, CSvmWork *w, int id);
 extern "C" void func_00250810(void *p, const char *name);
+
+extern u8 EventObj_vt[] asm("_vt$9CEventObj");
+extern "C" void EoSvmDtor(void *p, s32 flags) asm("_$_8CSvmWork");
+extern "C" void EoMovieDtor(void *p, s32 flags) asm("_$_9CMovieObj");
+extern "C" void func_00297F20(void *p, s32 flags);
+inline void EvWFree(CEvWait *w) { if (w->m8) { w->m4(w->m8); w->m8 = 0; w->m14 = 0; w->m18 = 0; w->m10 = 0; w->mC = 0; } }
+class CSndWorkReal {
+public:
+    int IsUnkA4Set();
+};
+extern "C" void func_001296F0(s32 snd, f32 v, const char *s);
+extern char D_002D5920[];
+extern char D_002D5AA0[];
+// Command handlers' state machines (m_sm[i]): reset on a new command.
+inline void SmInit(CStateMachine *s, s32 st) { s->m_depth = 0; s->m_flags = 0; s->m_state = st; }
+// Stand-in, no code: keeps if-conversion from hoisting the machine's setup (`done = 0`, the
+// machine pointer) above the command-range test, as in retail. The real state.h construct that
+// does this is unknown (see docs/lessons.md ## sm).
+#define SM_SETUP_FENCE() __asm__ volatile ("")
+extern const char D_002D56B0[];
+extern const char D_002D56C8[];
+extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
+struct CEvQueue {
+    u8 pad0[8];
+    u8 *m_buf;                // 0x8
+    s32 m_wr;                 // 0xC
+    s32 m_rd;                 // 0x10
+    s32 m_size;               // 0x14
+    s32 m_num;                // 0x18
+    s32 Write(const void *src, s32 n) {
+        s32 done;
+        s32 pos;
+        if (m_size - m_num < n) {
+            Func235DE0(D_002D56B0);
+            return 0;
+        }
+        pos = m_wr;
+        done = 0;
+        while (done < n) {
+            s32 c = m_size - pos;
+            if (n - done < c) c = n - done;
+            memcpy(m_buf + pos, (const u8 *)src + done, c);
+            done += c;
+            pos = (pos + c) % m_size;
+        }
+        return 1;
+    }
+    s32 Read(void *dst, s32 n) {
+        s32 done;
+        s32 pos;
+        if (m_num < n) {
+            Func235DE0(D_002D56C8);
+            return 0;
+        }
+        pos = m_rd;
+        done = 0;
+        while (done < n) {
+            s32 c = n - done;
+            if (m_size - pos <= c) c = m_size - pos;
+            if (dst) memcpy((u8 *)dst + done, m_buf + pos, c);
+            done += c;
+            pos = (pos + c) % m_size;
+        }
+        return 1;
+    }
+    s32 Pop(void *dst, s32 n) {
+        if (Read(dst, n)) {
+            s32 r = (m_rd + n) % m_size;
+            m_num = m_num - n;
+            m_rd = r;
+            return 1;
+        }
+        return 0;
+    }
+    void Push(const void *p, s32 n) {
+        if (Write(p, n)) {
+            s32 w = (m_wr + n) % m_size;
+            m_num = m_num + n;
+            m_wr = w;
+        }
+    }
+    void Push8(u8 v) {
+        u8 t = v;
+        Push(&t, 1);
+    }
+};
+
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001327F8);
+extern "C" void func_001327F8(CEventObj *e, s32 flags) {
+    *(void **)((u8 *)e + 0xFEC4) = EventObj_vt;
+    e->ClearScene();
+    e->Func132D30();
+    EvWFree(&e->m_FC9C);
+    EvWFree(&e->m_FC80);
+    EvWFree(&e->m_FC64);
+    EoMovieDtor(&e->m_F9D0, 2);
+    func_00297F20(&e->m_F9B4, 2);
+    EoSvmDtor(&e->m_svm[5], 2);
+    EoSvmDtor(&e->m_svm[4], 2);
+    EoSvmDtor(&e->m_svm[3], 2);
+    EoSvmDtor(&e->m_svm[2], 2);
+    EoSvmDtor(&e->m_svm[1], 2);
+    EoSvmDtor(&e->m_svm[0], 2);
+    if (flags & 1) return (void)::operator delete(e);
+}
 
 void CEventObj::Clear132998() {
     m_FB48 = 0;
@@ -436,21 +551,79 @@ int CEventObj::CallNum133000(int a, s32 *val, int c) {
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56B0);
 INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D56C8);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00133140);
+extern "C" void func_00133140(void *self, CEvQueue *q, s32 v) {
+    q->Push8(1);
+    q->Push8(1);
+    q->Push8(v);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001333D8);
+extern "C" void func_001333D8(void *self, CEvQueue *q, s32 v) {
+    q->Push8(2);
+    q->Push8(4);
+    q->Push(&v, 4);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00133660);
+extern "C" void func_00133660(void *self, CEvQueue *q, f32 v) {
+    q->Push8(3);
+    q->Push8(4);
+    q->Push(&v, 4);
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_001338E8);
+extern "C" void func_001338E8(void *self, CEvQueue *q, const char *s) {
+    s32 n = strlen(s) + 1;
+    q->Push8(4);
+    q->Push8(n);
+    q->Push(s, n);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", Wait133B90__9CEventObjP7CEvWait);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00134100);
+extern "C" s32 func_00134100(void *self, CEvQueue *q, s32 def) {
+    s8 c = 0;
+    s32 v;
+    q->Read(&c, 1);
+    if (c != 2) return def;
+    c = 0;
+    q->Pop(&c, 1);
+    c = 0;
+    q->Pop(&c, 1);
+    v = 0;
+    q->Pop(&v, 4);
+    return v;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00134438);
+extern "C" f32 func_00134438(void *self, CEvQueue *q, f32 def) {
+    f32 r;
+    s8 c = 0;
+    s32 v;
+    q->Read(&c, 1);
+    if (c != 3) return def;
+    c = 0;
+    q->Pop(&c, 1);
+    c = 0;
+    q->Pop(&c, 1);
+    v = 0;
+    q->Pop(&v, 4);
+    *(s32 *)&r = v;
+    return r;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00134768);
+extern "C" s32 func_00134768(void *self, CEvQueue *q, char *dst, const char *def) {
+    s8 c = 0;
+    s32 n;
+    q->Read(&c, 1);
+    if (c != 4) {
+        strcpy(dst, def);
+        return strlen(def);
+    }
+    c = 0;
+    q->Pop(&c, 1);
+    c = 0;
+    q->Pop(&c, 1);
+    n = c;
+    q->Pop(dst, n);
+    return n;
+}
 
 int CEventObj::IsSpecial(int id) {
     switch (id) {
@@ -633,7 +806,40 @@ int CEventObj::Cmd1385E8(CSvmWork *w, int id, int reset) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00138610);
+int CEventObj::Cmd138610(CSvmWork *w, int id, int reset) {
+    char buf[0x100];
+    s32 done;
+    if (reset) SmInit(&m_sm[3], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        if (m_FD30 && m_FD34) return (m_FD30->*m_FD34)(w, id, reset);
+        return 0;
+    }
+    done = 0;
+    {
+    SM_SETUP_FENCE();
+    CStateMachine *sm = &m_sm[3];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0x49:
+        while (D_002A3568->V21()) {
+            sm->m_state = -0x16C; done = 1; goto loop;
+    case -0x16C:;
+        }
+        w->SlotGetStr(1, buf, 0x100, D_002D5920);
+        Call132F40(3, (int)buf, 0);
+        D_002A3568->V19(buf);
+        return 0;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 void CEventObj::Func1387E8() {
     func_0013D908();
@@ -721,7 +927,40 @@ int CEventObj::Cmd13C0F8(CSvmWork *w, int id, int reset) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013C120);
+int CEventObj::Cmd13C120(CSvmWork *w, int id, int reset) {
+    char buf[0x100];
+    s32 done;
+    if (reset) SmInit(&m_sm[4], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        if (m_FD30 && m_FD34) return (m_FD30->*m_FD34)(w, id, reset);
+        return 0;
+    }
+    done = 0;
+    {
+    SM_SETUP_FENCE();
+    CStateMachine *sm = &m_sm[4];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0x51:
+        if (!m4) goto r1;
+        while (((CSndWorkReal *)m4)->IsUnkA4Set()) {
+            sm->m_state = -0x16E; done = 1; goto loop;
+    case -0x16E:;
+        }
+        w->SlotGetStr(0, buf, 0x100, D_002D5AA0);
+        func_001296F0(m4, w->SlotAsFloat(3, 0.0f), buf);
+        return 0;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013C2D0);
 

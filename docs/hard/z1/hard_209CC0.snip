@@ -1,0 +1,47 @@
+//@decl
+struct SeqCfgE { u8 id; u8 fl; u8 pad[2]; };
+struct SeqCfg { SeqCfgE e[32]; s32 v[32]; s32 n; };
+
+//@func 0x209CC0
+extern "C" void func_00209CC0(SeqCfg *c) {
+    SeqEnt *e;
+    SeqEnt *cur;
+    SeqEnt **pp;
+    s32 k;
+    s32 found;
+    e = D_3145C0.m300;
+    for (;;) {
+        if (!e) break;
+        cur = e;
+        e = e->m0;
+        for (k = 0; k < c->n; k++) {
+            if (c->e[k].id == cur->m4) {
+                u8 f = c->e[k].fl;
+                u32 m = cur->m8;
+                m = (m & ~2) | (f & 2);
+                m = (m & ~8) | (f & 8);
+                m = (m & ~4) | (f & 4);
+                cur->m8 = m;
+                cur->m10 = c->v[k];
+                if ((f & 4) && !cur->mC) func_002094A0(c->e[k].id, 0);
+                break;
+            }
+        }
+    }
+    pp = &D_3145C0.m304;
+    while ((e = *pp)) {
+        found = 0;
+        for (k = 0; k < c->n; k++) {
+            if (c->e[k].id == e->m4) {
+                found = 1;
+                break;
+            }
+        }
+        if (found) pp = &e->m0;
+        else {
+            *pp = e->m0;
+            e->m0 = D_3145C0.m308;
+            D_3145C0.m308 = e;
+        }
+    }
+}

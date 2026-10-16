@@ -317,6 +317,11 @@ extern "C" void func_00248C70(CPushBuf *p);
 void Func249348();
 struct CEvGpEnt { s32 m_id; u8 pad4[0x14]; };
 struct CEvGp { u8 pad0[0x2C]; s32 m_num; CEvGpEnt *m_ents; };
+
+extern u8 UserFlagMgr_vt[] asm("_vt$12CUserFlagMgr");
+extern "C" void UfSvmDtor(void *p, s32 flags) asm("_$_8CSvmWork");
+extern "C" void UfPushBufDtor(void *p, s32 flags) asm("_$_8CPushBuf");
+inline void UfFree(CUserFlagBuf *b) { if (b->m_ptr) { b->m_free(b->m_ptr); b->m_ptr = 0; b->m_cap = 0; b->m_size = 0; } }
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -325,7 +330,17 @@ CUserFlagMgr::CUserFlagMgr() throw() {
     return;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", func_0013F390);
+extern "C" void func_0013F390(CUserFlagMgr *m, s32 flags) {
+    *(void **)m = UserFlagMgr_vt;
+    m->CUserFlagMgr::Reset140040();
+    D_002A0D38 = 0;
+    UfFree(&m->m_buf5914);
+    UfFree(&m->m_buf58E0);
+    UfSvmDtor(&m->m_svm2, 2);
+    UfSvmDtor(&m->m_svm, 2);
+    UfPushBufDtor(&m->m_buf, 2);
+    if (flags & 1) return (void)::operator delete(m);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE0);
 INCLUDE_RODATA("asm/nonmatchings/CUserFlagMgr", D_002D5EE8);

@@ -165,6 +165,16 @@ extern char *W2_sbrk_base __asm__("D_002BF9F0");
 extern unsigned long W2_max_sbrked_mem __asm__("D_002BF9F8");
 extern unsigned long W2_max_total_mem __asm__("D_002BFA00");
 extern struct W2mallinfo W2_cur_mallinfo __asm__("D_002BFA08");
+typedef enum W2FCf W2FCf_t;
+enum W2FCf { W2Cf_SNAN, W2Cf_QNAN, W2Cf_ZERO, W2Cf_NUMBER, W2Cf_INF };
+typedef struct W2FpF W2FpF;
+struct W2FpF { enum W2FCf cls; u32 sign; s32 exp; u32 frac; };
+typedef union W2FBits W2FBits;
+union W2FBits { float f; u32 l; struct { unsigned int frac : 23 __attribute__((packed)); unsigned int exp : 8 __attribute__((packed)); unsigned int sign : 1 __attribute__((packed)); } b; };
+static inline int w2f_iszero(W2FpF *x) { return x->cls == W2Cf_ZERO; }
+extern void Y1Abort3(void) asm("func_00288FF8") __attribute__((noreturn));
+extern void *Y1UtiDyncast(const void *self, int boff, const void *target, void *objptr, const void *subtype, void *subptr) asm("func_00286C78");
+typedef const void *(*Y1TiFn)(void);
 // @decl-end
 
 extern s32 func_002888C0(void *a, void *b, void *c) { s32 x; if (func_002883B0(a, b, c, &x)) return x; return 0; }
@@ -183,7 +193,11 @@ extern void func_002889C0(void *p, const char *n) { if (p) { FLD(const char *, p
 
 extern void func_002889E0(void *p, const char *n) { if (p) { FLD(const char *, p, 0) = n; FLD(void *, p, 4) = W2vt_arr; } }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00288A00);
+void *func_00288A00(Y1TiFn from, Y1TiFn to, int require_public, void *address, Y1TiFn sub, void *subptr)
+{
+  if (!require_public) Y1Abort3();
+  return Y1UtiDyncast(from (), -1, to (), address, sub (), subptr);
+}
 
 extern s32 func_00288A88(void *from, void *to, s32 boff, void *addr, void *sub, void *subptr) { return func_00286C78(((W2TiFn2)from)(), boff, ((W2TiFn2)to)(), addr, ((W2TiFn2)sub)(), subptr); }
 
@@ -225,7 +239,7 @@ extern void *func_00288ED0(void) { if (!FLD(const char *, D_002BF2D0, 0)) { FLD(
 
 extern void *func_00288F08(void) { if (!FLD(const char *, D_002BF2D8, 0)) { FLD(const char *, D_002BF2D8, 0) = D_002EAD98; FLD(void *, D_002BF2D8, 4) = W2_vt_19__builtin_type_info; } return D_002BF2D8; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2888C0", func_00288F40);
+float func_00288F40(W2FpF *src) { u32 fraction = src->frac; s32 sign = src->sign; s32 exp = 0; W2FBits dst; if (w2f_iszero(src)) { fraction = 0; } else if (fraction == 0) { exp = 0; } else { if (src->exp < -126) { fraction = 0; } else if (src->exp > 128) { exp = 0xFF; fraction = 0; } else { if (src->exp == 128 && (s32)fraction < 0) { exp = 0xFF; fraction = 0; } else { exp = src->exp + 127; fraction >>= 7; } } } dst.b.frac = fraction; dst.b.exp = exp; dst.b.sign = sign; return dst.f; }
 
 extern void func_00288FF8(void) { func_0028ADE8(6); func_00100248(1); __asm__(""); }
 

@@ -1,0 +1,222 @@
+//@decl
+#include "state.h"
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual int V7(s32 *a, s32 *b, s32 *c);
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14(s32 v);
+};
+extern CSndIf *D_002A5468;
+class CChrBodyWin {
+public:
+    void Clear1884B0();
+    void Open(int c);
+    int Func1889F8();
+};
+class CChrBodyWinSub188748 {
+public:
+    void SetUnk380(int v);
+};
+extern CChrBodyWin *D_002A4308;
+class CStatusBaseSub19AE68 {
+public:
+    void Func19ADD0(s32 c);
+    s32 GetUnk18();
+};
+class CStatusBaseSub19AD70 {
+public:
+    void ItemFunc1A3628();
+    void ItemStart();
+};
+class CBgTarget;
+typedef int (CBgTarget::*BgFn)();
+extern "C" void func_002457A0(CBgWork *bg, void *obj, BgFn f, s32 x);
+extern "C" int BgBusy(void *p, s32 v) asm("func_00245818");
+extern "C" void func_00185648(s32 v);
+extern "C" void func_0018D958(void *p);
+extern "C" void func_0018C130(void *p, s32 v);
+extern "C" void func_0019AC20(void *p, s32 v);
+extern "C" void func_0019AFA8(void *p);
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+#define M64 ((CMenuCommonSub18E0E0 *)m_unk64)
+#define M68 ((CMenuCommonSub18C110 *)m_unk68)
+#define M6C1 ((CStatusBaseSub19AE68 *)m_unk6C)
+#define M6C2 ((CStatusBaseSub19AD70 *)m_unk6C)
+//@func 0x18B080
+s32 CMenuCommon::Update() {
+    CStateMachine *sm = (CStateMachine *)this;
+    s32 a, b, c;
+    s32 done;
+    if (m_state == 6) {
+        BgBusy(&m_bg, 1);
+        m_state = 5;
+        m_unk4C = -1;
+        goto end;
+    }
+    done = 0;
+    D_002A5468->V7(&a, &b, &c);
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        func_00185648(D_002A5358->Func1091B0(0x261));
+        D_002A4308->Clear1884B0();
+        ((CChrBodyWinSub188748 *)D_002A4308)->SetUnk380(0);
+        D_002A4308->Open(D_002A5358->Func1091B0(0x261));
+        func_002457A0(&m_bg, D_002A4308, (BgFn)&CChrBodyWin::Func1889F8, 0);
+        m_state = 1;
+        while (BgBusy(&m_bg, 0)) {
+            sm->m_state = -0xB7; done = 1; goto loop;
+    case -0xB7:;
+        }
+        {
+            CMenuCommonSub18D838 *p = (CMenuCommonSub18D838 *)operator new(0x3C);
+            p->Clear18D918();
+            m_unk64 = p;
+            func_0018D958(p);
+        }
+        {
+            CMenuCommonSub18B990 *p = (CMenuCommonSub18B990 *)operator new(0x50);
+            p->Clear();
+            m_unk68 = p;
+            ((CMenuCommonSub18C110 *)p)->Init18BB10();
+        }
+        m_state = 1;
+        func_002457A0(&m_bg, m_unk68, (BgFn)&CMenuCommonRes::Load18BDF0, 0);
+        while (BgBusy(&m_bg, 0)) {
+            sm->m_state = -0xC4; done = 1; goto loop;
+    case -0xC4:;
+        }
+        func_002457A0(&m_bg, m_unk68, (BgFn)&CMenuChildStatusSub18B9E0::Load18BEE8, 0);
+        while (BgBusy(&m_bg, 0)) {
+            sm->m_state = -0xC9; done = 1; goto loop;
+    case -0xC9:;
+        }
+        if (m_unk50 < 0) func_0018C130(m_unk68, 0);
+        else func_0018C130(m_unk68, m_unk50);
+        {
+            void *p = operator new(0x20);
+            func_0019AC20(p, 2);
+            m_unk6C = p;
+        }
+        M6C1->Func19ADD0(D_002A5358->Func1091B0(0x261));
+        m_state = 2;
+        M64->Func18DF88();
+        do {
+    case -0xE6:
+            if (M64->GetItemState() != 2) {
+                sm->m_state = -0xE6; done = 1; goto loop;
+            }
+        } while (0);
+        M68->Func18C050();
+        M6C2->ItemFunc1A3628();
+        do {
+    case -0xF5: {
+            s32 k = M68->GetItemState();
+            if (k != 2) {
+                sm->m_state = -0xF5; done = 1; goto loop;
+            }
+            if (M6C1->GetUnk18() != k) {
+                sm->m_state = -0xF5; done = 1; goto loop;
+            }
+        }
+        } while (0);
+        m_state = 3;
+        m_unk70 = 1;
+        do {
+    case -0x125:
+            if (c & 0x1000) {
+                D_002A5468->V14(0);
+                M64->Prev();
+                func_0018C130(m_unk68, M64->m_index);
+                sm->Push();
+                SetVar(sm, 0, -0x105);
+                goto sub;
+            } else if (c & 0x4000) {
+                D_002A5468->V14(0);
+                M64->Next();
+                func_0018C130(m_unk68, M64->m_index);
+                sm->Push();
+                SetVar(sm, 0, -0x10E);
+                goto sub;
+            } else if (a & 0x20) {
+                m_unk4C = M64->m_index;
+                if (D_002A5358->Func1091B0(m_unk4C + 0x279)) {
+                    D_002A5468->V14(1);
+                    goto s4;
+                }
+                D_002A5468->V14(4);
+                m_unk4C = -1;
+            } else if (a & 0x40) {
+                if (D_002A5358->Func1091B0(0x25F)) {
+                    m_unk4C = -1;
+                    goto s4;
+                }
+            }
+    case -0x105:
+    case -0x10E:
+            sm->m_state = -0x125; done = 1; goto loop;
+        } while (0);
+    s4:
+        m_state = 4;
+        M64->Start18DFC8();
+        if (m_unk70) {
+            M68->Start18C0B0();
+            M6C2->ItemStart();
+        }
+        do {
+    case -0x13C:
+            if (M64->GetItemState() != 0) {
+                sm->m_state = -0x13C; done = 1; goto loop;
+            }
+            if (M68->GetItemState() != 0) {
+                sm->m_state = -0x13C; done = 1; goto loop;
+            }
+            if (M6C1->GetUnk18() == 0) {
+                m_state = 5;
+                sm->m_state = -0x158; done = 1; goto loop;
+            }
+            sm->m_state = -0x13C; done = 1; goto loop;
+        } while (0);
+    sub:
+        if (D_002A5358->Func1091B0(M64->m_index + 0x26E) > 0) {
+            if (!m_unk70) {
+                M68->Func18C050();
+                M6C2->ItemFunc1A3628();
+                m_unk70 = 1;
+            }
+        } else if (m_unk70) {
+            M68->Start18C0B0();
+            M6C2->ItemStart();
+            m_unk70 = 0;
+        }
+        sm->m_state = sm->Get();
+        sm->Pop();
+        goto loop;
+    case -0x158:
+        goto out;
+    }
+out:
+    if (m_unk64 && m_unk68 && m_unk6C) {
+        M64->Update18E100();
+        M68->Update18CE28();
+        func_0019AFA8(m_unk6C);
+    }
+end:;
+}

@@ -142,6 +142,10 @@ int func_00291040(struct _reent *reent_ptr, size_t pad);
 void *func_0028AB30(struct _reent *reent_ptr, int incr);
 void func_0028A070(struct _reent *reent_ptr);
 void func_0028A0F0(struct _reent *reent_ptr);
+extern int Y1lo0bits(unsigned int *) asm("func_00291D10");
+extern int Y1hi0bits(unsigned int) asm("func_00291C90");
+extern W2Bg2 *Y1Balloc(void *, int) asm("func_00291980");
+W2Bg2 *Y1d2b(void *ptr, double _d, int *e, int *bits) asm("func_002926D0");
 // @decl-end
 
 extern int func_00290990(W2File2 *fp) { u8 *p; s32 n, t; if (fp == 0) return func_00291590(D_002BF5D0, (void *)func_00290990); do { if (fp->data == 0) fp->data = D_002BF5D0; if (!FLD(s32, fp->data, 0x38)) func_00290CB8(fp->data); } while (0); t = fp->flags; if ((t & 8) == 0 || (p = fp->base) == 0) return 0; n = fp->p - p; fp->p = p; fp->w = t & 3 ? 0 : fp->size; while (n > 0) { t = ((s32 (*)(void *, u8 *, s32))fp->wr)(fp->cookie, p, n); if (t <= 0) { fp->flags |= 0x40; return -1; } p += t; n -= t; } return 0; }
@@ -468,7 +472,52 @@ extern double func_00292468(double _x) { W2DU x, a; s32 L; x.d = _x; L = (x.i[1]
 
 extern double func_00292538(void *av, s32 *e) { W2Bg3 *a = (W2Bg3 *)av; u32 *xa, *xa0, w, y, z; s32 k; W2DU d; xa0 = a->x; xa = xa0 + a->wds; y = *--xa; k = func_00291C90(y); *e = 32 - k; if (k < 11) { d.i[1] = 0x3ff00000 | y >> (11 - k); w = xa > xa0 ? *--xa : 0; d.i[0] = y << ((32 - 11) + k) | w >> (11 - k); goto ret_d; } z = xa > xa0 ? *--xa : 0; if (k -= 11) { d.i[1] = 0x3ff00000 | y << k | z >> (32 - k); y = xa > xa0 ? *--xa : 0; d.i[0] = z << k | y >> (32 - k); } else { d.i[1] = 0x3ff00000 | y; d.i[0] = z; } ret_d: return d.d; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_002926D0);
+W2Bg2 *Y1d2b(void *ptr, double _d, int *e, int *bits)
+{
+  W2DU d;
+  W2Bg2 *b;
+  int de, i, k;
+  unsigned int *x, y, z;
+  d.d = _d;
+  b = Y1Balloc (ptr, 1);
+  x = b->x;
+
+  z = d.i[1] & 0xfffff;
+  d.i[1] &= 0x7fffffff;
+  if ((de = (int) (d.i[1] >> 20)) != 0)
+    z |= 0x100000;
+  if (d.i[0])
+    {
+      y = d.i[0];
+      k = Y1lo0bits (&y);
+      if (k)
+	{
+         x[0] = y | z << (32 - k);
+	  z >>= k;
+	}
+      else
+	x[0] = y;
+      i = b->wds = (x[1] = z) ? 2 : 1;
+    }
+  else
+    {
+      k = Y1lo0bits (&z);
+      x[0] = z;
+      i = b->wds = 1;
+      k += 32;
+    }
+  if (de)
+    {
+      *e = de - 1023 - (53 - 1) + k;
+      *bits = 53 - k;
+    }
+  else
+    {
+      *e = de - 1023 - (53 - 1) + 1 + k;
+      *bits = 32 * i - Y1hi0bits (x[i - 1]);
+    }
+  return b;
+}
 
 extern double func_00292858(void *a, void *b) { W2DU da, db; s32 k, ka, kb; da.d = func_00292538(a, &ka); db.d = func_00292538(b, &kb); k = ka - kb + 32 * (FLD(s32, a, 0x10) - FLD(s32, b, 0x10)); if (k > 0) da.i[1] += k * 0x100000; else { k = -k; db.i[1] += k * 0x100000; } return da.d / db.d; }
 
@@ -498,15 +547,3 @@ extern s32 func_00292D00(s32 *ptr, s32 a, s32 b) { s32 ret; D_2EB920 = 0; if ((r
 extern s32 func_00292D60(s32 *ptr, s32 a, s32 b, s32 c) { s32 ret; D_2EB920 = 0; if ((ret = func_00273898(a, b, c)) == -1 && D_2EB920 != 0) *ptr = D_2EB920; return ret; }
 
 extern long func_00292DC0(s32 *ptr, s32 a, s32 b, s32 c) { long ret; D_2EB920 = 0; if ((ret = func_002737E8(a, b, c)) == -1 && D_2EB920 != 0) *ptr = D_2EB920; return ret; }
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00292E20);
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00292EC8);
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00292F48);
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00292F60);
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00293008);
-
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00293088);

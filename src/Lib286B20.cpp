@@ -100,6 +100,38 @@ struct W2UTI : W2TI {
 };
 inline bool w2_contained_public_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_public; }
 inline bool w2_contained_nonvirtual_p(W2UTI::sub_kind access_path) { return (access_path & (W2UTI::contained_mask | W2UTI::contained_virtual_mask)) == W2UTI::contained_mask; }
+typedef void *(*Y1match_fn)(void *, void *, void *);
+struct Y1eh_info { Y1match_fn match_function; short language; short version; };
+typedef void (*Y1cleanup_fn)(void *);
+struct Y1cp_eh_info { Y1eh_info eh_info; void *value; void *type; Y1cleanup_fn cleanup; bool caught; Y1cp_eh_info *next; long handlers; void *original_value; };
+extern "C" Y1cp_eh_info **Y1GetEhInfo(void) asm("func_00283980");
+extern "C" int func_002888E8(void *);
+extern "C" void func_00283E00(void *);
+struct Y1dyncast_result { void *target_obj; int whole2target; int whole2src; int whole_details; };
+enum W2Access { W2_PUBLIC = 1, W2_VIRTUAL, W2_PROTECTED, W2_PRIVATE };
+struct W2BaseInfo { W2UTI *base; int offset : 29; bool is_virtual : 1; W2Access access : 2; };
+struct W2ClassTI : W2UTI { W2BaseInfo *base_list; u32 n_bases; };
+inline bool w2_contained_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_mask; }
+extern "C" s32 W2TiEq(const W2TI *, const W2TI *) asm("func_00286B58");
+inline void *y1_convert_to_base(void *addr, bool is_virtual, int offset)
+{
+  if (!addr)
+    return 0;
+  if (!is_virtual)
+    return (char *)addr + offset;
+  return *(void **)((char *)addr + offset);
+}
+extern "C" bool Y1TiEq(const W2TI *, const W2TI *) throw() asm("func_00286B58");
+struct Y1upcast_result {
+    void *target_obj;
+    W2UTI::sub_kind whole2target;
+    const W2TI *base_type;
+    Y1upcast_result() : target_obj(0), whole2target(W2UTI::unknown), base_type(0) {}
+};
+#define Y1_nonvirtual_base_type ((const W2TI *)8)
+inline bool y1_contained_virtual_p(W2UTI::sub_kind access_path) { return (access_path & (W2UTI::contained_mask | W2UTI::contained_virtual_mask)) == (W2UTI::contained_mask | W2UTI::contained_virtual_mask); }
+inline bool y1_contained_nonpublic_p(W2UTI::sub_kind access_path) { return (access_path & W2UTI::contained_public) == W2UTI::contained_mask; }
+inline bool y1_contained_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_mask; }
 // @decl-end
 
 extern "C" void func_00286B20(void *p, s32 c) { FLD(void *, p, 4) = W2vt_ti2; if (c & 1) { __builtin_delete(p); return; } }
@@ -136,7 +168,22 @@ extern "C" void *func_00286C78(const W2UTI *self, int boff, const W2TI &target, 
 
 extern "C" s32 func_00286DC0(void *self, s32 access, void *target, void *obj, W2Upcast *res) { if (func_00286B58((const char **)self, (const char **)target)) { res->obj = obj; res->base = (void *)8; res->access = access; return (access & 6) == 4; } return 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00286E20);
+extern "C" bool func_00286E20(const char **self, int, int access_path, const char **target, void *objptr, const char **subtype, void *subptr, Y1dyncast_result *__restrict result)
+{
+  if (objptr == subptr && func_00286B58(self, subtype))
+    {
+      result->whole2src = access_path;
+      return false;
+    }
+  if (func_00286B58(self, target))
+    {
+      result->target_obj = objptr;
+      result->whole2target = access_path;
+      result->whole_details = 1;
+      return false;
+    }
+  return false;
+}
 
 extern "C" s32 func_00286EB8(void *a, void *b, void *c, s32 x, s32 y) { return y == x ? 6 : 1; }
 
@@ -146,41 +193,218 @@ extern "C" s32 func_00286F80(void *self, s32 boff, s32 access, void *target, voi
 
 extern "C" s32 func_002870A0(void *self, s32 boff, void *sub, void *obj, void *subptr) { if (subptr == obj && func_00286B58((const char **)sub, (const char **)self)) return 6; return FLD(W2TI2 *, self, 8)->v3(boff, sub, obj, subptr); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287138);
+extern "C" bool func_00287138(const W2ClassTI *self, W2UTI::sub_kind access_path, const W2TI &target, void *objptr, Y1upcast_result &__restrict result)
+{
+  if (Y1TiEq(self, &target))
+    {
+      result.target_obj = objptr;
+      result.base_type = Y1_nonvirtual_base_type;
+      result.whole2target = access_path;
+      return y1_contained_nonpublic_p (access_path);
+    }
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287378);
+  for (u32 i = self->n_bases; i--;)
+    {
+      Y1upcast_result result2;
+      void *p = objptr;
+      W2UTI::sub_kind sub_access = access_path;
+      p = y1_convert_to_base (p,
+                           self->base_list[i].is_virtual,
+                           self->base_list[i].offset);
+      if (self->base_list[i].is_virtual)
+	sub_access = W2UTI::sub_kind (sub_access | W2UTI::contained_virtual_mask);
+      if (self->base_list[i].access != W2_PUBLIC)
+	sub_access = W2UTI::sub_kind (sub_access & ~W2UTI::contained_public_mask);
+      if (self->base_list[i].base->do_upcast (sub_access, target, p, &result2)
+          && !y1_contained_virtual_p (result2.whole2target))
+        return true;
+      if (result2.base_type)
+        {
+          if (result2.base_type == Y1_nonvirtual_base_type
+              && self->base_list[i].is_virtual)
+            result2.base_type = self->base_list[i].base;
+          if (!result.base_type)
+            result = result2;
+          else if (result.target_obj != result2.target_obj)
+            {
+	      result.target_obj = 0;
+	      result.whole2target = W2UTI::contained_ambig;
+	      return true;
+            }
+          else if (result.target_obj)
+            {
+              result.whole2target
+                  = W2UTI::sub_kind (result.whole2target | result2.whole2target);
+            }
+          else
+            {
+              if (result2.base_type == Y1_nonvirtual_base_type
+                  || result.base_type == Y1_nonvirtual_base_type
+                  || !Y1TiEq (result2.base_type, result.base_type))
+                {
+                  result.whole2target = W2UTI::contained_ambig;
+                  return true;
+                }
+              result.whole2target
+                  = W2UTI::sub_kind (result.whole2target | result2.whole2target);
+            }
+        }
+    }
+  return false;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_002877B8);
+extern "C" bool func_00287378(const W2ClassTI *self, int boff, W2UTI::sub_kind access_path,
+            const W2TI &target, void *objptr,
+            const W2TI &subtype, void *subptr,
+            W2UTI::dyncast_result &__restrict result)
+{
+  if (objptr == subptr && Y1TiEq(self, &subtype))
+    {
+      result.whole2sub = access_path;
+      return false;
+    }
+  if (Y1TiEq(self, &target))
+    {
+      result.target_obj = objptr;
+      result.whole2target = access_path;
+      if (boff >= 0)
+        result.target2sub = ((char *)subptr - (char *)objptr) == boff
+              ? W2UTI::contained_public : W2UTI::not_contained;
+      else if (boff == -2)
+        result.target2sub = W2UTI::not_contained;
+      return false;
+    }
+  bool result_ambig = false;
+  for (u32 i = self->n_bases; i--;)
+    {
+      W2UTI::dyncast_result result2;
+      void *p;
+      W2UTI::sub_kind sub_access = access_path;
+      p = y1_convert_to_base (objptr,
+                           self->base_list[i].is_virtual,
+                           self->base_list[i].offset);
+      if (self->base_list[i].is_virtual)
+	sub_access = W2UTI::sub_kind (sub_access | W2UTI::contained_virtual_mask);
+      if (self->base_list[i].access != W2_PUBLIC)
+	sub_access = W2UTI::sub_kind (sub_access & ~W2UTI::contained_public_mask);
 
-typedef void (*W2NoRet)(void) __attribute__((noreturn));
-extern "C" W2NoRet D_002BF22C;
-// splat merged three functions here: __terminate, __default_unexpected, set_terminate
-extern "C" void func_00287920(void) { D_002BF22C(); }
-extern "C" void func_00287938(void) { func_00287920(); }
-extern "C" W2NoRet func_00287948(W2NoRet f) { W2NoRet o = D_002BF22C; D_002BF22C = f; return o; }
+      bool result2_ambig
+          = self->base_list[i].base->do_dyncast (boff, sub_access,
+                                           target, p, subtype, subptr, result2);
+      result.whole2sub = W2UTI::sub_kind (result.whole2sub | result2.whole2sub);
+      if (result2.target2sub == W2UTI::contained_public
+          || result2.target2sub == W2UTI::contained_ambig)
+        {
+          result.target_obj = result2.target_obj;
+          result.whole2target = result2.whole2target;
+          result.target2sub = result2.target2sub;
+          return result2_ambig;
+        }
 
-extern "C" void *func_00287960(void *p) { void *o = D_002BF244; D_002BF244 = p; return o; }
+      if (!result_ambig && !result.target_obj)
+        {
+          result.target_obj = result2.target_obj;
+          result.whole2target = result2.whole2target;
+          result_ambig = result2_ambig;
+        }
+      else if (result.target_obj && result.target_obj == result2.target_obj)
+        {
+          result.whole2target =
+              W2UTI::sub_kind (result.whole2target | result2.whole2target);
+        }
+      else if ((result.target_obj && result2.target_obj)
+               || (result_ambig && result2.target_obj)
+               || (result2_ambig && result.target_obj))
+        {
+          W2UTI::sub_kind new_sub_kind = result2.target2sub;
+          W2UTI::sub_kind old_sub_kind = result.target2sub;
 
-// splat merged two functions here: __unexpected, __cp_exception_info
-extern "C" void func_00287978(void) { ((W2NoRet)D_002BF244)(); }
-extern "C" void *func_00287990(void) { return *(u8 **)func_00283980() + 8; }
+          if (w2_contained_nonvirtual_p (result.whole2sub))
+            {
+              if (old_sub_kind == W2UTI::unknown)
+                old_sub_kind = W2UTI::not_contained;
+              if (new_sub_kind == W2UTI::unknown)
+                new_sub_kind = W2UTI::not_contained;
+            }
+          else
+            {
+              const W2UTI &t =
+                  static_cast <const W2UTI &> (target);
 
-extern "C" s32 func_002879B8(void) { return *(s32 *)func_00283980(); }
+              if (old_sub_kind >= W2UTI::not_contained)
+                ;
+              else if (w2_contained_nonvirtual_p (new_sub_kind))
+                old_sub_kind = W2UTI::not_contained;
+              else
+                old_sub_kind = t.find_public_subobj (boff, subtype,
+                                                     result.target_obj, subptr);
 
-extern "C" void *func_002879D8(void) { u8 *p = *(u8 **)func_00283980(); FLD(s32, p, 0x14) = 1; FLD(s64, p, 0x20) = FLD(s64, p, 0x20) + 1; return p; }
+              if (new_sub_kind >= W2UTI::not_contained)
+                ;
+              else if (w2_contained_nonvirtual_p (old_sub_kind))
+                new_sub_kind = W2UTI::not_contained;
+              else
+                new_sub_kind = t.find_public_subobj (boff, subtype,
+                                                     result2.target_obj, subptr);
+            }
 
-extern "C" void *func_00287A10(void *info, void *match, void *tbl) { if (tbl && FLD(s16, tbl, 4) != 4) return 0; if (match == (void *)-1) return (void *)1; match = ((void *(*)(void))match)(); return (void *)(func_002883B0(match, FLD(void *, info, 0xC), FLD(void *, info, 0x28), (u8 *)info + 8) != 0); }
+          if (y1_contained_p (W2UTI::sub_kind (new_sub_kind ^ old_sub_kind)))
+            {
+              if (y1_contained_p (new_sub_kind))
+                {
+                  result.target_obj = result2.target_obj;
+                  result.whole2target = result2.whole2target;
+                  result_ambig = false;
+                  old_sub_kind = new_sub_kind;
+                }
+              result.target2sub = old_sub_kind;
+              if (result.target2sub == W2UTI::contained_public)
+                return false;
+            }
+          else if (y1_contained_p (W2UTI::sub_kind (new_sub_kind & old_sub_kind)))
+            {
+              result.target_obj = 0;
+              result.target2sub = W2UTI::contained_ambig;
+              return true;
+            }
+          else
+            {
+              result.target_obj = 0;
+              result.target2sub = W2UTI::not_contained;
+              result_ambig = true;
+            }
+        }
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287A70);
+      if (result.whole2sub == W2UTI::contained_private)
+        return result_ambig;
+    }
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287B00);
+  return result_ambig;
+}
 
-extern "C" void func_00287C28(void) { W2EhInfo **stack = (W2EhInfo **)func_00283980(); W2EhInfo **q = stack; W2EhInfo *p; for (;;) { p = *q; if (p == 0) func_00287920(); if (p->caught) break; q = &p->next; } if (q != stack) { *q = p->next; p->next = *stack; *stack = p; } p->caught = 0; }
+extern "C" W2UTI::sub_kind func_002877B8(const W2ClassTI *self, int boff, const W2TI &subtype, void *objptr, void *subptr)
+{
+    if (objptr == subptr && W2TiEq(&subtype, self))
+        return W2UTI::contained_public;
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287C88);
+    for (u32 i = self->n_bases; i--;) {
+        if (self->base_list[i].access != W2_PUBLIC)
+            continue;
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287E50);
+        void *p;
 
-INCLUDE_ASM("asm/nonmatchings/Lib286B20", func_00287EB8);
+        if (self->base_list[i].is_virtual && boff == -3)
+            continue;
 
-extern "C" const char *func_00287F58(void *self) { void *t; if (self) t = ((void *(*)(void))FLD(void *, *(void **)self, 4))(); else t = func_00287EB8(); return *(const char **)t; }
+        p = y1_convert_to_base(objptr, self->base_list[i].is_virtual, self->base_list[i].offset);
+
+        W2UTI::sub_kind base_kind = self->base_list[i].base->do_find_public_subobj(boff, subtype, p, subptr);
+        if (w2_contained_p(base_kind)) {
+            if (self->base_list[i].is_virtual)
+                base_kind = W2UTI::sub_kind(base_kind | W2UTI::contained_virtual_mask);
+            return base_kind;
+        }
+    }
+
+    return W2UTI::not_contained;
+}

@@ -1,0 +1,22 @@
+//@decl
+//@func 0x24EF88
+extern "C" void func_0024EF88(CTaskTag *t, u32 i, s32 dir)
+{
+    CTaskTag *c, *n;
+    if (t->m_count[0][i] <= 0 && t->m_count[1][i] <= 0 && t->m_task) (t->m_task->*t->m_fn[i][0])();
+    if (t->m_count[0][i] <= 0 && t->m_count[2][i] <= 0) {
+        if (dir) {
+            for (c = TagPrev((CTaskTag *)&t->m_children); c; c = n) {
+                n = TagPrev(c);
+                func_0024EF88(c, i, dir);
+            }
+        } else {
+            for (c = TagNext((CTaskTag *)&t->m_children); c; c = n) {
+                n = TagNext(c);
+                func_0024EF88(c, i, dir);
+            }
+        }
+    }
+    if (t->m_count[0][i] <= 0 && t->m_count[1][i] <= 0 && t->m_task) (t->m_task->*t->m_fn[i][1])();
+    if (t->m_parent && !t->m_task) delete t;
+}

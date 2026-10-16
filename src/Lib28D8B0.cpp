@@ -25,11 +25,35 @@ typedef struct W2Bi W2Bi;
 struct W2Bi { W2Bi *_next; s32 _k, _maxwds, _sign, _wds; u32 _x[1]; };
 extern int func_00292270(W2Bi *, W2Bi *);
 #define W2Storeinc(a,b,c) (((unsigned short *)a)[1] = (unsigned short)b, ((unsigned short *)a)[0] = (unsigned short)c, a++)
+struct Y1sbuf { unsigned char *_base; int _size; };
+struct Y1FILE { unsigned char *_p; int _r; int _w; short _flags; short _file; struct Y1sbuf _bf; int _lbfsize; void *_cookie; int (*_read)(void *, char *, int); int (*_write)(void *, const char *, int); long (*_seek)(void *, long, int); int (*_close)(void *); struct Y1sbuf _ub; unsigned char *_up; int _ur; unsigned char _ubuf[3]; unsigned char _nbuf[1]; struct Y1sbuf _lb; int _blksize; int _offset; struct _reent *_data; };
+extern s32 Y1fflush(struct Y1FILE *) asm("func_00290990");
+
+s32 Y1sbprintf(struct Y1FILE *fp, const char *fmt, void *ap) asm("func_0028D8F8");
 // @decl-end
 
 extern s32 func_0028D8B0(void *fp, void *uio) { s32 err; if (FLD(s32, uio, 8) == 0) { FLD(s32, uio, 4) = 0; return 0; } err = func_002911B0(fp, uio); FLD(s32, uio, 8) = 0; FLD(s32, uio, 4) = 0; return err; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028D8F8);
+s32 Y1sbprintf(struct Y1FILE *fp, const char *fmt, void *ap)
+{
+    int ret;
+    struct Y1FILE fake;
+    unsigned char buf[1024];
+    fake._data = fp->_data;
+    fake._flags = fp->_flags & ~0x0002;
+    fake._file = fp->_file;
+    fake._cookie = fp->_cookie;
+    fake._write = fp->_write;
+    fake._bf._base = fake._p = buf;
+    fake._bf._size = fake._w = sizeof(buf);
+    fake._lbfsize = 0;
+    ret = func_0028D9B0((W2File *)&fake, fmt, ap);
+    if (ret >= 0 && Y1fflush(&fake))
+        ret = -1;
+    if (fake._flags & 0x0040)
+        fp->_flags |= 0x0040;
+    return ret;
+}
 
 extern s32 func_0028D9B0(W2File *fp, const char *fmt, void *ap) { do { if (fp->data == 0) fp->data = D_002BF5D0; if (!FLD(s32, fp->data, 0x38)) func_00290CB8(fp->data); } while (0); return func_0028DA28(fp->data, fp, fmt, ap); }
 

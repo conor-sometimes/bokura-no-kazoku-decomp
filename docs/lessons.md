@@ -1036,3 +1036,73 @@ end:;
 - **A same-unit callee keeps `bnez`**: after the cut, 0x253358 turned into `bnezl` until its helpers
   (Func2531D0/2531E8) were back in the same unit; when splitting a unit, keep a function's helpers
   with it (nothrow-by-definition, see ## nm). *(bokura)*
+
+## y1 (overnight grind 2026-10-16: Dk*/Lib* retry list)
+- **`#pragma interface` must sit in the header that defines the class**: in the .cpp it only covers classes
+  defined there (CEnvResObj etc.); for CProcess/CTask/CBgWork/CPushBuf/CMemTex (include/*.h) the key-method
+  destructors only kept their vtables in asm once the pragma went into the header. *(bokura)*
+- **Template vtables ignore `#pragma interface`**: constructing a `TList<T>` member (placement new) emitted
+  `_vt$t5TList1Z...` and its `__tf` into the object; `extern template class TList<CResCacheUnit>;` suppresses
+  the implicit instantiation (CResCache ctor 0x24FFE0). utest does not see the extra linkonce section; mk.sh does. *(bokura)*
+- **CList drain loop**: `while (Remove(First(l)));` with `First = { n = l->next; return n->isHead ? 0 : n; }` and
+  `Remove(t) { if (t) {unlink} return t; }` gives retail's `daddu r,0; movz r,n,head` + `beql` top test + the
+  redundant `bnez t` at the bottom (nine CList/TList deleting dtors, CResCache/CSndWork/CTaskTag dtors).
+  The list walkers use two First forms: `h->next->isHead ? 0 : h->next` (branchy first item, then movz/movn)
+  and the local-variable form; which one a function used shows in whether the first item is branchy. *(bokura)*
+- **"m0 stored before the vptr" in a constructor** came from a member object with a real (non-inline)
+  constructor: declaring that member's ctor with an asm label (`Y1Prm() asm("Func25BD60__FP7CSndPrm")`) and
+  writing a real C++ ctor reproduced it (CSndUnit 0x25C098); the same body with an explicit call did not. *(bokura)*
+- **Argument setup order hints at the parameter order**: when retail loads a float argument register before an
+  int one, the float parameter probably comes later in the signature (0x256DC8 is (ctx, ch, x, y, l): retail
+  sets f13 before a2). *(bokura)*
+- **nothrow crosses unit boundaries the wrong way**: a callee compiled earlier in the same retail .cpp is
+  nothrow, so a `throw()` redeclaration that fixes a near miss also tells you where the callee's code really
+  lives: `func_0025C2C0` (CSndWork dtor, at the end of Dk25A010) had to be `throw()` for 0x25D3E0 in Dk25C438,
+  i.e. CSndWork's code belongs to Dk25C438's object (unit text starts late); 0x24A128 needed func_002496D0
+  `throw()`. tools/bk/ntprobe.py finds these. *(bokura)*
+- **libgcc2 from gcc-2.95.2 needs `__ll_B` as `((USItype) 1 << 16)`**: 2.95's `(1L << 16)` is 64-bit on the
+  EE and turns `r * __ll_B` into dsll32/dsra32 pairs; with the 32-bit constant __udivdi3/__umoddi3/__divdi3/
+  __moddi3 match (each with its own static __clz_tab, __negdi2 as a static inline), and the conversions match
+  with `a -= (DFtype)v` on the parameter (dptoul/__floatdidf libcall names need aliases.ld lines). *(bokura)*
+- **newlib mallocr.c `_malloc_trim_r`**: `_sbrk_r` must be prototyped with an `int` increment (ptrdiff_t);
+  without a prototype `-extra` is passed as a 64-bit long (dnegu instead of negu of the truncated value). *(bokura)*
+- **SDK C (991111, strict aliasing) field-type searches**: the sifrpc request handlers matched only with the
+  input packet's pkt_addr/client as pointers and the output packet all-int (0x275B58/0x275E10), the
+  _request_call queue with `end`/`client` as void* (0x276020), the alarm functions with flags read into an
+  `unsigned int` (li 0xFFFFFFFE) and the current id read through a `volatile AlarmSys *`. A small script that
+  expands `{{a|b}}` alternatives in a snippet and utests every combination (build/bk/y1/ts.py) found these in
+  seconds. *(bokura)*
+- **Constant in the wrong FPR before a call**: `w = h = x = y = 0.0f; f(x, y, &w, &h)` put the zero in f13
+  and copied it to f12 like retail; `f(0.0f, 0.0f, ...)` loads f12 first (CFontWork 0x2566A0). *(bokura)*
+- **Loop counters that count down in retail but were `for (i = 0; i < n; i++)`**: loop.c reverses an
+  unused biv into a down-counter copied from n (0x256DC8's `daddu $19,$6`). *(bokura)*
+- **SDK library objects and jump tables**: a compiled switch makes the object's .rodata 16-aligned; Dk26CFB0's
+  .rodata piece starts 8-aligned (0x2E9928), so sceGsSetDefLoadImage (0x26F0D8) matches in utest but shifts the
+  piece; the libgraph object starts at 0x2E9A00 in .rodata and needs its own unit. *(bokura)*
+- **Library code: write the upstream source with its real types first**. In the strict-aliasing LIBC units the
+  field types decide load/store order: newlib __sbprintf (two copies) matched with FILE's real function-pointer
+  and short fields where an all-void* struct was stuck at DIFF 4; libgcc add_fdes/init_object with
+  `uword`/`fde **`; __cp_push_exception with the real cp_eh_info (bool caught, long handlers); tinfo
+  do_dyncast/do_upcast/do_find_public_subobj with 2.96 tinfo.cc's `convert_to_base` inline (the `if
+  (!is_virtual) return addr + off; return *(void **)(addr + off)` shape) and `type_info::operator==` declared
+  `bool ... throw()`. d2b matched as the upstream `if (d1) { y = d1; ...`. *(bokura)*
+- **frame.c is C**: with the tinfo C++ split off (lane cv), Lib285F80 compiles with `-x c` (added to
+  LIBC_C_OBJS, bk.py's LIBC_C_RANGES updated): the C++ front end hoists `&local` stack addresses out of call
+  loops into s-registers, C does not (init_object, __frame_state_for, execute_cfa_insn all matched as C).
+  Quick test for "which front end": compile the snippet standalone with `ee-gcc -x c` and compare
+  (build/bk/y1/fcmp.py). *(bokura)*
+- **2.96 does not rotate `while` loops here**: `while (c) body` compiled as jump-to-test; retail's duplicated
+  entry test came from `if (c) do body while (c);` (get_reg_addr 0x2843A8). *(bokura)*
+- **RTL inlining keeps wide loads**: `(void *)*(long *)f()` narrows to `lw`; going through an inline
+  `long get_reg(...) { return *get_reg_addr(...); }` keeps retail's `ld` + sign-extend (next_stack_level). *(bokura)*
+- **noreturn decides fallthrough code**: abort/__terminate called as noreturn give `jal; nop` and no a0 save
+  (0x283D20, 0x288A00, 0x2838D8); declare a local asm-labelled alias with `__attribute__((noreturn))` rather
+  than changing the shared declaration. *(bokura)*
+- **A function-local static in a matched function needs the retail symbol**: fde_split's `static fde *marker`
+  compiled as `marker.0` in our .bss; replacing it with `extern Y1Fde *D_424594` (the retail .bss slot) fixed
+  the relocation (end_fde_sort 0x285728). *(bokura)*
+- **Defining a function earlier in a C unit can change its callers**: porting new_eh_context turned
+  __get_eh_context's caller `bne` into `bnel`; giving the definition its own C name with an asm label
+  (`void *Y1NewEhContext(void) asm("func_002838D8")`) kept the caller as retail. *(bokura)*
+- **utest vs mk.sh after a compiler-group change**: tools/bk/bk.py keeps its own LIBC_C_RANGES; until that is
+  updated utest compiles the unit with the old front end (DIFF 85 in utest, OK in mk.sh). *(bokura)*

@@ -95,6 +95,7 @@ extern "C" void func_0024EF30(CTaskTag *t);
 static inline Y1Tg *Y1Fst(Y1Tg *l) { Y1Tg *n = l->next; return n->isHead ? 0 : n; }
 static inline Y1Tg *Y1Rem(Y1Tg *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 static inline void Y1TagDtor(Y1Tg *l) { l->vptr = Y1vtCListTag; l->prev->next = l->next; l->next->prev = l->prev; l->next = l; l->prev = l; }
+extern u8 Y1vtTListTT[] asm("_vt$t5TList1Z8CTaskTag");
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68C8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68D0);
@@ -150,7 +151,27 @@ extern "C" void func_0024ECF8(void *p) {
     if (p) (*D_002BA06C)(p);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024ED20);
+extern "C" CTaskTag *func_0024ED20(void *vp)
+{
+    Y1Tg *t = (Y1Tg *)vp;
+    Y1Tg *c = (Y1Tg *)((u8 *)vp + 0x54);
+    CTaskTag *tt = (CTaskTag *)vp;
+    s32 i, j;
+    t->vptr = Y1vtTaskTag;
+    t->isHead = 0;
+    t->next = t;
+    t->prev = t;
+    c->vptr = Y1vtTListTT;
+    c->isHead = 1;
+    c->prev = c;
+    c->next = c;
+    tt->m_parent = 0;
+    tt->m_task = 0;
+    memset(tt->m_count, 0, 9);
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 2; j++)
+            tt->m_fn[i][j] = D_002BA070[i][j];
+}
 
 extern "C" void func_0024EDE8(CTaskTag *t, s32 flags)
 {
@@ -188,6 +209,7 @@ extern "C" void func_0024EF30(CTaskTag *t) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024EF88);
 
+asm(".p2align 3");
 extern "C" void func_0024F1F0(CTaskTag *t, u32 i, TaskFn a, TaskFn b) {
     if (!a) a = D_002BA070[i][0];
     if (!b) b = D_002BA070[i][1];
@@ -295,7 +317,18 @@ extern "C" void func_0024F668(CTask *t) {
     while ((c = func_0024F570(t)) != 0) func_0024F610(c);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F6A8);
+extern "C" s32 func_0024F6A8(CTask *t, u32 i, u32 j, s32 inc)
+{
+    s8 *e;
+    s32 v, n;
+    if (i >= 3 || j >= 3) return 0;
+    e = (s8 *)(j + i * 3 + (s32)t->m_unk0) + 0x48;
+    v = *e;
+    n = v + 1;
+    if (!inc) n = v - 1;
+    *e = n;
+    return v > 0;
+}
 
 extern "C" s32 func_0024F6F8(CTask *t, u32 i, u32 j) {
     if (i >= 3 || j >= 3) return 0;

@@ -1,31 +1,35 @@
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+typedef struct W2Fde2 W2Fde2;
+typedef struct W2Upcast W2Upcast;
+typedef struct W2UR W2UR;
+typedef struct W2CieInfo W2CieInfo;
+typedef struct W2DwState W2DwState;
+typedef struct W2FdeF W2FdeF;
+typedef struct W2ObjF W2ObjF;
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-extern "C" int func_00283980(void);
-extern "C" int strcmp(const char *, const char *);
-extern "C" void *D_002BF244;
+extern int func_00283980(void);
+extern int strcmp(const char *, const char *);
+extern void *D_002BF244;
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-struct W2FpNumS { s32 cls; u32 sign; s32 exp; u32 frac; };
-extern "C" float func_00288F40(W2FpNumS *);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-extern "C" s32 strcmp(const char *, const char *);
+extern s32 strcmp(const char *, const char *);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 struct W2Fde2 { u32 length; s32 cie; u32 pc_begin; u32 pc_range; };
 struct W2Upcast { void *obj; s32 access; void *base; };
-extern "C" s32 func_00286B58(const char **, const char **);
-extern "C" void func_00287920(void) __attribute__((noreturn));
-struct W2EhInfo { u8 pad[0x14]; s32 caught; W2EhInfo *next; };
+extern s32 func_00286B58(const char **, const char **);
+extern void func_00287920(void) __attribute__((noreturn));
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-extern "C" void *func_00287EB8(void);
+extern void *func_00287EB8(void);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-extern "C" void *func_00283D20(u32);
-extern "C" void *func_00287A10(void *, void *, void *);
+extern void *func_00283D20(u32);
+extern void *func_00287A10(void *, void *, void *);
 extern u8 W2vt_si[] asm("_vt$14__si_type_info");
 extern u8 W2vt_user[] asm("_vt$16__user_type_info");
 
@@ -35,31 +39,22 @@ extern u8 W2vt_class2[] asm("_vt$17__class_type_info");
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 extern u8 W2vt_ti2[] asm("_vt$9type_info");
 extern u8 W2vt_bi[] asm("_vt$19__builtin_type_info");
-extern "C" u8 D_002BF248[];
-extern "C" const char D_002EAD08[];
+extern u8 D_002BF248[];
+extern const char D_002EAD08[];
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-struct W2FpS { s32 cls; u32 sign; s32 exp; u32 frac; };
-extern "C" s32 func_002883B0(void *, void *, void *, void *);
-struct W2TI2 { const char *name; virtual void v0(); virtual s32 v1(s32, void *, void *, s32 *); virtual void v2(); virtual s32 v3(s32, void *, void *, void *); };
+extern s32 func_002883B0(void *, void *, void *, void *);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-enum W2FC { W2C_SNAN, W2C_QNAN, W2C_ZERO, W2C_NUMBER, W2C_INF };
-struct W2FpD { W2FC cls; u32 sign; s32 exp; u32 pad; u64 frac; };
-union W2DBits { double d; u64 l; struct { u64 frac : 52 __attribute__((packed)); unsigned int exp : 11 __attribute__((packed)); unsigned int sign : 1 __attribute__((packed)); } b; };
-static inline int w2d_isnan(W2FpD *x) { return x->cls == W2C_SNAN || x->cls == W2C_QNAN; }
-static inline int w2d_isinf(W2FpD *x) { return x->cls == W2C_INF; }
-static inline int w2d_iszero(W2FpD *x) { return x->cls == W2C_ZERO; }
 struct W2UR { void *obj; s32 access; void *base; };
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-struct W2TI3 { const char *name; virtual void v0(); virtual void v1(); virtual s32 v2(s32, s32, void *, void *, void *, void *, s32 *); };
 
 struct W2CieInfo { char *augmentation; void *eh_ptr; int code_align; int data_align; unsigned ra_regno; };
 union W2Unaligned { void *p; unsigned b2 __attribute__ ((mode (HI))); unsigned b4 __attribute__ ((mode (SI))); } __attribute__((packed));
-extern "C" u32 strlen(const char *);
-extern "C" u8 *func_00285590(u8 *, void *);
-extern "C" u8 *func_002855D8(u8 *, void *);
+extern u32 strlen(const char *);
+extern u8 *func_00285590(u8 *, void *);
+extern u8 *func_002855D8(u8 *, void *);
 extern const char D_002EABA0[];
 extern const char D_002EABA8[];
 static inline void *w2_read_pointer(void *p) { union W2Unaligned *up = (union W2Unaligned *)p; return up->p; }
@@ -68,46 +63,107 @@ static inline unsigned w2_read_2byte(void *p) { union W2Unaligned *up = (union W
 static inline unsigned w2_read_4byte(void *p) { union W2Unaligned *up = (union W2Unaligned *)p; return up->b4; }
 
 struct W2DwState { u8 p0[8]; s64 m8; s64 m10; u8 p18[0x3F8 - 0x18]; u16 m3F8; u8 p3FA[0x477 - 0x3FA]; u8 m477; };
-extern "C" void func_00288FF8(void) __attribute__((noreturn));
+extern void func_00288FF8(void) __attribute__((noreturn));
 
 struct W2FdeF { u32 length; s32 CIE_delta; void *pc_begin; u32 pc_range; };
 struct W2ObjF { void *pc_begin; void *pc_end; W2FdeF *fde_begin; W2FdeF **fde_array; u32 count; W2ObjF *next; };
-extern "C" W2ObjF *D_424598;
-extern "C" int D_002BE1C4;
-extern "C" s32 func_002731E0(s32);
-extern "C" s32 func_002731C0(s32);
-extern "C" void func_00285FD8(W2ObjF *) throw();
-extern "C" W2FdeF *W2SearchFdes(W2FdeF *, void *) asm("func_00285F80");
+extern W2ObjF *D_424598;
+extern int D_002BE1C4;
+extern s32 func_002731E0(s32);
+extern s32 func_002731C0(s32);
+extern void func_00285FD8(W2ObjF *);
+extern W2FdeF *W2SearchFdes(W2FdeF *, void *) asm("func_00285F80");
 
-struct W2TI { const char *_name; virtual ~W2TI(); };
-struct W2UTI : W2TI {
-    enum sub_kind { unknown = 0, not_contained, contained_ambig, contained_virtual_mask = 1, contained_public_mask = 2, contained_mask = 4, contained_private = 4, contained_public = 6 };
-    struct dyncast_result {
-        void *target_obj;
-        sub_kind whole2target, whole2sub, target2sub;
-        dyncast_result() : target_obj(0), whole2target(unknown), whole2sub(unknown), target2sub(unknown) {}
-    };
-    virtual bool do_upcast(sub_kind, const W2TI &, void *, void *) const;
-    virtual bool do_dyncast(int boff, sub_kind access_path, const W2TI &target, void *objptr, const W2TI &subtype, void *subptr, dyncast_result &result) const;
-    virtual sub_kind do_find_public_subobj(int boff, const W2TI &subtype, void *objptr, void *subptr) const;
-    sub_kind find_public_subobj(int boff, const W2TI &subtype, void *objptr, void *subptr) const
-    {
-        if (boff >= 0)
-            return ((char *)subptr - (char *)objptr) == boff ? contained_public : not_contained;
-        if (boff == -2)
-            return not_contained;
-        return do_find_public_subobj(boff, subtype, objptr, subptr);
-    }
+typedef struct Y1fde_vector { W2FdeF **array; unsigned int count; } Y1fde_vector;
+typedef struct Y1fde_accumulator { Y1fde_vector linear; Y1fde_vector erratic; } Y1fde_accumulator;
+extern W2FdeF **Y1end_fde_sort(Y1fde_accumulator *, unsigned int) asm("func_00285728");
+extern unsigned int Y1count_fdes(W2FdeF *) asm("func_00285EB0");
+extern void Y1add_fdes(W2FdeF *, Y1fde_accumulator *, void **, void **) asm("func_00285EF0");
+extern void *Y1malloc(unsigned int) asm("func_00289348");
+static inline int
+Y1start_fde_sort (Y1fde_accumulator *accu, unsigned int count)
+{
+  accu->linear.array = count ? (W2FdeF **) Y1malloc (sizeof (W2FdeF *) * count) : 0;
+  accu->erratic.array = accu->linear.array ?
+      (W2FdeF **) Y1malloc (sizeof (W2FdeF *) * count) : 0;
+  accu->linear.count = 0;
+  accu->erratic.count = 0;
+  return accu->linear.array != 0;
+}
+typedef struct W2FrameState W2FrameState;
+typedef struct W2FrameStateInt W2FrameStateInt;
+struct W2FrameState { void *cfa; void *eh_ptr; u8 p8[0x3FA - 8]; u16 retaddr_column; u8 p3FC[0x478 - 0x3FC]; } __attribute__((aligned(8)));
+struct W2FrameStateInt { W2FrameState s; void *saved_state; u32 pad; };
+extern u8 *func_00286518(u8 *, W2FrameStateInt *, W2CieInfo *, void **);
+extern void *memset(void *, int, unsigned int);
+typedef struct W2FS W2FS;
+struct W2FS {
+    void *cfa;                // 0x0
+    void *eh_ptr;             // 0x4
+    long cfa_offset;          // 0x8
+    long cfa_exp;             // 0x10
+    long args_size;           // 0x18
+    long reg_or_offset[123];  // 0x20
+    unsigned short cfa_reg;   // 0x3F8
+    unsigned short retaddr_column; // 0x3FA
+    char saved[123];          // 0x3FC
+    char cfa_how;             // 0x477
+    W2FS *saved_state;        // 0x478
 };
-inline bool w2_contained_public_p(W2UTI::sub_kind access_path) { return access_path >= W2UTI::contained_public; }
-inline bool w2_contained_nonvirtual_p(W2UTI::sub_kind access_path) { return (access_path & (W2UTI::contained_mask | W2UTI::contained_virtual_mask)) == W2UTI::contained_mask; }
+extern void *func_00289348(unsigned int n);       /* malloc */
+extern void func_002893A0(void *p);               /* free */
+extern void *memcpy(void *, const void *, unsigned int);
+u8 *Y1execute_cfa_insn(u8 *p, W2FS *state, W2CieInfo *info, void **pc) asm("func_00286518");
 // @decl-end
 
-extern "C" W2Fde2 *func_00285F80(W2Fde2 *f, u32 pc) { for (; f->length != 0; f = (W2Fde2 *)((u8 *)f + f->length + 4)) { if (f->cie == 0) continue; if (f->pc_begin == 0) continue; if (pc - f->pc_begin < f->pc_range) return f; } return 0; }
+extern W2Fde2 *func_00285F80(W2Fde2 *f, u32 pc) { for (; f->length != 0; f = (W2Fde2 *)((u8 *)f + f->length + 4)) { if (f->cie == 0) continue; if (f->pc_begin == 0) continue; if (pc - f->pc_begin < f->pc_range) return f; } return 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00285FD8);
+void func_00285FD8(W2ObjF *ob)
+{
+  Y1fde_accumulator accu;
+  unsigned int count;
 
-extern "C" W2FdeF *func_00286140(void *pc)
+  if (ob->pc_begin)
+    count = ob->count;
+  else
+    {
+      if (ob->fde_array)
+	{
+	  W2FdeF **p = ob->fde_array;
+	  for (count = 0; *p; ++p)
+	    count += Y1count_fdes (*p);
+	}
+      else
+	count = Y1count_fdes (ob->fde_begin);
+    }
+  ob->count = count;
+
+  if (!Y1start_fde_sort (&accu, count) && ob->pc_begin)
+    return;
+
+  {
+    W2FdeF **array;
+    void *pc_begin = (void *)-1;
+    void *pc_end = 0;
+
+    if (ob->fde_array)
+      {
+	W2FdeF **p = ob->fde_array;
+	for (; *p; ++p)
+	  Y1add_fdes (*p, &accu, &pc_begin, &pc_end);
+      }
+    else
+      Y1add_fdes (ob->fde_begin, &accu, &pc_begin, &pc_end);
+
+    array = Y1end_fde_sort (&accu, count);
+    if (array)
+      ob->fde_array = array;
+    ob->pc_begin = pc_begin;
+    ob->pc_end = pc_end;
+  }
+}
+
+extern W2FdeF *func_00286140(void *pc)
 {
     W2ObjF *ob;
     u32 lo, hi;
@@ -161,7 +217,7 @@ extern "C" W2FdeF *func_00286140(void *pc)
     return 0;
 }
 
-extern "C" u8 *func_002862E8(W2Fde2 *f, W2CieInfo *c)
+extern u8 *func_002862E8(W2Fde2 *f, W2CieInfo *c)
 {
     u8 *p;
     int i;
@@ -193,7 +249,7 @@ extern "C" u8 *func_002862E8(W2Fde2 *f, W2CieInfo *c)
     return p;
 }
 
-extern "C" u8 *func_002863F8(u8 *p, W2DwState *s)
+extern u8 *func_002863F8(u8 *p, W2DwState *s)
 {
     unsigned int op = *p++;
     int tmp;
@@ -230,6 +286,173 @@ extern "C" u8 *func_002863F8(u8 *p, W2DwState *s)
 
 INCLUDE_RODATA("asm/nonmatchings/Lib285F80", D_002EABA0);
 INCLUDE_RODATA("asm/nonmatchings/Lib285F80", D_002EABA8);
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286518);
+asm(".p2align 3");
+u8 *Y1execute_cfa_insn(u8 *p, W2FS *state, W2CieInfo *info, void **pc)
+{
+    unsigned insn = *p++;
+    int offset;
+    unsigned reg;
 
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00286968);
+    if (insn & 0x40)
+        *(char **)pc += ((insn & 0x3f) * info->code_align);
+    else if (insn & 0x80) {
+        reg = (insn & 0x3f);
+        p = func_00285590(p, &offset);
+        if (reg == state->cfa_reg)
+            ;
+        else {
+            offset *= info->data_align;
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = offset;
+        }
+    } else if (insn & 0xc0) {
+        reg = (insn & 0x3f);
+        state->saved[reg] = 0;
+    } else switch (insn) {
+    case 1:
+        *pc = w2_read_pointer(p);
+        p += sizeof(void *);
+        break;
+    case 2:
+        *(char **)pc += w2_read_1byte(p);
+        p += 1;
+        break;
+    case 3:
+        *(char **)pc += w2_read_2byte(p);
+        p += 2;
+        break;
+    case 4:
+        *(char **)pc += w2_read_4byte(p);
+        p += 4;
+        break;
+    case 5:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        if (reg == state->cfa_reg)
+            ;
+        else {
+            offset *= info->data_align;
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = offset;
+        }
+        break;
+    case 6:
+        p = func_00285590(p, &reg);
+        state->saved[reg] = 0;
+        break;
+    case 0:
+    case 7:
+    case 8:
+        break;
+    case 9: {
+        unsigned reg2;
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &reg2);
+        state->saved[reg] = 2;
+        state->reg_or_offset[reg] = reg2;
+        break;
+    }
+    case 0xc:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        state->cfa_reg = reg;
+        state->cfa_offset = offset;
+        break;
+    case 0xd:
+        p = func_00285590(p, &reg);
+        state->cfa_reg = reg;
+        break;
+    case 0xe:
+        p = func_00285590(p, &offset);
+        state->cfa_offset = offset;
+        break;
+    case 0xf: {
+        u8 *end;
+        state->cfa_reg = 0;
+        state->cfa_offset = 0;
+        state->cfa_exp = 0;
+        state->cfa_how = 0;
+        p = func_00285590(p, &offset);
+        end = p + offset;
+        while (p < end)
+            p = func_002863F8(p, (W2DwState *)state);
+        return p;
+    }
+    case 0xa: {
+        W2FS *save = (W2FS *)func_00289348(sizeof(W2FS));
+        memcpy(save, state, sizeof(W2FS));
+        state->saved_state = save;
+        break;
+    }
+    case 0xb: {
+        W2FS *save = state->saved_state;
+        memcpy(state, save, sizeof(W2FS));
+        func_002893A0(save);
+        break;
+    }
+    case 0x2d:
+        for (reg = 16; reg < 32; ++reg) {
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = (reg - 16) * sizeof(void *);
+        }
+        break;
+    case 0x2e:
+        p = func_00285590(p, &offset);
+        state->args_size = offset;
+        break;
+    case 0x2f:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        offset *= info->data_align;
+        state->saved[reg] = 1;
+        state->reg_or_offset[reg] = -offset;
+        break;
+    default:
+        func_00288FF8();
+    }
+    return p;
+}
+
+extern W2FrameState *func_00286968(void *pc_target, W2FrameState *state_in)
+{
+    W2CieInfo info;
+    W2FrameStateInt state;
+    W2FdeF *f;
+    u8 *insn, *end;
+    int i;
+    void *pc;
+
+    f = func_00286140(pc_target);
+    if (f == 0)
+        return 0;
+
+    insn = func_002862E8((W2Fde2 *)f, &info);
+    if (insn == 0)
+        return 0;
+
+    memset(&state, 0, sizeof(state));
+    state.s.retaddr_column = info.ra_regno;
+    state.s.eh_ptr = info.eh_ptr;
+
+    {
+        W2FdeF *cie = (W2FdeF *)((char *)&f->CIE_delta - f->CIE_delta);
+        end = (u8 *)cie + cie->length + sizeof(cie->length);
+    }
+    while (insn < end)
+        insn = func_00286518(insn, &state, &info, 0);
+
+    insn = (u8 *)(f + 1);
+
+    if (info.augmentation[0] == 'z') {
+        insn = func_00285590(insn, &i);
+        insn += i;
+    }
+
+    end = (u8 *)f + f->length + sizeof(f->length);
+    pc = f->pc_begin;
+    while (insn < end && pc <= pc_target)
+        insn = func_00286518(insn, &state, &info, &pc);
+
+    *state_in = state.s;
+    return state_in;
+}

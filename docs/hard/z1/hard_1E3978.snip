@@ -1,0 +1,72 @@
+//@decl
+extern u8 Mg6_vt[] asm("_vt$10CMiniGame6");
+extern "C" void Mg6Flag108FF0(void *w, s32 id, s32 v) asm("Func108FF0__9CFlagWorkii");
+extern void *D_002A26E4;
+extern "C" void Mg6LayoutDtor(void *p, s32 f) asm("_$_10CLayoutObj");
+extern "C" void func_0025C2C0(void *p, s32 flags);
+extern "C" void Mg6ProcessDtor(void *p, s32 f) asm("_$_8CProcess");
+extern "C" void Mg6TaskDelete(void *p) asm("__dl__5CTaskPv");
+struct Mg6Ring {
+    void *(*m_alloc)(u32);    // 0x0
+    void (*m_free)(void *);   // 0x4
+    u8 *m_buf;                // 0x8
+    s32 m_wr;                 // 0xC
+    s32 m_rd;                 // 0x10
+    s32 m_size;               // 0x14
+    s32 m_count;              // 0x18
+    s32 PeekAt(void *dst, s32 off, s32 n) {
+        s32 pos, done;
+        if (m_count < off + n) {
+            Func235DE0(D_002E1998);
+            return 0;
+        }
+        pos = (m_rd + off) % m_size;
+        done = 0;
+        while (done < n) {
+            s32 c = n - done;
+            if (m_size - pos <= c) c = m_size - pos;
+            if (dst) memcpy((u8 *)dst + done, m_buf + pos, c);
+            done += c;
+            pos = (pos + c) % m_size;
+        }
+        return 1;
+    }
+    void Free() {
+        if (m_buf) {
+            m_free(m_buf);
+            m_buf = 0;
+            m_size = 0;
+            m_count = 0;
+            m_rd = 0;
+            m_wr = 0;
+        }
+    }
+};
+
+//@func 0x1E3978
+extern "C" void func_001E3978(void *g, s32 flags) {
+    u8 *p = (u8 *)g;
+    Mg6Ring *r = (Mg6Ring *)(p + 0x9EC);
+    s32 k;
+    *(void **)(p + 4) = Mg6_vt;
+    for (k = 0; k < r->m_count; k++) {
+        s8 c = 0;
+        r->PeekAt(&c, k, 1);
+        Mg6Flag108FF0(D_002A26E4, 0x1049 + k, c);
+    }
+    Mg6Flag108FF0(D_002A26E4, 0x1049 + k, -1);
+    Mg6Flag108FF0(D_002A26E4, 0x105E, *(s32 *)(p + 0x9E0));
+    Mg6Flag108FF0(D_002A26E4, 0x105F, *(s32 *)(p + 0x9E4));
+    Mg6Flag108FF0(D_002A26E4, 0x1060, *(s32 *)(p + 0x9E8));
+    Mg6Flag108FF0(D_002A26E4, 0x1061, *(s32 *)(p + 0x9DC));
+    r->Free();
+    Mg6LayoutDtor(p + 0x830, 2);
+    Mg6LayoutDtor(p + 0x6C0, 2);
+    Mg6LayoutDtor(p + 0x550, 2);
+    Mg6LayoutDtor(p + 0x3E0, 2);
+    Mg6LayoutDtor(p + 0x270, 2);
+    Mg6LayoutDtor(p + 0x100, 2);
+    func_0025C2C0(p + 0x78, 2);
+    Mg6ProcessDtor(g, 0);
+    if (flags & 1) Mg6TaskDelete(g);
+}

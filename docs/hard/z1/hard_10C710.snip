@@ -1,0 +1,22 @@
+//@decl
+extern "C" void func_00219A40(u32 a);
+
+//@func 0x10C710
+extern "C" void func_0010C710(s32 i) {
+    s32 off;
+    switch (i) {
+    case 0: case 1: case 2: case 3:
+        off = 0x90000 + i * 0x40000;
+        break;
+    case 4: case 5:
+        off = i * 0x40000 - 0x70000;
+        break;
+    case 6: case 7: case 8: case 9: case 10: case 11:
+        off = 0x20000 + i * 0x28000;
+        break;
+    default:
+        off = 0;
+        break;
+    }
+    return (void)func_00219A40(D_002A0290 + off);
+}

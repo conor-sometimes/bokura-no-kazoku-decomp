@@ -138,6 +138,11 @@ extern CResCache *D_002A0BEC;
 extern "C" void func_00250828(CResCache *c, const char *name);
 extern "C" void func_00129020(CSndWorkReal *s, const char *name, s32 c, s32 a, s32 b, f32 vol);
 extern "C" void func_0011ADD0(void *p);
+
+extern u8 SceneSet_vt[] asm("_vt$9CSceneSet");
+extern "C" void func_00296620(void *p, s32 flags);
+extern "C" void func_002965A0(void *p, s32 flags);
+extern "C" void __builtin_delete(void *);
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CSceneSet", D_002D4E10);
@@ -150,7 +155,15 @@ CSceneSet::CSceneSet() {
     m_unk38 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012C4F0);
+extern "C" void func_0012C4F0(CSceneSet *s, s32 flags) {
+    *(void **)((u8 *)s + 0x3C) = SceneSet_vt;
+    s->ResetB();
+    s->ResetA();
+    s->ReleaseSnd();
+    func_00296620((u8 *)s + 0x18, 2);
+    func_002965A0(s, 2);
+    if (flags & 1) return (void)__builtin_delete(s);
+}
 
 int CSceneSet::InitA(s32 n) {
     ResetA();

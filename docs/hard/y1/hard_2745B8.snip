@@ -1,0 +1,10 @@
+//@func 0x2745B8
+int func_002745B8(int c)
+{
+    while (*(volatile unsigned int *)0x1000F130 & 0x8000)
+        ;
+{{    { int r = c; asm("" : "+r"(r)); *(volatile unsigned char *)0x1000F180 = c; return r; }@|    { int r = c; *(volatile unsigned char *)0x1000F180 = c; asm("" : "+r"(r)); return r; }@|    { volatile unsigned char *p = (volatile unsigned char *)0x1000F180; int r = c; *p = c; return r; }@|    *(unsigned char *)0x1000F180 = c;
+    return c;@|    *(volatile unsigned char *)0x1000F180 = c;
+    asm volatile(".set volatile");
+    return c;}}
+}

@@ -481,6 +481,11 @@ extern char D_002DDFE0[];
 // definitions (bnel there, docs/lessons.md nm), so CStatusWinSub1A4A40 was probably its own .cpp.
 extern "C" int SelMT(CStatusItem *, s32) asm("Select__11CStatusItemi");
 extern "C" void GetMT(CStatusItem *, f32 *, f32 *, s32) asm("GetMappedUnkC0__11CStatusItemPfT1i");
+
+extern u8 StatusWin_vt[] asm("_vt$10CStatusWin");
+extern "C" void SWSubDtorA(void *p, s32 flags) asm("_$_26CMenuLoadMemorialSub178690");
+extern "C" void SWSubDtorB(void *p, s32 flags) asm("_$_26CMenuLoadMemorialSub1792B0");
+extern "C" void __builtin_delete(void *);
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusWin", D_002DDA28);
@@ -594,7 +599,18 @@ CStatusWinV::CStatusWinV(s32 kind) {
     for (s32 n = 3; n >= 0; n--) m_unk1EC[n] = m1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusWin", func_0019D0A8);
+extern "C" void func_0019D0A8(CStatusWinV *w, s32 flags) {
+    *(void **)((u8 *)w + 0x58) = StatusWin_vt;
+    if (w->m_unk60) {
+        SWSubDtorA(w->m_unk60, 3);
+        w->m_unk60 = 0;
+    }
+    if (w->m_unk5C) {
+        SWSubDtorB(w->m_unk5C, 3);
+        w->m_unk5C = 0;
+    }
+    if (flags & 1) return (void)__builtin_delete(w);
+}
 
 void CStatusWinV::V2(f32 t) {
     for (s32 i = 0; i < 5; i++) {

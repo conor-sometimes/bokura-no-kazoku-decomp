@@ -165,6 +165,110 @@ typedef struct { Y1Fde **array; u32 count; } Y1FdeVec;
 static __inline__ int y1_fde_compare(Y1Fde *x, Y1Fde *y) { return (int)x->pc_begin - (int)y->pc_begin; }
 extern void (*D_002BF22C)(void) __attribute__((noreturn));
 extern int strcmp(const char *, const char *);
+extern void Y1Abort(void) asm("func_00288FF8") __attribute__((noreturn));
+typedef struct Y1FS { void *cfa; void *eh_ptr; long cfa_offset; long base_offset; long args_size; long reg_or_offset[123]; unsigned short cfa_reg; unsigned short retaddr_column; char saved[123]; char indirect; } Y1FS;
+extern void Y1Abort2(void) asm("func_00288FF8") __attribute__((noreturn));
+void *Y1GetRegAddr(unsigned reg, Y1FS *udata, Y1FS *sub_udata) asm("func_002843A8");
+extern Y1FS *Y1FrameStateFor(void *, Y1FS *) asm("func_00286968");
+void *Y1NextStackLevel(void *pc, Y1FS *udata, Y1FS *caller_udata) asm("func_002844A0");
+static inline long Y1GetReg(unsigned reg, Y1FS *udata, Y1FS *sub_udata) { return *(long *)Y1GetRegAddr(reg, udata, sub_udata); }
+typedef unsigned int Y1uword __attribute__ ((mode (SI)));
+typedef int Y1sword __attribute__ ((mode (SI)));
+typedef struct Y1fde { Y1uword length; Y1sword CIE_delta; void *pc_begin; Y1uword pc_range; } Y1fde;
+typedef struct Y1fde_vector { Y1fde **array; unsigned int count; } Y1fde_vector;
+typedef struct Y1fde_accumulator { Y1fde_vector linear; Y1fde_vector erratic; } Y1fde_accumulator;
+static inline Y1fde *Y1next_fde (Y1fde *p) { return (Y1fde *)(((char *)p) + p->length + sizeof (p->length)); }
+static inline void Y1fde_insert (Y1fde_accumulator *accu, Y1fde *this_fde) { accu->linear.array[accu->linear.count++] = this_fde; }
+void Y1add_fdes (Y1fde *this_fde, Y1fde_accumulator *accu, void **beg_ptr, void **end_ptr) asm("func_00285EF0");
+typedef struct { Y1FdeVec linear; Y1FdeVec erratic; } Y1FdeAcc;
+extern void Y1free(void *) asm("func_002893A0");
+extern Y1Fde *D_424594;
+static inline void
+y1_fde_split (Y1FdeVec *linear, Y1FdeVec *erratic)
+{
+  u32 count = linear->count;
+  Y1Fde **chain_end = &D_424594;  /* fde_split's static marker */
+  u32 i, j, k;
+
+  if (sizeof (Y1Fde *) != sizeof (Y1Fde **))
+    Y1Abort ();
+
+  for (i = 0; i < count; i++)
+    {
+      Y1Fde **probe;
+
+      for (probe = chain_end;
+           probe != &D_424594 && y1_fde_compare (linear->array[i], *probe) < 0;
+           probe = chain_end)
+        {
+          chain_end = (Y1Fde **)erratic->array[probe - linear->array];
+          erratic->array[probe - linear->array] = 0;
+        }
+      erratic->array[i] = (Y1Fde *)chain_end;
+      chain_end = &linear->array[i];
+    }
+
+  for (i = j = k = 0; i < count; i++)
+    if (erratic->array[i])
+      linear->array[j++] = linear->array[i];
+    else
+      erratic->array[k++] = linear->array[i];
+  linear->count = j;
+  erratic->count = k;
+}
+#define Y1SWAP(x,y) do { Y1Fde * tmp = x; x = y; y = tmp; } while (0)
+static inline void
+y1_frame_heapsort (Y1FdeVec *erratic)
+{
+  Y1Fde ** a = erratic->array;
+  u32 n = erratic->count;
+  u32 m = n;
+  u32 i;
+
+  while (m > 0)
+    {
+      m--;
+      for (i = m; 2*i+1 < n; )
+        {
+          if (2*i+2 < n
+              && y1_fde_compare (a[2*i+2], a[2*i+1]) > 0
+              && y1_fde_compare (a[2*i+2], a[i]) > 0)
+            {
+              Y1SWAP (a[i], a[2*i+2]);
+              i = 2*i+2;
+            }
+          else if (y1_fde_compare (a[2*i+1], a[i]) > 0)
+            {
+              Y1SWAP (a[i], a[2*i+1]);
+              i = 2*i+1;
+            }
+          else
+            break;
+        }
+    }
+  while (n > 1)
+    {
+      n--;
+      Y1SWAP (a[0], a[n]);
+      for (i = 0; 2*i+1 < n; )
+        {
+          if (2*i+2 < n
+              && y1_fde_compare (a[2*i+2], a[2*i+1]) > 0
+              && y1_fde_compare (a[2*i+2], a[i]) > 0)
+            {
+              Y1SWAP (a[i], a[2*i+2]);
+              i = 2*i+2;
+            }
+          else if (y1_fde_compare (a[2*i+1], a[i]) > 0)
+            {
+              Y1SWAP (a[i], a[2*i+1]);
+              i = 2*i+1;
+            }
+          else
+            break;
+        }
+    }
+}
 // @decl-end
 
 extern void __pure_virtual(void) { func_00283888(); return; }
@@ -188,7 +292,16 @@ void *func_002838A0(void *catch_type, void *throw_type, void *obj)
 extern void func_002838D0(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002838D8);
+/* new_eh_context; own C name so the caller below does not see a known definition (bnel at 0x283CC0) */
+void *Y1NewEhContext(void) asm("func_002838D8");
+void *Y1NewEhContext(void)
+{
+    char *p = (char *)func_00289348(0xF0);
+    if (!p) W2Terminate();
+    memset(p, 0, 0xF0);
+    *(void **)(p + 4) = p + 0xE0;
+    return p;
+}
 
 extern void func_00283930(void *p) { if (p) { func_002893A0(p); return; } }
 
@@ -210,7 +323,32 @@ extern void *func_00283C30(void) { if (!D_424500) { D_424500 = 1; memset(D_42442
 
 extern void *func_00283C98(void) { void *eh = D_424FE0[func_00273090()]; if (!eh) { void *old; eh = func_002838D8(); old = D_424FE0[func_00273090()]; if (old) func_002893A0(old); D_424FE0[func_00273090()] = eh; } return eh; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283D20);
+void *func_00283D20(unsigned int size)
+{
+    void *p;
+    if (!size)
+        Y1Abort();
+    p = func_00289348(size);
+    if (p == 0) {
+        unsigned char *eh = ((unsigned char *(*)(void))func_00283958)();
+        unsigned blocks = (size + 16 - 1) / 16;
+        unsigned real_mask = *(unsigned *)(eh + 0xD0) | (*(unsigned *)(eh + 0xD0) << 1);
+        unsigned our_mask;
+        unsigned ix;
+        if (blocks > 0xC0 / 16)
+            W2Terminate();
+        blocks += blocks == 1;
+        our_mask = (1 << blocks) - 1;
+        for (ix = 0xC0 / 16 - blocks; ix; ix--)
+            if (!((real_mask >> ix) & our_mask)) {
+                p = eh + 0x10 + ix * 16;
+                *(unsigned *)(eh + 0xD0) |= (our_mask >> 1) << ix;
+                return p;
+            }
+        W2Terminate();
+    }
+    return p;
+}
 
 extern void func_00283E00(void *p) { u8 *eh = ((u8 *(*)(void))func_00283958)(); s32 diff = (u8 *)p - (eh + 0x10); if (diff >= 0 && diff < 0xC0) { s32 mask = FLD(s32, eh, 0xD0); s32 bit = 1 << (diff / 16); do { mask ^= bit; bit <<= 1; } while (mask & bit); FLD(s32, eh, 0xD0) = mask; } else { func_002893A0(p); return; } }
 
@@ -373,11 +511,35 @@ extern void *func_00284268(void *pc, W2ExcDesc *table, W2EhInfo *eh_info, int re
     return retval;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002843A8);
+void *Y1GetRegAddr(unsigned reg, Y1FS *udata, Y1FS *sub_udata)
+{
+  if (udata->saved[reg] == 2)
+    do
+      reg = udata->reg_or_offset[reg];
+    while (udata->saved[reg] == 2);
+  if (udata->saved[reg] == 1)
+    return (void *)((char *)udata->cfa + udata->reg_or_offset[reg]);
+  else
+    Y1Abort2();
+}
 
 extern void func_00284438(s32 reg, void *u, void *t) { void *p = func_002843A8(reg, u, 0); void *q = func_002843A8(reg, t, 0); memcpy(q, p, D_424518[reg]); return; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002844A0);
+void *Y1NextStackLevel(void *pc, Y1FS *udata, Y1FS *caller_udata)
+{
+  caller_udata = Y1FrameStateFor(pc, caller_udata);
+  if (! caller_udata)
+    return 0;
+  if (udata->saved[caller_udata->cfa_reg])
+    caller_udata->cfa = (void *)Y1GetReg(caller_udata->cfa_reg, udata, 0);
+  else
+    caller_udata->cfa = udata->cfa;
+  if (caller_udata->indirect)
+    caller_udata->cfa = * (void **) ((unsigned char *)caller_udata->cfa
+                                     + caller_udata->base_offset);
+  caller_udata->cfa += caller_udata->cfa_offset;
+  return caller_udata;
+}
 
 extern void func_00284550(void) {
 }
@@ -606,7 +768,26 @@ void func_00285630(Y1FdeVec *v1, const Y1FdeVec *v2)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00285728);
+Y1Fde **func_00285728(Y1FdeAcc *accu, u32 count)
+{
+  if (accu->linear.array && accu->linear.count != count)
+    Y1Abort ();
+
+  if (accu->erratic.array)
+    {
+      y1_fde_split (&accu->linear, &accu->erratic);
+      if (accu->linear.count + accu->erratic.count != count)
+	Y1Abort ();
+      y1_frame_heapsort (&accu->erratic);
+      func_00285630 (&accu->linear, &accu->erratic);
+      Y1free (accu->erratic.array);
+    }
+  else
+    {
+      y1_frame_heapsort (&accu->linear);
+    }
+  return accu->linear.array;
+}
 
 extern void func_00285CA0(void *begin, void *o) { W2Obj *ob = (W2Obj *)o; ob->fde_begin = begin; ob->pc_begin = ob->pc_end = 0; ob->fde_array = 0; ob->count = 0; func_002731E0(D_002BE1C4); ob->next = (W2Obj *)D_424598; D_424598 = ob; func_002731C0(D_002BE1C4); __asm__(""); }
 
@@ -622,4 +803,25 @@ extern void func_00285E90(void *b) { func_002893A0(func_00285DD0(b)); return; }
 
 extern u32 func_00285EB0(W2Fde *f) { u32 n; for (n = 0; f->length != 0; f = (W2Fde *)((u8 *)f + f->length + 4)) { if (f->cie == 0 || f->pc == 0) continue; ++n; } return n; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00285EF0);
+void Y1add_fdes (Y1fde *this_fde, Y1fde_accumulator *accu, void **beg_ptr, void **end_ptr)
+{
+  void *pc_begin = *beg_ptr;
+  void *pc_end = *end_ptr;
+
+  for (; this_fde->length != 0; this_fde = Y1next_fde (this_fde))
+    {
+      if (this_fde->CIE_delta == 0 || this_fde->pc_begin == 0)
+	continue;
+
+      if (accu->linear.array)
+	Y1fde_insert (accu, this_fde);
+
+      if (this_fde->pc_begin < pc_begin)
+	pc_begin = this_fde->pc_begin;
+      if (this_fde->pc_begin + this_fde->pc_range > pc_end)
+	pc_end = this_fde->pc_begin + this_fde->pc_range;
+    }
+
+  *beg_ptr = pc_begin;
+  *end_ptr = pc_end;
+}

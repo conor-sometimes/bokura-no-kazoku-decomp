@@ -1,0 +1,120 @@
+//@decl
+struct Y1TI { const char *_name; void **y1vp; };
+struct Y1VtEnt { short delta; short index; void *pfn; };
+struct Y1PtrTI : Y1TI { const Y1TI &type; };
+struct Y1AttrTI : Y1TI { const Y1TI &type; int attr; };
+extern "C" bool Y1TiEq2(const Y1TI *, const Y1TI *) asm("func_00286B58");
+extern "C" void *Y1DynCast2(void *, void *, int, void *, void *, const void *) asm("func_00288A88");
+extern "C" int Y1UtiUpcast(const Y1TI *, const Y1TI *, void *, void **) asm("func_00286C00");
+extern "C" const Y1TI &Y1TiVoid(void) asm("func_00288B18");
+extern "C" void Y1tf_uti(void) asm("__tf16__user_type_info");
+extern "C" void Y1tf_pti(void) asm("__tf19__pointer_type_info");
+extern "C" void Y1tf_ati(void) asm("__tf16__attr_type_info");
+extern "C" void Y1tf_fti(void) asm("__tf16__func_type_info");
+extern "C" void Y1tf_ti(void) asm("__tf9type_info");
+#define Y1DCAST(T, p, tf) ((const T *)y1dc((p), (void *)tf))
+static inline void *y1dc(const Y1TI *p, void *tf) { void *r = 0; if (p) r = Y1DynCast2(((Y1VtEnt *)p->y1vp)->pfn, tf, 0, (char *)p + ((Y1VtEnt *)p->y1vp)->delta, (void *)Y1tf_ti, p); return r; }
+//@func 0x2883B0
+extern "C" int func_002883B0(const void *catch_type_r, const void *throw_type_r, void *objptr, void **valp)
+{
+  const Y1TI &catch_type = *(const Y1TI *)catch_type_r;
+  const Y1TI &throw_type = *(const Y1TI *)throw_type_r;
+
+  *valp = objptr;
+
+  if (Y1TiEq2(&catch_type, &throw_type))
+    return 1;
+
+  if (const Y1TI *p = Y1DCAST(Y1TI, &throw_type, Y1tf_uti))
+    {
+      return Y1UtiUpcast(p, &catch_type, objptr, valp);
+    }
+  else if (const Y1PtrTI *fr = Y1DCAST(Y1PtrTI, &throw_type, Y1tf_pti))
+    {
+      const Y1PtrTI *to = Y1DCAST(Y1PtrTI, &catch_type, Y1tf_pti);
+
+      if (! to)
+	return 0;
+
+      const Y1TI *subfr = &fr->type, *subto = &to->type;
+      int cvfrom, cvto;
+
+      if (const Y1AttrTI *at = Y1DCAST(Y1AttrTI, subfr, Y1tf_ati))
+	{
+	  cvfrom = at->attr;
+	  subfr = &at->type;
+	}
+      else
+	cvfrom = 0;
+
+      if (const Y1AttrTI *at = Y1DCAST(Y1AttrTI, subto, Y1tf_ati))
+	{
+	  cvto = at->attr;
+	  subto = &at->type;
+	}
+      else
+	cvto = 0;
+
+      if (((cvfrom & 1) > (cvto & 1))
+	  || ((cvfrom & 2) > (cvto & 2)))
+	return 0;
+
+      if (Y1TiEq2(subto, subfr))
+	return 1;
+      else if (Y1TiEq2(subto, &Y1TiVoid())
+	       && Y1DCAST(Y1TI, subfr, Y1tf_fti) == 0)
+	return 1;
+      else if (const Y1TI *p = Y1DCAST(Y1TI, subfr, Y1tf_uti))
+	return Y1UtiUpcast(p, subto, objptr, valp);
+      else if (const Y1PtrTI *pfr = Y1DCAST(Y1PtrTI, subfr, Y1tf_pti))
+	{
+	  const Y1PtrTI *pto = Y1DCAST(Y1PtrTI, subto, Y1tf_pti);
+
+	  if (! pto)
+	    return 0;
+
+	  bool constp = (cvto & 1);
+	  for (subto = &pto->type, subfr = &pfr->type; ;
+	       subto = &pto->type, subfr = &pfr->type)
+	    {
+	      if (const Y1AttrTI *at = Y1DCAST(Y1AttrTI, subfr, Y1tf_ati))
+		{
+		  cvfrom = at->attr;
+		  subfr = &at->type;
+		}
+	      else
+		cvfrom = 0;
+
+	      if (const Y1AttrTI *at = Y1DCAST(Y1AttrTI, subto, Y1tf_ati))
+		{
+		  cvto = at->attr;
+		  subto = &at->type;
+		}
+	      else
+		cvto = 0;
+
+	      if (((cvfrom & 1) > (cvto & 1))
+		  || ((cvfrom & 2) > (cvto & 2)))
+		return 0;
+
+	      if (! constp
+		  && (((cvfrom & 1) < (cvto & 1))
+		      || ((cvfrom & 2) < (cvto & 2))))
+		return 0;
+
+	      if (Y1TiEq2(subto, subfr))
+		return 1;
+
+	      pto = Y1DCAST(Y1PtrTI, subto, Y1tf_pti);
+	      pfr = Y1DCAST(Y1PtrTI, subfr, Y1tf_pti);
+	      if (! pto || ! pfr)
+		return 0;
+
+	      if (! (cvto & 1))
+		constp = false;
+	    }
+	}
+    }
+
+  return 0;
+}

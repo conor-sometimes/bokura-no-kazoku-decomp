@@ -1,0 +1,75 @@
+//@decl
+//@func 0x2468F8
+extern "C" void *func_002468F8(s32 mode, s32 size)
+{
+    CMemHeap *h;
+    CMemNode *n;
+    CMemNode *first, *last;
+    CMemBlk *b;
+    s32 asize;
+
+    if (size < 0) {
+        if (D_38F188.m_flags & 4)
+            Func235DE0("*** memheap : invalid size (%d)\n", size);
+        return 0;
+    }
+    h = D_38F188.m_slot[func_001F1180()].m_heap;
+    if (!h) {
+        if (D_38F188.m_flags & 4)
+            Func235DE0("*** memheap : unregisted zone %X\n", 0);
+        return 0;
+    }
+    first = h->m_first;
+    if (!first) goto fail;
+    last = h->m_last;
+    if (!last) goto fail;
+    if (size == 0) {
+        n = func_00246698(h);
+        if (!n) {
+            if (D_38F188.m_flags & 2)
+                Func235DE0("*** memheap : can't allocate size (%d)\n", 0);
+            return 0;
+        }
+        b = n->m_blk;
+        asize = (s32)(b->m_size * D_38F188.m_ratio[func_001F1180()]) & ~15;
+        mode = 0;
+        size = asize;
+        goto found;
+    }
+    asize = (size + 15) & ~15;
+    switch (mode) {
+    case 0:
+        for (n = first; n != &h->m_list; n = n->m_next) {
+            b = n->m_blk;
+            if (b->m_req <= 0 && b->m_size >= asize)
+                goto found;
+            if (n == last) break;
+        }
+        break;
+    case 1:
+        for (n = last; n != &h->m_list; n = n->m_prev) {
+            b = n->m_blk;
+            if (b->m_req <= 0 && b->m_size >= asize)
+                goto found;
+            if (n == first) break;
+        }
+        break;
+    }
+fail:
+    if (D_38F188.m_flags & 2)
+        Func235DE0("*** memheap : can't allocate size (%d)\n", size);
+    return 0;
+found:
+    if (asize + 16 < b->m_size) {
+        n = func_002466E8(mode, n, asize);
+        if (!n) return 0;
+        b = n->m_blk;
+    }
+    b->m_req = size;
+    b->m_tag = h->m_tag;
+    h->m_used += b->m_size;
+    h->m_count += size;
+    D_38F188.m_slot[func_001F1180()].m_used += asize;
+    func_00246858(h);
+    return b + 1;
+}

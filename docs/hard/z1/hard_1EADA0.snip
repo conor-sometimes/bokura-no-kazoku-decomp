@@ -1,0 +1,30 @@
+//@decl
+typedef unsigned int AmTI __attribute__((mode(TI)));
+struct AmV16 { AmTI q; };
+struct AmList30 { s32 m0; s32 m4; };
+struct AmItemH { u8 pad[0x10]; AmV16 a; AmV16 b; s32 m20; f32 m24; };
+struct AmItemH50 { u8 pad[0x10]; AmV16 a; AmV16 b; AmV16 c; f32 m40; f32 m44; f32 m48; f32 m4C; s32 m50; };
+struct AmCopy30 { u8 pad[0x10]; AmV16 a; AmV16 b; AmV16 c; };
+extern AmV16 D_002E1F60, D_002E1F70, D_002E1F80, D_002E1F90, D_002E1FA0;
+
+struct AmIt30 { AmV16 a; AmV16 b; AmV16 c; };
+struct AmListC { s32 m0; s32 m4; s32 m8; s32 mC; AmIt30 items[1]; };
+//@func 0x1EADA0
+extern "C" AmList30 *func_001EADA0(s32 k) {
+    AmListC **e = (AmListC **)(D_002A5D0C + k * 52);
+    AmListC *p;
+    AmIt30 *s;
+    AmIt30 *d;
+    s32 i;
+    if (!e) return 0;
+    p = (AmListC *)D_002B91A4((*e)->m0 * 0x30 + 0x10);
+    p->m0 = (*e)->m0;
+    for (i = 0, d = p->items, s = (*e)->items; i < (*e)->m0; i++) {
+        d->a.q = s->a.q;
+        d->b.q = s->b.q;
+        d->c.q = s->c.q;
+        d++;
+        s++;
+    }
+    return (AmList30 *)p;
+}

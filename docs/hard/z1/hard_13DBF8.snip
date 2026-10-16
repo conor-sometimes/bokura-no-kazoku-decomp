@@ -1,0 +1,30 @@
+//@decl
+extern "C" s32 func_0024A7D8(const char *s, const char *a, const char *b);
+const char *Func24A570(const char *src, char *buf, const char *a, const char *b);
+extern "C" char *func_0024A778(const char *p, f32 *v, f32 def, const char *s1, const char *s2);
+extern "C" char *func_00248DA8(CPushBuf *b);
+extern "C" s32 func_00248DC0(CPushBuf *b);
+extern const char D_002D5BB8[];
+extern const char D_002D5BC0[];
+struct CEvItem2 { s32 m0; s32 m4; s32 *m8; f32 *mC; };
+
+//@func 0x13DBF8
+extern "C" void func_0013DBF8(CEventMesResSub13DD98 *self, CEvItem2 *it, const char *line, const char *rest) {
+    CPushBuf *buf = &self->m_buf;
+    const char *p;
+    s32 i;
+    it->m4 = func_0024A7D8(rest, D_002D5BB8, D_002D5BC0);
+    i = 0;
+    it->mC = (f32 *)buf->Func248CC8(it->m4 * 4, 1, 1);
+    it->m8 = (s32 *)buf->Func248CC8(it->m4 * 4, 1, 1);
+    p = Func24A570(line, func_00248DA8(buf), D_002D5BB8, D_002D5BC0);
+    it->m0 = func_00248DC0(buf);
+    for (; i < it->m4; i++) {
+        p = func_0024A778(p, &it->mC[i], 2.0f, D_002D5BB8, D_002D5BC0);
+    }
+    p = rest;
+    for (i = 0; i < it->m4; i++) {
+        p = Func24A570(p, func_00248DA8(buf), D_002D5BB8, D_002D5BC0);
+        it->m8[i] = func_00248DC0(buf);
+    }
+}

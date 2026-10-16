@@ -42,6 +42,13 @@ extern const char D_002E32D8[];
 extern "C" s16 func_00206518(void);
 extern "C" s16 func_00206528(void);
 struct Pkt4s { s32 m0; s32 m4; s16 m8; s16 mA; };
+
+extern u16 D_3169C0[];
+extern "C" u16 *func_00206538(void);
+extern "C" void func_0020B160(u32 i, u16 *a, u16 *b, s32 n);
+
+struct S316200 { Node20 *free; StrmEnt e[32]; };
+extern S316200 D_316200;
 // @decl-end
 
 extern "C" s32 func_0020A410(u32 i, s32 v) {
@@ -274,9 +281,88 @@ found:
 
 INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020B160);
 
-INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020B448);
+extern "C" void func_0020B448(u32 i) {
+    StrmEnt *e;
+    u16 *buf;
+    s32 n;
+    if (i < 32) {
+        e = &D_316204[i];
+        if (Used(e)) {
+            if (e->pad19[0] == 3) {
+                s32 k;
+                u16 *p = D_3169C0;
+                for (k = 1023; k >= 0; k--) {
+                    p[0] = ((u16 *)&e->m34)[1];
+                    p[1] = ((u16 *)&e->m34)[0];
+                    p += 2;
+                }
+                buf = D_3169C0;
+            } else {
+                buf = func_00206538();
+            }
+            if (e->m2C > 0) {
+                n = 0x1000 - e->m2C;
+                while (n > 0) {
+                    s32 c = n > 0x1000 ? 0x1000 : n;
+                    func_0020B160(i, buf, buf, c);
+                    n -= c;
+                }
+            }
+            {
+                Pkt3 *pk;
+                func_0020DE28(0xB2, 0, 0xC);
+                pk = (Pkt3 *)func_0020DED8();
+                pk->m0 = e->m4;
+                pk->m4 = 5;
+                pk->m8 = 0;
+                return (void)func_0020DEF0();
+            }
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020B5A0);
+extern "C" s32 func_0020B5A0(u32 i, s32 off, s32 x, s32 y) {
+    StrmEnt *e;
+    Node20 *nd;
+    Node20 *cur;
+    Node20 **pp;
+    s32 a, b, t;
+    if (i < 32) {
+        e = &D_316200.e[i];
+        if (Used(e) && (nd = D_316200.free)) goto found;
+    }
+    return 0;
+found:
+    t = e->pad19[0];
+    switch (t) {
+    case 0:
+        a = e->m30 + (e->m2C + off) / e->m14;
+        b = (e->m2C + off) % e->m14;
+        break;
+    case 1:
+    case 2:
+    case 3:
+        a = e->m30 + (e->m2C + off) / e->m14;
+        b = (e->m2C + off) % e->m14 / 2;
+        break;
+    default:
+        a = 0;
+        b = 0;
+        break;
+    }
+    nd->mC = x;
+    nd->m10 = y;
+    nd->m4 = a;
+    nd->m8 = b;
+    D_316200.free = nd->m0;
+    for (pp = &e->m38; (cur = *pp); pp = &cur->m0) {
+        if (nd->m4 < cur->m4) break;
+        if (nd->m4 == cur->m4 && nd->m8 < cur->m8) break;
+    }
+    nd->m0 = cur;
+    *pp = nd;
+    return 1;
+}
 
 extern "C" s32 func_0020B6F8(u32 i, s32 v) {
     StrmEnt *e;

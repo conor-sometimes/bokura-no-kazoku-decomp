@@ -743,7 +743,10 @@ extern "C" void func_0021BC88(u32 i, u32 v) {
     if (i < 2 && v < 32) D_002B6818[i].m0 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021BCC0);
+extern "C" s32 func_0021BCC0(s32 i) {
+    if ((u32)i >= 2) return 0;
+    return D_002B6818[i].m0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021BCF8);
 

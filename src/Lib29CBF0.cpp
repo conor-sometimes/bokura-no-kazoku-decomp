@@ -86,6 +86,8 @@ extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
 extern "C" void __builtin_delete(void *);
 static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
 static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
+
+struct Y1Cnt { u8 p0[0x48]; s8 c[3][3]; };
 // @decl-end
 
 extern "C" TypeInfo *__tf8CAppMain()
@@ -185,7 +187,17 @@ extern "C" void func_0029CF98(void *p, s32 v) { FLD(s32, p, 0x14) = v; }
 
 extern "C" void func_0029CFA0(W2Rc *p) { p->m14 = 0; if (!p->m10) delete p; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CFE8);
+extern "C" s32 func_0029CFE8(Y1Cnt *p, s32 a, s32 b, s32 inc)
+{
+    s8 *e;
+    s32 v, n;
+    e = (s8 *)(b + a * 3 + (s32)p) + 0x48;
+    v = *e;
+    n = v + 1;
+    if (!inc) n = v - 1;
+    *e = n;
+    return v > 0;
+}
 
 extern "C" s32 func_0029D018(W2Tbl48 *p, s32 a, s32 b) { return p->m[a][b] > 0; }
 

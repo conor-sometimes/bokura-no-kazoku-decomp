@@ -194,6 +194,9 @@ extern "C" const char *func_0024A778(const char *src, f32 *out, f32 def, const c
 extern "C" s32 func_0024B818(char **pp, const char *fmt, ...);
 
 extern const char D_002E6638[];
+extern "C" char *strcpy(char *d, const char *s);
+struct Y1XapHdr { s32 m0, m4, m8, mC; };
+static inline void Y1PushFree(CXapLink *l) { CXapGlobal *g = &D_38F2D8; func_001F15F0v(); l->m_next = g->m_free; g->m_free = l; func_001F1610(); }
 // @decl-end
 
 extern "C" CXapEntry *func_002497C0(CXapDir *d, const char *name) {
@@ -365,7 +368,50 @@ extern "C" void func_0024A098() {
     func_00249790();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024A128);
+extern "C" s32 func_002496D0(void *p) throw();
+extern "C" s32 func_0024A128(const char *name, const char *path)
+{
+    CXapGlobal *g = &D_38F2D8;
+    CXapLink *l;
+    Y1XapHdr h;
+    s32 ok = 0;
+    func_0024A2E0(name);
+    func_001F15F0v();
+    l = g->m_free;
+    if (l) g->m_free = l->m_next;
+    func_001F1610();
+    if (!l) {
+        Func235DE0("*** xap : empty link slot\n");
+    } else if (func_002498D8(path, 0, &h, 0x10) < 0) {
+        Func235DE0("*** xap : not found %s\n", path);
+    } else if (!func_002496D0(&h)) {
+        Func235DE0("*** xap : invalid data type %s\n", path);
+    } else {
+        if (!(l->m_data = Func245D00(h.m8 + 0x10)) || func_002498D8(path, 0, l->m_data, h.m8 + 0x10) < 0) {
+            if (l->m_data) {
+                (*D_002B91B0)(l->m_data);
+                l->m_data = 0;
+            }
+            Func235DE0("*** xap : failed to load %s\n", path);
+        } else {
+            strcpy(l->m_path, path);
+            strcpy(l->m_name, name);
+            ok = 1;
+            func_001F15F0v();
+            l->m_next = g->m_open;
+            g->m_open = l;
+            func_001F1610();
+            l = 0;
+        }
+    }
+    if (l) {
+        func_001F15F0v();
+        l->m_next = D_38F2D8.m_free;
+        D_38F2D8.m_free = l;
+        func_001F1610();
+    }
+    return ok;
+}
 
 extern "C" void func_0024A2E0(const char *name) {
     CXapLink **pp;
@@ -436,7 +482,22 @@ extern "C" void func_0024A500(char **dst, const char **src) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", Func24A570__FPCcPcT0T0);
+extern "C" char *func_0028B000(const char *s, int c) throw();
+const char *Func24A570(const char *src, char *dst, const char *delim, const char *skip)
+{
+    char *d0 = dst;
+    while (*src && func_0028B000(skip, *src)) src++;
+    while (*src && !func_0028B000(delim, *src)) {
+        if (dst) func_0024A500(&dst, &src);
+        else src = func_0024A4E0(src);
+    }
+    if (dst) {
+        while (dst != d0 && func_0028B000(skip, dst[-1])) dst--;
+        *dst = 0;
+    }
+    if (*src && func_0028B000(delim, *src)) src++;
+    return src;
+}
 
 extern "C" const char *func_0024A6B0(const char *src, char *dst, const char *def, const char *delim, const char *skip) {
     const char *r = Func24A570(src, dst, delim, skip);
@@ -498,7 +559,18 @@ INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6638);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6640);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6648);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6660);
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024AC50);
+extern "C" const char *func_0024AC50(const char *src, char *dst, s32 max)
+{
+    char *d0 = dst;
+    const char *s = func_0024AB90(src, D_002E6618);
+    while (*s && *s != '\n' && *s != '#') {
+        if (max-- >= 2) *dst++ = *s;
+        s++;
+    }
+    *dst = 0;
+    func_0024ABE0(d0, D_002E6618);
+    return func_0024AB30(s);
+}
 
 extern "C" const char *func_0024AD10(const char *src, char *dst, s32 skip, s32 max) {
     do {
@@ -695,7 +767,14 @@ extern "C" void func_0024BAE0(CValue *v) {
 }
 
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6670);
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024BAF0);
+extern "C" void func_0024BAF0(CValue *v, s32 i)
+{
+    switch (v->m_type) {
+    case 0: default: v->u.i = i; v->m_type = 0; break;
+    case 1: v->u.f = i; break;
+    case 2: { char *p = v->u.s; sprintf(p, D_002E6670, i); } break;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6678);
 INCLUDE_RODATA("asm/nonmatchings/Dk2497C0", D_002E6680);

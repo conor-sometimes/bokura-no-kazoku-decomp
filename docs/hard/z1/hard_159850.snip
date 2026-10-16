@@ -1,0 +1,62 @@
+//@decl
+extern u8 GsSched_vt[] asm("_vt$13CGameSchedule");
+extern u8 GsTList_vt[] asm("_vt$t5TList1Z17CGameScheduleUnit");
+extern "C" void GsProcCtor(void *p) asm("__8CProcess");
+extern "C" void GsBgCtor(void *p) asm("__7CBgWork");
+extern "C" void GsEvResCtor(void *p) asm("__9CEventRes");
+struct GsS30 { s16 m0; s16 m2; s32 m4; };
+struct GsS84 { s32 m0; };
+struct GsTag { s32 isHead; GsTag *prev; GsTag *next; void *vptr; };
+inline void GsListInit(GsTag *l, void *vt) { l->vptr = vt; l->isHead = 1; l->prev = l; l->next = l; }
+inline void GsAppend(GsTag *h, GsTag *e) {
+    e->prev->next = e->next;
+    e->next->prev = e->prev;
+    e->next = e;
+    e->prev = e;
+    {
+        GsTag *q = h->prev;
+        e->next = h;
+        e->prev = q;
+        q->next = e;
+        e->next->prev = e;
+    }
+}
+
+//@func 0x159850
+extern "C" void func_00159850(CGameSchedule *g, CGameScheduleCfg *cfg, s32 b) {
+    u8 *p = (u8 *)g;
+    GsTag *l1;
+    GsTag *l2;
+    s32 i;
+    s32 x;
+    GsS84 *t;
+    GsProcCtor(g);
+    *(void **)(p + 4) = GsSched_vt;
+    {
+        GsS30 *s = (GsS30 *)(p + 0x30);
+        s->m4 = -1;
+        s->m2 = 0;
+        s->m0 = 0;
+    }
+    GsBgCtor(p + 0x78);
+    t = (GsS84 *)(p + 0x84);
+    t->m0 = 1;
+    l1 = (GsTag *)(p + 0xAC);
+    GsListInit(l1, GsTList_vt);
+    l2 = (GsTag *)(p + 0xBC);
+    GsListInit(l2, GsTList_vt);
+    GsEvResCtor(p + 0xD4);
+    t->m0 = Func251B88();
+    g->m_unk2C = cfg;
+    g->m_unk88 = b;
+    *(CGameScheduleUnit **)(p + 0xA8) = new CGameScheduleUnit[256];
+    for (i = 0; i < 256; i++) {
+        GsAppend(l2, (GsTag *)&(*(CGameScheduleUnit **)(p + 0xA8))[i]);
+    }
+    x = D_002A26E4->Func1091B0(0x17) % 4;
+    g->m_unk254 = -1;
+    g->m_unk258 = -1;
+    g->m_unk25C = -1;
+    *(s32 *)(p + 0x264) = (x) != 0;
+    return (void)Func235DE0("gameschedule : init\n");
+}

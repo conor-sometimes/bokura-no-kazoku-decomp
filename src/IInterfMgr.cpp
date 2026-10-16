@@ -222,9 +222,25 @@ public:
     s32 m_unk0;               // 0x0
 };
 extern CTaskMgr390 *D_0029F390;
+
+extern u8 IfMgr_vt[] asm("_vt$10CInterfMgr");
+extern u8 IIfMgr_vt[] asm("_vt$10IInterfMgr");
+extern "C" void IfSndStop(void *p) asm("Func25C488__FP9CSndUnitN");
+extern "C" void func_0025C2C0(void *p, s32 flags);
+extern "C" void IfTaskDtor(void *p, s32 flags) asm("_$_5CTask");
+extern void *D_002A3568;
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/IInterfMgr", func_00169128);
+extern "C" void func_00169128(CInterfMgr *m, s32 flags) {
+    *(void **)((u8 *)m + 4) = IfMgr_vt;
+    IfSndStop(&m->m_snd);
+    D_002A3568 = 0;
+    func_0025C2C0((u8 *)m + 0x970, 2);
+    func_0025C2C0(&m->m_snd, 2);
+    *(void **)((u8 *)m + 4) = IIfMgr_vt;
+    IfTaskDtor(m, 0);
+    if (flags & 1) return (void)CTask::operator delete(m);
+}
 
 void CInterfMgr::Reset1691D0() {
     m_timer.Reset();

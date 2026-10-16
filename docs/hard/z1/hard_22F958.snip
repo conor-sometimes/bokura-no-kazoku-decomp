@@ -1,0 +1,24 @@
+//@decl
+inline void DlUnlink(DL *n) { n->m0->m4 = n->m4; n->m4->m0 = n->m0; }
+
+//@func 0x22F958
+extern "C" void func_0022F958(FEnt *f, s32 k) {
+    u32 st = DisableIntr();
+    DL *h = &f->mB4;
+    DL *n = h->m4;
+    while (n != h) {
+        DL *nx = n->m4;
+        s32 sz = n->mC;
+        if (k < sz) {
+            n->mC = sz - k;
+            n->m8 += k;
+            break;
+        }
+        DlUnlink(n);
+        n->m4 = D_3401E0.m4E08;
+        D_3401E0.m4E08 = n;
+        n = nx;
+        k -= sz;
+    }
+    RestoreIntr(st);
+}

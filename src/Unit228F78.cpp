@@ -130,6 +130,30 @@ inline void Unlink(HL *h, NL *n) {
 
 #define EE_VA_START(ap, last) (ap = (char *)__builtin_next_arg(last) - (__builtin_args_info(2) < 8 ? (8 - __builtin_args_info(2)) * 8 : 0))
 extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
+
+struct QsN { u8 *m0; QsN *m4; QsN *m8; };
+struct QsH { s32 m0; QsN *m4; QsN *m8; s32 mC; s32 m10; u32 m14; };
+extern "C" void func_0028A140(void *base, u32 n, u32 size, s32 (*cmp)(const void *, const void *));
+extern "C" s32 func_0022C000(const void *a, const void *b);
+
+struct HdB { u32 m0; u32 m4; u32 m8; u32 mC; };
+
+extern "C" void func_0022BBC0(HL *h, NL *n);
+extern "C" void func_0022BB88(HL *h, NL *n);
+inline void HfMerge(BL *a, BL *b) {
+    NL *m = b->m0;
+    HL *mh = m->mC;
+    BL *nx;
+    a->m8 += b->m8;
+    func_0022BBF8(mh, m);
+    func_0022BFD0(m);
+    nx = (BL *)((u8 *)a + a->m8);
+    if ((u8 *)nx < mh->m28 + mh->m2C) nx->m4 = a->m8;
+}
+
+extern const char D_002E4358[];
+extern "C" void func_002299E0(void *d, void *s, u32 n);
+extern "C" void func_0022A390(void *p);
 // @decl-end
 
 extern "C" u8 *func_00228F78(s32 i) {
@@ -189,7 +213,26 @@ extern "C" s32 func_00229458(u128 v) {
     return func_001F11C8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_002294E8);
+extern "C" void func_002294E8(u128 v) {
+    Node *n = D_002B8C40->m4;
+    u64 *p;
+    u128 t;
+    s32 c;
+    s32 i;
+    func_001F1190();
+    t = v;
+    for (; n; n = n->m8) {
+        p = (u64 *)n->m0;
+        c = (u32)func_00229FB8(p) >> 3;
+        for (i = 0; i < c; i++, p += 2) {
+            if (p[0] != ((u64 *)&t)[0] || p[1] != ((u64 *)&t)[1]) {
+                if (D_002B8C3C & 5) func_0022B510("DIFF %08X:%08X%08X%08X%08X\n", p, p[1] >> 32, p[1], p[0] >> 32, p[0]);
+                break;
+            }
+        }
+    }
+    func_001F11C8();
+}
 INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E4150);
 
 extern "C" u32 func_002295C8(u32 base, u32 size, u32 n) {
@@ -393,7 +436,44 @@ extern "C" void func_0022A128(Loc *l, void *p, u32 n) {
     if (func_00229FB8(p) >= n) return func_0022A198(l, ((void **)p)[-4], n);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022A198);
+extern "C" void func_0022A198(Loc *loc, void *hv, u32 n) {
+    void **h = (void **)hv;
+    Blk *b;
+    u32 sz;
+    if (!h) return;
+    func_001F1190();
+    b = (Blk *)((u8 *)*h - 0x10);
+    sz = (n + 0x1F) & ~0xF;
+    if (b->m8 == sz) {
+        b->mC = (b->mC & 0xF0000000) | (n & 0x0FFFFFFF);
+        return (void)func_001F11C8();
+    }
+    if ((u32)b->m8 >= sz) {
+        if ((u32)(sz - b->m8) > 0x10) {
+            if (D_002B8C3C & 5) func_0022B510(D_002E4358, loc->name, h, *h, b->m8 - 0x10, n, loc->ra, loc->m4);
+            func_0022AD68(b, sz);
+        }
+    } else {
+        void **nh = (void **)func_0022A070(loc, n);
+        Blk *nb;
+        void *t;
+        if (D_002B8C3C & 5) func_0022B510(D_002E4358, loc->name, h, *h, b->m8 - 0x10, n, loc->ra, loc->m4);
+        nb = (Blk *)*nh;
+        func_002299E0(nb, *h, b->m8);
+        nb = (Blk *)((u8 *)nb - 0x10);
+        {
+            void *t2 = nb->m0;
+            nb->m0 = b->m0;
+            b->m0 = t2;
+        }
+        t = *nh;
+        *nh = *h;
+        *h = t;
+        func_0022A390(nh);
+    }
+    if (D_002B8C3C & 0xA) func_0022AF60();
+    return (void)func_001F11C8();
+}
 
 extern "C" void func_0022A390(void *p) {
     Loc l;
@@ -579,11 +659,39 @@ extern "C" void func_0022AF60(void) {
     return func_0022B390();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022AF98);
+extern "C" void func_0022AF98(void) {
+    HeapX *h = (HeapX *)D_002B8C40;
+    Nd *n;
+    Bk *b;
+    u32 i;
+    if (D_002B8C3C & 5) func_0022B510("MASTER POINTER\tUNUSED %d/%d\n", h->m10, h->mC);
+    for (i = 0, n = (Nd *)(((u32)h + 0x4F) & ~0xF); i < (u32)h->mC; i++, n++) {
+        if (D_002B8C3C & 5) func_0022B510("%8d %08X PREV=%08X NEXT=%08X BLOCK=%08X\n", i, n, n->m4, n->m8, n->m0);
+    }
+    if (D_002B8C3C & 5) func_0022B510("\nFREE BLOCK\t%d\n", h->m14);
+    for (n = (Nd *)h->m4; n; n = n->m8) {
+        b = (Bk *)((u8 *)n->m0 - 0x10);
+        if (D_002B8C3C & 5) func_0022B510("  %08X PREV=%08X NEXT=%08X BLOCK=%08X(%08X) FLAG=%08X\n", n, n->m4, n->m8, b, b->m8, b->mC);
+        if (b->m0 != n) {
+            if (D_002B8C3C & 5) func_0022B510("LINKERROR! %08X != %08X\n", n, b->m0);
+        }
+    }
+    if (D_002B8C3C & 5) return (void)func_0022B510("\n");
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B138);
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B390);
+extern "C" void func_0022B390(void) {
+    HeapX *h = (HeapX *)D_002B8C40;
+    HdB *b = (HdB *)h->m28;
+    HdB *end = (HdB *)((u8 *)b + h->m2C);
+    s32 k;
+    if (D_002B8C3C & 5) func_0022B510("ALL BLOCK\n");
+    for (k = 0; b < end; b = (HdB *)((u8 *)b + b->m8), k++) {
+        if (D_002B8C3C & 5) func_0022B510("%8d %08X SIZE=%08X PREV=%08X FLAG=%08X(%s%s%s) MASTER=%08X\n", k, b, b->m8, b->m4, b->mC, (b->mC & 0x10000000) ? "F" : "U", (b->mC & 0x20000000) ? "L" : " ", (b->mC & 0x40000000) ? "R" : " ", b->m0);
+    }
+    if (D_002B8C3C & 5) return (void)func_0022B510(" :%d BLOCKS\n", k);
+}
 INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E47B8);
 
 extern "C" void func_0022B510(const char *fmt, ...) { char buf[0x100]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_001F1190(); if (D_002B8C3C & 4) func_0022B660(buf); if (D_002B8C3C & 1) Func235DE0(buf); func_001F11C8(); }
@@ -619,7 +727,25 @@ extern "C" s32 func_0022B778(void) {
     return a - b - c;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B7C0);
+extern "C" void func_0022B7C0(void) {
+    QsH *h = (QsH *)D_002B8C40;
+    QsN **arr = (QsN **)__builtin_alloca(h->m14 * 4);
+    QsN **p;
+    QsN *n;
+    u32 i;
+    for (n = h->m4, i = 0; n; n = n->m8) arr[i++] = n;
+    func_0028A140(arr, h->m14, 4, func_0022C000);
+    for (i = 0; i < h->m14; i++) {
+        u8 *d = arr[i]->m0;
+        arr[i]->m4 = arr[i - 1];
+        arr[i]->m8 = arr[i + 1];
+        *(QsN **)(d - 0x10) = arr[i];
+    }
+    arr[0]->m4 = 0;
+    arr[i - 1]->m8 = 0;
+    h->m4 = arr[0];
+    h->m8 = arr[i - 1];
+}
 
 extern "C" void *func_0022B8D0(Loc *l, s32 n) {
     void *r;
@@ -648,7 +774,26 @@ extern "C" void func_0022B970(BL *b, BL *nx) {
     if ((u8 *)nn < h->m28 + h->m2C) nn->m4 = b->m8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022B9F0);
+extern "C" void func_0022B9F0(void *p) {
+    NL *n = (NL *)p;
+    BL *b = (BL *)((u8 *)n->m0 - 0x10);
+    HL *h = n->mC;
+    BL *nx;
+    if (b->mC & 0x10000000) {
+        func_0022B5C8("mem:Unshift Already Freed Block: %08X\n", b);
+        D_33F610 = -4;
+        return;
+    }
+    nx = (BL *)((u8 *)b + b->m8);
+    if ((u8 *)nx < h->m28 + h->m2C && (nx->mC & 0x10000000)) HfMerge(b, nx);
+    if (b->mC & 0x40000000) func_0022BBC0(h, n);
+    else func_0022BB88(h, n);
+    b->mC = 0x10000000;
+    if (b->m4) {
+        BL *pv = (BL *)((u8 *)b - b->m4);
+        if (pv->mC & 0x10000000) HfMerge(pv, b);
+    }
+}
 
 extern "C" void func_0022BB88(HL *h, NL *n) {
     n->m4 = 0;

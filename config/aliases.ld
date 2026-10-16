@@ -427,3 +427,4 @@ __fixdfdi = 0x002930A0; /* libgcc2, double-to-long */
 /* Lane sm: the kanji-select menus still call the list machine by its old name. */
 func_001A73B0 = 0x001A73B0; /* = Update1A73B0__14CMenuSub1A7658 */
 dptoul = 0x002854F0; /* = func_002854F0 (fp-bit __fixunsdfsi, the soft-float libcall for (u32)double) */
+D_316200 = 0x00316200; /* lane z1: free Node20 list head right before D_316204 (Unit20A410 0x20B5A0) */

@@ -136,12 +136,12 @@ void LoadEFontSe();
 // From CList.cpp
 #include "CList.h"
 // Texture cache entry (vtable _vt$10CCacheInfo), on the cache's list.
-class CTexCacheEnt : public CListTag {
+class CCacheInfo : public CListTag {
 public:
-    virtual ~CTexCacheEnt();
+    virtual ~CCacheInfo();
     s32 m10;                  // 0x10
     s32 m14;                  // 0x14
-    u8 pad18[4];
+    s32 m18;                  // 0x18
     s32 m1C;                  // 0x1C
 };
 // The node list at 0x20 (TList<CCacheInfo>: CListTag fields, vptr at 0xC).
@@ -173,16 +173,40 @@ public:
     s32 m10;                  // 0x10
     s32 m14;                  // 0x14
     s32 m18;                  // 0x18
-    CTexCacheEnt *m1C;        // 0x1C
+    CCacheInfo *m1C;        // 0x1C
     CTexCacheList m20;        // 0x20
 };
 extern void (*D_002B91B0)(void *p);
 void BlitFlip8(u8 *dst, u8 *src, int stride, int x, int y, int w, int h);
 void BlitFlip32(u32 *dst, u32 *src, int stride, int x, int y, int w, int h);
 void BlitFlip16(u16 *dst, u16 *src, int stride, int x, int y, int w, int h);
+
+extern char D_vt5CList[] asm("_vt$5CList");
+extern char D_vt8CListTag[] asm("_vt$8CListTag");
+extern char D_vtTcMgr[] asm("_vt$12CTexCacheMgr");
+extern char D_vtTcTList[] asm("_vt$t5TList1Z10CCacheInfo");
+extern void *D_002A039C;
+inline CTexCacheList *TcFirst(CTexCacheList *l) { CTexCacheList *n = l->m_next; return n->m_isHead ? 0 : n; }
+inline CTexCacheList *TcRemove(CTexCacheList *t) { if (t) { t->m_prev->m_next = t->m_next; t->m_next->m_prev = t->m_prev; t->m_next = t; t->m_prev = t; } return t; }
+
+s32 Func253A18(s32 a);
+void *Func245D00(s32 n);
+inline void TcInsert(CTexCacheList *n, CTexCacheList *h) { CTexCacheList *p = h->m_prev; n->m_next = h; n->m_prev = p; p->m_next = n; n->m_next->m_prev = n; }
+inline void TcUnlink(CTexCacheList *t) { t->m_prev->m_next = t->m_next; t->m_next->m_prev = t->m_prev; t->m_next = t; t->m_prev = t; }
+
+void *Func237570(int size);
+extern "C" void func_0010D360(u8 *dst, u8 *src, int psm, int stride, int unused, int x, int y, int w, int h);
+inline CCacheInfo *TcFirstE(CTexCacheList *l) { CTexCacheList *n = l->m_next; return n->m_isHead ? 0 : (CCacheInfo *)n; }
+inline CCacheInfo *TcNextE(CCacheInfo *p) { CListTag *n = p->m_next; return n->m_isHead ? 0 : (CCacheInfo *)n; }
+inline CCacheInfo *TcLastE(CTexCacheList *l) { CTexCacheList *n = l->m_prev; return n->m_isHead ? 0 : (CCacheInfo *)n; }
+inline void TcToFront(CTexCacheList *t, CTexCacheList *h) {
+    t->m_prev->m_next = t->m_next; t->m_next->m_prev = t->m_prev; t->m_next = t; t->m_prev = t;
+    t->m_prev = h; t->m_next = h->m_next; h->m_next = t; t->m_next->m_prev = t;
+}
+
+extern int TexPrintf(const char *fmt, ...) asm("Func235DE0__FPCce");
 // @decl-end
 
-INCLUDE_RODATA("asm/nonmatchings/CTexCacheMgr", D_002D2038);
 INCLUDE_RODATA("asm/nonmatchings/CTexCacheMgr", D_002D2040);
 INCLUDE_RODATA("asm/nonmatchings/CTexCacheMgr", D_002D2050);
 INCLUDE_RODATA("asm/nonmatchings/CTexCacheMgr", D_002D2060);
@@ -473,12 +497,70 @@ CEFontWorkSub10CEE8 *NewEFontWorkSub() {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/CTexCacheMgr", Init10CEE8__19CEFontWorkSub10CEE8);
+void CEFontWorkSub10CEE8::Init10CEE8() {
+    CTexCacheMgr *m = (CTexCacheMgr *)this;
+    CTexCacheList *l = &m->m20;
+    *(void **)m = D_vtTcMgr;
+    l->m_vt = D_vtTcTList;
+    l->m_isHead = 1;
+    l->m_prev = l;
+    l->m_next = l;
+    D_002A039C = m;
+    m->m4 = 0;
+    m->m8 = 0;
+    m->mC = 0;
+    m->m10 = 0;
+    m->m14 = 0;
+    m->m18 = 0;
+    m->m1C = 0;
+}
 
 
-INCLUDE_ASM("asm/nonmatchings/CTexCacheMgr", func_0010CF40);
+CTexCacheMgr::~CTexCacheMgr() {
+    CTexCacheList *l;
+    CTexCacheMgr::Release10D200();
+    D_002A039C = 0;
+    l = &m20;
+    l->m_vt = D_vt5CList;
+    while (TcRemove(TcFirst(l)));
+    l->m_vt = D_vt8CListTag;
+    l->m_prev->m_next = l->m_next;
+    l->m_next->m_prev = l->m_prev;
+    l->m_next = l;
+    l->m_prev = l;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CTexCacheMgr", func_0010D028);
+extern "C" s32 func_0010D028(CTexCacheMgr *m, s32 a, s32 b, s32 c, s32 n) {
+    s32 u = Func253A18(a) * b * c;
+    s32 total = u * n;
+    void *p = Func245D00(total);
+    if (!p) {
+        Func235DE0("*** can't allocate reverse buffer (size=%d)\n", total);
+    } else {
+        s32 i;
+        m->m4 = p;
+        p = 0;
+        m->m8 = a;
+        m->mC = b;
+        m->m10 = c;
+        m->m14 = u;
+        m->m18 = n;
+        m->m1C = new CCacheInfo[n];
+        for (i = 0; i < m->m18; i++) {
+            m->m1C[i].m10 = -1;
+            m->m1C[i].m14 = 0;
+            m->m1C[i].m18 = (s32)m->m4 + i * u;
+            m->m1C[i].m1C = 0;
+            {
+                CTexCacheList *e = (CTexCacheList *)&m->m1C[i];
+                TcUnlink(e);
+                TcInsert(e, &m->m20);
+            }
+        }
+    }
+    if (p) D_002B91B0(p);
+    return 0;
+}
 
 void CTexCacheMgr::Release10D200() {
     if (m4) {
@@ -512,9 +594,86 @@ void CTexCacheMgr::Age() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CTexCacheMgr", func_0010D360);
+extern "C" void func_0010D360(u8 *dst, u8 *src, int psm, int stride, int unused, int x, int y, int w, int h) {
+    switch (psm) {
+    case 0:
+        BlitFlip32((u32 *)dst, (u32 *)src, stride, x, y, w, h);
+        return;
+    case 1: {
+        u8 *d = dst;
+        u8 *s = src + (y * stride + x + w) * 3 - 3;
+        int i, j = h;
+        for (; j > 0; j--) {
+            for (i = w; i > 0; i--) {
+                u8 r = *s--;
+                u8 g = *s--;
+                u8 b = *s--;
+                *d++ = b;
+                *d++ = g;
+                *d++ = r;
+            }
+            s += (stride + w) * 3;
+        }
+        return;
+    }
+    case 2:
+    case 0xA:
+        BlitFlip16((u16 *)dst, (u16 *)src, stride, x, y, w, h);
+        return;
+    case 0x13:
+    case 0x1B:
+        BlitFlip8(dst, src, stride, x, y, w, h);
+        return;
+    case 0x14:
+    case 0x24:
+    case 0x2C: {
+        u8 *s = src + ((y * stride + x + w) >> 1) - 1;
+        int i;
+        for (; h > 0; h--) {
+            for (i = w >> 1; i > 0; i--) {
+                u8 c = *s--;
+                *dst++ = (c << 4) | (c >> 4);
+            }
+            s += (stride + w) >> 1;
+        }
+        return;
+    }
+    default:
+        TexPrintf("*** unknown pixel mode '%X'\n", psm);
+        __asm__("");
+        return;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CTexCacheMgr", func_0010D4F0);
+extern "C" void *func_0010D4F0(CTexCacheMgr *m, s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 k) {
+    CTexCacheList *l = &m->m20;
+    CCacheInfo *p;
+    void *buf;
+    s32 size;
+    for (p = TcFirstE(l); p; p = TcNextE(p)) {
+        if (p->m10 == a && p->m14 == b) {
+            p->m1C = 2;
+            TcToFront((CTexCacheList *)p, l);
+            return (void *)p->m18;
+        }
+    }
+    size = Func253A18(c) * h * k;
+    if (m->m14 >= size) {
+        p = TcLastE(l);
+        if (p && !p->m1C) {
+            p->m1C = 2;
+            p->m10 = a;
+            p->m14 = b;
+            TcToFront((CTexCacheList *)p, l);
+            buf = (void *)p->m18;
+            goto blit;
+        }
+    }
+    buf = Func237570(size);
+blit:
+    func_0010D360((u8 *)buf, (u8 *)b, c, d, e, f, g, h, k);
+    return buf;
+}
 
 void BlitFlip32(u32 *dst, u32 *src, int stride, int x, int y, int w, int h) {
     u32 *s = src + (y * stride + x) + w - 1;

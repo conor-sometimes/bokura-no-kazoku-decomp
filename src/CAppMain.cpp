@@ -198,6 +198,30 @@ void CreateCMenuMgr();
 extern void *D_002A26E0, *D_002A26E4;
 class CTaskList24F5C0;
 extern "C" void func_001E9E00(CTaskList24F5C0 *l);
+
+extern u8 AppMain_vt[] asm("_vt$8CAppMain");
+struct AmRel { virtual void Release(); };
+struct AmRel3 { virtual void V0(); virtual void V1(); virtual void V2(); virtual void V3(); };
+struct AmRel13C { u8 pad[0x13C]; virtual void V0(); virtual void V1(); };
+struct AmDel1C { u8 pad[0x1C]; virtual ~AmDel1C(); };
+extern void *D_002A36C0, *D_002A2988, *D_002A0BE4, *D_002A0BEC, *D_002A0BE8;
+extern "C" void func_002494B0(const char *a, const char *b);
+void FreeFontData();
+extern "C" void AmCallFunc109738() asm("CallFunc109738__9CFlagWork");
+extern "C" void AmCallFunc10ACF0() asm("CallFunc10ACF0__9CFlagWork");
+extern "C" void AmEvMesResDtor(void *p, s32 f) asm("_$_12CEventMesRes");
+extern "C" void AmBgWorkDtor(void *p, s32 f) asm("_$_7CBgWork");
+extern "C" void AmProcessDtor(void *p, s32 f) asm("_$_8CProcess");
+
+extern u8 *D_002A5D0C;
+struct AnEnt52 { u8 pad0[4]; u8 *m4; u8 pad8[0x2C]; };
+
+typedef unsigned int AmTI __attribute__((mode(TI)));
+struct AmV16 { AmTI q; };
+struct AmList30 { s32 m0; s32 m4; };
+struct AmItemH { u8 pad[0x10]; AmV16 a; AmV16 b; s32 m20; f32 m24; };
+struct AmItemH50 { u8 pad[0x10]; AmV16 a; AmV16 b; AmV16 c; f32 m40; f32 m44; f32 m48; f32 m4C; s32 m50; };
+extern AmV16 D_002E1F60, D_002E1F70, D_002E1F80, D_002E1F90, D_002E1FA0;
 // @decl-end
 
 CAppMain::CAppMain()
@@ -253,7 +277,41 @@ CAppMain::CAppMain()
     m_88 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001E95C0);
+extern "C" void func_001E95C0(CAppMain *a, s32 flags) {
+    *(void **)((u8 *)a + 4) = AppMain_vt;
+    func_002494B0(D_002E1DE8, D_002E1DF0);
+    func_002494B0(D_002E1DE8, D_002E1E00);
+    func_002494B0(D_002E1DE8, D_002E1E08);
+    ((AmRel3 *)D_002A5468)->V3();
+    ((AmRel *)D_002A5468)->Release();
+    ((AmRel *)D_002A3AC0)->Release();
+    ((AmRel *)D_002A36E8)->Release();
+    ((AmRel *)D_002A36C0)->Release();
+    ((AmRel *)D_002A28D8)->Release();
+    ((AmRel *)D_002A0D38)->Release();
+    ((AmRel *)D_002A0CE0)->Release();
+    ((AmRel *)D_002A35B0)->Release();
+    ((AmRel *)D_002A2988)->Release();
+    ((AmRel *)D_002A05D0)->Release();
+    ((AmRel13C *)D_002A0BE4)->V1();
+    ((AmRel13C *)D_002A0BEC)->V1();
+    ((AmRel13C *)D_002A0BE8)->V1();
+    delete (AmDel1C *)D_002A26E0;
+    delete (AmDel1C *)D_002A26E4;
+    ((AmRel *)D_002BA1D8)->Release();
+    ((AmRel *)D_002BA1D4)->Release();
+    ((AmRel *)D_002BA1D0)->Release();
+    ((AmRel *)D_002BA248)->Release();
+    FreeFontData();
+    ((AmRel *)D_002A039C)->Release();
+    ((AmRel *)D_002BA128)->Release();
+    AmCallFunc109738();
+    AmCallFunc10ACF0();
+    AmEvMesResDtor((u8 *)a + 0x9C, 2);
+    AmBgWorkDtor((u8 *)a + 0x74, 2);
+    AmProcessDtor(a, 0);
+    if (flags & 1) return (void)CTask::operator delete(a);
+}
 
 s32 CAppMain::Func7()
 {
@@ -420,16 +478,71 @@ INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EADA0);
 
 INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F60);
 INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F70);
-INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAE70);
+extern "C" AmList30 *func_001EAE70(s32 n) {
+    AmList30 *h = (AmList30 *)D_002B91A4(n * 0x30 + 0x10);
+    s32 i;
+    h->m4 = n;
+    h->m0 = 0;
+    for (i = 0; i < h->m4; i++) {
+        AmItemH *e = (AmItemH *)((u8 *)h + i * 0x30);
+        e->a.q = D_002E1F60.q;
+        e->b.q = D_002E1F70.q;
+        e->m20 = 0;
+        e->m24 = 0.125f;
+    }
+    return h;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F80);
 INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F90);
 INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FA0);
-INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAF10);
+extern "C" AmList30 *func_001EAF10(s32 n) {
+    AmList30 *h = (AmList30 *)D_002B91A4(n * 0x50 + 0x10);
+    s32 i;
+    h->m4 = n;
+    h->m0 = 0;
+    for (i = 0; i < h->m4; i++) {
+        AmItemH50 *e = (AmItemH50 *)((u8 *)h + i * 0x50);
+        e->m50 = -1;
+        e->a.q = D_002E1F80.q;
+        e->b.q = D_002E1F90.q;
+        e->c.q = D_002E1FA0.q;
+        e->m40 = 10.0f;
+        e->m44 = 20.0f;
+        e->m48 = 0.125f;
+        e->m4C = 0.027777777f;
+    }
+    return h;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAFF0);
+extern "C" s32 func_001EAFF0(s32 r, s32 k) {
+    CAnim1EA *t = GetAnim(k);
+    u32 i;
+    u8 *e;
+    s8 *c;
+    if (!t) return 0;
+    if (!(c = (s8 *)t->m_unk4)) return 1;
+    {
+    AnEnt52 *ent = (AnEnt52 *)(D_002A5D0C + r * 52);
+    e = ent->m4;
+    }
+    for (i = 0; i < t->m_unk14; i++) { if (c[i]) *(s16 *)(e + i * 8 + 0xE) &= ~1; else *(s16 *)(e + i * 8 + 0xE) |= 1; }
+    return 1;
+}
 
-INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EB0C0);
+extern "C" s32 func_001EB0C0(s32 r, s32 k) {
+    CAnim1EA *t = GetAnim(k);
+    u32 i;
+    u8 *e;
+    if (!t) return 0;
+    if (!t->m_unk4) return 1;
+    {
+    AnEnt52 *ent = (AnEnt52 *)(D_002A5D0C + r * 52);
+    e = ent->m4;
+    }
+    for (i = 0; i < t->m_unk14; i++) *(s16 *)(e + i * 8 + 0xE) &= ~1;
+    return 1;
+}
 
 extern "C" s32 func_001EB178(s32 mode)
 {

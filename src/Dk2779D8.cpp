@@ -523,7 +523,7 @@ int func_00279D28(const char *name, void *buf, unsigned int size)
     return res;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2779D8", func_00279EF0);
+int func_00279EF0(void) { int i; for (;;) { if (func_00275EE0(D_420440, 0x80000003, 0) < 0) return -1; if (*(int *)(D_420440 + 0x24) != 0) break; i = 0x100000; do i--; while (i != -1); } D_002BDB4C = 0; asm volatile(""); return 0; }
 
 int func_00279F78(int a)
 {
