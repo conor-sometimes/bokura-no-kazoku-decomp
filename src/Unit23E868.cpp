@@ -431,7 +431,22 @@ extern "C" s32 func_0023FB60(s32 a, Ch14 *c) {
     return (s32)e;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023FCB8);
+extern "C" u64 *func_0023FCB8(u64 *p, s32 a, Ch14 *c) {
+    if (!func_0023FB60(a, c)) {
+        D_38EF50 = (s32)p;
+        D_38EF54 = p;
+        c->m6 = 0;
+        {
+            s32 odd = c->m14;
+            c->m4 = odd & 1;
+        }
+        func_0023F1C0(a, c);
+        *D_38EF54++ = 0x8000;
+        *D_38EF54++ = 0;
+        p = D_38EF54;
+    }
+    return p;
+}
 
 extern "C" void func_0023FD58(void) {
     D_38EF74 = 0;

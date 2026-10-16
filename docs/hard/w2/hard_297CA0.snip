@@ -1,7 +1,0 @@
-#define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
-//@decl
-struct W2Rand { u32 m_seed; u32 Next() { m_seed = m_seed * 0x19660D + 1; return (m_seed >> 12) & 0xFFFF; } };
-//@func 0x297CA0
-extern "C" s32 func_00297CA0(void *p, s32 lo, s32 hi) { s32 r = FLD(s32, p, 0x291C); W2Rand *g = (W2Rand *)((u8 *)p + 4); if (hi < lo) hi = lo; if (r < 0) { if (lo == hi) r = lo; else { u32 x = g->Next() << 16; x |= g->Next(); r = x % (hi - lo + 1) + lo; } } return r; }
-//@func 0x297CA0
-extern "C" s32 func_00297CA0(void *p, s32 lo, s32 hi) { W2Rand *g = (W2Rand *)((u8 *)p + 4); s32 r; if (hi < lo) hi = lo; r = FLD(s32, p, 0x291C); if (r < 0) { r = lo; if (lo != hi) { u32 x = g->Next() << 16; x |= g->Next(); r = x % (hi - lo + 1) + lo; } } return r; }

@@ -630,7 +630,26 @@ INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E4430);
 INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E4448);
 INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E4458);
 INCLUDE_RODATA("asm/nonmatchings/Unit228F78", D_002E4478);
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022AAF8);
+extern "C" void **func_0022AAF8(void *vl, s32 n, s32 tag) {
+    Loc *l = (Loc *)vl;
+    Blk *b;
+    if (!HeapOk()) return 0;
+    b = func_0022BC70(D_002B8C40, n);
+    if (!b) {
+        func_0022B5C8(D_002E4458, l->name, n);
+        D_33F610 = -1;
+        return 0;
+    }
+    b->mC = tag;
+    {
+        long sz = n + 0x1F;
+        func_0022AD68(b, sz & ~0xF);
+    }
+
+    if (D_002B8C3C & 5) func_0022B510(D_002E42C8, l->name, b->m0, *(void **)b->m0, n, l->ra, l->m4);
+    if (D_002B8C3C & 0xA) func_0022AF60();
+    return (void **)b->m0;
+}
 
 extern "C" void **func_0022AC30(void *vl, s32 n, s32 tag) {
     Loc *l = (Loc *)vl;
@@ -649,7 +668,36 @@ extern "C" void **func_0022AC30(void *vl, s32 n, s32 tag) {
     return (void **)b->m0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022AD68);
+extern "C" s32 func_0022AD68(Blk *vb, s32 sn) {
+    Bk *b = (Bk *)vb;
+    u32 n = sn;
+    u32 rest;
+    Nd *nd;
+    Bk *t;
+    u8 *e;
+    HeapX *h;
+    rest = b->m8;
+    rest -= n;
+    if (rest < 16 || n < 16) return (s32)b;
+    nd = func_0022BF70(b->m0->mC);
+    {
+        u32 nm = n & 0x0FFFFFFF;
+        if (!nd) return (s32)b;
+        t = (Bk *)((u8 *)b + n);
+        b->m8 = n;
+        b->mC = (b->mC & 0xF0000000) | nm;
+    }
+    t->m8 = rest;
+    t->m4 = b->m8;
+    t->m0 = nd;
+    nd->m0 = t + 1;
+    t->mC = 0;
+    func_0022B9F0(nd);
+    h = nd->mC;
+    e = (u8 *)t + t->m8;
+    if (e < h->m28 + h->m2C) ((Bk *)e)->m4 = t->m8;
+    return (s32)b;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit228F78", func_0022AE58);
 

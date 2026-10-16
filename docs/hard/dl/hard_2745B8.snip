@@ -1,0 +1,9 @@
+//@func 0x2745B8
+int func_002745B8(int c)
+{
+    while (*(volatile unsigned int *)0x1000F130 & 0x8000)
+        ;
+    *(volatile unsigned char *)0x1000F180 = c;
+    asm volatile("");
+    return c;
+}

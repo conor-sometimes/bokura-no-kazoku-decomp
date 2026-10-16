@@ -1,0 +1,25 @@
+//@func 0x1EF210
+extern "C" s32 func_001EF210(void (*fn)(void *), CRxMcSlot *slot, RxMcFn f, s32 a, s32 b, s32 c, s32 d) {
+    CRxJob *j;
+    s32 w;
+    while (((D_002A5C94 - D_002A5C98) & 0x1F) == 0x1F) {
+        if (!(EeGetStatus() & 0x10000)) {
+            func_0027BD78();
+            Func235DE0(D_002E21C0);
+            func_0027BD78();
+        }
+    }
+    func_001F15F0();
+    w = D_002A5C94;
+    j = &D_2ED448[w];
+    j->m_head.m_fn = fn;
+    j->m_head.m_slot = slot;
+    j->m_head.m_func = f;
+    j->m_a = a;
+    j->m_b = b;
+    j->m_c = c;
+    j->m_d = d;
+    D_002A5C94 = (w + 1) & 0x1F;
+    func_001F18D0(D_2ED440, 1);
+    return func_001F1610s();
+}

@@ -89,6 +89,8 @@ inline void PutADc20(u32 v, u32 a) {
     p[1] = 0;
     p[3] = 0;
 }
+
+inline u32 *PUTD64(u64 v) { u32 *p = (u32 *)D_002B94E4; D_002B94E4 = p + 2; p[0] = v; p[1] = v >> 32; return p; }
 // @decl-end
 
 extern "C" void func_0021F250(f32 a, f32 b) {
@@ -287,7 +289,20 @@ extern "C" void func_00220030(s32 a, s32 b, s32 c, s32 d) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_002200C8);
+extern "C" void func_002200C8(s32 a, s32 b, s32 c, s32 d, s32 e) {
+    u64 t;
+    PUT(0x6C028000);
+    a |= 4;
+    PUT(b);
+    PUT(c);
+    PUT(d);
+    PUT(e);
+    t = ((u64)(a | 0x10) << 47) | ((u64)a << 32);
+    PUTD64(t | ((u64)0x8001 << 46));
+
+    PUTD64(0x42);
+    PUT((D_33D9A0 + 0x2C) | 0x14000000);
+}
 
 extern "C" void func_002201A0(s32 n, s32 a, s32 b, s32 c, s32 d) {
     PUT(0x6C028000); PUT(a); PUT(b); PUT(c); PUT(d);
@@ -296,9 +311,25 @@ extern "C" void func_002201A0(s32 n, s32 a, s32 b, s32 c, s32 d) {
     PUT2((D_33D9A0 + 0x2E) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220278);
+extern "C" void func_00220278(s32 a, s32 b) {
+    u64 t;
+    PUT(0x68018000);
+    a |= 0x45;
+    t = (u64)b | ((u64)a << 32);
+    PUTD64(t | ((u64)(a | 0x10) << 47) | ((u64)0xC001 << 46));
+    PUT(0x412);
+    PUT((b << 16) | 0x6E00C001);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit21F250", func_00220318);
+extern "C" void func_00220318(s32 a, s32 b) {
+    u64 t;
+    PUT(0x68018000);
+    a |= 0x44;
+    t = (u64)b | ((u64)a << 32);
+    PUTD64(t | ((u64)(a | 0x10) << 47) | ((u64)0xC001 << 46));
+    PUT(0x412);
+    PUT((b << 16) | 0x6E00C001);
+}
 
 extern "C" void func_002203B8(u8 a, u8 b, u8 c, u8 d) {
     PUTB(a);

@@ -122,6 +122,8 @@ inline void PutADc2(u32 v, u32 a) {
     p[1] = 0;
     p[3] = 0;
 }
+
+extern "C" void func_0021CB58(CVec4 *pv);
 // @decl-end
 
 extern "C" void func_0021BEC0(void) {
@@ -304,9 +306,9 @@ extern "C" void func_0021C7B0(s32 a) {
     return;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C7C8);
+extern "C" void func_0021C7C8(CVec4 *a) { PUT(0x6C048000); ((F398)func_00237398)(0x10, a); u32 v = D_33D6F0 + 4; PUT(v | 0x14000000); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C838);
+extern "C" void func_0021C838(CVec4 *a) { func_00237350(0xC); PUT(0x6C048000); ((F860)func_00237860)(4, a); u32 v = D_33D6F0 + 4; PUT(v | 0x14000000); }
 
 extern "C" void func_0021C8B8(CVec4 *m, f32 s) {
     func_00237350(0xC);
@@ -316,9 +318,9 @@ extern "C" void func_0021C8B8(CVec4 *m, f32 s) {
     PUT2((D_33D6F0 + 4) | 0x14000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C978);
+extern "C" void func_0021C978(CVec4 *a) { PUT(0x6C038000); ((F398)func_00237398)(0xC, a); u32 v = D_33D6F0 + 6; PUT(v | 0x14000000); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021C9E8);
+extern "C" void func_0021C9E8(CVec4 *a) { func_00237350(0xC); PUT(0x6C038000); ((F860)func_00237860)(3, a); u32 v = D_33D6F0 + 6; PUT(v | 0x14000000); }
 
 extern "C" void func_0021CA68(CVec4 *a) { PUT(0x6C048000); ((F398)func_00237398)(0x10, a); u32 v = D_33D6F0 + 8; PUT(v | 0x14000000); }
 
@@ -326,9 +328,9 @@ extern "C" void func_0021CAD8(CVec4 *a) { func_00237350(0xC); PUT(0x6C048000); (
 
 extern "C" void func_0021CB58(CVec4 *pv) { P21EFB0 *p = (P21EFB0 *)pv; f32 s = 1536.0f; f32 a = p->m50, b = p->m54; PUTF2(p->m0 * a / s); PUTF2(p->m4 * b / s); PUTF2(p->m8); PUTF2(p->mC); PUTF2(s); PUTF2(s); PUTF2(p->m58); PUTF2(p->m5C); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CC30);
+extern "C" void func_0021CC30(void *va) { CVec4 *a = (CVec4 *)va; PUT(0x6C088000); ((F398)func_00237398)(0x18, a); func_0021CB58(a); u32 v = D_33D6F0 + 2; PUT(v | 0x14000000); }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21BEC0", func_0021CCB0);
+extern "C" void func_0021CCB0(CVec4 *a) { func_00237350(0xC); PUT(0x6C088000); ((F860)func_00237860)(6, a); func_0021CB58(a); u32 v = D_33D6F0 + 2; PUT(v | 0x14000000); }
 
 extern "C" void func_0021CD38(s32 i) { i = i < 0 ? 0 : (i > 2 ? 2 : i); func_00237350(0xC); PUT2(0x6C058000); ((F860)func_00237860)(5, (CVec4 *)&D_33D720[i]); u32 v = D_33D6F0 + 0x10; PUT(v | 0x14000000); }
 

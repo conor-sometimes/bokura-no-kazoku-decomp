@@ -1,0 +1,78 @@
+//@decl
+extern u32 *D_002B94E4;
+extern u64 *D_38F1AC;
+extern "C" void func_002375C0(void);
+extern "C" void func_00237408(s32 n);
+extern "C" s32 func_0023A0E8();
+extern "C" s32 func_0023A2F0(s32 a);
+extern "C" u64 func_0023C650(s32 a);
+extern "C" u64 func_0023C658(s32 a);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" void func_002374B0(void);
+extern "C" void func_002377D8(void);
+inline u32 *PktAlloc(s32 n) { u32 *p = D_002B94E4; D_002B94E4 = p + n; return p; }
+#define DL_GPUT(v) { u64 *q = D_38F1B0.m_pkt; *q = (v); D_38F1B0.m_pkt = q + 1; }
+#define DL_GPUT2(v) { u64 *q = D_38F1B0.m_pkt; D_38F1B0.m_pkt = q + 1; *q = (v); }
+//@func 0x248298
+extern "C" void func_00248298(s32 x, s32 y, s32 w, s32 h, CMemHeap *heap)
+{
+    u64 fr, zb;
+    s32 n;
+    func_002375C0();
+    func_00237408(0x10);
+    D_38F1AC = D_38F1B0.m_pkt = (u64 *)D_002B94E4;
+    fr = func_0023C650(func_0023A2F0(func_0023A0E8()));
+    zb = func_0023C658(func_0023A2F0(func_0023A0E8()));
+    DL_GPUT(0x100000000000000A);
+    DL_GPUT(0xE);
+    DL_GPUT(0x44);
+    DL_GPUT(0x42);
+    DL_GPUT(0xA);
+    DL_GPUT(8);
+    DL_GPUT(0);
+    DL_GPUT(0x4A);
+    DL_GPUT(0);
+    DL_GPUT(0x49);
+    DL_GPUT2((fr & 0x3FFF) | ((u64)0x8000 << 46) | ((((fr >> 14) & 0x3F) << 14) | ((fr & 0x3FFF) << 37)) | ((((fr >> 32) & 0x3F) << 20) | (((fr >> 32) & 0x3F) << 51)) | ((u64)0xAA00 << 18));
+    DL_GPUT(6);
+    DL_GPUT(0x60);
+    DL_GPUT(0x14);
+    DL_GPUT(0x80);
+    DL_GPUT(0x3B);
+    DL_GPUT(0x38002);
+    DL_GPUT(0x47);
+    DL_GPUT2(((zb & 0x3FFF) >> 5) | (((zb >> 32) & 0x3F) << 24));
+    DL_GPUT(0x4E);
+    DL_GPUT2(((fr & 0x3FFF) >> 5) | (((fr >> 14) & 0x3F) << 16) | (((fr >> 32) & 0x3F) << 24));
+    DL_GPUT(0x4C);
+    func_00247C00(x, y, x + w, y + h, 0x40404040);
+    if (heap) {
+        CMemNode *nd;
+        f32 total = (f32)heap->m_size;
+        f32 area = (f32)(w * h);
+        for (nd = heap->m_list.m_next; nd != &heap->m_list; nd = nd->m_next) {
+            CMemBlk *b = nd->m_blk;
+            f32 s = (f32)((u8 *)b - heap->m_data);
+            f32 e = s + (f32)(u32)(b->m_size + 16);
+            s = s * area / total;
+            e = e * area / total;
+            if (b->m_req > 0) {
+                func_00247FA8(x, y, w, h, (s32)s, (s32)e, 0x800080, 0x404080);
+            } else {
+                func_00247FA8(x, y, w, h, (s32)s, (s32)e, heap->m_first != nd ? 0x40404040 : 0x4040E040, heap->m_last != nd ? 0x40404040 : 0x4040E040);
+            }
+        }
+    }
+    DL_GPUT(0x8000);
+    DL_GPUT(0);
+    D_002B94E4 = (u32 *)D_38F1B0.m_pkt;
+    func_00237460();
+    *PktAlloc(1) = 0;
+    *PktAlloc(1) = 0;
+    *PktAlloc(1) = 0x11000000;
+    n = func_00237450();
+    { u32 v = ((n + 15) / 16 - 1) | 0x50000000; *PktAlloc(1) = v; }
+    func_002374B0();
+    func_002377D8();
+}

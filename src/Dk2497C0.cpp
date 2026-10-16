@@ -217,6 +217,8 @@ extern s32 D_002BA048[];
 typedef s32 (*CExprAssignFn)(CValue *dst, CValue *src, CExpr *e);
 extern CExprAssignFn D_002B9EB8[][3];
 extern "C" int strcmp(const char *, const char *);
+struct DlRand2 { u32 m_seed; u32 Next() { m_seed = m_seed * 0x19660D + 1; return (m_seed >> 12) & 0xFFFF; } };
+inline f32 DlRandF(DlRand2 *g, f32 lo, f32 hi) { u32 r = g->Next() << 16; r |= g->Next(); return (f32)(s32)(r & 0xFFFF) / 65535.0f * (hi - lo) + lo; }
 // @decl-end
 
 extern "C" CXapEntry *func_002497C0(CXapDir *d, const char *name) {
@@ -1363,7 +1365,10 @@ extern "C" s32 func_0024D868(CExpr *e, s32 lo, s32 hi) {
     return ((r->Next() << 16) | (r->Next() & 0xFFFF)) % (u32)(hi - lo + 1) + lo;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2497C0", func_0024D8D8);
+extern "C" f32 func_0024D8D8(CExpr *e, f32 lo, f32 hi)
+{
+    return DlRandF((DlRand2 *)&e->m_seed, lo, hi);
+}
 
 extern "C" void func_0024D948(CExpr *e, const char *fmt, ...) {
     char buf[0x400];

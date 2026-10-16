@@ -1,0 +1,54 @@
+//@decl
+struct DlMat4 { CVec4 v[4]; };
+extern f32 D_002A6800[];
+inline s32 DlFtoI15(f32 f) {
+    s32 r;
+    asm volatile("mfc1 %0, %1\n\tqmtc2.ni %0, $vf2\n\tvftoi15.x $vf2, $vf2\n\tqmfc2.ni %0, $vf2" : "=r"(r) : "f"(f));
+    return r;
+}
+inline f32 DlFSqrt(f32 x) { f32 r; asm("sqrt.s %0, %1" : "=f"(r) : "f"(x)); return r; }
+extern "C" void func_00270B68(CVec4 *d, const CVec4 *a, f32 s);
+extern "C" void func_00270A30(CVec4 *d, const CVec4 *a, const CVec4 *b);
+extern "C" void func_00270790(DlMat4 *d, DlMat4 *s);
+//@func 0x24DE30
+extern "C" void func_0024DE30(DlMat4 *out, CVec4 *axis, f32 ang)
+{
+    DlMat4 A, B, C;
+    f32 x = axis->x, y = axis->y, z = axis->z;
+    f32 inv = 1.0f / DlFSqrt(x * x + y * y + z * z);
+    f32 cs, sn;
+    u8 *tbl;
+    x *= inv; y *= inv; z *= inv;
+    A.v[0].x = x * x; A.v[0].y = x * y; A.v[0].z = x * z;
+    A.v[1].x = x * y; A.v[1].y = y * y; A.v[1].z = y * z;
+    A.v[2].x = x * z; A.v[2].y = y * z; A.v[2].z = z * z;
+    B.v[0].x = 1.0f - x * x; B.v[0].y = -(x * y); B.v[0].z = -(x * z);
+    B.v[1].x = -(x * y); B.v[1].y = 1.0f - y * y; B.v[1].z = -(y * z);
+    B.v[2].x = -(x * z); B.v[2].y = -(y * z); B.v[2].z = 1.0f - z * z;
+    C.v[0].x = 0.0f; C.v[0].y = -z; C.v[0].z = y;
+    C.v[1].x = z; C.v[1].y = 0.0f; C.v[1].z = -x;
+    C.v[2].x = -y; C.v[2].y = x; C.v[2].z = 0.0f;
+    tbl = (u8 *)D_002A6800;
+    cs = *(f32 *)(tbl + ((((DlFtoI15(ang) >> 1) & 0x3FFF) + 0x1000) & 0x3FFF) * 4);
+    sn = *(f32 *)(tbl + ((DlFtoI15(ang) << 1) & 0xFFFC));
+    func_00270B68(&B.v[0], &B.v[0], cs);
+    func_00270B68(&B.v[1], &B.v[1], cs);
+    func_00270B68(&B.v[2], &B.v[2], cs);
+    func_00270B68(&C.v[0], &C.v[0], sn);
+    func_00270B68(&C.v[1], &C.v[1], sn);
+    func_00270B68(&C.v[2], &C.v[2], sn);
+    func_00270A30(&out->v[0], &A.v[0], &B.v[0]);
+    func_00270A30(&out->v[1], &A.v[1], &B.v[1]);
+    func_00270A30(&out->v[2], &A.v[2], &B.v[2]);
+    func_00270A30(&out->v[0], &out->v[0], &C.v[0]);
+    func_00270A30(&out->v[1], &out->v[1], &C.v[1]);
+    func_00270A30(&out->v[2], &out->v[2], &C.v[2]);
+    out->v[0].w = 0.0f;
+    out->v[1].w = 0.0f;
+    out->v[2].w = 0.0f;
+    out->v[3].x = 0.0f;
+    out->v[3].y = 0.0f;
+    out->v[3].z = 0.0f;
+    out->v[3].w = 1.0f;
+    func_00270790(out, out);
+}

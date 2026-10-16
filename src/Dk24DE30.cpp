@@ -96,6 +96,30 @@ static inline Y1Tg *Y1Fst(Y1Tg *l) { Y1Tg *n = l->next; return n->isHead ? 0 : n
 static inline Y1Tg *Y1Rem(Y1Tg *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 static inline void Y1TagDtor(Y1Tg *l) { l->vptr = Y1vtCListTag; l->prev->next = l->next; l->next->prev = l->prev; l->next = l; l->prev = l; }
 extern u8 Y1vtTListTT[] asm("_vt$t5TList1Z8CTaskTag");
+class DlProcV {
+public:
+    s32 m0;
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual s32 V7(s32 a);
+};
+struct CVec4 { f32 x; f32 y; f32 z; f32 w; };
+void Func270C50(CVec4 *dst, const CVec4 *src);
+extern "C" void func_00270A98(CVec4 *d, const CVec4 *a, const CVec4 *b);
+extern "C" void func_00270B00(CVec4 *d, const CVec4 *a, const CVec4 *b);
+extern "C" void func_00270B68(CVec4 *d, const CVec4 *a, f32 s);
+extern "C" void func_00270A30(CVec4 *d, const CVec4 *a, const CVec4 *b);
+inline f32 DlVuSqrt(f32 x) { f32 r; asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8"); return r; }
+inline f32 DlVuDot3(CVec4 *a, CVec4 *b) {
+    f32 r;
+    asm volatile("lqc2 $vf2, 0x0(%1)\n\tlqc2 $vf3, 0x0(%2)\n\tvmul.xyz $vf3, $vf2, $vf3\n\tvaddy.x $vf3, $vf3, $vf3y\n\tvaddz.x $vf3, $vf3, $vf3z\n\tqmfc2.ni $8, $vf3\n\tmtc1 $8, %0" : "=f"(r) : "r"(a), "r"(b) : "$8");
+    return r;
+}
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68C8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68D0);
@@ -125,9 +149,47 @@ s32 Func24E0F0(const char *ppts, int n, int pp) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E240);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E560);
+asm(".p2align 3");
+extern "C" void func_0024E560(CVec4 *out, CVec4 *a, CVec4 *b, CVec4 *p)
+{
+    CVec4 d, e, f;
+    f32 len, t;
+    if (a->x == b->x && a->y == b->y && a->z == b->z) {
+        Func270C50(out, a);
+        return;
+    }
+    func_00270A98(&d, p, a);
+    func_00270A98(&e, b, a);
+    func_00270B00(&f, &e, &e);
+    len = DlVuSqrt(f.x + f.y + f.z);
+    t = DlVuDot3(&d, &e) / (len * len);
+    if (t < 0.0f) {
+        Func270C50(out, a);
+    } else if (t < 1.0f) {
+        func_00270B68(out, &e, t);
+        func_00270A30(out, out, a);
+    } else {
+        Func270C50(out, b);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E6D0);
+extern "C" s32 func_0024E6D0(CVec4 *out, CVec4 *a, CVec4 *b, CVec4 *p)
+{
+    CVec4 d, e, f;
+    f32 len, t;
+    if (a->x == b->x && a->y == b->y && a->z == b->z) goto same;
+    func_00270A98(&d, p, a);
+    func_00270A98(&e, b, a);
+    func_00270B00(&f, &e, &e);
+    len = DlVuSqrt(f.x + f.y + f.z);
+    t = DlVuDot3(&d, &e) / (len * len);
+    func_00270B68(out, &e, t);
+    func_00270A30(out, out, a);
+    return 0.0f <= t && t <= 1.0f;
+same:
+    Func270C50(out, a);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E830);
 
@@ -209,7 +271,6 @@ extern "C" void func_0024EF30(CTaskTag *t) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024EF88);
 
-asm(".p2align 3");
 extern "C" void func_0024F1F0(CTaskTag *t, u32 i, TaskFn a, TaskFn b) {
     if (!a) a = D_002BA070[i][0];
     if (!b) b = D_002BA070[i][1];
@@ -394,7 +455,13 @@ extern "C" int func_0024F998(CProcess *p, s32 wait) {
     return func_00245818(&p->m_bg, wait);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F9B0);
+extern "C" s32 func_0024F9B0(CProcess *p, s32 a)
+{
+    CProcessData *d = (CProcessData *)p;
+    if (d->m18) return 1;
+    d->m18 = 1;
+    return ((DlProcV *)p)->V7(a);
+}
 
 extern "C" void func_0024F9F0(CProcess *p) {
     CProcessData *d = (CProcessData *)p;
@@ -413,7 +480,11 @@ extern "C" void func_0024FA38(CProcess *p, s32 a, s32 b, s32 c, s32 e) {
     d->m14 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024FA50);
+extern "C" s32 func_0024FA50(CProcess *p, u32 i)
+{
+    if (i >= 4) return 0;
+    return ((CProcessData *)p)->m1C[i];
+}
 
 extern "C" s32 func_0024FA70(CProcess *p) {
     return ((CProcessData *)p)->m14;

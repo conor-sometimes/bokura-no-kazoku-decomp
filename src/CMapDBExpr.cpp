@@ -124,6 +124,14 @@ extern "C" s32 func_00248DC0(CPushBuf *b);
 extern "C" const char *func_0024AD10(const char *p, char *buf, s32 k, s32 n);
 const char *Func24A570(const char *s, char *out, const char *sep, const char *ws);
 extern char D_002DA280[];
+
+int Func235DE0(const char *fmt, ...) throw();
+extern "C" void *func_00248CC8(void *b, s32 n, s32 a, s32 c);
+char *Func24A4C0(const char *path);
+extern "C" void func_0028A140(void *base, s32 n, s32 size, int (*cmp)(const char **, const char **));
+extern void (*D_002B91B0)(void *p);
+extern "C" s32 func_00173648(CMapDBMgr *m, const char *p, CMapDBPair *out);
+inline void FreeIf173(void *p) { if (p) D_002B91B0(p); }
 // @decl-end
 
 CMapDBExpr::CMapDBExpr() {
@@ -208,7 +216,7 @@ int Func235DE0(const char *fmt, ...);
 extern "C" void func_00248C30(CPushBuf *b);
 extern "C" void func_00248C70(CPushBuf *b);
 extern "C" s32 func_00173160(CMapDBMgr *m);
-extern "C" void func_00173578(CMapDBMgr *m);
+extern "C" s32 func_00173578(CMapDBMgr *m);
 
 // Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
 int CMapDBMgr::Func173050(const char *path) {
@@ -241,7 +249,20 @@ int CompareMapDBNames2(const char **a, const char **b) {
     return strcmp(*a, *b);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173578);
+extern "C" s32 func_00173578(CMapDBMgr *m) {
+    s32 ok = 0;
+    char *buf = Func24A4C0("similar.txt");
+    if (buf) {
+        ok = 1;
+        m->m_count = func_00173648(m, buf, 0);
+        m->m_table = func_00248CC8(&m->m_buf, m->m_count * 8, 1, 1);
+        func_00173648(m, buf, (CMapDBPair *)m->m_table);
+        func_0028A140(m->m_table, m->m_count, 8, CompareMapDBNames2);
+    }
+    FreeIf173(buf);
+    Func235DE0(" similar (%d)\n", ok);
+    return ok;
+}
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2B8);
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2F0);
 

@@ -74,6 +74,28 @@ int func_0027D938();
 static __inline__ FreeEnt *W2AllocEnt(void) { FreeEnt *e = D_423F00; if (e) D_423F00 = e->next; return e; }
 
 int func_0027D938();
+#define DL_GETTIME(t) asm volatile( \
+    ".set noreorder\n\t" \
+    "lui $3, 0x1000\n\t" \
+    "lui $4, %%hi(D_002BF138)\n\t" \
+    "ori $3, $3, 0x1000\n\t" \
+    "lwu %0, 0x0($3)\n\t" \
+    "lw $8, 0x10($3)\n\t" \
+    "ld $10, %%lo(D_002BF138)($4)\n\t" \
+    "andi $9, $8, 0x800\n\t" \
+    "beqz $9, 1f\n\t" \
+    "addiu $9, $0, 0x2\n\t" \
+    "lwu %0, 0x0($3)\n\t" \
+    "daddiu $10, $10, 0x1\n" \
+    "1:\n\t" \
+    "andi $8, $8, 0x3\n\t" \
+    "dsll $10, $10, 16\n\t" \
+    "movz $9, $0, $8\n\t" \
+    "or %0, %0, $10\n\t" \
+    "dsllv $9, $9, $8\n\t" \
+    "dsllv %0, %0, $9\n\t" \
+    ".set reorder" \
+    : "=&r"(t) : : "$3", "$4", "$8", "$9", "$10")
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Dk27C020", D_002EA110);
 
@@ -298,9 +320,21 @@ AlarmEnt *func_0027CB88(AlarmEnt *p)
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027CBC0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027CE60);
+unsigned long long func_0027CE60(void)
+{
+    unsigned long long t;
+    DL_GETTIME(t);
+    return t;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027CEB0);
+unsigned long long func_0027CEB0(void)
+{
+    unsigned long long t;
+    int intr = func_0027BD20();
+    DL_GETTIME(t);
+    if (intr) func_0027BD78();
+    return t;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027CF30);
 
@@ -390,7 +424,25 @@ int func_0027D288(int id)
 
 int func_0027D350(int a) { int s = func_0027BD20(); int r = func_0027D288(a); if (s) func_0027BD78(); return r; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D3A0);
+unsigned long long func_0027D3A0(int id, unsigned long long t)
+{
+    AlarmEnt *e = ENT(id);
+    unsigned long long old, now;
+    int intr = func_0027BD20();
+    if (id < 0 || (id & 0x3FF) != e->seq || ((volatile AlarmSys *)&D_002BF138)->cur == id) {
+        if (intr) func_0027BD78();
+        return -1;
+    }
+    old = e->elapsed;
+    if (e->flags & 1) {
+        now = func_0027CE60();
+        { unsigned long long st = e->start; e->elapsed = t; e->start = now; old += now - st; }
+    } else {
+        e->elapsed = t;
+    }
+    if (intr) func_0027BD78();
+    return old;
+}
 
 unsigned long long func_0027D470(int id) { AlarmEnt *a = (AlarmEnt *)(((unsigned int)id >> 10) << 6); if (id < 0 || (id & 0x3FF) != a->seq) return -1; if (a->flags & 1) return a->start - a->elapsed; return 0; }
 
@@ -454,7 +506,18 @@ unsigned long long func_0027D8B0(float x)
 
 int func_0027D8E8(void) { int i; D_423F00 = D_423B00; for (i = 0; i < 64; i++) D_423B00[i].next = &D_423B00[i + 1]; D_423B00[63].next = 0; return 0; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk27C020", func_0027D938);
+int func_0027D938(unsigned int id, int a, int b, FreeEnt *e)
+{
+    int r = ((int (*)(int, int, int, int))e->p[1])(((int)e << 4) | (id & 0xFE) | 1, a, b, e->p[2]);
+    if (r) return r;
+    {
+        FreeEnt *n = D_423F00;
+        D_423F00 = e;
+        e->next = n;
+        ((volatile FreeEnt *)e)->p[0] = 0;
+    }
+    return -1;
+}
 
 int func_0027D998(unsigned long long ticks, void *handler, void *arg)
 {

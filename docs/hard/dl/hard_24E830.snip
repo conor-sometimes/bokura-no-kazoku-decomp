@@ -1,0 +1,44 @@
+//@decl
+struct DlMat4 { CVec4 v[4]; };
+void Func270CA0(CVec4 *dst, void *m);
+extern "C" f32 func_0021ACA8(f32 x, f32 z);
+extern f32 D_002A6800[];
+inline s32 DlFtoI15(f32 f) {
+    s32 r;
+    asm volatile("mfc1 %0, %1\n\tqmtc2.ni %0, $vf2\n\tvftoi15.x $vf2, $vf2\n\tqmfc2.ni %0, $vf2" : "=r"(r) : "f"(f));
+    return r;
+}
+#define DL_VU_CALL(ms) asm volatile("vcallms %0" : : "i"(ms))
+#define DL_VU_MAT(p, ms) asm volatile("qmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tlqc2 $vf5, 0x10(%0)\n\tlqc2 $vf6, 0x20(%0)\n\tlqc2 $vf7, 0x30(%0)\n\tvnop\n\tvnop\n\tvcallms %1" : : "r"(p), "i"(ms))
+#define DL_VU_ROT(a, ms) do { \
+    s32 i_ = (DlFtoI15(a) >> 1) & 0x3FFF; \
+    s32 s_ = ((s32 *)D_002A6800)[i_]; \
+    s32 c_ = ((s32 *)D_002A6800)[(i_ + 0x1000) & 0x3FFF]; \
+    asm volatile("qmtc2.i %0, $vf4\n\tqmtc2.ni %1, $vf5\n\tvnop\n\tvnop\n\tvcallms %2" : : "r"(c_), "r"(s_), "i"(ms)); \
+} while (0)
+inline void DlVuStoreMat(void *p) {
+    asm volatile("vcallms 0x0\n\tqmfc2.i $0, $vf0\n\tsqc2 $vf24, 0x0(%0)\n\tsqc2 $vf25, 0x10(%0)\n\tsqc2 $vf26, 0x20(%0)\n\tsqc2 $vf27, 0x30(%0)\n\tvcallms 0x40" : : "r"(p) : "memory");
+}
+//@func 0x24E830
+extern "C" void func_0024E830(DlMat4 *out, void *src)
+{
+    DlMat4 m;
+Y:    f32 yaw, pitch;
+    Func270CA0(m.v, src);
+    m.v[0].x = 1.0f;
+    m.v[0].y = 0.0f;
+    m.v[0].z = 0.0f;
+    m.v[1].x = 0.0f;
+    m.v[1].y = 1.0f;
+    m.v[1].z = 0.0f;
+    m.v[2].x = 0.0f;
+    m.v[2].y = 0.0f;
+    m.v[2].z = 1.0f;
+    yaw = func_0021ACA8(m.v[3].x, m.v[3].z);
+    pitch = func_0021ACA8(-m.v[3].y, DlVuSqrt(m.v[3].x * m.v[3].x + m.v[3].z * m.v[3].z));
+    DL_VU_CALL(0x30);
+    DL_VU_MAT(&m, 0x50);
+    DL_VU_ROT(pitch, 0xB0);
+    DL_VU_ROT(yaw, 0xA0);
+    DlVuStoreMat(out);
+}

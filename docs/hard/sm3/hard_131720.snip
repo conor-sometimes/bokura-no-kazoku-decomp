@@ -1,6 +1,14 @@
 //@decl
 extern char D_002D5428[], D_002D5448[];
 extern void (*D_002A0A2C[][3])(CValue *a, CValue *b, CSvmWork *w);
+typedef f32 (*SvOpR0)(CValue *a, CValue *b, CSvmWork *w);
+typedef u8 (*SvOpR1)(CValue *a, CValue *b, CSvmWork *w);
+typedef s16 (*SvOpR2)(CValue *a, CValue *b, CSvmWork *w);
+typedef s64 (*SvOpR3)(CValue *a, CValue *b, CSvmWork *w);
+typedef void * (*SvOpR4)(CValue *a, CValue *b, CSvmWork *w);
+typedef CValue * (*SvOpR5)(CValue *a, CValue *b, CSvmWork *w);
+typedef int (*SvOpR6)(CValue *a, CValue *b, CSvmWork *w);
+
 // state.h's machine over CSvmWork::m_unk5A4, with this unit's copies of its literals.
 struct CSvSm {
     u16 m_flags;              // 0x00
@@ -78,7 +86,7 @@ loop:
             goto next;
         case 0x35: case 0x36: case 0x37:
             Pop12EC18(1, &a);
-            D_002A0A2C[m_unk5EC][a.m_type](&a, &a, this);
+            ((SvOpR0)D_002A0A2C[m_unk5EC][a.m_type])(&a, &a, this);
             Push12EB68(1, &a);
             goto next;
         case 0x40:

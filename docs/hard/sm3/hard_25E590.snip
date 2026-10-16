@@ -73,7 +73,7 @@ extern "C" void func_0025E590(CSndUnitU *u, const CSndPrm *prm) {
     s32 done;
     sm = &u->m_sm;
     if (u->m1D && !u->m64) {
-        sm = &u->m_sm;
+
         sm->m_depth = 0;
         sm->m_flags = 0;
         sm->m_state = 0;
@@ -124,7 +124,11 @@ loop:
                 f32 z = 0.0f;
                 SndSetVar(sm, 3, *(s32 *)&z);
             }
-            for (; sm->Get(0) < sm->Get(1); SndInc(sm)) {
+            for (;;) {
+                if (!(sm->Get(0) < sm->Get(1))) {
+                    sm->Pop(4);
+                    break;
+                }
                 s32 v3, a2, b3, c2;
                 if (sm->Get(1) == 1) {
                     v3 = sm->Get(3);
@@ -132,19 +136,22 @@ loop:
                 } else {
                     f32 a, b, c;
                     a2 = sm->Get(2);
+                    do { } while (0);
                     a = *(f32 *)&a2;
                     b3 = sm->Get(3);
+                    do { } while (0);
                     b = *(f32 *)&b3;
                     c2 = sm->Get(2);
+                    do { } while (0);
                     c = *(f32 *)&c2;
                     u->m4C = (s32)((a + (b - c) * (f32)sm->Get(0) / (f32)(sm->Get(1) - 1)) * 128.0f);
                 }
                 u->m1C = 1;
                 func_0025E438((u8 *)u, prm);
                 sm->m_state = -0xEB; done = 1; goto loop;
-    case -0xEB:;
+    case -0xEB:
+                SndInc(sm);
             }
-            sm->Pop(4);
         }
         if (u->m_num >= 0 && u->m1D && u->m1F) Func25E3B0((CSndUnitH *)u, 1);
         delete u;

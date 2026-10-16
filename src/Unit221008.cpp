@@ -428,9 +428,26 @@ extern "C" void func_002227D0(s32 a, s32 b, s32 c, s32 d) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit221008", func_00222848);
+extern "C" void func_00222848(s32 a, s32 b) {
+    u64 t;
+    PUT(0x68018000);
+    a |= 0x45;
+    t = (u64)b | ((u64)a << 32);
+    PUTD(t | ((u64)(a | 0x10) << 47) | ((u64)0xC001 << 46));
 
-INCLUDE_ASM("asm/nonmatchings/Unit221008", func_002228E8);
+    PUT(0x412);
+    PUT((b << 16) | 0x6E00C001);
+}
+
+extern "C" void func_002228E8(s32 a, s32 b) {
+    u64 t;
+    PUT(0x68018000);
+    a |= 0x44;
+    t = (u64)b | ((u64)a << 32);
+    PUTD(t | ((u64)(a | 0x10) << 47) | ((u64)0xC001 << 46));
+    PUT(0x412);
+    PUT((b << 16) | 0x6E00C001);
+}
 
 extern "C" void func_00222988(u8 a, u8 b, u8 c, u8 d) {
     PUTB(a);

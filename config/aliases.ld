@@ -432,3 +432,4 @@ __8CSndWork = 0x0025C230; /* func_0025C230 (sound object ctor), CInterfMgr membe
 _$_8CSndWork = 0x0025C2C0; /* func_0025C2C0 (sound object dtor), CInterfMgr members (lane lb) */
 _vt$7DlRUnit = 0x002C2518; /* = _vt$13CResCacheUnit: view class of ~CResCacheUnit 0x24FAF0 (lane dl) */
 _vt$6DlTagB = 0x002BFFC0; /* = _vt$8CListTag: inline-dtor view of CListTag for ~CResCacheUnit (lane dl) */
+D_38EF50 = 0x0038EF50; /* lane gb: .bss word before D_38EF54 (Unit23E868 0x23FCB8) */

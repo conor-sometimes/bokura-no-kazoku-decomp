@@ -1,0 +1,36 @@
+//@func 0x22AE58
+extern "C" Bk *func_0022AE58(Bk *b, u32 n) {
+    u32 rest;
+    Nd *nd;
+    Bk *bd;
+    Bk *t;
+    u8 *e;
+    HeapX *h;
+    rest = b->m8;
+    rest -= n;
+    if (rest < 16 || n < 16) return b;
+    nd = func_0022BF70(b->m0->mC);
+    {
+        u32 nm = n & 0x0FFFFFFF;
+        bd = b + 1;
+        if (!nd) return b;
+        t = (Bk *)((u8 *)b + rest);
+        b->m8 = rest;
+        t->m8 = n;
+        t->mC = (b->mC & 0xF0000000) | nm;
+    }
+    t->m4 = b->m8;
+    {
+        Nd *o = b->m0;
+        t->m0 = o;
+        o->m0 = t + 1;
+    }
+    b->m0 = nd;
+    nd->m0 = bd;
+    b->mC = 0x40000000;
+    func_0022B9F0(nd);
+    h = nd->mC;
+    e = (u8 *)t + t->m8;
+    if (e < h->m28 + h->m2C) ((Bk *)e)->m4 = t->m8;
+    return t;
+}

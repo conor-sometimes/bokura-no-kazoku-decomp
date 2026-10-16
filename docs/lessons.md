@@ -1261,6 +1261,45 @@ end:;
   literals below the table before it, D_002D5B98 after it), every moved symbol given
   force_not_migration in config/rodata_syms.txt so splat keeps them as files; matched in one build
   (scratch build/bk/sm3/romove.py). The compiled jump table landed 16-aligned by itself. *(bokura)*
+- **Two identical call tails that retail did not cross-jump**: find_cross_jump gives up on a pair of
+  CALL_INSNs whose patterns or CALL_INSN_FUNCTION_USAGE differ, so the two calls had different
+  signatures in retail. CSvmWork 0x131720's binary- and unary-op table calls stayed separate with one
+  of them called through an `f32`-returning view of the table (an `int` view also separates them but
+  puts the function pointer in `$2`): DIFF 214 to 15. Try the return type (void/int/f32) and the
+  argument count of one copy before `asm volatile` tricks. *(bokura)*
+- **Where loop.c puts a moved exit block decides the layout; aim it with the goto target**
+  (loop.c find_and_verify_loops: a block `if (c) { ...; goto L; }` that leaves its loop goes to the
+  nearest BARRIER *before L whose insn is in L's loop* (uid_loop_num equal; -1 = no loop), else after
+  L). CMenuSysscr27::Update (0x1A8EE8, 578 insns) matched from a first draft at DIFF 538 once:
+  every state sits in a loop (`do { case L: ... yield; } while (0)` with all its yields inside, the
+  last one as the last statement, or `for (;;) { case L: if (!c) break; ...; yield; }` for retail's
+  rotated "then-block before the test" states), so the only barriers outside loops are the few
+  yields retail has at the top level; an exit that retail places *before* a later state's code
+  jumps to a label after its own loop (`goto y124;` with `y124: yield -0x124;` after the next loop:
+  the block lands after the previous top-level yield), and a block shared by several states
+  (`advance:`) sits right after the preceding loop, without an `if (0)` (whose jump is a barrier
+  outside any loop and attracts the moved blocks). Yield blocks moved this way vanish (cross-jumped
+  and threaded into `bxx c, tail; li state`). Then: unused `int` results of non-virtual calls through
+  a `void` view (Check2To3: fixed a `$2`/`$3` swap), the Pop(4)/SetMode1 order (next item), and
+  Release1A8DC0 (a CMenuSysscr31 method retail compiled in the same .cpp) `throw()` for the entry
+  test's `bne`. *(bokura)*
+- **Loop notes are scheduling barriers: `do { } while (0);` instead of `asm volatile("")`**. haifa-sched
+  (sched_analyze_insn) flushes its dependence lists at a NOTE_INSN_LOOP_BEG/END inside a block, so an
+  empty `do { } while (0);` keeps later loads below earlier stores exactly like an empty asm, and
+  it is plausible source (a state.h macro remnant). After `sm->Pop(4);` it gave retail's `addiu; sh;
+  jal SetMode1; lw $4` in CMenuChildStatus 0x18A548 and CMenuSysscr27 0x1A8EE8 (where the asm had
+  slipped in); wrapping the Pop itself (`do { sm->Pop(4); } while (0);`) does not work. The
+  CMenuMemorial-style "needs asm volatile after Pop(4)" notes are probably this. *(bokura)*
+- **`bk port` also runs the standalone test** (the snippet without the unit's other functions): a
+  function whose callees are defined earlier in the unit (nothrow there, may-throw standalone) can be
+  MATCH in utest and refused by port. Port by hand then (scratch build/bk/sm3/mport.py: decls before
+  `// @decl-end`, body in place of the INCLUDE_ASM) and let mk.sh decide. *(bokura)*
+- **The fade wall was loop notes**: retail's `m_depth` reload after each stack-temp store in the
+  Push(4) fade frames (0x25E590) comes back with `do { } while (0);` after each `x = Get(k);` (cse's
+  extended block ends at loop notes, haifa-sched treats them as barriers), and the exit Pop reuses the
+  loop test's depth when it sits inside the loop (`if (!(...)) { Pop(4); break; }`). DIFF 195 to 7.
+  The same barrier replaced asm volatile in two menu Updates; state.h probably wraps steps in
+  do/while macros. *(bokura)*
 ### Finds
 ## lb (structural blockers, 2026-10-16)
 - **A function-static (or file-static) const table comes after the object's RTTI names**: CMiniGame4Res's
@@ -1474,3 +1513,68 @@ end:;
   made when their declaration is expanded. *(bokura)*
 - **`return f(...)` on a void callee** in a void C++ function is how retail gets the sibcall `j f`
   with the frame popped first (0x247FA8's single-row case). *(bokura)*
+- **`lh` vs `lhu` before an `andi 1`**: storing `c->m14 & 1` into an s16 field let GCC narrow the load to
+  `lhu`; retail's `lh` comes from the value read into an int local first (`s32 odd = c->m14; c->m4 = odd & 1;`,
+  the same spelling the matched 0x23FB60 uses). A packet function that returns the advanced pointer keeps it in
+  the parameter's register when the source assigns the parameter (`p = D_38EF54; ... return p;`) (0x23FCB8). *(bokura)*
+- **A null test kept twice around a free** (`beqz buf` at the top and again before the `jalr` free): the free is an
+  inline `FreeIf(p) { if (p) D_002B91B0(p); }` called after the `if (buf) {...}` block, not inside it (0x173578).
+  A callee whose caller ignores the result can still return one: retail's `daddu $2,$18` at the end meant
+  `s32 func_00173578`, and changing the caller's extern from void kept CMapDBMgr::Func173050 identical. *(bokura)*
+- **`dsll32; dsra32` on a 32-bit argument** (sign-extending truncation) is a `long` (64-bit on the EE) value
+  passed to an `s32` parameter: `long sz = n + 0x1F; func_0022AD68(b, sz & ~0xF);` (the add stays `addiu`,
+  the and is DImode, the call truncates); `(long)n + 0x1F` gives `daddiu` (0x22AAF8). *(bokura)*
+- **A difference computed straight into its register** (`lw $20, 8(b); subu $20, $20, n`) is a variable
+  assigned twice (`rest = b->m8; rest -= n;`); `u32 rest = b->m8 - n;` gets its own temp and shifts every
+  s-register (0x22AD68, also its twin 0x22AE58). A field stored twice through a pointer (`t->m0 = b->m0;
+  b->m0->m0 = ...`) reloads b->m0 under -fno-strict-aliasing; retail's single load is a local `Nd *o = b->m0;`. *(bokura)*
+- **utest's "rest of unit differs" is also how the GNU as lui bug shows up**, and the fix can move:
+  after 0x24E560 went in, the old `asm(".p2align 3")` before 0x24F1F0 stopped working; one before
+  the new function (the first code that changed) fixed it. A small script that tries the directive
+  before each candidate function and runs mk.sh (build/bk/dl/p2try.sh) finds the spot in minutes;
+  luibug.py did not recognise this instance. *(bokura)*
+- **Two identical tail calls in the source, one jal in retail**: an early `if (same) { f(out, a);
+  return; }` and a later `if (t < 0) f(out, a);` cross-jump into one call; the early copy keeps its
+  arguments in the parameter registers, which is why retail's first path sets nothing before the
+  shared `jal` (0x24E560). Writing it as one shared `goto` target instead copies `out` to a saved
+  register. *(bokura)*
+- **A result variable kept in a saved register through the error exits** (`daddu $20,$0,$0` in the prologue,
+  `b end; daddu $2,$20` after each error print) is `s32 ok = 0; ... goto end; ... ok = 1; print; end: return ok;`;
+  `return ok;` at each error site lets GCC fold the 0 (CChrBodyWin 0x187D68, DIFF 7 before). *(bokura)*
+- **`&local` arguments inside loops** are expanded through force_operand into a pseudo, which gcse's PRE hoists
+  out of the loop; retail recomputes `addiu $a2, $sp, 4` before each call in a few rxMc/rxsnd loops (HARD.md
+  ## gb, stack-address family). `-fno-gcse` reproduces those loops but nothing at source level found yet. *(bokura)*
+- **GIF tag words whose constants did not fold** (`ori $4,$4,0x45; ori $2,$4,0x10; dsll32 $4; dsll32 $2,$2,15`):
+  the matched sibling 0x2271E8 had the shape: OR the parameter in place, build part of the u64 in a temp, then
+  the rest in the PUTD argument: `a |= 0x45; t = (u64)b | ((u64)a << 32); PUTD(t | ((u64)(a | 0x10) << 47) |
+  ((u64)0xC001 << 46));`. Every single-expression form folds `(a | 0x45) | 0x10` into `a | 0x55`. Five old
+  HARD entries matched at once (0x222848, 0x2228E8, 0x220278, 0x220318, 0x2200C8): look for a matched sibling
+  before fighting a fold. *(bokura)*
+- **"Not tried" entries are cheap**: CDiffMotion/archive/heap functions marked "not tried" in older HARD lists
+  (0x2288A0) matched on the first draft; check those before the heavily-tried near misses. *(bokura)*
+- **LCG pairs: `u32 r = Next() << 16; r |= Next(); ... r & 0xFFFF`** with `Next()` returning
+  `(seed >> 12) & 0xFFFF` keeps retail's `or` + `andi` (0x24D8D8); one expression folds the high half
+  away. The same inline under a `fix >= 0 ? fix : Rand(...)` ternary matched the int range 0x297CA0
+  (its float twin 0x297D20 had shown the shape). Look for an already matched sibling first. *(bokura)*
+- **An asm reading `$gp` with a `"memory"` clobber** gives retail's reload of the table pointer before
+  the gp store (sceSifAddCmdHandler-like 0x2752D0); without it the address is CSE'd. *(bokura)*
+- **A store kept out of a delay slot and a second epilogue copy** came from a volatile store
+  (`((volatile FreeEnt *)e)->p[0] = 0;`, 0x27D938), as w2 found for the alarm code. *(bokura)*
+- **Load-before-store order with strict aliasing**: 0x27D3A0 matched once the u64 `e->start` was read
+  into a local before storing `e->elapsed` (same type, so the compiler may not reorder them). *(bokura)*
+- **Find siblings by opcode sequence**: comparing each unmatched function's opcode sequence (op/funct only,
+  registers and immediates ignored) with every matched function's (difflib ratio, length within 30%) turned up
+  exact twins of old HARD entries: 0x21E860 is 0x221128 with other globals, the six Unit21BEC0 GS writers
+  (0x21C7C8..0x21CCB0) are 0x21CA68/0x21CAD8/0x21F088/0x21F108 with other constants (the matched siblings use
+  `u32 v = D_33D6F0 + k; PUT(v | 0x14000000);`, which the old notes had not tried). Script: build/bk/gb/sib.py
+  (scratch). *(bokura)*
+
+### Finds (dl)
+- **Duff's device in the XAP archive decoder** (0x249958, Dk2497C0): the LZ decompressor copies long
+  matches with an 8-way unrolled `switch (n & 7)` falling into a `do { ... } while` loop, the
+  classic Duff's device, in a game's resource loader.
+- **The full-width digit writer stores its minus sign even with a NULL buffer** (0x24BA08): every digit
+  store checks `if (buf)`, the SJIS minus `0x817C` for negative numbers does not.
+- **A heap-usage overlay in dklib** (0x248298, 0x248760 family): debug code draws each memheap block as
+  a coloured bar (allocated blocks one colour, the first/last free node highlighted), a leftover
+  memory visualiser.

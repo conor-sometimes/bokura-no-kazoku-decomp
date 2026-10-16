@@ -382,6 +382,59 @@ extern "C" void CtorChrSchoolWin(void *p, s32 k) asm("__13CChrSchoolWini");
 extern "C" void CtorStatusSub(void *p, s32 k) asm("Init19AC20__20CStatusBaseSub19AE68i");
 extern "C" void func_00187038(void *p);
 extern char D_002DB3D8[];
+
+int Func235DE0(const char *fmt, ...) throw();
+struct CChrBodyTex { void *m_data; s32 m_unk4, m_unk8, m_unkC, m_unk10, m_unk14, m_unk18, m_unk1C, m_unk20; };
+void *Func248E48(const char *name);
+extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+extern char D_002DB228[], D_002DB250[], D_002DB270[];
+#include "state.h"
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual int V7(s32 *a, s32 *b, s32 *c);
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14(s32 v);
+};
+extern CSndIf *D_002A5468;
+class CStatusWinV {
+public:
+    void Select1A01C8(s32 k) asm("Select1A01C8__10CStatusWini");
+    void SetUnk4C(u32 v) asm("SetUnk4C__10CStatusWinUi");
+    void ItemFunc1A3628() asm("ItemFunc1A3628__10CStatusWin");
+    s32 GetItemState2() asm("GetItemState2__10CStatusWin");
+    void ItemStart() asm("ItemStart__10CStatusWin");
+    void Update1A03E8() asm("Update1A03E8__10CStatusWin");
+};
+extern "C" void CsStatusWinCtor(void *p) asm("__10CStatusWin");
+s32 Func1855B0(s32 *out);
+extern "C" void func_001895F8(void *p);
+class CBgTarget;
+typedef int (CBgTarget::*BgFn)();
+extern "C" void func_002457A0(CBgWork *bg, void *obj, BgFn f, s32 x);
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
+struct CChrBodyWinM48 {
+    u8 pad0[0x48];
+    s32 m48;
+};
+#define BODY ((CChrBodyWin *)m_unk64)
+#define BODYV ((CChrBodyWinM48 *)m_unk64)
+#define WIN ((CStatusWinV *)m_unk68)
+#define IDS ((s32 *)pad70)
+#define M8C (*(s32 *)pad8C)
 // @decl-end
 
 int CChrBodyWin::GetFlag187610(s32 id, s32 k) {
@@ -475,7 +528,32 @@ int CChrBodyWin::CallFunc1091B0(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", Func187A68__11CChrBodyWinPciii);
 
-INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", Func187D68__11CChrBodyWiniii);
+int CChrBodyWin::Func187D68(s32 i, s32 f, s32 k) {
+    char buf[0x100];
+    s32 ok = 0;
+    void *d;
+    CChrBodyTex *t;
+    if ((u32)i >= 6) {
+        Func235DE0(D_002DB228, i);
+        goto end;
+    }
+    Func187A68(buf, i, f, k);
+    d = Func248E48(buf);
+    if (!d) {
+        Func235DE0(D_002DB250, buf);
+        goto end;
+    }
+    if (k == 1) t = (CChrBodyTex *)&m_ent[i].m28;
+    else t = (CChrBodyTex *)&m_ent[i].m4;
+
+    t->m_data = d;
+    func_00253048(d, &t->m_unk4, &t->m_unk8, &t->m_unkC, &t->m_unk10, &t->m_unk14, &t->m_unk18, &t->m_unk1C, &t->m_unk20);
+    if (t->m_unk1C > 0x10) func_0023C048(t->m_unk1C * t->m_unk20, t->m_unk14, t->m_unk14);
+    ok = 1;
+    Func235DE0(D_002DB270, i, buf, d);
+end:
+    return ok;
+}
 
 int CChrBodyWin::Func187ED0(s32 k) {
     CChrBodySub *e;
@@ -1035,10 +1113,189 @@ CMenuChildStatus::~CMenuChildStatus() {
     func_0018A410(this);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB4D8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB4E0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuChildStatus", D_002DB500);
-INCLUDE_ASM("asm/nonmatchings/CMenuChildStatus", Update__16CMenuChildStatus);
+void CMenuChildStatus::Update() {
+    CStateMachine *sm;
+    sm = (CStateMachine *)this;
+    s32 a, b, c;
+    s32 done;
+    s32 i;
+    if (m_state == 6) {
+        ((CChrBodyWinSub18A410 *)this)->Close();
+        m_state = 5;
+        m_unk4C = -1;
+        goto end;
+    }
+    done = 0;
+    D_002A5468->V7(&a, &b, &c);
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        m_state = 0;
+        m_unk6C = (void *)Func1855B0(IDS);
+        for (i = 0; i < (s32)m_unk6C; i++) func_00185868(IDS[i], 0, 5);
+        D_002A4308->Clear1884B0();
+        ((CChrBodyWinSub188748 *)D_002A4308)->SetUnk380(1);
+        for (i = 0; i < (s32)m_unk6C; i++) D_002A4308->Open(IDS[i]);
+        m_state = 1;
+        func_002457A0(&m_bg, D_002A4308, (BgFn)&CChrBodyWin::Func1889F8, 0);
+        while (func_00245818(&m_bg, 0)) {
+            sm->m_state = -0xB5; done = 1; goto loop;
+    case -0xB5:;
+        }
+        {
+            void *p = operator new(0x84);
+            ((CChrBodyWin *)p)->Init189018(0);
+            m_unk64 = p;
+        }
+        {
+            void *p = operator new(0x84);
+            CsStatusWinCtor(p);
+            m_unk68 = p;
+        }
+        m_unk88 = 0;
+        BODY->Set189348(1, 0);
+        ((CChildStatusObj *)m_unk64)->SetChild1893A0(IDS[m_unk88]);
+        WIN->SetUnk4C(0);
+        WIN->Select1A01C8(IDS[m_unk88]);
+        WIN->ItemFunc1A3628();
+        sm->Push(4);
+        SetVar(sm, 1, 6);
+        SetVar(sm, 0, 0);
+        {
+            f32 z = 0.0f;
+            SetVar(sm, 2, *(s32 *)&z);
+        }
+        {
+            f32 o = 1.0f;
+            SetVar(sm, 3, *(s32 *)&o);
+        }
+        for (; sm->Get(0) < sm->Get(1); Inc(sm)) {
+            sm->m_state = -0xC9; done = 1; goto loop;
+    case -0xC9:;
+        }
+        sm->Pop(4);
+        do { } while (0);
+        BODY->SetMode1();
+        m_state = 3;
+        do {
+    case -0xD6: {
+            s32 k;
+            k = WIN->GetItemState2();
+            if (k != 2) {
+                sm->m_state = -0xD6; done = 1; goto loop;
+            }
+            if (BODYV->m48 == k) goto yDA;
+            sm->m_state = -0xD6; done = 1; goto loop;
+        }
+        } while (0);
+    yDA:
+        sm->m_state = -0xDA; done = 1; goto loop;
+    case -0xDA:
+        M8C = 0;
+        do {
+    case -0xF0:
+            if (a & 0x20) {
+                D_002A5468->V14(3);
+                BODY->SetMode5();
+                goto y112;
+            }
+            if (a & 0x40) {
+                D_002A5468->V14(3);
+                goto s4;
+            }
+            M8C++;
+            if (D_002A4B60->Func1091B0(0x21) < M8C) {
+                sm->m_state = -0xF5; done = 1; goto loop;
+            }
+            sm->m_state = -0xF0; done = 1; goto loop;
+        } while (0);
+    case -0xF5:
+        m_state = 2;
+        BODY->Check2To3();
+        sm->m_state = -0xFB; done = 1; goto loop;
+        for (;;) {
+    case -0xFB:
+    case -0x10B:
+            if (BODYV->m48 != 3) break;
+            if (a & 0x20) {
+                D_002A5468->V14(3);
+                BODY->Check3To4();
+            } else if (a & 0x40) {
+                D_002A5468->V14(3);
+                goto s4;
+            }
+            sm->m_state = -0x10B; done = 1; goto loop;
+        }
+    y112:
+        m_state = 3;
+        sm->m_state = -0x112; done = 1; goto loop;
+    case -0x112:
+        M8C = 0;
+        do {
+    case -0x126:
+            if (a & 0x20) {
+                D_002A5468->V14(3);
+                goto y12A;
+            }
+            if (a & 0x40) {
+                D_002A5468->V14(3);
+                goto s4;
+            }
+            M8C++;
+            if (D_002A4B60->Func1091B0(0x23) < M8C) goto y12A;
+            sm->m_state = -0x126; done = 1; goto loop;
+        } while (0);
+    y12A:
+        sm->m_state = -0x12A; done = 1; goto loop;
+    case -0x12A:
+        if (++m_unk88 >= (s32)m_unk6C) {
+            M8C = 0;
+            goto s146;
+        }
+        WIN->Select1A01C8(IDS[m_unk88]);
+        ((CChildStatusObj *)m_unk64)->SetChild1893A0(IDS[m_unk88]);
+        goto yDA;
+        for (;;) {
+    case -0x146:
+    s146:
+            if (!(M8C++ < D_002A4B60->Func1091B0(0x25))) break;
+            if (a & 0x20) {
+                D_002A5468->V14(3);
+                goto s4;
+            }
+            if (a & 0x40) {
+                D_002A5468->V14(3);
+                goto s4;
+            }
+            sm->m_state = -0x146; done = 1; goto loop;
+        }
+    s4:
+        m_state = 4;
+        WIN->ItemStart();
+        BODY->SetMode2();
+    case -0x156:
+        if (WIN->GetItemState2() != 0) {
+            sm->m_state = -0x156; done = 1; goto loop;
+        }
+        if (BODYV->m48 == 0) goto e5;
+        sm->m_state = -0x156; done = 1; goto loop;
+    e5:
+        m_state = 5;
+        sm->m_state = -0x15B;
+    case -0x15B:
+        done = 1; goto loop;
+    }
+out:
+    if (m_unk68) WIN->Update1A03E8();
+    if (m_unk64) func_001895F8(m_unk64);
+end:;
+}
+
 
 s32 CMenuChildStatus::Draw() {
     if (m_unk64 == 0) {

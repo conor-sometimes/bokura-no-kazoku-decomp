@@ -149,6 +149,11 @@ struct W2Lt {
     s32 mA0;
     f32 mB0[4] __attribute__((aligned(16)));
 };
+struct DlV4 { f32 x, y, z, w; };
+inline void DlVuSub3(DlV4 *d, DlV4 *a, DlV4 *b) {
+    asm volatile("lqc2 $vf4, 0x0(%1)\n\tlqc2 $vf5, 0x0(%2)\n\tlqc2 $vf6, 0x0(%1)\n\tvsub.xyz $vf6, $vf4, $vf5\n\tsqc2 $vf6, 0x0(%0)" : : "r"(d), "r"(a), "r"(b) : "memory");
+}
+inline f32 DlVuSqrtB(f32 x) { f32 r; asm volatile("mfc1 $8, %1\n\tqmtc2.ni $8, $vf2\n\tvsqrt Q, $vf2x\n\tvwaitq\n\tcfc2.ni $8, $vi22\n\tmtc1 $8, %0" : "=f"(r) : "f"(x) : "$8"); return r; }
 // @decl-end
 
 extern "C" CMapAttrLightPos *func_00294A60(TArrB *a, CMapAttrLightPos *p, s32 n) {
@@ -478,7 +483,11 @@ extern "C" void *__tf18CMapEffCurtainWork(void) {
 // CMapEffCurtainWork[1]
 extern "C" s32 func_002958A0(u8 *p, s32 id) { return id == -100; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib294A60", func_002958B0);
+extern "C" f32 func_002958B0(u8 *p, DlV4 *d, DlV4 *a, DlV4 *b)
+{
+    DlVuSub3(d, a, b);
+    return DlVuSqrtB(d->x * d->x + d->y * d->y + d->z * d->z);
+}
 
 extern "C" void *__tf15CMapEffLeafWork(void) {
     if (*(s32 *)D_424760 == 0) {

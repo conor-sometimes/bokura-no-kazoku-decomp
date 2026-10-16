@@ -89,6 +89,7 @@ typedef int (CSvmHost::*CSvmCallback)(CSvmWork *w, int a, int b);
 class CSvmWork {
 public:
     CSvmWork();
+    int Func131720();
     virtual ~CSvmWork();
     int Callback130048(int a, int b);
     f32 SlotAsFloat(s32 i, f32 def);

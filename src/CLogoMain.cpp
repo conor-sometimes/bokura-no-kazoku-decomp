@@ -29,10 +29,10 @@ public:
     CMemTex m_tex2C;          // 0x2C
     CMemTex m_tex58;          // 0x58
     CStateMachine m_sm;       // 0x84
-    u8 padCC[0x4];
+    s32 m_unkCC;              // 0xCC
     struct CLogoTex *m_texD0; // 0xD0
     f32 m_unkD4;              // 0xD4
-    u8 padD8[0x4];
+    s32 m_unkD8;              // 0xD8
 };
 
 class CUnk237E90 {

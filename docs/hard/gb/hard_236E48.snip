@@ -1,0 +1,16 @@
+//@decl
+extern s32 D_379AA0;
+extern u32 D_379BF4[][80];
+//@func 0x236E48
+extern "C" void func_00236E48(char c)
+{
+    u8 ch = c;
+    if (ch != '\n') {
+
+        u32 color = D_379AA0 & 0xFFFFFF;
+        s32 o = D_379A9C * 320;
+        *(u32 *)((u8 *)D_379BF4 + (D_379A98 * 4 + o)) = (ch << 24) | color;
+        if (++D_379A98 < 75) return;
+    }
+    return func_00236DB0();
+}

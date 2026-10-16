@@ -1,0 +1,28 @@
+//@decl
+extern "C" int strcmpNT(const char *a, const char *b) throw() asm("strcmp");
+struct CNameTbl113368 { s32 m_num; u8 pad4[0xC]; const char *m_name[1]; };
+//@func 0x113368
+s32 Func113368(s32 i, s32 v) {
+    CNameTbl113368 *t;
+    s32 j;
+    u8 *e;
+    if (i >= 0) {
+
+        e = D_002A5D0C + i * 52;
+        if (!e) goto fail;
+        t = *(CNameTbl113368 **)(e + 0x10);
+        if (t == 0) return -1;
+        j = 0;
+        if (t->m_num > 0) goto test;
+        return -1;
+    loop:
+        if (strcmp(t->m_name[j], (const char *)v) == 0) goto found;
+        j++;
+    test:
+        if (j < t->m_num) goto loop;
+    }
+fail:
+    return -1;
+found:
+    return j;
+}

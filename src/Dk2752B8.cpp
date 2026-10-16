@@ -125,7 +125,21 @@ typedef struct Y1CQs { int m0, m4; void * m8; } Y1CQ;
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002752D0);
+void func_002752D0(int cid, void *func, void *data)
+{
+    void *gp;
+    if (cid & 0x80000000) {
+        D_41D198_h.mC[cid & 0x7FFFFFFF].func = func;
+        D_41D198_h.mC[cid & 0x7FFFFFFF].arg = data;
+        asm volatile("move %0, $28" : "=r"(gp) : : "memory");
+        D_41D198_h.mC[cid & 0x7FFFFFFF].gp = gp;
+    } else {
+        D_41D198_h.m14[cid].func = func;
+        D_41D198_h.m14[cid].arg = data;
+        asm volatile("move %0, $28" : "=r"(gp) : : "memory");
+        D_41D198_h.m14[cid].gp = gp;
+    }
+}
 
 void func_00275348(int n)
 {

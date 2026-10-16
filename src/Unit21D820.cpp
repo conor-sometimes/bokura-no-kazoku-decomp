@@ -124,6 +124,17 @@ s32 Func235DE0(const char *fmt, ...);
 extern char D_002C5200[], D_002C82E8[], D_002C8300[], D_002CAE78[];
 extern const char D_002E3D18[], D_002E3D38[], D_002E3D58[], D_002E3D70[], D_002E3D88[], D_002E3DA0[], D_002E3DB8[];
 extern const char D_002E3DD0[], D_002E3DE8[], D_002E3E00[], D_002E3E18[], D_002E3E30[], D_002E3E48[], D_002E3E60[];
+
+inline u32 *PutW(u32 v) { u32 *p = D_002B94E4; D_002B94E4 = p + 1; *p = v; return p; }
+inline u32 *PutQW(u64 hi, u64 lo) {
+    u32 *q = D_002B94E4;
+    D_002B94E4 = q + 4;
+    q[0] = lo;
+    q[1] = lo >> 32;
+    q[2] = hi;
+    q[3] = hi >> 32;
+    return q;
+}
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D18);
 INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D38);
@@ -370,7 +381,11 @@ extern "C" s32 func_0021E838(void) {
     return Func238158((void *)func_002377D8(), 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit21D820", func_0021E860);
+extern "C" void func_0021E860(void) {
+    D_002B8A98 = 0;
+    D_33DB80 = PutW(0x6C008000);
+    D_33DB84 = PutQW(0xE, 0x1000000000000000);
+}
 
 extern "C" void func_0021E8C0(void) {
     *D_33DB80 |= (D_002B8A98 + 1) << 16;

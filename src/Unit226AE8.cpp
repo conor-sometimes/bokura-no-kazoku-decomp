@@ -300,7 +300,33 @@ extern "C" s32 func_00227688(void) {
     return 0x30;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_00227690);
+extern "C" void func_00227690(s32 a, u32 b, u32 c, s32 d, s32 e) {
+    u64 t;
+    D_002B8C1C = func_002275A8;
+    func_00226ED0(1);
+    if ((D_33DE9C == 0 || D_33DE9C == b) && (D_33DEAC == 0 || D_33DEAC == a)
+        && D_33DEB8 + D_33DEA4 + D_33DEA8 < 0x35 - d
+        && d * 3 + 1 < 0x91 - (D_33DEA4 + D_33DEA8 * 3) - D_33DEB8) {
+    } else {
+        D_002B8C1C();
+    }
+    D_33DEA0 = c;
+    D_33DE9C = b;
+    D_33DEAC = a;
+    D_002B8C20 = d;
+    PUT((D_33DEB8 + D_33DEA4 + D_33DEA8) | 0x68018000);
+    if (e) e = 0x8000;
+    t = (u64)d | ((u64)a << 32);
+    PUTD(t | ((u64)a << 47) | ((u64)0xC001 << 46));
+    if (a & 0x10) PUT(e | 0x412);
+    else PUT(e | 0x41F);
+    {
+        u32 v = (D_33DEB8 + (D_33DEA8 + D_33DEA4) + 1) | 0xC000;
+        PUT(v | (d << 16) | 0x6E000000);
+    }
+    D_33DEA8 += d;
+    D_33DEA4++;
+}
 
 extern "C" void func_00227900(s32 a, s32 d) {
     return func_00227690(a | 2, MSADDR(D_002CEFA0), MSADDR(D_002CEF78), d, 0);
@@ -567,7 +593,26 @@ extern "C" void func_00228658(u8 *base) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_00228710);
 
-INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_002288A0);
+asm(".p2align 3");
+extern "C" s32 func_002288A0(char *name) {
+    s32 i;
+    s32 r;
+    char c;
+    if (D_33F600[TID] >= D_33F608[TID]) return 0;
+
+    D_33F600[TID]++;
+    i = 0;
+    do {
+        c = D_33F5F0[TID][i];
+        name[i] = c;
+        i++;
+    } while (c);
+
+    D_33F5F8[TID] = *(s32 *)(D_33F5F0[TID] + 0x1C);
+    r = *(s32 *)(D_33F5F0[TID] + 0x18);
+    D_33F5F0[TID] += 0x20;
+    return (s32)(D_33F5E8[TID] + r);
+}
 
 extern "C" s32 func_002289E8(u8 *p) {
     return (p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];

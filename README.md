@@ -1,19 +1,19 @@
 # Bokura no Kazoku decomp
 
 <!-- status:begin -->
-![functions](https://img.shields.io/badge/functions-6371%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-49.5%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
+![functions](https://img.shields.io/badge/functions-6404%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-50.1%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
 
 Progress, 2026-10-16 (functions in C; the rest is still INCLUDE_ASM):
 
 | | Progress | |
 |---|---|---|
-| **Functions** | `██████████████████████░░░` | 6,371 / 7,223 (88.2%) |
-| **Code bytes** (`.text`, 1.70 MB) | `████████████░░░░░░░░░░░░░` | 841.3 KB / 1700.4 KB (49.5%) |
-| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `██████████░░░░░░░░░░░░░░░` | 1,975 / 2,303 functions, 39.8% of bytes |
-| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `█████████████░░░░░░░░░░░░` | 1,943 / 2,264 functions, 51.3% of bytes |
-| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `████████████████░░░░░░░░░` | 1,308 / 1,483 functions, 64.8% of bytes |
-| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `███████████████████████░░` | 1,145 / 1,169 functions, 91.0% of bytes |
-| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 852 |
+| **Functions** | `██████████████████████░░░` | 6,404 / 7,223 (88.7%) |
+| **Code bytes** (`.text`, 1.70 MB) | `█████████████░░░░░░░░░░░░` | 851.6 KB / 1700.4 KB (50.1%) |
+| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `██████████░░░░░░░░░░░░░░░` | 1,979 / 2,303 functions, 40.3% of bytes |
+| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `█████████████░░░░░░░░░░░░` | 1,960 / 2,264 functions, 52.2% of bytes |
+| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `████████████████░░░░░░░░░` | 1,318 / 1,483 functions, 65.4% of bytes |
+| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `███████████████████████░░` | 1,147 / 1,169 functions, 91.2% of bytes |
+| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 819 |
 
 Build: Sony EE-GCC 2.96 for the game; parts of dklib and the Sony SDK were built with older
 SDK compilers (ee-gcc 2.9-991111 and -01), set per unit ([docs/compiler.md](docs/compiler.md)).
