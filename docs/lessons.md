@@ -913,7 +913,126 @@ end:;
 - **state.h's stack**: `Push(n)`/`Pop(n)`, `Var(k)`/`Get(k)` (k-th slot below the top); a value stored
   into a slot is evaluated before the check, so store through an inline `SetVar(sm, k, v)`; a return
   state kept across calls is an inline function's parameter (`SmCall(sm, -0x7A)`).
+- **A loop exit that `break`s and then pops** (CMenuMemorial/CMenuNews `if (a & 0x60) { Play(3); break; }`
+  before `Pop(4)`): write the pop in both places, `{ Play(3); sm->Pop(4); goto s4; } ... } sm->Pop(4); s4:`.
+  cse2 then reuses the loop test's file pointer in each copy (one block each, no label in between) and
+  jump2's cross-jumping merges the copies into retail's `b pop; lhu $5` with the check's `bnel` and the
+  file pointer in a register (`daddu $6,$19`); one shared Pop reached by a label recomputes the
+  pointer and the depth store moves after `m_state = 4`. *(bokura)*
+- **loop.c moves exit blocks out of C loops** (find_and_verify_loops): inside a `do`/`while`/`for`, a
+  block `if (c) { ...; goto L; }` whose jump leaves the loop and that sits between a conditional jump and
+  that jump's label is moved to the nearest BARRIER before L that is at L's loop depth (else after L).
+  That is where retail's "out of place" blocks come from: CMenuSub1A7658::Update1A73B0's cancel block
+  (`Play(2); m58 = -1; goto sel;`) sits in the switch's compare tree because the -0xE5/-0x105 code is
+  one `do { yield -0xE5; case -0xE5: ...; if (!(m4C & 0x10)) { cancel } yield -0x105; } while (0);`
+  (barriers inside loops do not count, so it lands after the dispatch's `b out`). A yield
+  `if (!c) { yield }` is such a block too (it jumps to `loop:`), unless it is the last statement of the
+  loop body (its skip label then merges with the loop's exit label: mark_jump_label skips LOOP_END notes).
+  A moved yield (a) is no longer marked PROB_VERY_LIKELY by estimate_probability's first pass and (b)
+  gives reorg a `li state` to steal: retail's `bne c, tail; li state` with the continuation inline
+  (CMenuSysscr26's -0x1EC wait: `do { case L: if (!c) yield; if (!d) yield2; } while (0);`).
+- **Label alignment**: final aligns (`.p2align 3`) every label that follows a BARRIER and the first
+  CODE_LABEL after a NOTE_INSN_LOOP_BEG, even past real insns, so where a `do {` starts decides which
+  label gets a nop before it (start it at a case label that retail has 8-aligned).
+- **A loop exit that `break`s and then pops** (CMenuMemorial/CMenuNews `if (a & 0x60) { Play(3); break; }`
+  before `Pop(4)`): write the pop in both places, `{ Play(3); sm->Pop(4); goto s4; } ... } sm->Pop(4); s4:`.
+  cse2 then reuses the loop test's file pointer in each copy and jump2's cross-jumping merges the copies
+  into retail's `b pop; lhu $5` with the check's `bnel` and `daddu $6,$19`.
+- **Counting waits** `m5C = 0; while (m5C++ < F(0x76)) { yield; case L:; }` (CMenuAsksavequit): the
+  yield-only body disappears and the test branches straight to the shared yield tail. Several yields to
+  one state can share one `yX: m_unk4 = X; done = 1; goto loop;` block reached by `goto yX;`
+  (CMenuSysscr26): a yield right after a call in the same block is scheduled `sw` first and becomes its
+  own cross-jump tail.
+- **Cross-jumping keeps the last copy**: jump.c redirects each `goto loop` (in insn order) into the
+  first matching jump on the label's jump chain, which runs from the last jump backwards, so retail's
+  shared yield tail is the last yield in the function whose `li done / sw state` order matches.
+- **reorg and branch probabilities**: the state.h checks get REG_BR_PROB 5000 (LTU has no heuristic,
+  mostly_true_jump 1 = likely); estimate_probability's first pass gives 9001 to a jump from a natural
+  loop's node into a non-node block inside the loop's index range (every `goto loop` is its own natural
+  loop), which turns `if (!c) yield` tests into `beql`/`bnel` with the continuation's first insn.
+- **Gosubs** (`Push(); SetVar(sm, 0, RET); ...; m_state = Get(); Pop(); goto loop;`): the return state
+  goes through `SetVar` (evaluated after the Push, before the Var check, so it lives in an s-register).
+  Two gosubs that share the call and the return: write the second's Push/SetVar in full and `goto call;`
+  from the first; cross-jumping merges them from `m_depth++` on (CGameSeasonPost 0x1590B8). A sub that
+  returns to several callers: `sub: ...; m_state = Get(); Pop(); goto loop;` inside the switch
+  (CCommandSelect 0x1986A8).
+- **A case that only sets the END state** (`case -1: m_state = -0x4E2;` in CInterfMgr 0x16BB20): store it
+  and `goto e;` to a label on the END case (`case -0x50A: case -0x4E2: e: done = 1; goto loop;`), so
+  cross-jumping lands it on the END block's `sw state` rather than the yields' tail.
+- **States with gotos between them** (CStatusBase 0x19A9D8): each state in its own `do { ... } while (0)`
+  so loop.c moves the blocks that leave it (`V4(); goto s2;`) to the barrier before the target; a
+  `m_state = 2;` reached from two places goes behind one label outside the loops (`s2:`), otherwise CSE
+  stores the compared register (`sw $3`) instead of `li 2`.
+- **Key-method Updates** (CCommandSelect::Update is its class's first virtual): `#pragma interface` at
+  the top of the unit (main's lesson), keep the typeinfo-name INCLUDE_RODATA after the function so the
+  state.h literals keep their place.
+- **More shapes from the menu Updates** (CMenuReviewSelect/ReviewStart/Exam, CMenuSysscr02):
+  - gosub return cases go right after their `goto sub;` (`goto sub; case -0xE3: Play(0); goto y;`): the
+    code after a return is then in source order, and cross-jumping keeps the later copy.
+  - an END state that only ends the machine: `case -0x147: default: goto out;` (it becomes a case node,
+    which changes the compare tree's root, and falls into the default range test).
+  - the error return after each `Find`: write it per window (`if (!w) return Func235DE0(fmt, name);`)
+    so the format string's literal lands between the two window names; one shared error block puts it
+    after both.
+  - `if (m20 == 2) { yield A } yield B;` vs `if (m20 != 2) { yield B } yield A;` decides which yield is
+    the branch and which falls through; try both.
+  - a wait written `while (c) { yield; case L:; }` right after a call: the -1/previous code jumps over the
+    (deleted) yield body (retail's `b` with the test's first insn in the slot); the yield body can also
+    be the kept copy of the shared yield tail (CMenuExam's -0xD6).
+  - counting loops over a table: a separate loop variable per loop (`s32 j`) can fix the s-register
+    choice; colour tables passed by pointer: `f32 *c0 = &col0.x;` keeps the address in an s-register;
+    `*(f32 *)((u8 *)c0 + o)` with `o = i * 4` gives `addu base, off` (base first).
+  - a call whose result is unused through a non-virtual view (`void Select(s32)`) avoids a `$2`
+    conflict for the next `lui`.
+  - utest does not check literal order: always run mk.sh.
 - `tools/bk/kfam.py` (scratch, not committed) generated the kanji-select family; the decl blocks of those
   units now declare CMenuSub1A7658 with its ctor/Func1A7308/m_unk54/m_unk58. *(bokura)*
 - **utest counted a function's own .rodata lines** (strings at the top of its .s) as instructions,
   shifting the relocation-symbol check by the number of strings; fixed in utest.target_refs. *(bokura)*
+## cv (unit conversion, 2026-10-16)
+- **The C-style/dklib .rodata splits cleanly by unit**: in ro_tail every literal's referencing text
+  units were monotonic in link order, so one piece per unit fell out of a full-disassembly scan (63
+  pieces, all to level 2 in one `apply ro` / `fix` / mk round). Literals only .data refers to go with the
+  unit before them. The library part does not follow the size-cut Lib units: split it by object
+  (strtod.c, vfiprintf, vfprintf.c, dtoa.c, locale.c+mprec.c, .gcc_except_table), and cut the text
+  units to match (dtoa.c into Lib28F4F8, frame.c alone in Lib285F80). *(bokura)*
+- **"Literals of the next unit in this file" is common**: a full-disassembly scan of which piece each
+  function's %lo literals sit in found ~15 class files whose tail belongs to the next unit (helpers,
+  factories, widgets). Move the tail into the next unit's file, or into a new unit when the literals
+  sit between two units' RTTI-bounded ranges (CPersGauge, CMenuMgrSub1B4768, CStatusItem,
+  CMenuCommonRes, Unit1E80A0). Give every INCLUDE_RODATA'd literal of the moved range
+  force_not_migration first: once user and literal share a unit, splat migrates it into the asm
+  function and the INCLUDE_RODATA file disappears. *(bokura)*
+- **Key methods without level 3: `#pragma interface` at the top of the .cpp** (lanes g5/y1) keeps the
+  unit from emitting any vtable, so a destructor (or whatever the first non-inline virtual is) is just
+  C++. 20 key methods matched this way here. Shapes: base-interface dtors are inline (`virtual ~IFoo()
+  {}`), so the base vptr store comes out inline; an interface that has *no* destructor shows as no base
+  vptr store at all (IMenuMgr: ~CMenuMgr is a new slot 20); member objects whose dtors live elsewhere
+  are raw storage with explicit `Dtor(p, 2)` calls (asm-labelled externs), last member first; a member
+  made of a layout plus a sound object is one inline helper `{ snd(p + 0x170, 2); layout(p, 2); }`,
+  which is what keeps `this + off` in an s-register (CMiniGame2/3/5). *(bokura)*
+- **An inline ~CListTag in one unit needs `#pragma interface` in the header too**: with the inline
+  body CListTag has no key method, so the unit emitted its RTTI name into .rodata; CList.h now gives
+  the inline body (and the pragma) only under `CLISTTAG_INLINE_DTOR`. *(bokura)*
+- **newlib 1.9.0 upstream matches the big libc functions with two Sony facts**: build with `-g` (cc1
+  schedules differently: the dpcmp libcall delay slots stay empty) and Sony's float.h has
+  `FLT_ROUNDS 0` (strtod's exact fast path compiles out). vfprintf.c also needs Sony's small edits
+  (no `{0}`/NULL initialisers for _double/expsize/xdigs, `if (expt || ndig)`), and EE va_arg is a
+  post-increment: `(*(T *)({ char *t = ap; ap = t + 8; t; }))` (gcc-2.95 va-mips.h's `(ap += 8) - 8`
+  folds into a -8 offset). `%p` converts through `(unsigned long)va_arg(ap, void *)` (lw, sign-extended).
+  _vfprintf_r, _vfiprintf_r (same source, INTEGER_ONLY, shared in include/nl_vfprintf.h), _dtoa_r and
+  _strtod_r (3800 instructions) matched. *(bokura)*
+- **objdump hides runs of zero words**: compare object code with `objdump -d -z`, or the R5900
+  short-loop nops look like missing instructions. *(bokura)*
+- **frame.c is EE-GCC 2.96's, not 2.95.2's**: execute_cfa_insn has DW_CFA_def_cfa_expression,
+  GNU_negative_offset_extended and a `reg == cfa_reg` skip; and as C its calls are nothrow (bnezl),
+  where retail has bnez, so the unit stays C++. *(bokura)*
+- **A compiled jump table that lands 8 bytes early marks a missed object boundary**: jump tables are
+  `.align 4`, so the object holding one starts 16-aligned. Dk252208's first switch landed at 0x..18
+  instead of 0x..20: its image/BMP code is a separate object whose .rodata starts at the 16-aligned
+  0x2E6B90 (new unit Dk253048, cut where the literal-less helpers before the first literal user
+  begin). Inside one object, a table of strings that retail starts 16-aligned right after a jump
+  table needs an explicit `asm(".section .rodata\n.balign 16\n.previous")`. *(bokura)*
+- **A same-unit callee keeps `bnez`**: after the cut, 0x253358 turned into `bnezl` until its helpers
+  (Func2531D0/2531E8) were back in the same unit; when splitting a unit, keep a function's helpers
+  with it (nothrow-by-definition, see ## nm). *(bokura)*

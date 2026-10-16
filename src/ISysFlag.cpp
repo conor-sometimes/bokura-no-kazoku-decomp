@@ -1,9 +1,11 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 extern s32 D_002A2814;
 extern s32 D_002A2818;
 
+#define CFLAGWORK_INLINE_IDTORS
 #include "CFlagWork.h"
 #include "CGameDBMgr.h"
 
@@ -47,7 +49,10 @@ int Func145738(int name, int flag);
 extern char D_002D79F0[];
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00143A90);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CSysFlag::~CSysFlag() {
+    D_002A26E0 = 0;
+}
 
 void CSysFlag::SetMax(s32 id, s32 v) {
     Func108FF0(id, v < Func1091B0(id) ? Func1091B0(id) : v);
@@ -114,7 +119,12 @@ void CSysFlag::Vf143FA8(u32 a, u32 b, u32 c, u32 bit, s32 set) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144070);
+extern "C" s32 func_00144070(CSysFlag *f, u32 k, u32 j, u32 i, u32 bit) {
+    u32 m;
+    if (k >= 3 || j >= 14 || i > 0x80 || bit >= 16) return 0;
+    m = 1 << bit;
+    return (f->Func1091B0((k * 13 + j) * 128 + i + 0xDD5) & m) != 0;
+}
 
 s32 CSysFlag::Get1440F8(s32 x) {
     s32 a = D_002A26E4->Func1091B0(1);
@@ -177,7 +187,10 @@ CCurFlag *NewSysFlag() {
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", __8CCurFlag);
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144808);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CCurFlag::~CCurFlag() {
+    D_002A26E4 = 0;
+}
 
 void ICurFlag::Vf144880(CFlagWork *src) {
     s32 i;

@@ -71,6 +71,13 @@ struct ListTag { s32 isHead; ListTag *prev; ListTag *next; void *vptr;
 extern u8 CMapEffWork_vt[] asm("_vt$11CMapEffWork");
 extern u8 CMapEffMirrorWork_vt[] asm("_vt$17CMapEffMirrorWork");
 extern void (*D_002B91B0)(void *p);
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+extern "C" void __builtin_delete(void *);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 // CMapEffFlyWork[1]
@@ -308,7 +315,18 @@ extern "C" void *__tf10CMapSndObj(void) {
 
 extern "C" s32 func_002962F0(u8 *p) { return *(s32 *)(p + 0x4); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2959A8", func_002962F8);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_002962F8(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" void *__tft5TList1Z9CCharaObj(void) {
     if (*(s32 *)D_4247A0 == 0) {

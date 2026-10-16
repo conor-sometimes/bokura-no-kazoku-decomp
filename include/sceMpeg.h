@@ -32,7 +32,9 @@ struct MpegSys {
     s32 mAC;                    // 0xAC
     s32 mB0;                    // 0xB0
     s32 mB4;                    // 0xB4
-    u8 padB8[0xC4 - 0xB8];
+    s32 mB8;                    // 0xB8
+    s32 mBC;                    // 0xBC
+    s32 mC0;                    // 0xC0
     s32 mC4;                    // 0xC4
     s32 mC8;                    // 0xC8
     s32 mCC;                    // 0xCC
@@ -79,7 +81,9 @@ struct MpegSys {
     s32 m828;                   // 0x828
     u8 pad82C[0x830 - 0x82C];
     s32 m830;                   // 0x830
-    u8 pad834[0x858 - 0x834];
+    s32 m834;                   // 0x834
+    s32 m838;                   // 0x838
+    u8 pad83C[0x858 - 0x83C];
     s32 m858;                   // 0x858
     s32 m85C;                   // 0x85C
     s32 m860;                   // 0x860

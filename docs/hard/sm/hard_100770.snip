@@ -1,0 +1,104 @@
+//@decl
+class CPadMgr : public CTask {
+public:
+    virtual s32 Vf293408();
+    virtual s32 Vf293410();
+};
+extern CPadMgr *D_0029F390;
+extern "C" void func_0024F6A8(void *p, s32 a, s32 b, s32 c);
+extern "C" void func_0024F900(void *p, s32 a);
+extern "C" void func_0024F950(void *p);
+extern "C" s32 func_0024F998(void *p, s32 a);
+extern "C" void func_0024FA38(void *p, s32 a, s32 b, s32 c, s32 d);
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
+//@func 0x100770
+void CLogoMain::Update() {
+    CStateMachine *sm = &m_sm;
+    s32 done = 0;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_state) {
+    case -1:
+        func_0024F6A8(this, 0, 2, 1);
+        func_0024F900(this, 0);
+        while (func_0024F998(this, 0)) {
+            sm->m_state = -0x79; done = 1; goto loop;
+    case -0x79:;
+        }
+        func_0024F6A8(this, 0, 2, 0);
+        m_texD0 = (CLogoTex *)&m_tex2C;
+        m_unkCC = 0;
+        sm->Push();
+        SetVar(sm, 0, -0x85);
+        goto sub;
+    case -0x85:
+        sm->Push(4);
+        SetVar(sm, 1, 0x1E);
+        SetVar(sm, 0, 0);
+        {
+            f32 z = 0.0f;
+            SetVar(sm, 2, *(s32 *)&z);
+        }
+        {
+            f32 o = 1.0f;
+            SetVar(sm, 3, *(s32 *)&o);
+        }
+        for (; sm->Get(0) < sm->Get(1); Inc(sm)) {
+            sm->m_state = -0x87; done = 1; goto loop;
+    case -0x87:;
+        }
+        sm->Pop(4);
+        m_texD0 = (CLogoTex *)&m_tex58;
+        m_unkCC = 1;
+        sm->Push();
+        SetVar(sm, 0, -0x90);
+        goto sub;
+    case -0x90:
+    skip:
+        while (0.0f < m_unkD4) {
+            sm->m_state = -0x9C; done = 1; goto loop;
+    case -0x9C:
+            m_unkD4 += -1.0f / 30.0f;
+        }
+        m_unkD4 = 0.0f;
+        func_0024F6A8(this, 0, 2, 1);
+        func_0024F950(this);
+        while (func_0024F998(this, 0)) {
+            sm->m_state = -0xA9; done = 1; goto loop;
+    case -0xA9:;
+        }
+        func_0024FA38(this, 0, 0, 0, 0);
+        sm->m_state = -0xAC;
+    case -0xAC:
+        done = 1; goto loop;
+    sub:
+        m_unkD4 = 0.0f;
+        do {
+            sm->m_state = -0xB7; done = 1; goto loop;
+    case -0xB7:
+            m_unkD4 += 1.0f / 60.0f;
+        } while (m_unkD4 < 1.0f);
+        m_unkD4 = 1.0f;
+        m_unkD8 = 0;
+        do {
+            if (m_unkCC && (D_0029F390->Vf293410() & 0x820)) goto skip;
+            sm->m_state = -0xC3; done = 1; goto loop;
+    case -0xC3:;
+        } while (++m_unkD8 < 180);
+        while (0.0f < m_unkD4) {
+            if (m_unkCC && (D_0029F390->Vf293410() & 0x820)) goto skip;
+            sm->m_state = -0xCD; done = 1; goto loop;
+    case -0xCD:
+            m_unkD4 += -1.0f / 60.0f;
+        }
+        m_unkD4 = 0.0f;
+        sm->m_state = sm->Get();
+        sm->Pop();
+        goto loop;
+    }
+}

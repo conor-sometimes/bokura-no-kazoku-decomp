@@ -1,0 +1,44 @@
+//@decl
+class CFontWork {
+public:
+    void Func2574B8(f32 x0, f32 y0, f32 *w, f32 *h, const char **s, void *ctx, s32 f);
+    void Func257B70(f32 x0, f32 y0, f32 *w, f32 *h, const char **s, void *ctx, s32 f);
+};
+struct Y1FCtx { s32 m0, m4, m8, mC, m10, m14, m18, m1C; f32 m20, m24, m28, m2C; s32 m30, m34, m38, m3C; s32 m40[5]; f32 m54; s32 m58[6]; s32 m70; s32 m74[11]; } __attribute__((aligned(8)));
+extern "C" void func_002571C0(CFontWork *fw, f32 x, f32 y, f32 *w, f32 *h, const char **s, void *ctx, s32 f);
+extern "C" void func_00241E78(s32 a);
+extern "C" void func_00242098(s32 a, s32 b, s32 c, s32 d);
+extern "C" void func_00242028(f32 a, f32 b);
+//@func 0x2574B8
+void CFontWork::Func2574B8(f32 x0, f32 y0, f32 *w, f32 *h, const char **s, void *vctx, s32 f)
+{
+    Y1FCtx *ctx = (Y1FCtx *)vctx;
+    const char *p;
+    Y1FCtx c2;
+    f32 lw, lh, dx;
+    f32 sum = 0.0f;
+    func_00241E78(ctx->m4);
+    func_00242098(ctx->m30, ctx->m34, ctx->m38, ctx->m3C);
+    func_00242028(ctx->m20, ctx->m24);
+    while (**s) {
+        p = *s;
+        c2 = *ctx;
+        lw = lh = 0.0f;
+        func_002571C0(this, 0.0f, 0.0f, &lw, &lh, s, ctx, f);
+        if (f & 1) {
+            switch (c2.m70) {
+            case 1: dx = *w * 0.5f - lw * 0.5f; break;
+            case 2: dx = *w - lw; break;
+            case 0: default: dx = 0.0f; break;
+            }
+            func_00241E78(c2.m4);
+            func_00242098(c2.m30, c2.m34, c2.m38, c2.m3C);
+            func_00242028(c2.m20, c2.m24);
+            func_002571C0(this, x0 + dx, y0 + sum, &lw, &lh, &p, &c2, f | 2);
+        }
+        *w = *w < lw ? lw : *w;
+        sum += lh;
+        if (**s) sum += ctx->m54;
+    }
+    *h = sum;
+}

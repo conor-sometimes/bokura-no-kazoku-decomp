@@ -1,9 +1,11 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 //@sym __10CMiniGame5 0x1DEF58
 #include "CProcess.h"
 #include "CPushBuf.h"
+#define CLISTTAG_INLINE_DTOR
 #include "CList.h"
 extern "C" void *memset(void *p, int c, unsigned int n);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
@@ -135,7 +137,11 @@ CMiniGame5Res *CreateMiniGame5Res() {
     return new CMiniGame5Res;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame5Res", func_001DEA78);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMiniGame5Res::~CMiniGame5Res() {
+    CMiniGame5Res::Release();
+    D_002A5538->SetUnkDC(0);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame5Res", D_002E15C8);
 int CMiniGame5Res::Load(const char *dir) {
@@ -219,7 +225,24 @@ void CreateMiniGame5(CTaskList24F5C0 *list) {
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame5Res", __10CMiniGame5);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame5Res", func_001DF0F8);
+extern "C" void func_0025C2C0(void *p, s32 flags);
+extern "C" void MG5LayoutDtor(void *p, s32 flags) asm("_$_10CLayoutObj");
+// m820's own (inline) destructor: its sound member at +0x170, then its layout.
+inline void MG5DestroyLayout2(u8 *p) {
+    func_0025C2C0(p + 0x170, 2);
+    MG5LayoutDtor(p, 2);
+}
+
+// Key method: the member objects are raw storage here, destroyed explicitly (last declared first).
+CMiniGame5::~CMiniGame5() {
+    func_0025C2C0(mAD4, 2);
+    MG5DestroyLayout2(m820);
+    MG5LayoutDtor(&m_lay[4], 2);
+    MG5LayoutDtor(&m_lay[3], 2);
+    MG5LayoutDtor(&m_lay[2], 2);
+    MG5LayoutDtor(&m_lay[1], 2);
+    MG5LayoutDtor(&m_lay[0], 2);
+}
 
 void CMiniGame5::SetX(f32 x) {
     m_lay[0].SetRect(x, x, 320.0f, 224.0f);

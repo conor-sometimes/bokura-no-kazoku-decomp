@@ -1,0 +1,37 @@
+//@decl
+//@func 0x280E88
+float func_00280E88(float x)
+{
+    float z;
+    u32 r, hx;
+    s32 ix, s, q, m, t;
+    GET_FLOAT_WORD(ix, x);
+    hx = ix & 0x7fffffff;
+    if (hx < 0x00800000) return x;
+    if (ix < 0) return (x - x) / (x - x);
+    m = (ix >> 23);
+    m -= 127;
+    ix = (ix & 0x007fffffL) | 0x00800000L;
+    if (m & 1) ix += ix;
+    m >>= 1;
+    ix += ix;
+    q = s = 0;
+    r = 0x01000000L;
+    while (r != 0) {
+        t = s + r;
+        if (t <= ix) {
+            s = t + r;
+            ix -= t;
+            q += r;
+        }
+        ix += ix;
+        r >>= 1;
+    }
+    if (ix != 0) {
+        q += (q & 1);
+    }
+    ix = (q >> 1) + 0x3f000000L;
+    ix += (m << 23);
+    SET_FLOAT_WORD(z, ix);
+    return z;
+}

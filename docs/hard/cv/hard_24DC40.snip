@@ -1,0 +1,41 @@
+//@decl
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max);
+extern "C" s32 func_0024D340(CExpr *e, const char *name, CValue *v);
+extern "C" s32 func_0024D3D0(CExpr *e, const char *name, CValue *v);
+extern const char *D_002BA028[];
+extern s32 D_002BA048[];
+typedef s32 (*CExprAssignFn)(CValue *dst, CValue *src, CExpr *e);
+extern CExprAssignFn D_002B9EB8[][3];
+extern "C" int strcmp(const char *, const char *);
+//@func 0x24DC40
+extern "C" s32 func_0024DC40(CExpr *e, const char *s) {
+    CValue val;
+    char name[0x100];
+    char op[0x100];
+    char rhs[0x100];
+    const char *p;
+    s32 i, kind;
+
+    func_0024BAE0(&val);
+    p = s;
+    p = Func24A840(p, name, 0, D_002E6780, 0x100);
+    p = Func24A840(p, op, (const char *)D_002BA028, D_002E6780, 0x100);
+    p = Func24A570(p, rhs, ",", D_002E6780);
+    p = rhs;
+    if (!func_0024D6A0(e, &val, &p, 0)) return 0;
+    for (i = 0; D_002BA028[i] && strcmp(D_002BA028[i], op); i++)
+        ;
+    if (!D_002BA028[i]) {
+        func_0024D948(e, "*** unknown assignment symbol '%s'\n", op);
+        return 0;
+    }
+    kind = D_002BA048[i];
+    if (kind != 3 && kind >= 0) {
+        CValue cur;
+        func_0024BAE0(&cur);
+        if (!func_0024D3D0(e, name, &cur)) return 0;
+        if (!D_002B9EB8[kind][cur.m_type](&cur, &val, e)) return 0;
+    }
+    if (!func_0024D340(e, name, &val)) return 0;
+    return 1;
+}

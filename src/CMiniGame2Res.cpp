@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -268,7 +269,30 @@ CMiniGame2::CMiniGame2(int a, int b) {
 #endif
 INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", __10CMiniGame2ii);
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame2Res", func_001C4710);
+extern "C" void MG2LayoutDtor(void *p, s32 flags) asm("_$_10CLayoutObj");
+extern "C" void MG2SetUnkDC(void *m, u32 v) asm("SetUnkDC__17CMenuMgrSub1B6418Ui");
+extern void *D_002A5538_2 asm("D_002A5538");
+
+// m_layout7's own (inline) destructor: its sound member at +0x170, then its layout.
+inline void MG2DestroyLayout2(u8 *p) {
+    func_0025C2C0(p + 0x170, 2);
+    MG2LayoutDtor(p, 2);
+}
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data). The
+// member objects are raw storage here, destroyed explicitly (last declared first).
+CMiniGame2::~CMiniGame2() {
+    MG2SetUnkDC(D_002A5538_2, 0);
+    func_0025C2C0((u8 *)this + 0xCB4, 2);
+    MG2DestroyLayout2((u8 *)this + 0xAA0);
+    MG2LayoutDtor((u8 *)this + 0x930, 2);
+    MG2LayoutDtor((u8 *)this + 0x7C0, 2);
+    MG2LayoutDtor((u8 *)this + 0x650, 2);
+    MG2LayoutDtor((u8 *)this + 0x4E0, 2);
+    MG2LayoutDtor((u8 *)this + 0x370, 2);
+    MG2LayoutDtor((u8 *)this + 0x200, 2);
+    MG2LayoutDtor((u8 *)this + 0x90, 2);
+}
 
 int CMiniGame2::Pick() {
     s32 k = 0;

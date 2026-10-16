@@ -126,6 +126,22 @@ struct W2suio { struct W2siov *uio_iov; int uio_iovcnt; int uio_resid; };
 extern int func_0028F3E8(W2sFILE *);
 extern void *func_00289EAC(void *, const void *, unsigned int);
 extern void *func_0029189C(const void *, int, unsigned int);
+
+struct _reent;
+typedef unsigned int size_t;
+struct Y1malloc_chunk { size_t prev_size; size_t size; struct Y1malloc_chunk *fd; struct Y1malloc_chunk *bk; };
+typedef struct Y1malloc_chunk *Y1mchunkptr;
+typedef struct Y1malloc_chunk *Y1mbinptr;
+struct Y1mallinfo { int arena, ordblks, smblks, hblks, hblkhd, usmblks, fsmblks, uordblks, fordblks, keepcost; };
+extern Y1mbinptr Y1_av_[] __asm__("D_002BF5D8");
+extern unsigned long Y1_trim_threshold __asm__("D_002BF9E0");
+extern unsigned long Y1_top_pad __asm__("D_002BF9E8");
+extern char *Y1_sbrk_base __asm__("D_002BF9F0");
+extern struct Y1mallinfo Y1_cur_mallinfo __asm__("D_002BFA08");
+int func_00291040(struct _reent *reent_ptr, size_t pad);
+void *func_0028AB30(struct _reent *reent_ptr, int incr);
+void func_0028A070(struct _reent *reent_ptr);
+void func_0028A0F0(struct _reent *reent_ptr);
 // @decl-end
 
 extern int func_00290990(W2File2 *fp) { u8 *p; s32 n, t; if (fp == 0) return func_00291590(D_002BF5D0, (void *)func_00290990); do { if (fp->data == 0) fp->data = D_002BF5D0; if (!FLD(s32, fp->data, 0x38)) func_00290CB8(fp->data); } while (0); t = fp->flags; if ((t & 8) == 0 || (p = fp->base) == 0) return 0; n = fp->p - p; fp->p = p; fp->w = t & 3 ? 0 : fp->size; while (n > 0) { t = ((s32 (*)(void *, u8 *, s32))fp->wr)(fp->cookie, p, n); if (t <= 0) { fp->flags |= 0x40; return -1; } p += t; n -= t; } return 0; }
@@ -142,9 +158,125 @@ extern int func_00290C98(void) { return func_00290C78(D_002BF5D0); }
 
 extern void func_00290CB8(void *s) { FLD(void *, s, 0x3C) = (void *)func_00290C78; FLD(s32, s, 0x38) = 1; func_00290AA8((W2File2 *)((u8 *)s + 0x1E4), 4, 0, s); func_00290AA8((W2File2 *)((u8 *)s + 0x23C), 9, 1, s); func_00290AA8((W2File2 *)((u8 *)s + 0x294), 0xA, 2, s); FLD(void *, s, 0x1D8) = 0; FLD(s32, s, 0x1DC) = 3; FLD(void *, s, 0x1E0) = (u8 *)s + 0x1E4; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00290D48);
+/* newlib-1.9.0 mallocr.c (Doug Lea malloc 2.6.4, public domain), MALLOC_ALIGNMENT 16 */
+void func_00290D48(struct _reent *reent_ptr, void* mem)
+{
+  Y1mchunkptr p;
+  size_t hd;
+  size_t sz;
+  int idx;
+  Y1mchunkptr next;
+  size_t nextsz;
+  size_t prevsz;
+  Y1mchunkptr bck;
+  Y1mchunkptr fwd;
+  int islr;
+  if (mem == 0)
+    return;
+  func_0028A070(reent_ptr);
+  p = ((Y1mchunkptr)((char*)(mem) - 2*(sizeof(size_t))));
+  hd = p->size;
+;
+  sz = hd & ~0x1;
+  next = ((Y1mchunkptr)(((char*)(p)) + (sz)));
+  nextsz = ((next)->size & ~((0x1|0x2)));
+  if (next == (((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd))
+  {
+    sz += nextsz;
+    if (!(hd & 0x1))
+    {
+      prevsz = p->prev_size;
+      p = ((Y1mchunkptr)(((char*)(p)) + (-prevsz)));
+      sz += prevsz;
+      { bck = p->bk; fwd = p->fd; fwd->bk = bck; bck->fd = fwd; };
+    }
+    ((p)->size = (sz | 0x1));
+    (((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd) = p;
+    if ((unsigned long)(sz) >= (unsigned long)Y1_trim_threshold)
+      func_00291040(reent_ptr, Y1_top_pad);
+    func_0028A0F0(reent_ptr);
+    return;
+  }
+  ((next)->size = (nextsz));
+  islr = 0;
+  if (!(hd & 0x1))
+  {
+    prevsz = p->prev_size;
+    p = ((Y1mchunkptr)(((char*)(p)) + (-prevsz)));
+    sz += prevsz;
+    if (p->fd == (((Y1mbinptr)((char*)&(Y1_av_[2*(1) + 2]) - 2*(sizeof(size_t))))))
+      islr = 1;
+    else
+      { bck = p->bk; fwd = p->fd; fwd->bk = bck; bck->fd = fwd; };
+  }
+  if (!((((Y1mchunkptr)(((char*)(next)) + (nextsz)))->size & 0x1)))
+  {
+    sz += nextsz;
+    if (!islr && next->fd == (((Y1mbinptr)((char*)&(Y1_av_[2*(1) + 2]) - 2*(sizeof(size_t))))))
+    {
+      islr = 1;
+      { (((Y1mbinptr)((char*)&(Y1_av_[2*(1) + 2]) - 2*(sizeof(size_t)))))->fd = (((Y1mbinptr)((char*)&(Y1_av_[2*(1) + 2]) - 2*(sizeof(size_t)))))->bk = p; p->fd = p->bk = (((Y1mbinptr)((char*)&(Y1_av_[2*(1) + 2]) - 2*(sizeof(size_t))))); };
+    }
+    else
+      { bck = next->bk; fwd = next->fd; fwd->bk = bck; bck->fd = fwd; };
+  }
+  ((p)->size = (sz | 0x1));
+  (((Y1mchunkptr)((char*)(p) + (sz)))->prev_size = (sz));
+  if (!islr)
+    { if (sz < 512) { idx = (((unsigned long)(sz)) >> 3); ((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->size) |= ((unsigned long)1 << (idx / 4))); bck = ((Y1mbinptr)((char*)&(Y1_av_[2*(idx) + 2]) - 2*(sizeof(size_t)))); fwd = bck->fd; p->bk = bck; p->fd = fwd; fwd->bk = bck->fd = p; } else { idx = (((((unsigned long)(sz)) >> 9) == 0) ? (((unsigned long)(sz)) >> 3): ((((unsigned long)(sz)) >> 9) <= 4) ? 56 + (((unsigned long)(sz)) >> 6): ((((unsigned long)(sz)) >> 9) <= 20) ? 91 + (((unsigned long)(sz)) >> 9): ((((unsigned long)(sz)) >> 9) <= 84) ? 110 + (((unsigned long)(sz)) >> 12): ((((unsigned long)(sz)) >> 9) <= 340) ? 119 + (((unsigned long)(sz)) >> 15): ((((unsigned long)(sz)) >> 9) <= 1364) ? 124 + (((unsigned long)(sz)) >> 18): 126); bck = ((Y1mbinptr)((char*)&(Y1_av_[2*(idx) + 2]) - 2*(sizeof(size_t)))); fwd = bck->fd; if (fwd == bck) ((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->size) |= ((unsigned long)1 << (idx / 4))); else { while (fwd != bck && sz < ((fwd)->size & ~((0x1|0x2)))) fwd = fwd->fd; bck = fwd->bk; } p->bk = bck; p->fd = fwd; fwd->bk = bck->fd = p; } };
+  func_0028A0F0(reent_ptr);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Lib290990", func_00291040);
+int func_00291040(struct _reent *reent_ptr, size_t pad)
+{
+  long top_size;
+  long extra;
+  char* current_brk;
+  char* new_brk;
+  unsigned long pagesz = (4096);
+  func_0028A070(reent_ptr);
+  top_size = (((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd))->size & ~((0x1|0x2)));
+  extra = ((top_size - pad - (sizeof(struct Y1malloc_chunk)) + (pagesz-1)) / pagesz - 1) * pagesz;
+  if (extra < (long)pagesz)
+  {
+    func_0028A0F0(reent_ptr);
+    return 0;
+  }
+  else
+  {
+    current_brk = (char*)(func_0028AB30(reent_ptr, (0)));
+    if (current_brk != (char*)((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd)) + top_size)
+    {
+      func_0028A0F0(reent_ptr);
+      return 0;
+    }
+    else
+    {
+      new_brk = (char*)(func_0028AB30(reent_ptr, (-extra)));
+      if (new_brk == (char*)(-1))
+      {
+        current_brk = (char*)(func_0028AB30(reent_ptr, (0)));
+        top_size = current_brk - (char*)(((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd);
+        if (top_size >= (long)(sizeof(struct Y1malloc_chunk)))
+        {
+          (Y1_cur_mallinfo.arena) = current_brk - Y1_sbrk_base;
+          (((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd))->size = (top_size | 0x1));
+        }
+;
+        func_0028A0F0(reent_ptr);
+        return 0;
+      }
+      else
+      {
+        (((((Y1mbinptr)((char*)&(Y1_av_[2*(0) + 2]) - 2*(sizeof(size_t))))->fd))->size = ((top_size - extra) | 0x1));
+        (Y1_cur_mallinfo.arena) -= extra;
+;
+        func_0028A0F0(reent_ptr);
+        return 1;
+      }
+    }
+  }
+}
 
 int
 func_002911B0 (fp, uio)

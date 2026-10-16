@@ -891,13 +891,9 @@ Overnight grind 2026-10-16 (game units). Best attempts in docs/hard/x1/hard_<ADD
 - **0x23B1D0** (208 insns): Unit23A1D8 texture-page LNode list code (D_37CDE0/D_380E04 nodes, D_386E24 head index, unlink/relink sequences like 0x23BA10): not attempted beyond reading; expect the same t-register numbering issue as 0x23BA10 (and $at-macro la addressing in 0x23AFB8/0x23B1D0).
 - **0x147130** (132 insns): CGameDBMgr::Func147130 (vtable slot 3, load the game database: Init(), open, the 15 table loaders, size print): DIFF 47 but only one real difference: the last test of the long loader chain becomes 'sltu s2, zero, v0' (if-converted ok = 1) in ours, retail keeps 'beqz; nop; li s2, 1'; every other diff is a branch offset. && chain, goto chain, bool, ok++ and swapped branch order tried. nm: docs/hard/nm/hard_147130.snip declares func_00248C70 `throw()` (nothrow in retail's CGameDBMgr; fixes the first `beqz` slot), DIFF 6 = only this if-conversion; 0x111BA8 is stuck on the same `if (call()) ok = 1` -> sltu.
 - **0x147130** (132 insns): CGameDBMgr::Func147130 (vtable slot 3, load the game database: Init(), open, the 15 table loaders, size print): DIFF 47 but only one real difference: the last test of the long loader chain becomes 'sltu s2, zero, v0' (if-converted ok = 1) in ours, retail keeps 'beqz; nop; li s2, 1'; every other diff is a branch offset. && chain, goto chain, bool, ok++ and swapped branch order tried.
-- **0x1A73B0** (170 insns): CMenuInputKanji update (state.h menu machine: goto-loop with the (flags >> 7) & 1 busy test and a switch on negative state codes, virtual calls through D_002A5468): the open menu-state-machine layout problem (see 0x192710, docs/lessons.md state.h entry); not attempted.
 - **0x19F6C0** (228 insns): CStatusWin update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x1AAC28** (212 insns): CMenuSysscr24 update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x19A9D8** (146 insns): CStatusBase update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x131720** (388 insns): CSvmWork update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x1AA1B8** (314 insns): CMenuSysscr26 update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
-- **0x18F5E8** (346 insns): CMenuGetMoney update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x191400** (396 insns): CMenuReviewSelect update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x191EC8** (420 insns): CMenuReviewStart update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
 - **0x184D98** (418 insns): CMenuExam update: state.h menu state machine (goto-loop, (flags >> 7) & 1 busy test, switch on negative state codes, yields cross-jumped into one 'li v1,1; b loop; sw state' tail); the open layout problem of these machines (see 0x192710 and the docs/lessons.md state.h entry: none of this shape is matched yet, CMenuNosave's best is DIFF 56); not attempted.
@@ -1218,17 +1214,26 @@ Lane sm (state.h machines, 2026-10-16). Recipe in docs/lessons.md ## sm; best at
   natural tests, `m_cmd->Update()` through a `void` view class). FreeBuf declared `throw()` (its call
   then has REG_EH_REGION 0) did not change it. Needs `void Open(); void Select198290(s32);` and
   `s32 m_state; // 0x4C` in include/CCommandBase.h (not committed).
-- **0x16BB20** CInterfMgr::Func16BB20 (sm at 0x928, start state 0): DIFF 1: `case -1` (state = -0x4E2,
-  done) cross-jumps into the yields' shared tail instead of the END block's (same code, other label).
-  Layout and float code match with `do { yield; case L:; } while ((m_unkDF4 += 0.25f) < 1.0f)` loops,
-  `case -0x50A: case -0x4E2: done = 1; goto loop;` sharing one block (two separate blocks give two
-  natural loops, the first loop in estimate_probability marks the dispatch jumps PROB_VERY_LIKELY and
-  ifcvt hoists `done = 1`), and `f32 m_unkDF4` in the unit's class.
 - **0x13C120** CEventObj command 0x51 (sm m_sm[4] at 0xF96C, pointer-to-member redirect for ids
   0x80-0xFF): aligned diff 26 words: the `sm = &m_sm[4]; done = 0;` block after the redirect test is
   hoisted above it by ifcvt (IF-CASE-2, branch probability 5000), so the busy test and the PMF call
   use other registers. Same family: the other CEventObj command handlers. Needs `int Cmd13C120(CSvmWork *,
   int, int);`, `SlotGetStr`, `SlotAsFloat` in the unit's decl block.
+- **0x13D518** CEventObj commands 0x5C-0x60 (no machine loop: busy test, then a switch on the state):
+  matches in utest (docs/hard/sm/hard_13D518.snip: four identical cases written out so GCC uses a jump
+  table; `on = SlotAsInt(7, 1) != 0` before the m4 test; `goto busy` to a `return 1` at the end).
+  Not ported: its jump table jtbl_002D5B80 is an INCLUDE_RODATA piece of CEventMesRes.cpp. CEventObj's
+  .rodata really runs to 0x2D5BB0 (D_002D58B0..D_002D5B98 are only used by CEventObj); moving the
+  yaml boundary and running dataconv fix re-split the literals and broke several matched CEventObj
+  functions, so it needs a data-lane pass first. Needs `int Cmd13D518(CSvmWork *, int, int);`.
+- **0x100770** CLogoMain::Update (two gosubs `Push(); SetVar(sm, 0, RET); goto sub;` into a fade sub that
+  returns with `m_state = Get(); Pop(); goto loop;`; the pad skip `goto skip` lands in the caller's -0x90
+  code): same length, ~20 words: the first gosub computes the file pointer before the Push test into
+  `$18` with the hi part in `$2` (ours `$3`, so reorg moves the lo into the slot); the `Pop(4)` after the
+  `for (; Get(0) < Get(1); Inc) { yield; case -0x87:; }` loop gets a cse2 copy of the loop's file pointer
+  (`daddu $19,$20`; retail uses `$20`); a goto-built loop fixes the Pop but makes the yield fall through;
+  the second Push check is `bnez` with `daddu $6,$20` from the fall-through in retail (ours `bnezl`).
+  Needs `s32 m_unkCC; s32 m_unkD8;` in the unit's CLogoMain.
 - **0x100358** CBootMain::Update (asserts): aligned diff 15. Asserts as an inline
   `Check(s32 v, const char *file, s32 line)` (the file pointer is then computed before the test, as
   retail), `Pop` as `m_depth = (s16)m_depth - 1` (addiu -1), the stack through `s32 *p = m_stack;`
@@ -1238,37 +1243,154 @@ Lane sm (state.h machines, 2026-10-16). Recipe in docs/lessons.md ## sm; best at
 - **0x19A9D8** CStatusBase update (mode machine on m_state 0..4 with gotos between states): same
   length, block order differs: retail puts two then-blocks (`m_state = 0; goto a0` and `V4(); m_state = 2;
   goto b5`) before their tests (rotated loops); written as plain labels/gotos here.
-- **0x13D518** CEventObj commands 0x5C-0x60 (no machine loop: busy test, then a switch on the state):
-  matches in utest (docs/hard/sm/hard_13D518.snip: four identical cases written out so GCC uses a jump
-  table; `on = SlotAsInt(7, 1) != 0` before the m4 test; `goto busy` to a `return 1` at the end).
-  Not ported: its jump table jtbl_002D5B80 is an INCLUDE_RODATA piece of CEventMesRes.cpp. CEventObj's
-  .rodata really runs to 0x2D5BB0 (D_002D58B0..D_002D5B98 are only used by CEventObj); moving the
-  yaml boundary and running dataconv fix re-split the literals and broke several matched CEventObj
-  functions, so it needs a data-lane pass first. Needs `int Cmd13D518(CSvmWork *, int, int);`.
-- **0x1590B8** CGameSeasonPost::Update (subroutine call through the stack: `Push(); Var() = RET;
-  Collect1592F8(); m_state = Get(); Pop(); goto loop;` for states 0-2 (RET -0x6B) and 3 (RET -0x7C)):
-  same length; retail cross-jumps the two call sequences from `m_depth++` on, with RET in `$18` in both
-  (path A reuses the dispatch's -0x6B constant); ours gives path B's constant another register, so the
-  merge starts later. A shared variable for RET merges too much (also the push checks).
-- **0x1A73B0** CMenuSub1A7658::Update1A73B0 (the kanji-select list machine): aligned diff 10, block
-  order only: retail's switch tree puts the `-1` leaf test (`bnel $3,-1,out`) after the cancel block
-  (`Play(2); m_unk58 = -1; goto sel;`) so it falls into case -1's code; ours tests -1 before the cancel
-  block and jumps over it. Needs `virtual int F7(...)` in the unit's CSePlayer and
-  `void Update1B6570();` in include/CMenuMgrSub1B6418.h (committed).
-- **0x1986A8** CCommandSelect::Update (gosub: `Push(); Var() = -0x7A; goto sub; case -0x7A:` and
-  `sub: ...; m_state = Get(); Pop(); goto loop;`): aligned diff 28. The return state has to be an
-  inline function's parameter (`SmCall(sm, -0x7A)`) to live in a callee-saved register like retail.
-  Left: retail puts the -0x70 wait's then-block (`m_state = 2; yield -0x76`) between two nodes of the
-  switch's compare tree (as 0x1A73B0's cancel block); ours keeps it after its test. Needs
-  SetMode198128/Open/Select198290 and `s32 m_state; // 0x4C` in include/CCommandBase.h (committed) and
-  SetOffset/GetPage/Func196D78 in the unit's CMenuRecordList.
-- **0x176638** CMenuMemorial::Update (frame of 4 stack slots: `Push(4)`, Var(1..3), a rotated
-  `for (; Get(0) < Get(1); Inc) { if (!(a & 0x60)) yield; V14(3); break; case -0x8C:; }`): about 10
-  words left, all in the final `Pop(4)`: retail's check is `bnel` with the file pointer still in `$19`
-  and stores the depth before `m_state = 4`. Stores go through `SetVar(sm, k, v)` (value evaluated
-  before the check, as retail); the zeroed slots 2/3 are an f32 0 read back through memory.
-- **0x1741F8** CMenuExGetMoney::Update (three counting loops with yields): same length, aligned diff
-  ~60: the loops are `while (m60 < F(k)) { ...; m60++; Set(m60/F(k)); yield; case L:; }` (rotated);
-  left is where retail puts the cancel blocks (`Stop(0x4C); m4C = -1` and `Play(3); m4C = -1`): each
-  sits just before the next state's code (reached by backward branches), and the -0x11C init falls into
-  the last loop's test without a jump.
+
+
+## y1
+
+Lane y1 (Dk*/Lib* retry, 2026-10-16). Best attempts in docs/hard/y1/hard_<ADDR>.snip.
+
+- Hand-written assembly (spimdisasm "Handwritten function": `addi`, `eret`, `cache` loops, MMI with fixed
+  $8-$15/$24/$25 and no frame), not C: 0x26296C, 0x262A0C, 0x262A8C, 0x2629CC, 0x262AF0 (Dk260A60 MPEG audio
+  SIMD), 0x269C98, 0x269D10, 0x269DA8, 0x269E60, 0x269F30, 0x269FE0, 0x26A098, 0x26A190, 0x26A290, 0x26A330,
+  0x26A3E0, 0x26A4C0, 0x26A5A8, 0x26A680, 0x26A750 (Dk268138 IPU/CSC SIMD), 0x26A870, 0x26A988, 0x26A9E8
+  (Dk26A870), 0x275698 (Dk2752B8 SyncDCache-style `cache 0x18` loop, `li 0xFFFFFFC0` as lui/ori),
+  0x27C580 (Dk27C020 `eret`), 0x27B9C0 (Dk27A100, `eret`).
+- 0x262FD0 (Dk262D28, cd callback: copy two 0x40-byte buffers to uncached and cached dest, then
+  `j func_00262D90(&D_002BBC18)`): DIFF 12, only $8/$9 swapped (retail: source base `u+0x10` in t0, dest in
+  t1); tried local/decl orders, int-typed dest, index forms.
+- 0x266738 (Dk265918, `u64 f(u32 i, u64 v)`: `D_2BD7A8[i].m0 | v << sh`, sh 24/32/0 by `m8 ==
+  0xFFFF000000 / 0xFF00000000`): DIFF 33; retail has a 16-byte frame with no saves and a `==, >, ==` compare
+  tree; every switch/if form (991111) if-converts with `xor; movn` and no frame.
+- 0x25D1A0 (CSndWork::Func25D1A0, call unit slot 1 on each unit with next fetched before the call): DIFF 18,
+  retail keeps the unit in t0 and builds `a0 = u + delta` from it; ours allocates u to a0 (scheduling of the
+  vtable load vs the `next` load). Same First form as the matched finders.
+- 0x25D008 (Func25D008, stop or delete units of a tree): DIFF 44, retail's three iterators (it $18, cur $16,
+  next $17) and `if (!f()) {stores} else delete` block order not reproduced.
+- 0x250B80 (Dk24FAF0, n-th unit over the free then used list): DIFF 23, retail keeps `&m_used`/`&m_free` in
+  $8/$4 and picks the head with `bnel k`, ours folds the offsets into the loads.
+- 0x250978 (CResCache::Func250978, move idle units to the back of the used list): DIFF 37-41, same
+  three-iterator shape as 0x25D008; retail also keeps the dead `n->next = n` store of the unlink.
+- 0x24F6A8 (task counter inc/dec): DIFF 13 (see the older note above); 0x24FA50: DIFF 4 (`r = 0; if (i < 4)
+  r = m1C[i]` gets the address add before the branch in retail); 0x24F9B0: DIFF 5.
+- MMI string routines (strncmp 0x289D68, memset 0x289FB0, strcpy/strlen/strcmp 0x28B2D4/0x28B3E8/0x28B190 and
+  the rest of the newlib EE ones): cc1 rejects TImode compares ("unsupported wide integer operation"), so the
+  u128 loops need inline asm; not attempted.
+- 0x267E58 (Dk265918, w2 snippet): DIFF 3-4, the `ok` temp of `func_0026D110(s, 0) && func_0026CFB0(s)` lands
+  in v0 (retail v1, copied to s2 in both branch slots); tried &&/?:/if forms and int/u32/u8 temps.
+- 0x286968 (__frame_state_for, w2 snippet): DIFF 3; retail recomputes `&pc` (sp+0x4A4) in the call's delay slot
+  every iteration and has a lone nop at the loop top; ours hoists `&pc` into s2. memcpy/struct copy, nothrow
+  probes no help.
+- 0x27D3A0 (Dk27C020, set alarm time): DIFF 4 after the 27D288 fixes (ENT before DI, volatile cur): retail stores
+  `e->elapsed = t` before the dsubu, ours `e->start = now` first (u64 stores; statement orders tried).
+- 0x27CF30 (Dk27C020, alarm alloc, w2's volatile version): DIFF 17, all registers shifted by one ($7/$6/$5/$4
+  vs a2/a1/a0/v1) plus one store; 720 statement orders tried.
+- 0x276E68 (Dk2752B8, fio init): DIFF 6 with `D_4203C0.m0 = 0; q->m4 = 0;` and `int *p = &D_002BDB38`: only
+  the prologue order (retail saves $16 before `lui $16`).
+- 0x275398 (Dk2752B8, sceSifSendCmd core, w2 snippet): DIFF 17; retail indexes `dma[count]` from `sp + count*16`
+  per field and reads D_41D1A0 through a raw lui; type search over the dma/header fields found nothing.
+- 0x277138 (Dk2752B8, fio open RPC with varargs mode): first draft DIFF 154: retail frame 0x150 with nine
+  s-registers ($30 holds %hi(D_41EC40)) and the name copy peeled differently; not pursued.
+- 0x249428 (Dk2470E8, xap link by ini key): DIFF 12-16; the literal order needs "not found" first but retail's
+  block order puts the link print last; if/else, goto and r-variable forms tried.
+- 0x247210 (Dk2470E8, range check): DIFF 13; s0/s1 roles swapped (retail p in s17) and the tail compare.
+- 0x24F6A8, 0x24FA50, 0x24F9B0: see above (DIFF 13/4/5).
+- 0x250C28 (Dk24FAF0, unit info switch): DIFF 13; case 5's index helper keeps the walker in $2 and the Next
+  result in $3 (`daddu $2,$3` each step); RFirst/RNext and ternary helpers tried.
+- 0x2683F8 (Dk268138, IPU DMA ref tags): DIFF 2, only the order of the hoisted `li 3` and `ori 0x0FFFFFFF`
+  (statement and expression orders tried).
+- 0x280E88 (newlib __ieee754_sqrtf, no-denormal): DIFF 8, scheduling of the mantissa setup; upstream text with
+  `one - tiny` folded, statement orders tried.
+- 0x25A098 (CSndMgr ctor): DIFF 6 with real member ctors (`CSndWorkM() asm("func_0025C230")`): only the
+  0x80/-1 constant registers and the 0x1C/0x2C store order; 27 orders and chained forms tried.
+- 0x285728 (frame.c init_object/end_fde_sort, 350 insns) and the other frame.c leftovers: upstream frame.c
+  (-DDWARF2_UNWIND_INFO, FIRST_PSEUDO_REGISTER 123) compiles fde_split/end_fde_sort out of line; retail inlines
+  them, sizes do not line up; not pursued further.
+- **0x1AA1B8** CMenuSysscr26::Update: DIFF 1, the same branch as 0x1A7818: the `m_state == 6` test
+  (before the V7 pad call) is `bnel` with `lui $2,%hi(D_002A5468)` from the target (reorg marks it
+  annulled; REG_BR_PROB 6001), retail `bne`. The fall-through is identical
+  (`m_state = 5; m_unk4C = -1;` in that order). Tried: return instead of goto end, an empty 6-path,
+  local order, done init. Needs `s32 m_unk5C..m_unk74` in the unit's CMenuSysscr26 (size 0x78).
+- **0x19F6C0** CStatusWin::Update19F6C0 (mode machine on m_state 0..5, states in do-while loops as
+  0x19A9D8): DIFF 3, one register: retail compares `m_unk64 != 3` (in the moved `c3` block) with the
+  register that already holds 3 for the `m_state == 3` test (`$4`); ours uses `m_state`'s register
+  (`$3`): cse1 follows the jump to c3 and the m_state pseudo becomes the class's canonical register
+  (make_regs_eqv). Tried `3 == m_state`, a local copy, `m_unk64 != m_state`, a switch. Needs
+  `void Update19F6C0();` in the unit's CStatusWin (`bk addm`).
+- **0x1831A0** CMenuTutorSelectedSub182108::Update1831A0 (three windows, a Push(4) counting frame as
+  CMenuMemorial): DIFF 18, all one register swap in the Push(4) frame: retail keeps the stack base
+  (`sm + 8`, a GCSE pseudo) in `$16` and the slot values in `$18`; ours the other way round (global
+  alloc gives the base `$18`). The snippet also needs `asm volatile("")` after `Pop(4)` so the depth
+  store stays before the `m_unk50` load (as CMenuMemorial before its fix). Wait shapes that work here:
+  the -0x248 wait as `while (m_state != 1) { yield; case -0x248:; }` (the -1 code then jumps over the
+  deleted yield as retail's `b`), the three-window wait as one `||` condition, the color loop indexed
+  (`GetColor(&c[i], i + 12)`). Needs `void Update1831A0();` in the unit's class (`bk addm`).
+## cv
+Unit conversion lane (2026-10-16). Matched here (HARD.md entries above that name them are done): 0x288268,
+0x17D240, 0x10AF00, 0x10B108, 0x10B8B8, 0x12D440, 0x12DC48, 0x16D548, 0x126E38, 0x118248, 0x11BD20,
+0x127888, 0x186E90, 0x113090, 0x172C88, 0x173050, 0x1BD958, 0x1BD700, 0x1C4710, 0x1C9E90, 0x1D4E98,
+0x1DEA78, 0x1DF0F8, 0x12E768, 0x1B3DD0, 0x11D670, 0x11F038, 0x120AC8, 0x121788, 0x1225F0, 0x143A90,
+0x144808, 0x144070, 0x28DA28, 0x28CCB8, 0x28F728 (+ quorem), 0x28B970, 0x2539A0, 0x253B00, 0x254730,
+0x10BAC8. Best attempts below are saved as docs/hard/cv/hard_<ADDR>.snip.
+### 0x185BD0 (CChrSchoolWin, was CMenuExam: exam/job/school name formatter, switch on kind 1..9, 172 insns) DIFF 37
+Unblocked by moving CMenuExam.cpp's tail into the CChrSchoolWin unit (its jump table jtbl_002DAE90 sits
+after 9CMenuExam). Control flow, literals and frame match; only the s-register numbering differs
+(retail p4=s0, p6=s1 (shared with the case-2/default record pointer), dst=s2, p5=s3, p2=s4, kind=s5,
+p7=s6, p8=s7; ours p6=s0, dst=s1, p7=s2, p4=s3, ...). Tried: param types, declaration placement,
+if/else shapes in case 1. Next: other ways to write the three error tails (they are cross-jumped).
+### 0x1B55A0 (CMenuMgrSub1B4768, was CMenuMgr: glyph cell lookup for a char, switch with jump table, 122 insns) DIFF 33
+Unblocked by the new CMenuMgrSub1B4768 unit (jump table and "*** no suppot char" literal now compiled in
+place). Everything matches except the block layout at the end: retail keeps case ' ' (x=0x7A, y=0x3C) in
+the cross-jumped tail of the other one-store cases and the default (print, then the same two stores with
+$3/$2 swapped) separate at the end; ours cross-jumps case ' ' into the default's identical stores. Tried:
+break/return, a shared `n` with one final store, ' ' first, fall-through from default.
+### 0x286518 (Lib285F80, frame.c execute_cfa_insn, EE-GCC 2.96 flavour, 276 insns) DIFF ~247 (block layout)
+Unblocked: Lib285F80 is frame.c only now, with its .rodata (jump table jtbl_002EABB0) from the object.
+The source is gcc-2.95.2's execute_cfa_insn plus 2.96's DW_CFA_def_cfa_expression (0x0F: loop over
+execute_stack_op 0x2863F8), DW_CFA_GNU_negative_offset_extended (0x2F) and the "reg == cfa_reg: record
+nothing" test in DW_CFA_offset/offset_extended; frame_state layout {cfa, eh_ptr, cfa_offset, cfa_exp,
+args_size, reg_or_offset[123] @0x20, cfa_reg @0x3F8, saved[] @0x3FC, cfa_how @0x477, saved_state @0x478}.
+Every case's code matches; what differs is cross-jumping: ours merges DW_CFA_offset's decode+test into
+the offset_extended case, retail only shares the final stores, and insn lives in $5 in retail. Next: the
+2.96 frame.c text itself (gcc CVS around 2000-06) would settle the statement shapes.
+### 0x267CA0 (Dk265918, libmpeg sceMpegGetPicture, switch on the decoder state, 110 insns) DIFF ~90
+Unblocked by Dk265918's .rodata at level 2 (jump table and messages compiled in place). The flow
+matches with goto loops (a for/while hoists the -1 constant into an s-register); left: the two
+"print + return -1" blocks get cross-jumped in ours (retail keeps both, the "aborted" one placed before
+the loop), and r/ret take s3/s2 where retail has s2/s3.
+### 0x10D360 (CTexCacheMgr, was CList: texture blit with flip by pixel mode, switch, 154 insns) DIFF ~8
+Unblocked by merging CList.cpp and CEFontWork's tail into the CTexCacheMgr unit (level 2). All five
+cases match (BlitFlip32/16/8 sibcalls, the 24-bit and 4-bit inline loops); only the default
+`Func235DE0("*** unknown pixel mode '%X'\n", psm)` is a sibcall in ours (`j`) and a `jal` falling into
+the epilogue in retail. Tried: int/void prototypes with and without throw().
+### 0x24DC40 (Dk2497C0, CExpr assignment statement `name op= expr`, 124 insns) DIFF 31 (tail only)
+Unblocked by Dk2497C0 at level 2 ("," and the "unknown assignment symbol" message compiled in place).
+Everything matches up to the final `func_0024D340(e, name, &val)` (store the value): retail has two
+copies of it (the kind == 3 / computed path ending `bnel v0, ret; li v0, 1`, and the kind < 0 path
+ending `beqz v0, ret; li v0, 1`), ours one copy returning `sltu`. Tried if/else shapes and returns
+written as `x ? 1 : 0`, `if (!x) return 0; return 1;`.
+- 0x26F0D8 (Dk26CFB0, libgraph sceGsSetDefLoadImage): MATCHES in utest (docs/hard/y1/hard_26F0D8.snip: psm
+  switch with `qwc = 0` preset, giftag0 + the A+D registers, then giftag1 last), but the compiled jump table makes
+  the object's .rodata 16-aligned and Dk26CFB0's .rodata piece starts at 0x2E9928 (8-aligned), so the whole piece
+  shifts by 8. The libgraph code is its own object in retail (its .rodata starts at the 16-aligned 0x2E9A00 with
+  "sceGsSetDefLoadImage: too big size"); port after the unit is split there.
+- 0x25D3E0 note: matched (see below). 0x257DC8 (AT3 free-list init): DIFF 16 with `CAt3Node **fl =
+  &D_002BA1E4`; structure right, registers one off (retail fl in $2).
+- 0x246100 (memheap init): DIFF 2 again (utest hill-climb over the 12 header stores, list-insert helper and
+  `CMemGlobal *g` min/max form fixed the rest): retail stores free.next (0x38) right after the magic, ours
+  numNodes; docs/hard/y1/hard_246100.snip.
+- Hand-written MMI also at 0x26228C and 0x262448 (Dk260A60 polyphase filter, fixed $8-$15/$24/$25).
+### 0x24D460 (Dk2497C0, CExpr primary: number / variable / unary op / parentheses, switch, 144 insns) DIFF ~98 (layout)
+Unblocked by Dk2497C0 at level 2 (four messages and the jump table compiled in place, in retail order
+with case 0x12 '(' first). Same open question as 0x24DC40: retail returns the result of the unary-op
+callback as `bnel v0, ret; li v0, 1` and keeps the "back brace error" call cross-jumped with "brace
+error"; ours turns every `return f() ? 1 : 0` / `if (!f()) return 0; return 1;` into `sltu`. Find that
+idiom once (it recurs in this parser) and both functions should fall.
+- **0x1AD800** CMenuSysscr02::Update (gosubs into a cursor/colour sub, PMF background loader, states in
+  do-while loops): same length, ~11 words, all register choice/scheduling: the 6-path's constants (`5` in
+  `$3`, `-1` in `$2` with the `m_state` store first; ours either regs or store order), the old cursor
+  in the 0x1000 branch (`$4`, ours `$3`), and the sub's `Move1B6488(x, y)` loading `this` last (in the
+  jal slot; ours first). Notes: `case -0x147: default: goto out;` gives retail's case tree (10 nodes),
+  the return cases (`case -0xE3: Play(0); goto y10C;`) sit right after their gosubs so cross-jumping
+  keeps the Play(4) copy, the PMF is `&CMenuSysscr02::LoadFlags` (a .rodata constant between the
+  literals), func_00245818's int return through an asm-named declaration. Needs `s32 m_unkAC;
+  s32 m_unkB4[3];` in the unit's class.

@@ -152,6 +152,13 @@ extern u8 W2s__vt_9IAlbumMgr[] asm("_vt$9IAlbumMgr");
 
 extern u8 W2vt_peo[] asm("_vt$14CPhotoEventObj");
 extern "C" void func_001327F8(void *, s32);
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+extern "C" void __builtin_delete(void *);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 extern "C" s32 func_00299948(void *p) { return FLD(s32, p, 0x23C); }
@@ -212,7 +219,18 @@ extern "C" TypeInfo *__tf17CGameScheduleUnit()
     return &D_424930;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib299948", func_00299B60);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_00299B60(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" TypeInfo *__tft5TList1Z17CGameScheduleUnit()
 {

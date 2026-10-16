@@ -1,0 +1,15 @@
+//@decl
+//@func 0x266738
+extern "C" u64 func_00266738(u32 i, u64 v)
+{
+    u64 r = 0;
+    s32 sh = 0;
+    if (i < 10) {
+        switch (D_002BD7A8[i].m8) {
+        case 0xFF00000000ULL: sh = 32; break;
+        case 0xFFFF000000ULL: sh = 24; break;
+        }
+        r = D_002BD7A8[i].m0 | ((u64)v << sh);
+    }
+    return r;
+}

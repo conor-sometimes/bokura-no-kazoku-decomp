@@ -9,6 +9,11 @@ public:
 // The window item (CStatusWin.cpp); Func1A4298 is named under another class there.
 class CStatusItem {
 public:
+    void Func1A40C8();
+    void Start();
+    int Select(s32 i);
+    void Func1A3628();
+    void Func1A3378();
     int GetColor(CVec4 *out, s32 i);
     void GetPos(f32 *x, f32 *y, s32 i);
 
@@ -70,6 +75,44 @@ extern "C" void func_001900B0(void *p);
 class CMenuReviewResult {
 public:
     static CMenuReviewResult *Create();
+};
+
+struct CStatusItemX {
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+#include "CMenuMgrSub1B6418.h"
+extern CMenuMgrSub1B6418 *D_002A5538;
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual int V7(s32 *a, s32 *b, s32 *c);
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void Play(s32 v);
+    virtual void Stop(s32 v);
+};
+extern CSndIf *D_002A5468;
+extern CFlagWork *D_002A4B60;
+class CMenuGetMoneyPart {
+public:
+    void SetRate(f32 t);
+    void SetScale(f32 t);
 };
 // @decl-end
 

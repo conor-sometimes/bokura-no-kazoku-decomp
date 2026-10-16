@@ -1,0 +1,10 @@
+//@decl
+class Y1Unit { public: s32 m_head; Y1Unit *m_prev; Y1Unit *m_next; virtual ~Y1Unit(); virtual void Apply(CSndPrm *p); };
+inline Y1Unit *Y1UNx(Y1Unit *h) { Y1Unit *n = h->m_next; return n->m_head ? 0 : n; }
+//@func 0x25D1A0
+void CSndWork::Func25D1A0(CSndPrm *prm)
+{
+    Y1Unit *p, *u;
+    p = Y1UNx((Y1Unit *)((u8 *)this + 0x24));
+    while (p) { u = p; p = Y1UNx(p); u->Apply(prm); }
+}

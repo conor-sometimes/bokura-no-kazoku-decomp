@@ -87,6 +87,13 @@ public:
     virtual void Func5();
     virtual ~CRelease7();
 };
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+extern "C" void __builtin_delete(void *);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 // libgcc __fixdfdi (soft-float double to 64-bit int)
@@ -316,7 +323,18 @@ extern "C" void *__tf5CList(void) {
     return D_424660;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_00293840);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_00293840(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 // CCacheInfo::~CCacheInfo() (linkonce, deleting): only the CListTag base's unlink
 extern "C" void CCacheInfo_dtor(ListTag *p, s32 flags) asm("_$_10CCacheInfo");
@@ -337,7 +355,18 @@ extern "C" void *__tf10CCacheInfo(void) {
     return D_424670;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib2930A0", func_002939A0);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_002939A0(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" void *__tft5TList1Z10CCacheInfo(void) {
     if (*(s32 *)D_4246A0 == 0) {

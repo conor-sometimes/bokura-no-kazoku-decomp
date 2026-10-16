@@ -82,6 +82,19 @@ public:
 };
 
 struct CV4 { f32 x, y, z, w; };
+
+inline CTaskTag *Y1TPrev(CListTag *t) { return t->m_prev->m_isHead ? 0 : (CTaskTag *)t->m_prev; }
+inline CTaskTag *Y1TNext(CListTag *t) { return t->m_next->m_isHead ? 0 : (CTaskTag *)t->m_next; }
+
+struct Y1Tg2 { s32 isHead; Y1Tg2 *prev; Y1Tg2 *next; void *vptr; };
+struct Y1Tg { s32 isHead; Y1Tg *prev; Y1Tg *next; void *vptr; };
+extern u8 Y1vtTaskTag[] asm("_vt$8CTaskTag");
+extern u8 Y1vtCList[] asm("_vt$5CList");
+extern u8 Y1vtCListTag[] asm("_vt$8CListTag");
+extern "C" void func_0024EF30(CTaskTag *t);
+static inline Y1Tg *Y1Fst(Y1Tg *l) { Y1Tg *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tg *Y1Rem(Y1Tg *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
+static inline void Y1TagDtor(Y1Tg *l) { l->vptr = Y1vtCListTag; l->prev->next = l->next; l->next->prev = l->prev; l->next = l; l->prev = l; }
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68C8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68D0);
@@ -139,9 +152,34 @@ extern "C" void func_0024ECF8(void *p) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024ED20);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024EDE8);
+extern "C" void func_0024EDE8(CTaskTag *t, s32 flags)
+{
+    Y1Tg *p = (Y1Tg *)t;
+    Y1Tg *c;
+    p->vptr = Y1vtTaskTag;
+    func_0024EF30(t);
+    c = (Y1Tg *)((u8 *)t + 0x54);
+    c->vptr = Y1vtCList;
+    while (Y1Rem(Y1Fst(c)));
+    Y1TagDtor(c);
+    Y1TagDtor(p);
+    if (flags & 1) return (void)func_0024ECF8(t);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024EEE8);
+extern "C" void func_0024EEE8(CTaskTag *parent, CTaskTag *ct)
+{
+    Y1Tg2 *c = (Y1Tg2 *)ct;
+    Y1Tg2 *l = (Y1Tg2 *)&parent->m_children;
+    c->prev->next = c->next;
+    c->next->prev = c->prev;
+    c->next = c;
+    c->prev = c;
+    c->prev = l->prev;
+    c->next = l;
+    c->prev->next = c;
+    c->next->prev = c;
+    ct->m_parent = parent;
+}
 
 extern "C" void func_0024EF30(CTaskTag *t) {
     CTaskTag *n;
@@ -206,13 +244,37 @@ extern "C" CTask *func_0024F460(CTask *t) {
     return p ? p->m_task : 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F480);
+extern "C" CTask *func_0024F480(CTask *t)
+{
+    CTaskTag *n;
+    for (n = Y1TPrev((CTaskTag *)t->m_unk0); n; n = Y1TPrev(n))
+        if (n->m_task) break;
+    return n ? n->m_task : 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F4D0);
+extern "C" CTask *func_0024F4D0(CTask *t)
+{
+    CTaskTag *n;
+    for (n = Y1TNext((CTaskTag *)t->m_unk0); n; n = Y1TNext(n))
+        if (n->m_task) break;
+    return n ? n->m_task : 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F520);
+extern "C" CTask *func_0024F520(CTask *t)
+{
+    CTaskTag *n;
+    for (n = Y1TNext(&((CTaskTag *)t->m_unk0)->m_children); n; n = Y1TNext(n))
+        if (n->m_task) break;
+    return n ? n->m_task : 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024F570);
+extern "C" CTask *func_0024F570(CTask *t)
+{
+    CTaskTag *n;
+    for (n = Y1TPrev(&((CTaskTag *)t->m_unk0)->m_children); n; n = Y1TPrev(n))
+        if (n->m_task) break;
+    return n ? n->m_task : 0;
+}
 
 void *CTaskList24F5C0::Func24F5C0(void *task, int x) {
     CTask *t = (CTask *)task;

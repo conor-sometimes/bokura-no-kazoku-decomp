@@ -1,7 +1,0 @@
-//@decl
-extern "C" s32 dpcmp(double, double);
-extern "C" u32 func_002854F0(double);
-//@func 0x283490
-extern "C" u64 func_00283490(double a) { double b; u64 v; if (a < 0) return 0; b = (a / 4294967296.0); v = (u32)b; v <<= 32; b = a - (double)v; if (b < 0) v -= (u32)(-b); else v += (u32)b; return v; }
-//@func 0x2835A8
-extern "C" u64 __fixunssfdi(float original_a) { double a = original_a; double b; u64 v; if (a < 0) return 0; b = (a / 4294967296.0); v = (u32)b; v <<= 32; b = a - (double)v; if (b < 0) v -= (u32)(-b); else v += (u32)b; return v; }

@@ -210,6 +210,36 @@ extern "C" void func_002128A8(void);
 struct CSndTree;
 void Func25D270(CSndTree *t, s32 i);
 extern void (*D_002BA258[])(s32, u32);
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern "C" void func_0025C580(void *p);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
+static inline void Y1TagDtor(Y1Tag *l)
+{
+    l->vptr = D_vtCListTag;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+}
+static inline void Y1ListDtor(Y1Tag *l)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    Y1TagDtor(l);
+}
+#include "CList.h"
+class Y1Prm { public: Y1Prm() asm("Func25BD60__FP7CSndPrm"); u8 b[0x54 - 0x1C]; };
+class CSndUnit : public CListTag {
+public:
+    CSndUnit(s32 a) asm("func_0025C098");
+    virtual ~CSndUnit();
+    s32 m10, m14, m18;
+    Y1Prm m1C;
+    s32 m54, m58, m5C, m60, m64;
+};
 // @decl-end
 
 s32 Func25A010(s32 i, s32 v) { return (v / D_002BA218[i]) << 10; }
@@ -823,7 +853,18 @@ void Func25C010(CSndPrm *p) {
     p->m0 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025C098);
+CSndUnit::CSndUnit(s32 a)
+{
+    m10 = 0;
+    m14 = -1;
+    m18 = a;
+    D_002BA248->Func25A5C0(a, 1);
+    m54 = 0;
+    m5C = -1;
+    m60 = -1;
+    m58 = 0;
+    m64 = 0;
+}
 
 extern "C" void func_0025C138(CSndLinkB *u, s32 chrg) {
     u->mC = D_vtCSndUnit;
@@ -842,4 +883,14 @@ void *Func25C220() { return D_41A788; }
 
 extern "C" void func_0025C230(CSndWorkM *w) { u8 *p = (u8 *)w; W2LH *b = (W2LH *)(p + 0x24); W2LH *a = (W2LH *)(p + 0x14); FLD(void *, p, 0xC) = W2vt_sw; FLD(s32, p, 0) = 0; FLD(void *, p, 8) = p; FLD(void *, p, 4) = p; a->vt = W2vt_lsw; a->next = a; a->prev = a; a->head = 1; b->vt = W2vt_lsu; b->prev = b; b->head = 1; b->next = b; Func25BD60((CSndPrm *)(p + 0x34)); FLD(s32, p, 0x10) = 0; ((CSndWork *)D_41A788)->Func25C438((CSndUnitN *)p); return; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025C2C0);
+// CSndWork::~CSndWork() (its own unit's text starts late): delete the units, the two lists, the CListTag base
+extern "C" void func_0025C2C0(CSndWorkM *w, s32 c)
+{
+    u8 *p = (u8 *)w;
+    FLD(void *, p, 0xC) = W2vt_sw;
+    func_0025C580(p);
+    Y1ListDtor((Y1Tag *)(p + 0x24));
+    Y1ListDtor((Y1Tag *)(p + 0x14));
+    Y1TagDtor((Y1Tag *)p);
+    if (c & 1) return (void)__builtin_delete(p);
+}

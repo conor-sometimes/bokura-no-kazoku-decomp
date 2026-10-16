@@ -95,6 +95,13 @@ extern "C" void MovFunc13E888(void *) asm("Func13E888__9CMovieObj");
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 extern "C" void *memset(void *, int, unsigned int);
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+extern "C" void __builtin_delete(void *);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 extern "C" void func_00298190(TArrEventCharaResName *a, EventCharaResName *p) { if (p) D_002B91B0(p); }
@@ -211,7 +218,18 @@ extern "C" TypeInfo *__tf12CEventMesRes()
     return &D_424870;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib298190", func_002987C0);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_002987C0(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" TypeInfo *__tft5TList1Z12CEventMesRes()
 {

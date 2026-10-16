@@ -1,0 +1,26 @@
+//@decl
+class Y1NodeD { public: s32 m_head; Y1NodeD *m_prev; Y1NodeD *m_next; virtual ~Y1NodeD(); };
+class Y1UnitD : public Y1NodeD { public: u8 m10[0xC]; u8 m1C; s8 m1D; s8 m1E; s8 m1F; u8 pad20[0x2E]; s16 m4E; };
+inline Y1UnitD *Y1DNx(Y1NodeD *h) { Y1NodeD *n = h->m_next; return n->m_head ? 0 : (Y1UnitD *)n; }
+//@func 0x25D008
+void Func25D008(CSndTree *t, s32 b)
+{
+    Y1UnitD *p, *it;
+    it = Y1DNx((Y1NodeD *)((u8 *)t + 0x24));
+    p = it;
+    while (p) {
+        it = Y1DNx(it);
+        if (!p->m1D) {
+            if (!Func25C810(b, 0)) {
+                p->m4E = 0;
+                p->m1D = 1;
+                p->m1F = b;
+                p->m1C = 1;
+                continue;
+            }
+            delete p;
+
+        }
+        p = it;
+    }
+}

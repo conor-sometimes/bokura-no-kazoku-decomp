@@ -1,0 +1,25 @@
+//@decl
+extern "C" CRU *func_00250B80(CResCache *c, s32 idx);
+inline s32 Y1RIndex(CResCache *c, CRU *u)
+{
+    CRU *p;
+    s32 i = 0;
+    for (p = RFirst(&c->m_free); p; p = RNext(p), i++)
+        if (p == u) return i;
+    return -1;
+}
+//@func 0x250C28
+extern "C" s32 func_00250C28(CResCache *c, s32 idx, u32 what)
+{
+    CRU *u = func_00250B80(c, idx);
+    if (!u) return 0;
+    switch (what) {
+    case 0: return (s32)u->m_name;
+    case 1: return u->m58;
+    case 2: return u->m50;
+    case 3: return func_00250BE0(u->m_heap);
+    case 4: return *(s32 *)c->pad8 - func_00250BE0(u->m_heap);
+    case 5: return Y1RIndex(c, u) >= 0;
+    }
+    return 0;
+}

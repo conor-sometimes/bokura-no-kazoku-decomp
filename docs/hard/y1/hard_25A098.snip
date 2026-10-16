@@ -1,0 +1,24 @@
+//@decl
+// needs: struct CSndWorkM { CSndWorkM() asm("func_0025C230"); u8 pad[0x6C]; }; in the unit (member ctors)
+//@func 0x25A098
+CSndMgr::CSndMgr()
+{
+    D_002BA248 = this;
+    m_defValW = 0x80;
+    m_unk30 = -1;
+    m_unk24 = -1;
+    m_unk2C = -1;
+    m_alloc = Func245D00;
+    m_defs = 0;
+    m_unk8 = 0;
+    m_ents = 0;
+    m_numEnts = 0;
+    m_seqs = 0;
+    m_numSeqs = 0;
+    m_vals = 0;
+    m_unk28 = 0;
+    m_free = D_002B91B0;
+    ((CSndWork *)Func25C220())->Func25C438((CSndUnitN *)&m_w3C);
+    ((CSndWork *)Func25C220())->Func25C438((CSndUnitN *)&m_wA8);
+    ((CSndWork *)Func25C220())->Func25C438((CSndUnitN *)&m_w114);
+}

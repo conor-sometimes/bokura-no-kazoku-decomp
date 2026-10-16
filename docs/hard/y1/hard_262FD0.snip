@@ -1,0 +1,26 @@
+//@decl
+struct Y1CdBuf { s32 m0; s32 m4; u8 *m8; u8 *mC; u8 m10[0x40]; u8 m50[0x40]; };
+//@func 0x262FD0
+extern "C" void func_00262FD0(Y1CdBuf *b)
+{
+    Y1CdBuf *u = (Y1CdBuf *)((u32)b | 0x20000000);
+    s32 i;
+    u8 *d;
+    if (u->m0 > 0) {
+        u8 *c; d = u->m8; c = (u8 *)((u32)d | 0x20000000);
+        for (i = 0; i < u->m0; i++) {
+            u8 v = u->m10[i];
+            c[i] = v;
+            d[i] = v;
+        }
+    }
+    if (u->m4 > 0) {
+        u8 *c; d = u->mC; c = (u8 *)((u32)d | 0x20000000);
+        for (i = 0; i < u->m4; i++) {
+            u8 v = u->m50[i];
+            c[i] = v;
+            d[i] = v;
+        }
+    }
+    func_00262D90((s32 *)&D_002BBC18);
+}

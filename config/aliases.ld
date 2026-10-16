@@ -419,3 +419,11 @@ D_41D1A0 = 0x0041D1A0; /* lane w2: SIF cmd server register address (Dk2752B8 0x2
 __muldi3 = 0x00281B20; /* lane w2: libgcc __muldi3 (func_00281B20, Dk280098), called by GCC for 64-bit multiplies in the C newlib units */
 D_33D9A8 = 0x0033D9A8; /* lane x1: Unit21D820 0x21E4A0, not a splat symbol */
 func_001513D0 = 0x001513D0; /* Func1513D0__9CGameMainiii (CGameSchedule) */
+__udivdi3 = 0x002828C0; /* libgcc, called by compiled 64-bit division (lane cv, _vfprintf_r) */
+__umoddi3 = 0x00282E40; /* libgcc */
+dptoli = 0x002853C8; /* libgcc soft-float double to int the compiler calls by name (lane cv, _dtoa_r) */
+__floatdidf = 0x00287F98; /* libgcc2 (func_00287F98), called by compiled long-to-double (lane cv, _strtod_r) */
+__fixdfdi = 0x002930A0; /* libgcc2, double-to-long */
+/* Lane sm: the kanji-select menus still call the list machine by its old name. */
+func_001A73B0 = 0x001A73B0; /* = Update1A73B0__14CMenuSub1A7658 */
+dptoul = 0x002854F0; /* = func_002854F0 (fp-bit __fixunsdfsi, the soft-float libcall for (u32)double) */

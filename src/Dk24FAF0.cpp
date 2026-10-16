@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -178,6 +179,8 @@ public:
     void Func250978();
     s32 Init250208(void (*create)(), int n, int size, int nodes);
     void Func250368();
+    CResCache();
+    virtual ~CResCache();
 
     CRU *m_units;             // 0x0
     s32 m_count;              // 0x4
@@ -185,6 +188,8 @@ public:
     RHead m_free;             // 0xC
     RHead m_used;             // 0x1C
     RHead m_spare;            // 0x2C
+    u8 pad3C[0x13C - 0x3C];
+    // vptr 0x13C
 };
 extern s32 D_002BA0AC;
 extern "C" void func_0024FC78(CResCacheUnit *u);
@@ -253,6 +258,35 @@ extern s32 D_393928;
 #define GS_ZBUF(zbp, psm, zmsk) ((u64)(zbp) | ((u64)(psm) << 24) | ((u64)(zmsk) << 32))
 #define GS_SCISSOR(x0, x1, y0, y1) ((u64)(x0) | ((u64)(x1) << 16) | ((u64)(y0) << 32) | ((u64)(y1) << 48))
 #define GS_XYOFFSET(x, y) ((u64)(x) | ((u64)(y) << 32))
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
+static inline void Y1ListDtor(Y1Tag *l)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+}
+inline void *operator new(unsigned int, void *p) { return p; }
+class CList : public CListTag { public: CList() { m_isHead = 1; } virtual ~CList(); };
+template <class T> class TList : public CList { public: virtual ~TList(); };
+extern template class TList<CResCacheUnit>;
+
+class Y1RU : public CListTag { public: virtual ~Y1RU(); u8 pad10[0x5C - 0x10]; };
+static inline Y1Tag *Y1Rem2(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
+
+inline CRU *Y1RFi(RHead *h) { return h->next->m_isHead ? 0 : h->next; }
+inline CRU *Y1RNx(CRU *p) { return p->m_next->m_isHead ? 0 : p->m_next; }
+inline CRU *Y1RF2(RHead *h) { CRU *n = h->next; return n->m_isHead ? 0 : n; }
+inline CRU *Y1RN2(CRU *p) { CRU *n = p->m_next; return n->m_isHead ? 0 : n; }
+inline s32 Y1Dec(s32 *p) { s32 v = *p - 1; if (v < 0) v = 0; *p = v; return v; }
+inline void Y1Dec2(s32 *p) { s32 v = *p - 1; if (v < 0) v = 0; *p = v; }
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FAF0);
@@ -331,16 +365,39 @@ extern "C" s32 func_0024FE80(CRU *u) {
     return ok;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", __9CResCache);
+CResCache::CResCache()
+{
+    new (&m_free) TList<CResCacheUnit>;
+    new (&m_used) TList<CResCacheUnit>;
+    new (&m_spare) TList<CResCacheUnit>;
+    m_units = 0;
+    m_count = 0;
+    pad3C[0] = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", _$_9CResCache);
+CResCache::~CResCache()
+{
+    Func250368();
+    Y1ListDtor((Y1Tag *)&m_spare);
+    Y1ListDtor((Y1Tag *)&m_used);
+    Y1ListDtor((Y1Tag *)&m_free);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F0);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6920);
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Init250208__9CResCachePFv_viii);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250368__9CResCache);
+void CResCache::Func250368()
+{
+    if (m_units) {
+        while (Y1Rem2(Y1First((Y1Tag *)&m_free)));
+        while (Y1Rem2(Y1First((Y1Tag *)&m_used)));
+        delete [] (Y1RU *)m_units;
+        m_units = 0;
+        m_count = 0;
+    }
+}
 
 extern "C" void func_00250488(CResCache *c) {
     CRU *n;
@@ -371,7 +428,18 @@ extern "C" s32 func_00250828(void *c, const char *name) {
     return func_002505A0(c, name, 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250840__9CResCachePv);
+void CResCache::Func250840(void *name)
+{
+    CRU *n;
+    for (n = Y1RF2(&m_free); n; n = Y1RN2(n)) {
+        if (!strcmp(n->m_name, (const char *)name)) {
+            if (Y1Dec(&n->m58) > 0) return;
+            RUnlink(n);
+            RPushFront(&m_used, n);
+            return;
+        }
+    }
+}
 
 extern "C" void func_00250910(void *pc) {
     CResCache *c = (CResCache *)pc;
@@ -385,9 +453,23 @@ extern "C" void func_00250910(void *pc) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250978__9CResCache);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250A48);
+extern "C" s32 func_00250A48(CResCache *c, const char *name)
+{
+    CRU *n;
+    for (n = Y1RFi(&c->m_free); n; n = Y1RNx(n))
+        if (!strcmp(n->m_name, name)) return n->m50;
+    for (n = Y1RFi(&c->m_used); n; n = Y1RNx(n))
+        if (!strcmp(n->m_name, name)) return n->m50;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Find250B08__9CResCachei);
+void *CResCache::Find250B08(int key)
+{
+    CRU *n;
+    for (n = Y1RFi(&m_free); n; n = Y1RNx(n))
+        if (!strcmp(n->m_name, (const char *)key)) return n->m_obj;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250B80);
 

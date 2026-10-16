@@ -1,5 +1,8 @@
 #ifndef CFLAGWORK_H
 #define CFLAGWORK_H
+#ifdef CFLAGWORK_INLINE_IDTORS
+#pragma interface
+#endif
 
 #include "common.h"
 
@@ -34,7 +37,13 @@ extern ICurFlag *D_002A26E4;
 // Interface of the current-game flags (vtable _vt$8ICurFlag, slots 3-35 pure).
 class ICurFlag : public CFlagWork {
 public:
+#ifdef CFLAGWORK_INLINE_IDTORS
+    // inline in retail (~CCurFlag stores _vt$8ICurFlag itself); units that define ~CCurFlag or
+    // ~CSysFlag define CFLAGWORK_INLINE_IDTORS before including this header (lane cv)
+    virtual ~ICurFlag() {}
+#else
     virtual ~ICurFlag();
+#endif
     virtual void Release();
     virtual void Vf144880(CFlagWork *src);
     virtual s32 Vf2991B0();
@@ -105,7 +114,11 @@ public:
 // System flags; interface ISysFlag (slots 3-15 pure).
 class ISysFlag : public CFlagWork {
 public:
+#ifdef CFLAGWORK_INLINE_IDTORS
+    virtual ~ISysFlag() {}
+#else
     virtual ~ISysFlag();
+#endif
     virtual void Vf2990F0() = 0;
     virtual void Vf143BD0() = 0;
     virtual void Load143BD8(CCurFlag *cur) = 0;

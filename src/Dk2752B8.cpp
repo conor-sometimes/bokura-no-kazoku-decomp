@@ -111,6 +111,16 @@ int func_00273560(W2DmaT *, int);
 
 typedef struct { u8 p0[0x10]; u32 m10; void *m14; int m18; struct Y1Rcv *m1C; int m20; int m24; int m28; } Y1In;
 typedef struct { u8 p0[0x10]; u32 m10; int m14; int m18; int m1C; u32 m20; int m24; int m28; int m2C; } Y1Out;
+
+typedef struct Y1Srv { int m0, m4, m8; int size; int m10, m14, m18; void *client; int pkt_addr; int rpc_number; int receive; int rsize; int rmode; int rid; u8 p38[4]; struct Y1Srv *link; struct Y1Base *base; } Y1Srv;
+typedef struct Y1Base { int thread_id; int active; int m8; Y1Srv *start; void *end; } Y1Base;
+typedef struct { u8 p0[0x10]; int rec_id; void *pkt_addr; int m18; void *client; int rpc_number; int send_size; int receive; int recv_size; int rmode; Y1Srv *server; } Y1Call;
+
+typedef struct { int m0, m4, m8, mC; unsigned int rec_id; int m14; int rpc_id; } Y1Pk;
+typedef struct { Y1Pk *pkt; int rpc_id; } Y1Cd;
+
+typedef struct Y1Cmd { int m0; int m4; int m8, mC, m10, m14; char p18[0x38 - 0x18]; void * m38; void * m3C; struct Y1CQs * m40; } Y1Cmd;
+typedef struct Y1CQs { int m0, m4; void * m8; } Y1CQ;
 // @decl-end
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
@@ -328,7 +338,22 @@ int func_00275EE0(RpcClient *cd, int rpc, int mode)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00276020);
+void func_00276020(Y1Call *request)
+{
+    Y1Srv *server = request->server;
+    Y1Base *base = server->base;
+    if (base->start == 0) base->start = server; else ((Y1Srv *)base->end)->link = server;
+    base->end = (__typeof__(base->end))server;
+    server->pkt_addr = (__typeof__(server->pkt_addr))request->pkt_addr;
+    server->client = (__typeof__(server->client))request->client;
+    server->rpc_number = request->rpc_number;
+    server->size = request->send_size;
+    server->receive = request->receive;
+    server->rsize = request->recv_size;
+    server->rmode = request->rmode;
+    server->rid = request->rec_id;
+    if (base->thread_id >= 0 && base->active == 0) func_00273DD0(base->thread_id);
+}
 
 s32 func_002760B0(void *vcd, s32 fno, s32 mode, void *send, s32 ssize, void *recv, s32 rsize, void *endfunc, void *efarg)
 {
@@ -385,7 +410,13 @@ s32 func_002760B0(void *vcd, s32 fno, s32 mode, void *send, s32 ssize, void *rec
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_002762A8);
+int func_002762A8(void *vcd)
+{
+    Y1Cd *cd = (Y1Cd *)vcd;
+    volatile Y1Pk *p = cd->pkt;
+    if (!p || cd->rpc_id != p->rpc_id || !(p->rec_id & 1)) return 0;
+    return 1;
+}
 
 void func_002762E8(Node *n, int a)
 {
@@ -406,7 +437,22 @@ void func_002762E8(Node *n, int a)
     func_0027BD78();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00276380);
+void func_00276380(Y1Cmd *c, int a, int b, int d, int e, int f, Y1CQ *q)
+{
+    Y1Cmd *p;
+    func_0027BD20();
+    c->m3C = 0;
+    c->m38 = 0;
+    c->m0 = (__typeof__(c->m0))a;
+    c->m4 = (__typeof__(c->m4))b;
+    c->m8 = d;
+    c->m10 = e;
+    c->m14 = f;
+    c->m40 = (__typeof__(c->m40))q;
+    if (q->m8 == 0) q->m8 = c;
+    else { p = (Y1Cmd *)q->m8; while (p->m38) p = (Y1Cmd *)p->m38; p->m38 = (__typeof__(p->m38))c; }
+    func_0027BD78();
+}
 
 Lnk *func_00276450(Lnk *a, LnkList *l)
 {

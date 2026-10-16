@@ -1,0 +1,52 @@
+//@decl
+extern int TexPrintf(const char *fmt, ...) asm("Func235DE0__FPCce");
+//@func 0x10D360
+extern "C" void func_0010D360(u8 *dst, u8 *src, int psm, int stride, int unused, int x, int y, int w, int h) {
+    switch (psm) {
+    case 0:
+        BlitFlip32((u32 *)dst, (u32 *)src, stride, x, y, w, h);
+        return;
+    case 1: {
+        u8 *d = dst;
+        u8 *s = src + (y * stride + x + w) * 3 - 3;
+        int i, j = h;
+        for (; j > 0; j--) {
+            for (i = w; i > 0; i--) {
+                u8 r = *s--;
+                u8 g = *s--;
+                u8 b = *s--;
+                *d++ = b;
+                *d++ = g;
+                *d++ = r;
+            }
+            s += (stride + w) * 3;
+        }
+        return;
+    }
+    case 2:
+    case 0xA:
+        BlitFlip16((u16 *)dst, (u16 *)src, stride, x, y, w, h);
+        return;
+    case 0x13:
+    case 0x1B:
+        BlitFlip8(dst, src, stride, x, y, w, h);
+        return;
+    case 0x14:
+    case 0x24:
+    case 0x2C: {
+        u8 *s = src + ((y * stride + x + w) >> 1) - 1;
+        int i;
+        for (; h > 0; h--) {
+            for (i = w >> 1; i > 0; i--) {
+                u8 c = *s--;
+                *dst++ = (c << 4) | (c >> 4);
+            }
+            s += (stride + w) >> 1;
+        }
+        return;
+    }
+    default:
+        TexPrintf("*** unknown pixel mode '%X'\n", psm);
+        return;
+    }
+}

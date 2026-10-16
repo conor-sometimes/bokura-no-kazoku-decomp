@@ -1,0 +1,16 @@
+//@decl
+//@func 0x27CF30
+int func_0027CF30(void)
+{
+    volatile AlarmSys *s = &D_002BF138;
+    AlarmEnt *e = s->free;
+    if (e == 0) return 0x80008005;
+    s->used++; //@p
+    s->free = e->next; //@p
+    e->handler = 0; //@p
+    e->flags = 0; //@p
+    s->seq++; //@p
+    e->elapsed = 0; //@p
+    e->seq = ((s->seq << 1) & 0x3FE) | 1;
+    return ((int)e << 4) | ((volatile AlarmEnt *)e)->seq;
+}

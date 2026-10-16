@@ -16,8 +16,18 @@ class CStatusItem {
 public:
     int GetColor(CVec4 *out, s32 i);
     void GetPos(f32 *x, f32 *y, s32 i);
+    void Func1A3378();
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    int Select(s32 i);
+    const char *GetUnkE4(s32 i);
+    void SetText(s32 i, const char *s);
+    int GetMappedUnkC0(f32 *x, f32 *y, s32 n);
 
-    u8 pad0[0x34];
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+    u8 pad24[0x10];
     f32 m_unk34;              // 0x34
 };
 class CUnk1A4298 {
@@ -58,9 +68,40 @@ public:
 
     CStatusItem *m_unk58;     // 0x58
     CStatusItem *m_unk5C;     // 0x5C
-    u8 pad60[0x8];
+    u8 pad60[0x4];
+    s32 m_unk64;              // 0x64
     s32 m_unk68[5];           // 0x68
 };
+
+#include "state.h"
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual int V7(s32 *a, s32 *b, s32 *c);
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14(s32 v);
+};
+extern CSndIf *D_002A5468;
+#include "CFlagWork.h"
+extern CFlagWork *D_002A5358;
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+#define W(p) ((CStatusItem *)(p))
 // @decl-end
 
 CMenuReviewSelect::CMenuReviewSelect() {
@@ -75,9 +116,117 @@ CMenuReviewSelect::CMenuReviewSelect() {
 CMenuReviewSelect::~CMenuReviewSelect() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuReviewSelect", Update__17CMenuReviewSelect);
-INCLUDE_RODATA("asm/nonmatchings/CMenuReviewSelect", D_002DBC00);
-INCLUDE_RODATA("asm/nonmatchings/CMenuReviewSelect", D_002DBC20);
+s32 CMenuReviewSelect::Update() {
+    CStateMachine *sm = (CStateMachine *)this;
+    s32 a, b, c;
+    char buf[0x200];
+    f32 x, y;
+    s32 done;
+    D_002A5468->V7(&a, &b, &c);
+    if (m_state == 6) {
+        m_state = 5;
+        goto end;
+    }
+    done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1: {
+        const char *name = "reviewselect1";
+        m_unk58 = (CStatusItem *)D_002A5408->Find(name);
+        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", name);
+        W(m_unk58)->Func1A3378();
+        name = "reviewselect2";
+        m_unk5C = (CStatusItem *)D_002A5408->Find(name);
+        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window\n", name);
+        W(m_unk5C)->Func1A3378();
+        D_002A5538->SetUnkE0(1);
+        m_unk64 = m_unk50 < 0 ? 0 : m_unk50;
+        W(m_unk58)->GetMappedUnkC0(&x, &y, m_unk64);
+        D_002A5538->SetUnk0And20(x, y);
+        W(m_unk58)->Select(m_unk64);
+        sm->Push();
+        SetVar(sm, 0, -0xBD);
+        goto sub;
+    }
+    case -0xBD:
+        W(m_unk5C)->Select(-1);
+        sprintf(buf, W(m_unk58)->GetUnkE4(7), D_002A5358->GetStr(0x243));
+        W(m_unk58)->SetText(7, buf);
+        W(m_unk58)->Func1A3628();
+        W(m_unk5C)->Func1A3628();
+        do {
+    case -0xD3:
+            if (W(m_unk58)->m_state != 2) {
+                sm->m_state = -0xD3; done = 1; goto loop;
+            }
+            if (W(m_unk5C)->m_state != 2) {
+                sm->m_state = -0xD3; done = 1; goto loop;
+            }
+        } while (0);
+        sm->m_state = -0xD8; done = 1; goto loop;
+    case -0xD8:
+    case -0xF4:
+        if (!(a & 0x20)) {
+            if ((a & 0x1000) && m_unk64 == 1) {
+                D_002A5468->V14(0);
+                m_unk64 = 0;
+                sm->Push();
+                SetVar(sm, 0, -0xE9);
+                goto sub;
+            }
+            if ((a & 0x4000) && m_unk64 == 0) {
+                D_002A5468->V14(0);
+                m_unk64 = 1;
+                sm->Push();
+                SetVar(sm, 0, -0xF1);
+                goto sub;
+            }
+            sm->m_state = -0xF4; done = 1; goto loop;
+    case -0xE9:
+    case -0xF1:
+            sm->m_state = -0xF4; done = 1; goto loop;
+        }
+        D_002A5468->V14(1);
+        m_unk4C = m_unk64;
+        m_state = 4;
+        W(m_unk58)->Start();
+        W(m_unk5C)->Start();
+        do {
+    case -0x107:
+            if (W(m_unk58)->m_state != 0 || W(m_unk5C)->m_state != 0) {
+                sm->m_state = -0x107; done = 1; goto loop;
+            }
+            m_state = 5;
+            sm->m_state = -0x118;
+            goto e118;
+        } while (0);
+    sub:
+        m_unk68[0] = D_002A5358->Func1091B0(0x244);
+        m_unk68[1] = D_002A5358->Func1091B0(0x245 + m_unk64);
+        m_unk68[2] = D_002A5358->Func1091B0(0x247);
+        m_unk68[3] = D_002A5358->Func1091B0(0x248);
+        m_unk68[4] = m_unk68[0] + m_unk68[1] + m_unk68[2] + m_unk68[3];
+        W(m_unk58)->GetMappedUnkC0(&x, &y, m_unk64);
+        D_002A5538->Move1B6488(x, y);
+        W(m_unk58)->Select(m_unk64);
+        sm->m_state = sm->Get();
+        sm->Pop();
+        goto loop;
+    case -0x118:
+    e118:
+        done = 1; goto loop;
+    }
+out:
+    W(m_unk58)->Func1A40C8();
+    W(m_unk5C)->Func1A40C8();
+    D_002A5538->Update1B6570();
+end:;
+}
 
 s32 CMenuReviewSelect::Draw() {
     f32 x, y;

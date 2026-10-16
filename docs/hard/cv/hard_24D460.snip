@@ -1,0 +1,53 @@
+//@decl
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max);
+extern "C" s32 func_0024D288(const char **tbl, const char *s);
+extern "C" s32 func_0024D2F8(const char *s);
+extern "C" s32 func_0024D3D0(CExpr *e, const char *name, CValue *v);
+extern "C" int atoi(const char *);
+extern const char *D_002B9E60[];
+typedef s32 (*CExprUnaryFn)(CValue *dst, CValue *src, CExpr *e);
+extern CExprUnaryFn D_002B9F78[], D_002B9F84[], D_002B9F6C[];
+//@func 0x24D460
+extern "C" s32 func_0024D460(CExpr *e, CValue *v, const char **pp) {
+    char tok[0x100];
+    s32 k;
+    *pp = Func24A840(*pp, tok, (const char *)D_002B9E60, D_002E6780, 0x100);
+    k = func_0024D288(D_002B9E60, tok);
+    if (k >= 0) {
+        switch (k) {
+        case 0x12:
+            if (!func_0024D6A0(e, v, pp, 0)) return 0;
+            if (**pp != ')') {
+                func_0024D948(e, "back brace error");
+                return 0;
+            }
+            (*pp)++;
+            return 1;
+        case 0xD:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F78[v->m_type](v, v, e)) return 0;
+            return 1;
+        case 0xE:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F84[v->m_type](v, v, e)) return 0;
+            return 1;
+        case 0xF:
+            if (!func_0024D460(e, v, pp)) return 0;
+            if (!D_002B9F6C[v->m_type](v, v, e)) return 0;
+            return 1;
+        case 0x13:
+            func_0024D948(e, "brace error");
+            return 0;
+        default:
+            func_0024D948(e, "unknown symbol '%s'", tok);
+            return 0;
+        }
+    }
+    if (func_0024D2F8(tok)) {
+        func_0024BAF0(v, atoi(tok));
+        return 1;
+    }
+    if (func_0024D3D0(e, tok, v)) return 1;
+    func_0024D948(e, "unknown '%s'", tok);
+    return 0;
+}

@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -234,7 +235,27 @@ CMiniGame4::CMiniGame4(s32 a, s32 b) {
     m_unk13F4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", _$_10CMiniGame4);
+extern "C" void MG4LayoutDtor(void *p, s32 flags) asm("_$_10CLayoutObj");
+extern "C" void func_0025C2C0(void *p, s32 flags);
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data). The
+// member objects are raw storage here, destroyed explicitly (last declared first).
+CMiniGame4::~CMiniGame4() {
+    func_0025C2C0((u8 *)this + 0x1334, 2);
+    MG4LayoutDtor((u8 *)this + 0x11C0, 2);
+    MG4LayoutDtor((u8 *)this + 0x1050, 2);
+    MG4LayoutDtor((u8 *)this + 0xEE0, 2);
+    MG4LayoutDtor((u8 *)this + 0xD70, 2);
+    MG4LayoutDtor((u8 *)this + 0xC00, 2);
+    MG4LayoutDtor((u8 *)this + 0xA90, 2);
+    MG4LayoutDtor((u8 *)this + 0x920, 2);
+    MG4LayoutDtor((u8 *)this + 0x7B0, 2);
+    MG4LayoutDtor((u8 *)this + 0x640, 2);
+    MG4LayoutDtor((u8 *)this + 0x4D0, 2);
+    MG4LayoutDtor((u8 *)this + 0x360, 2);
+    MG4LayoutDtor((u8 *)this + 0x1F0, 2);
+    MG4LayoutDtor((u8 *)this + 0x80, 2);
+}
 
 int CMiniGame4ResObj::ParseCfg1D4FA8() {
     char key[256];

@@ -192,3 +192,31 @@ first.
 Matched here: 44. Of the 570 left, 103 are key methods (the first virtual a class declares, nearly
 always the destructor): those need their unit at level 3. The other 467 (constructors, virtual
 calls, other virtual functions) can be written in any unit now.
+
+### Conversion round cv (2026-10-16)
+
+- **ro_tail is split**: one asm piece per text/dklib unit (references are monotonic in link order),
+  all 63 at level 2 (`[addr, .rodata, Unit…]`). The library part is split by object: ro_tail (libgcc,
+  linkonce RTTI names), Lib285F80 (frame.c, level 2), ro_tail2 (tinfo names, Lib2888C0, `_ctype_`),
+  Lib28AE50 (strtod.c + vfiprintf, level 2), Lib28D8B0 (vfprintf.c, level 2), Lib28F4F8 (dtoa.c,
+  level 2), ro_Lib290990 (locale.c, mprec.c tables), ro_libtail (.gcc_except_table).
+- **Level 2 for the remaining class units** (CMenuMgr, CMiniGame1/4/6Res, CMapDBExpr, CSvmWork,
+  CMapEffRes, CMapAttr, CChrSchoolWin, CNameDBMgr, CCommandBase) and for the merged pairs done so far:
+  CPadMgr (+IPadMgr.cpp, + CFlagWork.cpp's tail), CTexCacheMgr (+CList.cpp, + CEFontWork.cpp's tail),
+  CSnapMgr (+ISnapMgr.cpp).
+- **Units re-cut where a file's tail had the next unit's literals**: CPersGauge (from
+  CMenuLoadMemorial.cpp), CMenuMgrSub1B4768 (CMenuMgr.cpp), CStatusItem (CStatusWin.cpp),
+  CMenuCommonRes (CMenuCommon.cpp), Unit1E80A0 (CMiniGame6Res.cpp), CChrSchoolWin (CMenuExam.cpp's
+  tail), CMenuSysscr26 (CMenuSysscr27.cpp's tail), CMiniGame1Res (CLayoutObj.cpp's tail), CSvmWork
+  (CSvmRes.cpp's CValue), Dk253048 (Dk252208.cpp's image code: its .rodata starts 16-aligned),
+  Lib286B20 (tinfo C++ out of Lib285F80), Lib287F98 (C fp-bit helpers), Lib288388.
+- **Key methods no longer need level 3**: `#pragma interface` at the top of the unit (lanes g5/y1)
+  keeps the vtables in asm; ~25 key methods were matched that way here.
+- Still to convert: the CStatusBase literals live in CStatusWin's piece (merge CStatusBase.cpp into
+  CStatusWin.cpp; CCommandSelect.cpp's tail likewise belongs to CCommandIncDec), CPhotoEventObj
+  with IAlbumMgr, CMapResObj with IMapResMgr, CCharaResObj with ICharaResMgr, CEnvResObj with
+  IEnvResMgr, CFadeMgr with IFadeMgr, CInterfRes with IInterfMgr, CCommandIncDec with CStatusBase's
+  vtable; CEventObj's tail belongs to CEventMesRes (sm's functions there); CChrBodyWin's tail to
+  CMenuChildStatus, CMenuRecord's to CCommandBase, CMenuInputKanji's to CMenuSysscr32,
+  CMenuTutorSelected's to CMenuExam, CMenuAsksavequit's to CMenuRecord, CMiniGame4Res's last
+  function to CMiniGame5Res (scripts/unit_literals.py).

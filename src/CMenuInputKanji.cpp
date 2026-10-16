@@ -130,7 +130,7 @@ public:
     virtual void F4();
     virtual void F5();
     virtual void F6();
-    virtual void F7(u32 *a, u32 *b, u32 *c);
+    virtual int F7(u32 *a, u32 *b, u32 *c);
     virtual void F8();
     virtual void F9();
     virtual void F10();
@@ -265,7 +265,69 @@ void CMenuSub1A7658::Func1A7308(s32 n) {
     m_unk50 = n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuInputKanji", func_001A73B0);
+void CMenuSub1A7658::Update1A73B0() {
+    u32 b[3];
+    s32 done;
+    D_002A5468->F7(&b[0], &b[1], &b[2]);
+    done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = m_sm.m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (m_sm.m_state) {
+    case -1:
+        if (((CStatusItem *)m_unk48)->m_mapCount < 2) D_002A5538->SetUnkE0(0);
+        Func1A7308(m_unk50);
+        ((CStatusItem *)m_unk48)->Func1A3628();
+        do {
+    case -0xE0:
+        if (((CStatusItem *)m_unk48)->m_state != 2) {
+            m_sm.m_state = -0xE0; done = 1; goto loop;
+        }
+        } while (0);
+        do {
+        m_sm.m_state = -0xE5; done = 1; goto loop;
+    case -0xE5:
+    case -0x105:
+        if (b[2] & 0x1000) {
+            Func1A7130();
+        } else if (b[2] & 0x4000) {
+            Func1A71F0();
+        } else if (b[0] & 0x20) {
+            if ((m_unk4C & 0x1000) && m_unk50 == 1) D_002A5468->Play(2);
+            else D_002A5468->Play(1);
+            m_unk58 = m_unk50;
+            goto sel;
+        } else if (b[0] & 0x40) {
+            if (!(m_unk4C & 0x10)) {
+                D_002A5468->Play(2);
+                m_unk58 = -1;
+                goto sel;
+            }
+        }
+        m_sm.m_state = -0x105; done = 1; goto loop;
+        } while (0);
+    sel:
+        m_unk54 = 2;
+        ((CStatusItem *)m_unk48)->Start();
+        do {
+    case -0x116:
+        if (((CStatusItem *)m_unk48)->m_state != 0) {
+            m_sm.m_state = -0x116; done = 1; goto loop;
+        }
+        } while (0);
+        m_unk54 = 3;
+        m_sm.m_state = -0x11A;
+    case -0x11A:
+        done = 1; goto loop;
+    }
+out:
+    ((CStatusItem *)m_unk48)->Func1A40C8();
+    D_002A5538->SetUnk4C(((CStatusItem *)m_unk48)->m_unk34);
+    D_002A5538->Update1B6570();
+}
 
 int CMenuSub1A7658::Func1A7658() {
     u8 *p = (u8 *)Func237570(0x60);

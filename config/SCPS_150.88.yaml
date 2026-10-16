@@ -49,10 +49,8 @@ segments:
       - [0xC068, cpp, CFadeMgr]
       - [0xC108, cpp, IFadeMgr]
       - [0xC840, cpp, CSnapMgr]
-      - [0xC8B8, cpp, ISnapMgr]
       - [0xCF88, cpp, CEFontWork]
-      - [0xDEE8, cpp, CTexCacheMgr]   # also t5TList1Z10CCacheInfo
-      - [0xDF40, cpp, CList]   # also CListTag CCacheInfo
+      - [0xD710, cpp, CTexCacheMgr]   # also t5TList1Z10CCacheInfo CList CListTag CCacheInfo; starts with the font code after 10CEFontWork (lane cv)
       - [0xE7F0, cpp, CFaceObj]
       - [0xF4F0, cpp, CFaceRes]
       - [0x10A70, cpp, CDiffMotionObj]
@@ -217,6 +215,7 @@ segments:
       - [0x14EE30, cpp, Dk24DE30]
       - [0x150AF0, cpp, Dk24FAF0]
       - [0x153208, cpp, Dk252208]
+      - [0x154048, cpp, Dk253048]   # split off Dk252208.cpp (literals after its RTTI names)
       - [0x155AA8, cpp, Dk254AA8]
       - [0x1581C0, cpp, Dk2571C0]
       - [0x15B010, cpp, Dk25A010]
@@ -244,11 +243,13 @@ segments:
       - [0x1838C0, cpp, Dk2828C0]
       - [0x184858, cpp, Lib283858]   # libgcc, Sony SDK, linkonce code: cut by size alone (text_units.py --size-only)
       - [0x186F80, cpp, Lib285F80]
+      - [0x187B20, cpp, Lib286B20]   # tinfo/exception C++ (split off Lib285F80, frame.c)
       - [0x188F98, cpp, Lib287F98]   # libgcc2/fp-bit, C (split off Lib285F80)
       - [0x189388, cpp, Lib288388]   # tinfo2, C++
       - [0x1898C0, cpp, Lib2888C0]
       - [0x18BE50, cpp, Lib28AE50]
       - [0x18E8B0, cpp, Lib28D8B0]
+      - [0x1904F8, cpp, Lib28F4F8]   # dtoa.c (split off Lib28D8B0)
       - [0x191990, cpp, Lib290990]
       - [0x1940A0, cpp, Lib2930A0]
       - [0x194CB0, cpp, Lib293CB0]
@@ -278,7 +279,7 @@ segments:
       - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr
       - [0x1C0E10, data, vt_CSnapMgr]   # also ISnapMgr
       - [0x1C0F10, data, vt_CEFontWork]
-      - [0x1C0F30, data, vt_CTexCacheMgr]   # also CList
+      - [0x1C0F30, data, vt_CTexCacheMgr]   # also CList (merged into CTexCacheMgr.cpp)
       - {start: 0x1C0FD8, type: .data, name: CFaceObj, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0FF0, type: .data, name: CFaceRes, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C1008, type: .data, name: CDiffMotionObj, linker_section: .gnu.linkonce.d.*}
@@ -395,9 +396,9 @@ segments:
       - [0x1D2BC8, .rodata, CFlagWork]
       - [0x1D2CB0, .rodata, CPadMgr] # also IPadMgr (merged into CPadMgr.cpp)
       - [0x1D2F08, rodata, ro_CFadeMgr]   # also IFadeMgr
-      - [0x1D2F28, rodata, ro_CSnapMgr]   # also ISnapMgr
+      - [0x1D2F30, .rodata, CSnapMgr]   # also ISnapMgr (merged into CSnapMgr.cpp)
       - [0x1D3008, .rodata, CEFontWork]
-      - [0x1D3038, rodata, ro_CTexCacheMgr]   # also CList
+      - [0x1D3038, .rodata, CTexCacheMgr] # also CList (merged into CTexCacheMgr.cpp)
       - [0x1D3DB0, .rodata, CFaceObj]
       - [0x1D3DC0, .rodata, CFaceRes]
       - [0x1D4030, .rodata, CDiffMotionObj]
@@ -551,6 +552,7 @@ segments:
       - [0x1E78C8, .rodata, Dk24DE30]
       - [0x1E78F0, .rodata, Dk24FAF0]
       - [0x1E7B18, .rodata, Dk252208]
+      - [0x1E7B90, .rodata, Dk253048]
       - [0x1E80D0, .rodata, Dk254AA8]
       - [0x1E8420, .rodata, Dk2571C0]
       - [0x1E8610, .rodata, Dk25A010]
@@ -572,9 +574,12 @@ segments:
       - [0x1EB270, .rodata, Dk27FC30]
       - [0x1EB2D8, .rodata, Dk280098]
       - [0x1EB980, .rodata, Dk2828C0]
-      - [0x1EBB80, rodata, ro_tail]   # libgcc, eh/tinfo RTTI names (linkonce users), Lib2888C0, newlib _ctype_, "C"
+      - [0x1EBB80, rodata, ro_tail]   # libgcc (Lib283858)
+      - [0x1EBBA0, .rodata, Lib285F80] # frame.c
+      - [0x1EBC70, rodata, ro_tail2]   # eh/tinfo RTTI names (linkonce users), Lib2888C0, newlib _ctype_, "C"
       - [0x1EBF90, .rodata, Lib28AE50] # strtod.c, then the 0x28CCB8 object
-      - [0x1EC250, .rodata, Lib28D8B0] # vfprintf.c, dtoa.c
+      - [0x1EC250, .rodata, Lib28D8B0] # vfprintf.c
+      - [0x1EC460, .rodata, Lib28F4F8] # dtoa.c
       - [0x1EC4B8, rodata, ro_Lib290990]   # locale.c (lconv), mprec.c (p05, tens, bigtens, tinytens)
       - [0x1EC680, rodata, ro_libtail]   # .gcc_except_table (Lib285F80 eh code)
   - [0x1EC6FC]

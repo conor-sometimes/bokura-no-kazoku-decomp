@@ -10,6 +10,7 @@ extern f32 D_002A53E4;
 // The object a status window points to at 0x48 (methods at 0x1A3480 on, in CStatusWin.cpp).
 class CStatusItem {
 public:
+    void Func1A40C8();
     void Start();
     void Func1A3628();
     void Func1A3378();
@@ -36,6 +37,7 @@ struct CStatusTag {
 
 class CStatusBase {
 public:
+    void Update19A9D8();
     CStatusBase();
     f32 GetItemUnk34();
     s32 GetItemState();
@@ -166,6 +168,17 @@ class CStatusWinSub1A0A10 { public: CStatusItem *Find(const char *name); };
 class CChrBodyWinSub188748 { public: void SetUnk388(s32 v); void SetUnk374(f32 v); };
 extern CStatusWinSub1A0A10 *D_002A5408;
 extern char D_002DDA70[], D_002DDA78[], D_002DDA88[], D_002DDA98[];
+
+class CStatusBaseV {
+public:
+    u8 pad0[0x58];
+    virtual void V0(u32 k);
+    virtual void V1();
+    virtual void V2(f32 t);
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+};
 // @decl-end
 
 CStatusBase::CStatusBase() {
@@ -217,7 +230,65 @@ void CStatusBase::Func19A990() {
     if (m_state == 3) m_unk54 = D_002A4B60->Func1091B0(0x22);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019A9D8);
+void CStatusBase::Update19A9D8() {
+    s32 done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = (u16)m_tag.m_unk0;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (m_tag.m_unk4) {
+    case -1:
+        ((CStatusBaseV *)this)->V1();
+    case -0xA0:
+    a0:
+        if (m_state != 1) {
+            m_tag.m_unk4 = -0xA0; done = 1; goto loop;
+        }
+        do {
+    case -0xA9:
+    a9:
+            if (m_item->m_state == 2) goto s2;
+            if (m_state == 4) goto d8;
+            m_tag.m_unk4 = -0xA9; done = 1; goto loop;
+        } while (0);
+    s2:
+        m_state = 2;
+    case -0xB5:
+    b5:
+        if (m_state != 3) {
+            if (m_state == 4) goto d8;
+            m_tag.m_unk4 = -0xB5; done = 1; goto loop;
+        }
+        m_unk54 = 0;
+        ((CStatusBaseV *)this)->V3();
+        do {
+    case -0xCA:
+            if (m_state == 4) goto d8;
+            ((CStatusBaseV *)this)->V2((f32)m_unk54 / (f32)D_002A4B60->Func1091B0(0x22));
+            m_unk54++;
+            if (D_002A4B60->Func1091B0(0x22) < m_unk54) {
+                ((CStatusBaseV *)this)->V4();
+                goto s2;
+            }
+            m_tag.m_unk4 = -0xCA; done = 1; goto loop;
+        } while (0);
+        do {
+    case -0xD8:
+    d8:
+            if (m_state == 1) goto a9;
+            if (m_item->m_state == 0) {
+                m_state = 0;
+                goto a0;
+            }
+            m_tag.m_unk4 = -0xD8; done = 1; goto loop;
+        } while (0);
+    }
+out:
+    m_item->Func1A40C8();
+    ((CStatusBaseV *)this)->V5();
+}
 
 void CStatusBaseSub19AE68::Init19AC20(s32 kind) {
     switch (kind) {

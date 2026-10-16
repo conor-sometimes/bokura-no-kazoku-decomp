@@ -1,0 +1,58 @@
+//@decl
+extern "C" s32 func_00268368(MpegSys *, const char *, ...);
+extern "C" s32 func_00267F78(SceMpeg *p, s32 a, s32 b);
+//@func 0x267CA0
+extern "C" s32 func_00267CA0(SceMpeg *mp)
+{
+    MpegSys *s = mp->sys;
+    s32 r = 1;
+    s32 ret = 0;
+
+    s->m0 = 0;
+    if (s->mF0 & 0x3F) {
+        func_00268368(s, "image buffer needs to be aligned to 64byte boundary(0x%08x)", s->mF0);
+        return -1;
+    }
+    if (s->m10A0) {
+        func_00274F10("Need to re-setup libipu since sceMpegGetPicture was aborted\n");
+        return -1;
+    }
+    goto loop;
+aborted:
+    func_00274F10("sceMpegGetPicture is aborted\n");
+    return -1;
+loop:
+    s->m838 = 0;
+again:
+    if (ret != -1) {
+        r = func_0026C700(s);
+        if (r < 0) return -1;
+        if (r != 0 && s->m18C != s->mEC && s->m860) goto again;
+    }
+    switch (r) {
+    case 0:
+        func_00268138(mp);
+        s->m0 = 1;
+        break;
+    case 1:
+        s->mC0 = 0;
+        s->mBC = 0;
+        s->mB8 = 0;
+        ret = func_00267F78(mp, 0, s->mAC);
+        s->mB8++;
+        break;
+    case 2:
+        ret = func_00267F78(mp, s->mBC, s->mB0);
+        s->mBC++;
+        break;
+    case 3:
+    case 4:
+        ret = func_00267F78(mp, s->mC0, s->mB4);
+        s->mC0++;
+        break;
+    }
+    if (s->m10A0) goto aborted;
+    if (s->m838) return 1;
+    if (!s->m0) goto loop;
+    return 1;
+}

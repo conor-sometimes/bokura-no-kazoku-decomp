@@ -211,6 +211,11 @@ extern "C" void func_0025C2C0(void *, s32);
 extern "C" u8 D_41A788[];
 struct W2SndSeqD { s32 m0, m4, m8, mC, m10, m14, m18; };
 typedef CSndUnitN *(*W2SndMake)(s32, s32, s32, s32);
+
+inline CSndNode *Y1Item(CSndNode *h) { return h->m_next->m_head ? 0 : h->m_next; }
+
+inline CSndNode *Y1Fi(CSndNode *h) { return h->m_next->m_head ? 0 : h->m_next; }
+#define Y1LIST(w) ((CSndNode *)((u8 *)(w) + 0x24))
 // @decl-end
 
 void CSndWork::Func25C438(CSndUnitN *u) {
@@ -226,13 +231,25 @@ void Func25C488(CSndUnitN *u) {
     SndUnlink(u);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25C4B0__8CSndWorki);
+CSndUnitN *CSndWork::Func25C4B0(s32 id)
+{
+    CSndUnitX *p;
+    for (p = (CSndUnitX *)Y1Fi(Y1LIST(this)); p; p = (CSndUnitX *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return p;
+    return p;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25C510__8CSndWorkP9CSndUnitN);
+CSndUnitN *CSndWork::Func25C510(CSndUnitN *cur)
+{
+    s32 id = ((CSndUnitX *)cur)->m14;
+    for (cur = (CSndUnitN *)Y1Fi(cur); cur; cur = (CSndUnitN *)Y1Fi(cur))
+        if (((CSndUnitX *)cur)->m14 == id && !((CSndUnitX *)cur)->m1D) return cur;
+    return cur;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025C580);
+extern "C" void func_0025C580(void *p) { CSndNode *h = (CSndNode *)((u8 *)p + 0x24); CSndNode *n; while ((n = Y1Item(h)) != 0) delete (CSndNodeV *)n; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025C5D8);
+extern "C" void func_0025C5D8(void *p) { CSndNode *h = (CSndNode *)((u8 *)p + 0x14); CSndNode *n; while ((n = Y1Item(h)) != 0) delete (CSndNodeV *)n; }
 
 s32 CSndWork::Func25C630(s32 i) { return D_002BA268[i]; }
 
@@ -309,15 +326,45 @@ void CSndWork::Func25C910(s32 id, s32 v, s32 w) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", Func25C990__8CSndWorki);
+s32 CSndWork::Func25C990(s32 id)
+{
+    CSndUnitX *p;
+    for (p = (CSndUnitX *)Y1Fi(Y1LIST(this)); p; p = (CSndUnitX *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return 1;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025C9F0);
+extern "C" s32 func_0025C9F0(CSndWork *w, s32 id)
+{
+    CSndUnitX2 *p;
+    for (p = (CSndUnitX2 *)Y1Fi(Y1LIST(w)); p; p = (CSndUnitX2 *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return p->m20 != 0;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025CA58);
+extern "C" s32 func_0025CA58(CSndWork *w, s32 id)
+{
+    CSndUnitX2 *p;
+    for (p = (CSndUnitX2 *)Y1Fi(Y1LIST(w)); p; p = (CSndUnitX2 *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return p->m1E != 0;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025CAC0);
+extern "C" s32 func_0025CAC0(CSndWork *w, s32 id)
+{
+    CSndUnitX2 *p;
+    for (p = (CSndUnitX2 *)Y1Fi(Y1LIST(w)); p; p = (CSndUnitX2 *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return ((s8 *)p)[0x50] != 0;
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025CB28);
+extern "C" s32 func_0025CB28(CSndWork *w, s32 id)
+{
+    CSndUnitX2 *p;
+    for (p = (CSndUnitX2 *)Y1Fi(Y1LIST(w)); p; p = (CSndUnitX2 *)Y1Fi(p))
+        if (p->m14 == id && !p->m1D) return ((s8 *)p)[0x51] != 0;
+    return 0;
+}
 
 void CSndWork::Func25CB90(s32 id, s32 a, s32 b) {
     for (CSndUnitX3 *p = (CSndUnitX3 *)Func25C4B0(id); p; p = (CSndUnitX3 *)Func25C510(p)) {
@@ -391,7 +438,17 @@ s32 Func25CEA0(CSndTree *t) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025CEE8);
+extern "C" s32 func_0025CEE8(CSndWork *w, s32 n)
+{
+    CSndUnitX2 *p;
+    s32 i = 0;
+    for (p = (CSndUnitX2 *)Y1Fi(Y1LIST(w)); p; p = (CSndUnitX2 *)Y1Fi(p))
+        if (!p->m1D) {
+            if (n == i) return p->m14;
+            i++;
+        }
+    return -1;
+}
 
 s32 CSndWork::Func25CF58(s32 id) {
     for (CSndUnitX2 *p = (CSndUnitX2 *)Func25C4B0(id); p; p = (CSndUnitX2 *)Func25C510(p)) {
@@ -457,7 +514,14 @@ void Func25D388(CSndTree *t, s32 b) {
     for (CSndNode *p = SndItem(t->m1C); p; p = SndItem(p->m_next)) Func25D270((CSndTree *)p, b);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk25C438", func_0025D3E0);
+extern "C" void func_0025C2C0(void *w, s32 c) throw();
+extern "C" void func_0025D3E0(s32 init, s32 prio)
+{
+    if (prio == 0xFFFF) {
+        if (init == 1) func_0025C230(D_41A788);
+        if (init == 0) func_0025C2C0(D_41A788, 2);
+    }
+}
 
 extern "C" void func_0025D438(void) { func_0025D3E0(1, 0xFFFF); }
 

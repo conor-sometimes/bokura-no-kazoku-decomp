@@ -12,7 +12,7 @@ extern s32 func_0028D9B0(W2File *, const char *, void *);
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 extern void func_00290CB8(void *);
-extern s32 func_0028DA28(void *, void *, const char *, void *);
+extern s32 func_0028DA28();   /* defined below with its real types */
 
 typedef struct W2File6 W2File6;
 struct W2File6 { u8 *p; s32 r; s32 w; s16 flags; s16 file; u8 *base; s32 size; s32 lbfsize; void *cookie; void *rd; void *wr; void *sk; void *cl; u8 *ubbase; s32 ubsize; u8 *up; s32 ur; u8 ubuf[3]; u8 nbuf[1]; u8 lb[8]; s32 blksize; s32 offset; void *data; };
@@ -33,16 +33,25 @@ INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028D8F8);
 
 extern s32 func_0028D9B0(W2File *fp, const char *fmt, void *ap) { do { if (fp->data == 0) fp->data = D_002BF5D0; if (!FLD(s32, fp->data, 0x38)) func_00290CB8(fp->data); } while (0); return func_0028DA28(fp->data, fp, fmt, ap); }
 
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB250);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB260);
-INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028DA28);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB280);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB298);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2A0);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2B8);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2D8);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2E0);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", jtbl_002EB2F0);
+/* _vfprintf_r: newlib vfprintf.c (include/nl_vfprintf.h) */
+struct W2Lconv;
+extern struct W2Lconv *func_002916F0(void);                      /* localeconv */
+extern int func_00292998(double);                               /* isinf */
+extern int func_002929E0(double);                               /* isnan */
+extern int func_0028D8F8(W2File6 *, const char *, char *);      /* __sbprintf */
+extern char *func_0028F098(void *, double, int, int, char *, int *, int, int *); /* cvt */
+extern int func_0028F258(char *, int, int);                     /* exponent */
+#define FLOATING_POINT
+#define NL_VFPRINTF_R func_0028DA28
+#define NL_FILE W2File6
+#define NL_SPRINT func_0028D8B0
+#define NL_SBPRINTF func_0028D8F8
+#define NL_CVT func_0028F098
+#define NL_EXPONENT func_0028F258
+#define NL_LOCALECONV func_002916F0
+#define NL_ISINF func_00292998
+#define NL_ISNAN func_002929E0
+#include "nl_vfprintf.h"
 
 extern char *func_0028F098(void *data, double value, int ndigits, int flags, char *sign, int *decpt, int ch, int *length)
 {
@@ -115,77 +124,3 @@ extern int func_0028F3E8(W2File6 *fp)
         fp->w = fp->flags & 0x2 ? 0 : fp->size;
     return 0;
 }
-
-extern int func_0028F4F8(W2Bi *b, W2Bi *S)
-{
-    int n;
-    s32 borrow, y;
-    u32 carry, q, ys;
-    u32 *bx, *bxe, *sx, *sxe;
-    s32 z;
-    u32 si, zs;
-
-    n = S->_wds;
-    if (b->_wds < n)
-        return 0;
-    sx = S->_x;
-    sxe = sx + --n;
-    bx = b->_x;
-    bxe = bx + n;
-    q = *bxe / (*sxe + 1);
-    if (q) {
-        borrow = 0;
-        carry = 0;
-        do {
-            si = *sx++;
-            ys = (si & 0xffff) * q + carry;
-            zs = (si >> 16) * q + (ys >> 16);
-            carry = zs >> 16;
-            y = (*bx & 0xffff) - (ys & 0xffff) + borrow;
-            borrow = y >> 16;
-            z = (*bx >> 16) - (zs & 0xffff) + borrow;
-            borrow = z >> 16;
-            W2Storeinc(bx, z, y);
-        } while (sx <= sxe);
-        if (!*bxe) {
-            bx = b->_x;
-            while (--bxe > bx && !*bxe)
-                --n;
-            b->_wds = n;
-        }
-    }
-    if (func_00292270(b, S) >= 0) {
-        q++;
-        borrow = 0;
-        carry = 0;
-        bx = b->_x;
-        sx = S->_x;
-        do {
-            si = *sx++;
-            ys = (si & 0xffff) + carry;
-            zs = (si >> 16) + (ys >> 16);
-            carry = zs >> 16;
-            y = (*bx & 0xffff) - (ys & 0xffff) + borrow;
-            borrow = y >> 16;
-            z = (*bx >> 16) - (zs & 0xffff) + borrow;
-            borrow = z >> 16;
-            W2Storeinc(bx, z, y);
-        } while (sx <= sxe);
-        bx = b->_x;
-        bxe = bx + n;
-        if (!*bxe) {
-            while (--bxe > bx && !*bxe)
-                --n;
-            b->_wds = n;
-        }
-    }
-    return q;
-}
-
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB460);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB470);
-INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028F728);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB480);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB488);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB490);
-INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", jtbl_002EB4A0);

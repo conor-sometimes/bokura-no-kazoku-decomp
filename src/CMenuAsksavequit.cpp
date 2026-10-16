@@ -139,7 +139,7 @@ public:
     virtual void F4();
     virtual void F5();
     virtual void F6();
-    virtual void F7();
+    virtual int F7(s32 *a, s32 *b, s32 *c);
     virtual void F8();
     virtual void F9();
     virtual void F10();
@@ -217,6 +217,25 @@ struct AsqWinV { s16 m0; s16 m2; s32 m4; u8 pad8[0x44]; s32 m4C; s32 m50; s32 m5
 extern char D_002DBEB0[];
 #include "CFlagWork.h"
 extern CFlagWork *D_002A5358;
+
+class CStatusItem {
+public:
+    void Func1A3378();
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    int Select(s32 i);
+    void SetUnk34(f32 v);
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+#include "CFlagWork.h"
+extern CFlagWork *D_002A4B60;
 // @decl-end
 
 CMenuAsksavequit::CMenuAsksavequit() {
@@ -227,7 +246,96 @@ CMenuAsksavequit::CMenuAsksavequit() {
 CMenuAsksavequit::~CMenuAsksavequit() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuAsksavequit", Update__16CMenuAsksavequit);
+s32 CMenuAsksavequit::Update() {
+    s32 a, b, c;
+    s32 done;
+    D_002A5468->F7(&a, &b, &c);
+    if (m_state == 6) {
+        m_state = 5;
+        goto end;
+    }
+    done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = (u16)m_unk0;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (m_unk4) {
+    case -1:
+        m_unk58 = (CUnk1A4298 *)D_002A5408->Find("asksavequit");
+        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "asksavequit");
+        if (0) {
+    c3:
+            D_002A5468->Play(3);
+            m_unk4C = -1;
+            goto s4;
+    c1:
+            D_002A5468->Play(1);
+            m_unk4C = 1;
+            goto s4;
+    tmo:
+            m_unk4C = -1;
+            goto s4;
+        }
+        ((CStatusItem *)m_unk58)->Func1A3378();
+        D_002A5538->SetUnkE0(0);
+        ((CStatusItem *)m_unk58)->Func1A3628();
+        ((CStatusItem *)m_unk58)->Select(-1);
+        do {
+    case -0x93:
+        if (((CStatusItem *)m_unk58)->m_state != 2) {
+            m_unk4 = -0x93; done = 1; goto loop;
+        }
+        } while (0);
+        m_unk4 = -0x98; done = 1; goto loop;
+    case -0x98:
+        m_unk5C = 0;
+        while (m_unk5C++ < D_002A4B60->Func1091B0(0x76)) {
+            m_unk4 = -0x9D; done = 1; goto loop;
+    case -0x9D:;
+        }
+        m_unk5C = 0;
+        do {
+    case -0xC4:
+        if (a & 0x800) goto c1;
+        if (a & 0x40) goto c3;
+        if (a & 0x20) goto c3;
+        if (!D_002A26E0->Func1091B0(8)) {
+            m_unk5C++;
+            if (D_002A4B60->Func1091B0(0x47) < m_unk5C) {
+                m_unk4 = -0xC8; done = 1; goto loop;
+            }
+        }
+        m_unk4 = -0xC4; done = 1; goto loop;
+        } while (0);
+    case -0xC8:
+        m_unk5C = 0;
+    case -0xE7:
+        ((CStatusItem *)m_unk58)->SetUnk34(1.0f - (f32)m_unk5C / (f32)D_002A4B60->Func1091B0(0x48));
+        if (a & 0x60) goto c3;
+        if (a & 0x800) goto c1;
+        m_unk5C++;
+        if (D_002A4B60->Func1091B0(0x48) >= m_unk5C) {
+            m_unk4 = -0xE7; done = 1; goto loop;
+        }
+        goto tmo;
+    s4:
+        m_state = 4;
+        ((CStatusItem *)m_unk58)->Start();
+    case -0xF8:
+        if (((CStatusItem *)m_unk58)->m_state != 0) {
+            m_unk4 = -0xF8; done = 1; goto loop;
+        }
+        m_state = 5;
+        m_unk4 = -0xFC;
+    case -0xFC:
+        done = 1; goto loop;
+    }
+out:
+    ((CStatusItem *)m_unk58)->Func1A40C8();
+end:;
+}
 
 s32 CMenuAsksavequit::Draw() {
     f32 v[2];

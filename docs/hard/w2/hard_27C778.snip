@@ -1,2 +1,0 @@
-//@func 0x27C778
-int func_0027C778(void) { AlarmSys *s = &D_002BF138; int st; if (s->id < 0) return 0x80008001; if (s->used != 0) return 0x80000010; st = func_0027BD20(); if (!func_00272EA0(0xB, s->id)) { func_00273A00(0xB); func_0027C600(0xC00); func_0027C5F0(0); } D_002BF138.counter = 0; s->id = -1; if (st) func_0027BD78(); return 0; }

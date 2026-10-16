@@ -1,0 +1,41 @@
+//@decl
+class Y1FW { public: u8 pad[0x7C]; virtual void F0(); virtual void F1(W2FontCh2 *c, W2FontLay2 *l, f32 x, f32 y); };
+#define Y1F1(o, c, x, y, l) (o)->F1(c, l, x, y)
+struct Y1Lay { s32 m0, m4, m8, mC, m10, m14, m18, m1C; f32 m20, m24, m28, m2C; s32 m30, m34, m38, m3C; u8 p40[0x38]; s32 m78; s32 m7C; s32 m80; s32 m84; s32 m88; };
+extern "C" void Y1Pos(f32 x, f32 y) asm("func_00241FC8");
+extern "C" void func_00242918(W2FontCh2 *c);
+extern "C" void Y1Put(W2FontCh2 *c) asm("func_00242468");
+extern "C" void func_00241E78(s32 a);
+extern "C" void func_00242098(s32 a, s32 b, s32 c, s32 d);
+extern "C" void func_00242028(f32 a, f32 b);
+//@func 0x256DC8
+extern "C" void func_00256DC8(void *vfw, W2FontCh2 *ch, f32 x, f32 y, W2FontLay2 *vl)
+{
+    Y1FW *fw = (Y1FW *)vfw;
+    Y1Lay *l = (Y1Lay *)vl;
+    s32 i, n = l->m88 ? 2 : 1;
+    for (i = 0; i < n; i++) {
+        if (!l->m80) {
+            switch (l->m78) {
+            case 0: Y1Pos(x, y); Y1Put(ch); break;
+            case 1: Y1Pos(x + 1.0f, y + 1.0f); Y1Put(ch); break;
+            case 2: Y1Pos(x, y); func_00242918(ch); break;
+            }
+        } else {
+            switch (l->m78) {
+            case 0: Y1F1(fw, ch, x, y, vl); break;
+            case 1: Y1F1(fw, ch, x + 1.0f, y + 1.0f, vl); break;
+            case 2:
+                Y1F1(fw, ch, x - 1.0f, y, vl);
+                Y1F1(fw, ch, x + 1.0f, y, vl);
+                Y1F1(fw, ch, x, y + 1.0f, vl);
+                Y1F1(fw, ch, x, y - 1.0f, vl);
+                break;
+            }
+            func_00241E78(l->m4);
+            func_00242098(l->m30, l->m34, l->m38, l->m3C);
+            func_00242028(l->m20, l->m24);
+        }
+    }
+    l->m84++;
+}

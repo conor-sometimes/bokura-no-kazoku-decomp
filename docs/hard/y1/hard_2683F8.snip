@@ -1,0 +1,26 @@
+//@decl
+extern "C" void func_00273420(s32);
+//@func 0x2683F8
+extern "C" void func_002683F8(MpegSys *s, u32 data, s32 size)
+{
+    u64 *tag = (u64 *)((((u32)s + 0x88F) >> 4) << 4);
+    u64 *p = tag;
+    s32 n, id;
+    while (size > 0) {
+        n = size > 0xFFF40 ? 0xFFF40 : size;
+        size -= n;
+        id = size ? 3 : 0;
+        *p = ((u64)(data & 0x0FFFFFFF) << 32) | ((u64)id << 28) | (u32)((n + 15) / 16);
+        asm volatile("sync");
+        data += n;
+        p += 2;
+    }
+    func_00273420(0);
+    {
+        s32 intr = func_0027BD20();
+        *(volatile u32 *)0x1000B430 = (u32)tag & 0x0FFFFFFF;
+        *(volatile u32 *)0x1000B420 = 0;
+        *(volatile u32 *)0x1000B400 = 0x105;
+        if (intr) func_0027BD78();
+    }
+}

@@ -57,10 +57,11 @@ struct CSeasonPostEnt {
     s32 m_done;               // 0xC
     s32 m10;                  // 0x10
 };
+
+extern "C" void func_0024FA38(void *p, s32 a, s32 b, s32 c, s32 d);
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
 // @decl-end
 
-INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPost", D_002D8EA8);
-INCLUDE_RODATA("asm/nonmatchings/CGameSeasonPost", D_002D8EC8);
 CGameSeasonPost::CGameSeasonPost(s32 a) {
     m_unk2C = a;
     m_timer.SetState(D_002A26E4->Func1091B0(0x17) % 4);
@@ -69,7 +70,40 @@ CGameSeasonPost::CGameSeasonPost(s32 a) {
 CGameSeasonPost::~CGameSeasonPost() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSeasonPost", Update__15CGameSeasonPost);
+void CGameSeasonPost::Update() {
+    CStateMachine *sm = (CStateMachine *)&m_timer;
+    s32 done = 0;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_state) {
+    case 0:
+    case 1:
+    case 2:
+        sm->Push();
+        SetVar(sm, 0, -0x6B);
+        goto call;
+    case 3:
+        Func159648();
+        sm->Push();
+        SetVar(sm, 0, -0x7C);
+    call:
+        Collect1592F8();
+        sm->m_state = sm->Get();
+        sm->Pop();
+        goto loop;
+    case -0x6B:
+    case -0x7C:
+        func_0024FA38(this, 0, 0, 0, 0);
+        sm->m_state = -0xAB;
+    case -0xAB:
+        done = 1;
+        goto loop;
+    }
+}
 
 int CompareSeasonPostIds(const s32 *a, const s32 *b) {
     return *a - *b;

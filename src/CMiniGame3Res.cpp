@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -217,7 +218,30 @@ CMiniGame3::CMiniGame3(int a, int b) {
     mF64 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame3Res", func_001C9E90);
+extern "C" void MG3LayoutDtor(void *p, s32 flags) asm("_$_10CLayoutObj");
+extern "C" void func_0025C2C0(void *p, s32 flags);
+extern "C" void MG3SetUnkDC(void *m, u32 v) asm("SetUnkDC__17CMenuMgrSub1B6418Ui");
+extern void *D_002A5538_3 asm("D_002A5538");
+
+// The 0x920 member's own (inline) destructor: its sound member at +0x170, then its layout.
+inline void MG3DestroyLayout2(u8 *p) {
+    func_0025C2C0(p + 0x170, 2);
+    MG3LayoutDtor(p, 2);
+}
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data). The
+// member objects are raw storage here, destroyed explicitly (last declared first).
+CMiniGame3::~CMiniGame3() {
+    MG3SetUnkDC(D_002A5538_3, 0);
+    func_0025C2C0((u8 *)this + 0xB34, 2);
+    MG3DestroyLayout2((u8 *)this + 0x920);
+    MG3LayoutDtor((u8 *)this + 0x7B0, 2);
+    MG3LayoutDtor((u8 *)this + 0x640, 2);
+    MG3LayoutDtor((u8 *)this + 0x4D0, 2);
+    MG3LayoutDtor((u8 *)this + 0x360, 2);
+    MG3LayoutDtor((u8 *)this + 0x1F0, 2);
+    MG3LayoutDtor((u8 *)this + 0x80, 2);
+}
 
 int CMiniGame3::LoadLevel() {
     char buf[0x100];

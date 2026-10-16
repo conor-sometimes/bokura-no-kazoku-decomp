@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -65,7 +66,7 @@ struct CMapDBNameRec {
 class IMapDBMgr {
 public:
     virtual void Release() = 0;
-    virtual int Func173050() = 0;
+    virtual int Func173050(const char *path) = 0;
     virtual void Init() = 0;
     virtual int Func29AC20() = 0;
     virtual int Func29AC28() = 0;
@@ -84,7 +85,7 @@ class CMapDBMgr : public IMapDBMgr {
 public:
     CMapDBMgr();
     virtual void Release() { delete this; }
-    virtual int Func173050();
+    virtual int Func173050(const char *path);
     virtual void Init();
     virtual int Func29AC20();
     virtual int Func29AC28();
@@ -129,7 +130,12 @@ CMapDBExpr::CMapDBExpr() {
     Func24D9C8(this, D_002DA200, D_002DA208);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", _$_10CMapDBExpr);
+extern "C" void func_0029A4A0(void *arr, s32 flags);   // TArray<CMapDBExprReg> destructor (linkonce)
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapDBExpr::~CMapDBExpr() {
+    Func172E98();
+    func_0029A4A0(&m_unk20, 2);
+}
 
 int CMapDBExpr::Set172D00(const char *name, void *src) {
     s32 i;
@@ -195,7 +201,33 @@ void CMapDBMgr::Clear() {
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA200);
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA208);
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA210);
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173050);
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+int Func249248(void *buf);
+void Func249348();
+int Func235DE0(const char *fmt, ...);
+extern "C" void func_00248C30(CPushBuf *b);
+extern "C" void func_00248C70(CPushBuf *b);
+extern "C" s32 func_00173160(CMapDBMgr *m);
+extern "C" void func_00173578(CMapDBMgr *m);
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+int CMapDBMgr::Func173050(const char *path) {
+    u8 buf[0x100];
+    CPushBuf *b = &m_buf;
+    CMapDBExpr *e = &m_expr;
+    Init();
+    Func2491A8(buf, path, (s32)"FILE", (s32)"mapdb", (s32)"data/mapdb.xap");
+    if (!Func249248(buf)) return 0;
+    Func235DE0("map database ...\n");
+    func_00248C30(b);
+    e->CallFunc172E98();
+    if (func_00173160(this)) func_00173578(this);
+    e->Func172E98();
+    func_00248C70(b);
+    Func249348();
+    Func235DE0("size=%d\n", b->m_unk4);
+    return 1;
+}
 
 int CompareMapDBNames(const char **a, const char **b) {
     return strcmp(*a, *b);

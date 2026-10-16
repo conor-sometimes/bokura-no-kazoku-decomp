@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -78,8 +79,20 @@ extern CMapEffObjRes *D_002A06F0;
 struct CMapEffRect {
     f32 x0, z0, x1, z1;
 };
-class CMapEffLeafWork {
+extern void (*D_002B91B0)(void *p);
+class CMapEffWork {
 public:
+    virtual ~CMapEffWork() {}
+    static void operator delete(void *p) { D_002B91B0(p); }
+    virtual void Vf295830();
+    virtual void Vf295838();
+    virtual void Vf295840();
+    virtual void Vf295848();
+};
+
+class CMapEffLeafWork : public CMapEffWork {
+public:
+    virtual ~CMapEffLeafWork();
     s32 IsHit(s32 id);
     void FreeAll();
     void Func11FE20(s32 unused, CMapEffTarget *t);
@@ -92,7 +105,7 @@ public:
     void Func11F660();
     void Func11F9C0();
 
-    CMapEffObjRes *m_res;     // 0x0
+    // vptr 0x0
     CMapEffParam *m_param;    // 0x4
     u8 pad8[0x8];
     CMapEffRect m_rect;       // 0x10
@@ -104,20 +117,12 @@ public:
     f32 m_unk34;              // 0x34
     f32 m_unk38;              // 0x38
     f32 m_unk3C;              // 0x3C
-    u8 pad40[0x4];
+    u8 *m_nodes;              // 0x40
     CMapEffNode *m_active;    // 0x44
     CMapEffNode *m_free;      // 0x48
 };
 
 // Effect work base: vptr at 0, no fields of its own (vtable _vt$11CMapEffWork).
-class CMapEffWork {
-public:
-    virtual ~CMapEffWork();
-    virtual void Vf295830();
-    virtual void Vf295838();
-    virtual void Vf295840();
-    virtual void Vf295848();
-};
 
 // The effect area as the work constructors read it (same object as CMapEffParam).
 struct CMapEffArea {
@@ -311,14 +316,15 @@ struct CMapEffCurtainPt {
     f32 m58;                  // 0x58
     u8 pad5C[0x14];
 };
-class CMapEffCurtainWork {
+class CMapEffCurtainWork : public CMapEffWork {
 public:
+    virtual ~CMapEffCurtainWork();
     void Func11E548();
     void Func11D8C8();
     void Func11E1C0();
     void Func11D6E0();
 
-    CMapEffObjRes *m_res;     // 0x0
+    // vptr 0x0
     CMapEffParam *m_param;    // 0x4
     u8 pad8[0x8];
     f32 m_unk10;              // 0x10
@@ -766,7 +772,10 @@ int ApplyLights(CVec4 *dir, CVec4 *col, CVec4 *amb) {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011D2D8);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011D670);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffCurtainWork::~CMapEffCurtainWork() {
+    if (m_pts) delete[] m_pts;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011D6E0);
 
@@ -789,7 +798,10 @@ void CMapEffObjRes::Init() {
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011ED80);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_0011F038);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffLeafWork::~CMapEffLeafWork() {
+    if (m_nodes) delete[] m_nodes;
+}
 
 s32 CMapEffLeafWork::IsHit(s32 id) {
     if (m_param->m_unk4 < 2 && id == -800) {
@@ -925,7 +937,17 @@ INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", Func120298__15CMapEffLeafWorkP13CM
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001207C0);
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00120AC8);
+// The fly effect (its other methods are in CMapEffObj.cpp's unit view; only the destructor here).
+class CMapEffFlyWork : public CMapEffWork {
+public:
+    virtual ~CMapEffFlyWork();
+    u8 pad4[0x8];
+    u8 *m_buf;                // 0xC
+};
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffFlyWork::~CMapEffFlyWork() {
+    if (m_buf) delete[] m_buf;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00120B38);
 
@@ -952,7 +974,11 @@ CMapEffRainWork::CMapEffRainWork(CMapEffArea *p) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_00121788);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffRainWork::~CMapEffRainWork() {
+    if (m_flakes) delete[] m_flakes;
+    if (m_drops) delete[] m_drops;
+}
 
 void CMapEffRainWork::Func121810(CMapEffDrop *d, s32 top) {
     CVec4 p;
@@ -1056,7 +1082,10 @@ CMapEffSnowWork::CMapEffSnowWork(CMapEffArea *p) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObjRes", func_001225F0);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffSnowWork::~CMapEffSnowWork() {
+    if (m_flakes) delete[] m_flakes;
+}
 
 void CMapEffSnowWork::Func122660() {
     CalcRect(&m_rect, m_param);

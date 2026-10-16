@@ -1,0 +1,143 @@
+//@decl
+struct W2FS {
+    void *cfa;                // 0x0
+    void *eh_ptr;             // 0x4
+    long cfa_offset;          // 0x8
+    long cfa_exp;             // 0x10
+    long args_size;           // 0x18
+    long reg_or_offset[123];  // 0x20
+    unsigned short cfa_reg;   // 0x3F8
+    unsigned short retaddr_column; // 0x3FA
+    char saved[123];          // 0x3FC
+    char cfa_how;             // 0x477
+    W2FS *saved_state;        // 0x478
+};
+extern "C" void *func_00289348(unsigned int n);       /* malloc */
+extern "C" void func_002893A0(void *p);               /* free */
+extern "C" void *memcpy(void *, const void *, unsigned int);
+//@func 0x286518
+extern "C" u8 *func_00286518(u8 *p, W2FS *state, W2CieInfo *info, void **pc)
+{
+    unsigned insn = *p++;
+    int offset;
+    unsigned reg;
+
+    if (insn & 0x40)
+        *(char **)pc += ((insn & 0x3f) * info->code_align);
+    else if (insn & 0x80) {
+        reg = (insn & 0x3f);
+        p = func_00285590(p, &offset);
+        if (reg == state->cfa_reg)
+            ;
+        else {
+            offset *= info->data_align;
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = offset;
+        }
+    } else if (insn & 0xc0) {
+        reg = (insn & 0x3f);
+        state->saved[reg] = 0;
+    } else switch (insn) {
+    case 1:
+        *pc = w2_read_pointer(p);
+        p += sizeof(void *);
+        break;
+    case 2:
+        *(char **)pc += w2_read_1byte(p);
+        p += 1;
+        break;
+    case 3:
+        *(char **)pc += w2_read_2byte(p);
+        p += 2;
+        break;
+    case 4:
+        *(char **)pc += w2_read_4byte(p);
+        p += 4;
+        break;
+    case 5:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        if (reg == state->cfa_reg)
+            ;
+        else {
+            offset *= info->data_align;
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = offset;
+        }
+        break;
+    case 6:
+        p = func_00285590(p, &reg);
+        state->saved[reg] = 0;
+        break;
+    case 0:
+    case 7:
+    case 8:
+        break;
+    case 9: {
+        unsigned reg2;
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &reg2);
+        state->saved[reg] = 2;
+        state->reg_or_offset[reg] = reg2;
+        break;
+    }
+    case 0xc:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        state->cfa_reg = reg;
+        state->cfa_offset = offset;
+        break;
+    case 0xd:
+        p = func_00285590(p, &reg);
+        state->cfa_reg = reg;
+        break;
+    case 0xe:
+        p = func_00285590(p, &offset);
+        state->cfa_offset = offset;
+        break;
+    case 0xf: {
+        u8 *end;
+        state->cfa_reg = 0;
+        state->cfa_offset = 0;
+        state->cfa_exp = 0;
+        state->cfa_how = 0;
+        p = func_00285590(p, &offset);
+        end = p + offset;
+        while (p < end)
+            p = func_002863F8(p, (W2DwState *)state);
+        return p;
+    }
+    case 0xa: {
+        W2FS *save = (W2FS *)func_00289348(sizeof(W2FS));
+        memcpy(save, state, sizeof(W2FS));
+        state->saved_state = save;
+        break;
+    }
+    case 0xb: {
+        W2FS *save = state->saved_state;
+        memcpy(state, save, sizeof(W2FS));
+        func_002893A0(save);
+        break;
+    }
+    case 0x2d:
+        for (reg = 16; reg < 32; ++reg) {
+            state->saved[reg] = 1;
+            state->reg_or_offset[reg] = (reg - 16) * sizeof(void *);
+        }
+        break;
+    case 0x2e:
+        p = func_00285590(p, &offset);
+        state->args_size = offset;
+        break;
+    case 0x2f:
+        p = func_00285590(p, &reg);
+        p = func_00285590(p, &offset);
+        offset *= info->data_align;
+        state->saved[reg] = 1;
+        state->reg_or_offset[reg] = -offset;
+        break;
+    default:
+        func_00288FF8();
+    }
+    return p;
+}

@@ -156,6 +156,11 @@ extern "C" CDirEntry *func_00249550();
 
 #define PKT(v) { *p = (v); p++; D_38F1B0.m_pkt = p; }
 #define RGBAQ(r, g, b, a, q) (((u64)(r) & 0xFF) | (((u64)(g) & 0xFF) << 8) | (((u64)(b) & 0xFF) << 16) | (((u64)(a) & 0xFF) << 24) | ((u64)(q) << 32))
+
+#define Y1CH(x, s) (((x) >> (s)) & 0xFF)
+
+struct Y1Chunk { s32 id; s32 size; };
+struct Y1ChunkHdr { s32 m0, m4, size, mC; u8 data[1]; };
 // @decl-end
 
 extern "C" s32 func_002470E8(void *p) {
@@ -332,7 +337,15 @@ void Dump247B00(CMemHeap *h) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247B60);
+extern "C" u32 func_00247B60(u32 a, u32 b, f32 t)
+{
+    s32 k = (s32)(t * 256.0f);
+    u32 r = (b >> 24) + (((a >> 24) - (b >> 24)) * k >> 8);
+    u32 g = Y1CH(b, 16) + ((Y1CH(a, 16) - Y1CH(b, 16)) * k >> 8);
+    u32 bl = Y1CH(b, 8) + ((Y1CH(a, 8) - Y1CH(b, 8)) * k >> 8);
+    u32 al = Y1CH(b, 0) + ((Y1CH(a, 0) - Y1CH(b, 0)) * k >> 8);
+    return (r << 24) | (g << 16) | (bl << 8) | al;
+}
 
 extern "C" void func_00247C00(s32 x0, s32 y0, s32 x1, s32 y1, u32 c) {
     s32 v[4];
@@ -636,7 +649,19 @@ INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64A8);
 INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64C8);
 INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64D0);
 INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64D8);
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", Func249348__Fv);
+s32 Func235DE0(const char *fmt, ...) throw();
+void Func249348()
+{
+    if (D_002B9E50 <= 0) {
+        return (void)Func235DE0("*** underflow open dir\n");
+    }
+    D_002B9E50--;
+    switch (D_38F2B8[func_001F1180()][D_002B9E50]) {
+    case 0: func_002490F8(); break;
+    case 1: func_0024A098(); break;
+    case 2: func_0022DD00(); break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00249428);
 INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6530);
@@ -685,7 +710,18 @@ extern "C" s32 func_002496D0(u32 *p) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00249700);
+extern "C" void *func_00249700(Y1ChunkHdr *h, s32 id)
+{
+    s32 off;
+    u8 *base;
+    off = 0;
+    if (off < h->size) for (base = h->data; off < h->size; ) {
+        Y1Chunk *c = (Y1Chunk *)(base + off);
+        if (c->id == id) return (u8 *)c + 8;
+        off = off + c->size + 8;
+    }
+    return 0;
+}
 
 extern "C" CDirEntry *func_00249748() {
     CDirStack *s = func_00249510();

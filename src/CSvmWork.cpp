@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -351,7 +352,20 @@ CSvmWork::CSvmWork() {
     Func12E858();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_0012E768);
+extern "C" void func_00297690(void *arr, s32 flags);   // TArray<> destructor (linkonce)
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CSvmWork::~CSvmWork() {
+    s32 i;
+    Unload12E968();
+    for (i = 0; i < 3; i++) {
+        void *p = ((void **)m_bases)[i];
+        if (p) D_002B91B0(p);
+    }
+    if (m_bases) D_002B91B0(m_bases);
+    if (m_vars) D_002B91B0(m_vars);
+    func_00297690(m_unk2938, 2);
+}
 
 void CSvmWork::Func12E858() {
     m_unk8.Init();

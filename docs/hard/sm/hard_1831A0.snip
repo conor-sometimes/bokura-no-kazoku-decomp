@@ -1,0 +1,112 @@
+//@decl
+#include "state.h"
+class CVec4 {
+public:
+    f32 x, y, z, w;
+};
+class CStatusItem {
+public:
+    void Func1A3378();
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    int GetColor(CVec4 *out, s32 i);
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
+//@func 0x1831A0
+void CMenuTutorSelectedSub182108::Update1831A0() {
+    CStateMachine *sm = (CStateMachine *)this;
+    s32 done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1: {
+        s32 i;
+        CVec4 *c;
+        m_unk48 = D_002A5408->Find("sysscr16_1");
+        m_win = (CMenuRecordWin *)D_002A5408->Find("sysscr16_2");
+        m_unk50 = (s32)D_002A5408->Find("sysscr16_3");
+        if (!m_unk48 || !m_win || !m_unk50) return;
+        ((CStatusItem *)m_unk48)->Func1A3378();
+        ((CStatusItem *)m_win)->Func1A3378();
+        ((CStatusItem *)m_unk50)->Func1A3378();
+        c = (CVec4 *)&pad7C98[8];
+        for (i = 0; i < 4; i++) {
+            ((CStatusItem *)m_win)->GetColor(&c[i], i + 12);
+            c[i].x /= 255.0f;
+            c[i].y /= 255.0f;
+            c[i].z /= 255.0f;
+        }
+    }
+        while (m_state != 1) {
+            sm->m_state = -0x248; done = 1; goto loop;
+    case -0x248:;
+        }
+        ((CStatusItem *)m_unk48)->Func1A3628();
+        ((CStatusItem *)m_win)->Func1A3628();
+        sm->Push(4);
+        SetVar(sm, 1, 6);
+        SetVar(sm, 0, 0);
+        {
+            f32 z = 0.0f;
+            SetVar(sm, 2, *(s32 *)&z);
+        }
+        {
+            f32 o = 1.0f;
+            SetVar(sm, 3, *(s32 *)&o);
+        }
+        for (; sm->Get(0) < sm->Get(1); Inc(sm)) {
+            sm->m_state = -0x251; done = 1; goto loop;
+    case -0x251:;
+        }
+        sm->Pop(4);
+        asm volatile("");
+        ((CStatusItem *)m_unk50)->Func1A3628();
+        do {
+    case -0x25D:
+        if (((CStatusItem *)m_unk48)->m_state != 2 || ((CStatusItem *)m_win)->m_state != 2 || ((CStatusItem *)m_unk50)->m_state != 2) {
+            sm->m_state = -0x25D; done = 1; goto loop;
+        }
+        } while (0);
+        m_state = 2;
+    case -0x26B:
+        if (m_state != 4) {
+            sm->m_state = -0x26B; done = 1; goto loop;
+        }
+        ((CStatusItem *)m_unk48)->Start();
+        ((CStatusItem *)m_win)->Start();
+        ((CStatusItem *)m_unk50)->Start();
+        do {
+    case -0x27D:
+        if (((CStatusItem *)m_unk48)->m_state != 0) {
+            sm->m_state = -0x27D; done = 1; goto loop;
+        }
+        if (((CStatusItem *)m_win)->m_state != 0) {
+            sm->m_state = -0x27D; done = 1; goto loop;
+        }
+        if (((CStatusItem *)m_unk50)->m_state != 0) {
+            sm->m_state = -0x27D; done = 1; goto loop;
+        }
+        } while (0);
+        m_state = 0;
+        sm->m_state = -0x281;
+    case -0x281:
+        done = 1; goto loop;
+    }
+out:
+    if (m_unk48) ((CStatusItem *)m_unk48)->Func1A40C8();
+    if (m_win) ((CStatusItem *)m_win)->Func1A40C8();
+    if (m_unk50) ((CStatusItem *)m_unk50)->Func1A40C8();
+}

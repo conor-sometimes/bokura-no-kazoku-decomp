@@ -79,6 +79,13 @@ struct W2Rc : W2RcB { s32 m10; s32 m14; };
 extern u8 W2s__vt_9CRootTask[] asm("_vt$9CRootTask");
 extern "C" void W2s____5CTask(void *, s32) asm("_$_5CTask");
 extern "C" void W2s___dl__5CTaskPv(void *) asm("__dl__5CTaskPv");
+
+struct Y1Tag { s32 isHead; Y1Tag *prev; Y1Tag *next; void *vptr; };
+extern u8 Y1CList_vt[] asm("_vt$5CList");
+extern u8 Y1CListTag_vt[] asm("_vt$8CListTag");
+extern "C" void __builtin_delete(void *);
+static inline Y1Tag *Y1First(Y1Tag *l) { Y1Tag *n = l->next; return n->isHead ? 0 : n; }
+static inline Y1Tag *Y1Remove(Y1Tag *t) { if (t) { t->prev->next = t->next; t->next->prev = t->prev; t->next = t; t->prev = t; } return t; }
 // @decl-end
 
 extern "C" TypeInfo *__tf8CAppMain()
@@ -135,7 +142,18 @@ extern "C" TypeInfo *__tf5CTask()
     return &D_2EB8B8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029CE18);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_0029CE18(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" TypeInfo *__tft5TList1Z8CTaskTag()
 {
@@ -202,7 +220,18 @@ extern "C" TypeInfo *__tf8CProcess()
 
 extern "C" s32 func_0029D190(void *p) { return FLD(s32, p, 0xC); }
 
-INCLUDE_ASM("asm/nonmatchings/Lib29CBF0", func_0029D198);
+// CList::~CList() (linkonce, deleting): drain the list, then the CListTag base's unlink
+extern "C" void func_0029D198(Y1Tag *l, s32 flags)
+{
+    l->vptr = Y1CList_vt;
+    while (Y1Remove(Y1First(l)));
+    l->vptr = Y1CListTag_vt;
+    l->prev->next = l->next;
+    l->next->prev = l->prev;
+    l->next = l;
+    l->prev = l;
+    if (flags & 1) return (void)__builtin_delete(l);
+}
 
 extern "C" TypeInfo *__tft5TList1Z13CResCacheUnit()
 {

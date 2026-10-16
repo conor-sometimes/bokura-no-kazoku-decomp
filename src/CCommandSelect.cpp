@@ -1,4 +1,5 @@
 #include "common.h"
+#pragma interface
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 //@sym memset 0x289FB0
@@ -62,6 +63,9 @@ public:
 
 class CMenuRecordList {
 public:
+    void Func196D78();
+    s32 GetPage();
+    void SetOffset(s32 v);
     s32 PageCol(s32 n);
 };
 class CMenuRecordSub196E68 {
@@ -137,17 +141,99 @@ struct CCsWin {
     f32 m34;                  // 0x34
 };
 extern char D_002DD9C8[];
+#include "state.h"
+class CStatusItem {
+public:
+    void GetUnkC0(f32 *x, f32 *y, s32 n);
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD928);
-INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD940);
-INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD960);
-INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD9A0);
 CCommandSelect::CCommandSelect() {
     func_00196B50(this);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCommandSelect", Update__14CCommandSelect);
+s32 CCommandSelect::Update() {
+    CStateMachine *sm = (CStateMachine *)this;
+    s32 done = 0;
+    f32 x, y;
+    char buf[0x100];
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        SetMode198128(0);
+        ((CMenuRecordList *)this)->SetOffset(0);
+        do {
+    case -0x59:
+        if (m_state != 1) {
+            sm->m_state = -0x59; done = 1; goto loop;
+        }
+        } while (0);
+        D_002A5538->SetUnkE0(1);
+        ((CStatusItem *)m_win)->GetUnkC0(&x, &y, ((CMenuRecordList *)this)->GetPage());
+        D_002A5538->SetUnk0And20(x, y);
+        ((CMenuRecordList *)this)->Func196D78();
+        Select198290(m_cursor);
+        ((CStatusItem *)m_win)->Func1A3628();
+        do {
+    case -0x70:
+        if (((CStatusItem *)m_win)->m_state == 2) {
+            m_state = 2;
+            sm->m_state = -0x76; done = 1; goto loop;
+        }
+        sm->m_state = -0x70; done = 1; goto loop;
+        } while (0);
+    case -0x76:
+        for (;;) {
+            if (*(s32 *)((u8 *)this + 0x4E4)) {
+                sm->Push(); SetVar(sm, 0, -0x7A);
+                goto sub;
+    case -0x7A:;
+            }
+            if (m_state != 4) {
+                sm->m_state = -0x80; done = 1; goto loop;
+            }
+            break;
+    case -0x80:;
+        }
+        ((CStatusItem *)m_win)->Start();
+        do {
+    case -0x8D:
+            if (((CStatusItem *)m_win)->m_state == 0) {
+                m_state = 0;
+                sm->m_state = -0x9B;
+                goto e9B;
+            }
+            sm->m_state = -0x8D; done = 1; goto loop;
+        } while (0);
+    sub:
+        *(s32 *)((u8 *)this + 0x4E4) = 0;
+        ((CMenuRecordList *)this)->Func196D78();
+        ((CStatusItem *)m_win)->GetUnkC0(&x, &y, ((CMenuRecordList *)this)->GetPage());
+        D_002A5538->Move1B6488(x, y);
+        sm->m_state = sm->Get();
+        sm->Pop();
+        goto loop;
+    case -0x9B:
+    e9B:
+        done = 1; goto loop;
+    }
+out:
+    ((CStatusItem *)m_win)->Func1A40C8();
+    D_002A5538->Update1B6570();
+}
+INCLUDE_RODATA("asm/nonmatchings/CCommandSelect", D_002DD9A0);
 
 s32 CCommandSelect::Draw() {
     u8 *p;

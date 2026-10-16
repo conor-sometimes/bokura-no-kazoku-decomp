@@ -1,0 +1,45 @@
+//@decl
+typedef struct { int m0, m4; } W2Pair2;
+extern W2Pair2 D_4203C0;
+extern u8 D_420380[];
+extern int D_002BDB38;
+typedef struct { void *m0; void *m4; } W2IoBuf;
+extern W2IoBuf D_41EC00;
+extern u8 D_41F8C0[];
+typedef struct { char c[4]; } W2C4;
+int func_00275EE0(RpcClient *cd, int rpc, int mode);
+void func_00276930();
+void func_00276E20();
+//@func 0x276E68
+int func_00276E68(void)
+{
+    int s, i;
+    Slot *p;
+    W2C4 t;
+    W2Pair2 *q = &D_4203C0;
+    func_00275748(0);
+    D_4203C0.m0 = 0;
+    q->m4 = 0;
+    s = func_0027BD20();
+    func_002752D0(0x80000011, (void *)func_00276930, D_420380);
+    func_002752D0(0x80000013, (void *)func_00276E20, q);
+    if (s) func_0027BD78();
+    while (1) {
+        if (func_00275EE0((RpcClient *)D_420340, 0x80000001, 0) < 0) return -1;
+        if (*(int *)(D_420340 + 0x24)) break;
+        i = 0x100000;
+        while (i--)
+            ;
+    }
+    func_002767D8();
+    func_002731E0(D_002BDB40);
+    for (p = D_420140; p < D_420140 + 32; p++) p->m4 = 0;
+    func_002731C0(D_002BDB40);
+    D_41EC00.m0 = D_41F8C0;
+    D_41EC00.m4 = D_41F8C0 + 0x440;
+    if (func_002760B0(D_420340, 0xFF, 0, &D_41EC00, 8, D_41F880, 8, 0, 0) < 0) return 0xFFFEFFFF;
+    *(W2C4 *)D_420368 = *(W2C4 *)((u32)D_41F880 | 0x20000000);
+    t = *(W2C4 *)((u32)(D_41F880 + 4) | 0x20000000);
+    { int *p = &D_002BDB38; D_002BDB34 = 1; *p = *(int *)&t == 2; }
+    return 0;
+}

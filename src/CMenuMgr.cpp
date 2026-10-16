@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -99,7 +100,7 @@ public:
 // CMenuMgr's vtable slots (_vt$8CMenuMgr); the vptr is at 0, so they come from a field-less base.
 class IMenuMgr {
 public:
-    virtual ~IMenuMgr();
+    virtual void Slot0();               // library inline (0x29BD90)
     virtual void Slot1();
     virtual void Slot2();
     virtual void Slot3();
@@ -119,7 +120,7 @@ public:
     virtual void Slot17();
     virtual void UpdateProc();
     virtual s32 DrawProc();
-    virtual void Slot20();
+    // slot 20: ~CMenuMgr (the interface has no destructor)
 };
 
 // Pad repeat state (inline constructor).
@@ -610,7 +611,39 @@ CMenuMgr::CMenuMgr() {
     if (GetFontTable(1)) func_0025C438(GetFontTable(1), &m_snd);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuMgr", func_001B3DD0);
+extern "C" void MMChrBodyWinDtor(void *p, s32 flags) asm("_$_11CChrBodyWin");
+extern "C" void MMStatusBaseSubDtor(void *p, s32 flags) asm("_$_20CStatusBaseSub19B8C8");
+extern "C" void MMMemorialSubDtor(void *p, s32 flags) asm("_$_26CMenuLoadMemorialSub17B3A0");
+extern "C" void MMSub1B4768Dtor(void *p, s32 flags) asm("_$_17CMenuMgrSub1B4768");
+extern "C" void MMSub1B5BF8Dtor(void *p, s32 flags) asm("_$_17CMenuMgrSub1B5BF8");
+extern "C" void MMSub1B6418Dtor(void *p, s32 flags) asm("_$_17CMenuMgrSub1B6418");
+extern "C" void MMStatusWinSubDtor(void *p, s32 flags) asm("_$_19CStatusWinSub1A0A10");
+extern "C" void func_0025C2C0(void *p, s32 flags);
+
+// Key method (slot 0 of the vtable is a library inline): #pragma interface (top) keeps this unit
+// from emitting the vtables (asm data). The menu objects are deleted through their own (non-virtual)
+// destructors, named by asm label.
+CMenuMgr::~CMenuMgr() {
+    s32 i;
+    delete m_proc;
+    for (i = 0; i < 6; i++) {
+        delete D_002A4638[i];
+        D_002A4638[i] = 0;
+    }
+    delete D_002A4B60;
+    D_002A4B60 = 0;
+    delete D_002A5358;
+    D_002A5358 = 0;
+    if (D_002A4308) MMChrBodyWinDtor(D_002A4308, 3);
+    if (D_002A53D4) MMStatusBaseSubDtor(D_002A53D4, 3);
+    if (D_002A3AF8) MMMemorialSubDtor(D_002A3AF8, 3);
+    if (D_002A5530) MMSub1B4768Dtor(D_002A5530, 3);
+    if (D_002A5534) MMSub1B5BF8Dtor(D_002A5534, 3);
+    if (D_002A5538) MMSub1B6418Dtor(D_002A5538, 3);
+    if (D_002A5408) MMStatusWinSubDtor(D_002A5408, 3);
+    D_002A5468 = 0;
+    func_0025C2C0(&m_snd, 2);
+}
 
 void CMenuMgr::Init1B3FC8() {
     m_unk6C = -1;

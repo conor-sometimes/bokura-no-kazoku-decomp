@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -454,7 +455,21 @@ CMiniGame1Res *NewMiniGame1Res() {
 
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame1Res", D_002E0D50);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame1Res", D_002E0D60);
-INCLUDE_ASM("asm/nonmatchings/CMiniGame1Res", func_001BD700);
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+extern "C" int func_001B8760(void *res, const char *path);
+
+// Key method of CMiniGame1Res (its destructor is inline): #pragma interface (top) keeps this unit
+// from emitting the vtables (asm data).
+s32 CMiniGame1Res::Load() {
+    char buf[0x100];
+    Release();
+    Func2491A8(buf, 0, (s32)"FILE", (s32)"minigcomdir", (s32)"data/minig/common.xap");
+    if (func_001B8760(&m_lay10, buf)) {
+        Func2491A8(buf, 0, (s32)"FILE", (s32)"minig1dir", (s32)"data/minig/minig1.xap");
+        if (func_001B8760(&m_lay34, buf)) D_002A59F8 = (CMiniGame1Data *)this;
+    }
+    return D_002A59F8 != 0;
+}
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame1Res", D_002E0DC0);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame1Res", D_002E0DE8);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame1Res", D_002E0DF0);
@@ -491,7 +506,18 @@ CMiniGame1::CMiniGame1(s32 a, s32 b) {
     m_unk8C8 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame1Res", _$_10CMiniGame1);
+extern "C" void MG1LayoutDtor(void *p, s32 flags) asm("_$_10CLayoutObj");
+
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data). The
+// member objects are raw storage here, destroyed explicitly (last declared first).
+CMiniGame1::~CMiniGame1() {
+    func_0025C2C0(m_unk7B4, 2);
+    MG1LayoutDtor(m_layout[4], 2);
+    MG1LayoutDtor(m_layout[3], 2);
+    MG1LayoutDtor(m_layout[2], 2);
+    MG1LayoutDtor(m_layout[1], 2);
+    MG1LayoutDtor(m_layout[0], 2);
+}
 
 int CMiniGame1ResCfg::Parse1BDA08() {
     char key[256];

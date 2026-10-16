@@ -137,6 +137,53 @@ extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
 extern char D_002DAEB8[];
 
 struct CGsRect { s32 x0, y0, x1, y1; };
+
+#include "state.h"
+class CStatusItem {
+public:
+    void Func1A3378();
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    void Select(s32 i);
+    const char *GetUnkE4(s32 i);
+    void SetText(s32 i, const char *s);
+    void SetUnkF0(s32 i, s32 v);
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual int V7(s32 *a, s32 *b, s32 *c);
+    virtual void V8();
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual void V12();
+    virtual void V13();
+    virtual void V14(s32 v);
+};
+extern CSndIf *D_002A5468;
+extern CFlagWork *D_002A4B60;
+#include "CMenuMgrSub1B6418.h"
+extern CMenuMgrSub1B6418 *D_002A5538;
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+void Func185AA0(char *dst, s32 k, s32 a, s32 b, s32 c, s32 d, s32 e);
+inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
+inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
+#define W ((CStatusItem *)m_unk58)
 // @decl-end
 
 CMenuExam::CMenuExam() {
@@ -162,9 +209,104 @@ INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAC50);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAC90);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DACB8);
 INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DACE0);
-INCLUDE_ASM("asm/nonmatchings/CMenuExam", Update__9CMenuExam);
-INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAD28);
-INCLUDE_RODATA("asm/nonmatchings/CMenuExam", D_002DAD48);
+s32 CMenuExam::Update() {
+    CStateMachine *sm = (CStateMachine *)this;
+    s32 a, b, c;
+    char buf[0x100];
+    char tmp[0x100];
+    s32 done;
+    D_002A5468->V7(&a, &b, &c);
+    if (m_state == 6) {
+        m_state = 5;
+        goto end;
+    }
+    done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        m_unk58 = (s32)D_002A5408->Find("exam");
+        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "exam");
+        W->Func1A3378();
+        W->Select(-1);
+        D_002A5538->SetUnkE0(0);
+        switch (D_002A5358->Func1091B0(0x2A6)) {
+        case 0:
+            W->SetUnkF0(3, 1);
+            W->SetUnkF0(4, 0);
+            W->SetUnkF0(5, 1);
+            W->SetUnkF0(6, 0);
+            W->SetUnkF0(7, 0);
+            break;
+        case 1:
+            W->SetUnkF0(3, 0);
+            W->SetUnkF0(4, 1);
+            W->SetUnkF0(5, 0);
+            W->SetUnkF0(6, 1);
+            W->SetUnkF0(7, 0);
+            Func185AA0(tmp, D_002A5358->Func1091B0(4), -1, -1, -1, -1, -1);
+            sprintf(buf, W->GetUnkE4(6), tmp);
+            W->SetText(6, buf);
+            break;
+        case 2:
+            W->SetUnkF0(3, 0);
+            W->SetUnkF0(4, 1);
+            W->SetUnkF0(5, 0);
+            W->SetUnkF0(6, 0);
+            W->SetUnkF0(7, 1);
+            Func185AA0(tmp, D_002A5358->Func1091B0(4), -1, -1, -1, -1, -1);
+            sprintf(buf, W->GetUnkE4(7), tmp);
+            W->SetText(7, buf);
+            break;
+        }
+        W->Func1A3628();
+    case -0xBB:
+        if (W->m_state == 2) {
+            sm->m_state = -0xC0; done = 1; goto loop;
+        }
+        sm->m_state = -0xBB; done = 1; goto loop;
+    case -0xC0:
+        sm->Push(4);
+        SetVar(sm, 1, D_002A4B60->Func1091B0(0x57));
+        SetVar(sm, 0, 0);
+        {
+            f32 z = 0.0f;
+            SetVar(sm, 2, *(s32 *)&z);
+        }
+        {
+            f32 z = 0.0f;
+            SetVar(sm, 3, *(s32 *)&z);
+        }
+        for (; sm->Get(0) < sm->Get(1); Inc(sm)) {
+            if (!(a & 0x60)) {
+                sm->m_state = -0xCB; done = 1; goto loop;
+            }
+            D_002A5468->V14(3);
+            sm->Pop(4);
+            goto s4;
+    case -0xCB:;
+        }
+        sm->Pop(4);
+    s4:
+        m_state = 4;
+        W->Start();
+        while (W->m_state != 0) {
+            sm->m_state = -0xD6; done = 1; goto loop;
+    case -0xD6:;
+        }
+        m_state = 5;
+        sm->m_state = -0xDC;
+    case -0xDC:
+        done = 1; goto loop;
+    }
+out:
+    if (m_unk58) W->Func1A40C8();
+end:;
+}
 
 s32 CMenuExam::Draw() {
     f32 v[2];

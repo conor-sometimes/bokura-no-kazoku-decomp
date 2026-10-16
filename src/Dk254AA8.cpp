@@ -152,6 +152,28 @@ void *Func24A4C0(const char *name);
 extern "C" s32 func_0024AD80(char *d, s32 c);
 extern "C" char *func_0024AD10(char *p, char *buf, s32 a, s32 n);
 char *Func24A570(const char *s, char *tok, const char *a, const char *b);
+
+extern "C" s32 func_00240C60(s32 i);
+extern "C" s32 func_00240CB8(s32 i);
+struct Y1FontCtx {
+    s32 m0, m4, m8, mC;
+    f32 m10, m14, m18, m1C;
+    f32 m20, m24, m28, m2C;
+    s32 m30, m34, m38, m3C;
+    f32 m40, m44, m48, m4C;
+    f32 m50, m54; s32 m58, m5C;
+    f32 m60, m64, m68, m6C;
+    s32 m70, m74, m78, m7C;
+    s32 m80, m84, m88, m8C;
+    char *m90; s32 m94; s32 m98;
+};
+
+struct Y1FontCtx2 { s32 w[0xA0 / 4]; } __attribute__((aligned(8)));
+#define Y1F(m) (*(f32 *)&(m))
+
+struct W2FontCh2 { u8 p0[0xA]; s8 mA; u8 pB[5]; s8 m10; };
+struct W2FontLay2 { u8 p0[0x10]; f32 m10; f32 m14; u8 p18[8]; f32 m20; u8 p24[0x2C]; f32 m50; u8 p54[0x28]; s32 m7C; };
+extern "C" void func_00256DC8(void *ctx, W2FontCh2 *c, f32 x, f32 y, W2FontLay2 *l);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00254AA8);
@@ -414,7 +436,47 @@ const char *CFontMgr::GetText(s32 id) {
     return D_002E70D0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk254AA8", Func2562B0__9CFontWorkPvPcii);
+void CFontWork::Func2562B0(void *vctx, char *buf, s32 n, s32 mode)
+{
+    Y1FontCtx *c = (Y1FontCtx *)vctx;
+    CVec4 v;
+    if (mode == 0) Func270C50(&v, (CVec4 *)&m_unk30);
+    else {
+        Func270C50(&v, (CVec4 *)&m_unk60);
+        v.w *= m_unk3C;
+    }
+    s32 b;
+    if (D_002BA1D4->GetBank(m_unk0) >= 0) b = m_unk0;
+    else b = D_002BA1D4->FindUsed();
+    c->m0 = b;
+    c->m4 = D_002BA1D4->GetBank(b);
+    c->m10 = func_00240C60(c->m4) * m_unk20;
+    c->m14 = func_00240CB8(c->m4) * m_unk24;
+    c->m20 = m_unk20;
+    c->m24 = m_unk24;
+    c->m30 = (s32)(v.x * 128.0f);
+    c->m34 = (s32)(v.y * 128.0f);
+    c->m38 = (s32)(v.z * 128.0f);
+    c->m3C = (s32)(v.w * 128.0f);
+    c->m40 = v.x;
+    c->m44 = v.y;
+    c->m48 = v.z;
+    c->m4C = v.w;
+    c->m50 = *(f32 *)&m_unk40;
+    c->m54 = *(f32 *)&m_unk44;
+    c->m60 = m_unk20;
+    c->m64 = m_unk24;
+    c->m70 = m_unk50;
+    c->m74 = m_unk54;
+    c->m78 = mode;
+    c->m7C = m_unk70;
+    c->m80 = 0;
+    c->m84 = 0;
+    c->m88 = 0;
+    c->m90 = buf;
+    c->m94 = n;
+    c->m98 = 0;
+}
 
 void CFontWork::Func2564B8(f32 *w, f32 *h, const char *s) {
     if (!D_002BA1D4) return;
@@ -451,7 +513,44 @@ s32 CFontMgr::Func256668() { return func_00242340(); }
 
 void CFontMgr::Func256680(s32 a, s32 b) { func_00242408(a, b); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk254AA8", Func2566A0__9CFontWorkPCci);
+void CFontWork::Func2566A0(const char *s, s32 mode)
+{
+    const char *p = s;
+    Y1FontCtx2 c;
+    Y1FontCtx2 c2;
+    char buf[0x1000];
+    const char *p2;
+    f32 w, h, x, y;
+    if (!D_002BA1D4) return;
+    Func2562B0(&c, buf, 0x400, mode);
+    c2 = c;
+    p2 = p;
+    w = h = x = y = 0.0f;
+    if (m_unk4 == 0) {
+        Func2574B8(x, y, &w, &h, &p, &c, 0);
+        switch (m_unk50) {
+        case 1: x = (Y1F(m_unk10) + Y1F(m_unk18)) * 0.5f - w * 0.5f; break;
+        case 2: x = Y1F(m_unk18) - w; break;
+        case 0: default: x = Y1F(m_unk10); break;
+        }
+    } else {
+        Func257B70(x, y, &w, &h, &p, &c, 0);
+        switch (m_unk50) {
+        case 0: default: x = Y1F(m_unk10) + w; break;
+        case 1: x = (Y1F(m_unk10) + Y1F(m_unk18)) * 0.5f + w * 0.5f; break;
+        case 2: x = Y1F(m_unk18); break;
+        }
+    }
+    switch (m_unk54) {
+    case 1: y = (Y1F(m_unk14) + Y1F(m_unk1C)) * 0.5f - h * 0.5f; break;
+    case 0: default: y = Y1F(m_unk14); break;
+    case 2: y = Y1F(m_unk1C) - h; break;
+    }
+    switch (m_unk4) {
+    case 0: Func2574B8(x, y, &w, &h, &p2, &c2, 1); break;
+    case 1: Func257B70(x, y, &w, &h, &p2, &c2, 1); break;
+    }
+}
 
 void CFontWork::Func256930(const char *s) {
     if (m_unk58 < 3) {
@@ -488,4 +587,27 @@ void CFontWork::Func1(s32 x) {
     func_00242468(x);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00257068);
+extern "C" void func_00257068(void *ctx, f32 *ow, f32 *oh, W2FontCh2 **items, s32 n, W2FontLay2 *l, s32 flags, f32 x, f32 y)
+{
+    f32 w = 0.0f;
+    s32 i;
+    for (i = 0; i < n; i++) {
+        f32 adv;
+        if (items[i] != 0) {
+            if (l->m7C) {
+                if (flags & 4) func_00256DC8(ctx, items[i], x + w + (f32)items[i]->m10 * l->m20, y, l);
+                adv = l->m10;
+            } else {
+                if (flags & 4) func_00256DC8(ctx, items[i], x + w, y, l);
+                adv = (f32)items[i]->mA * l->m20;
+            }
+        } else {
+            adv = l->m10;
+        }
+        w += adv;
+        w += l->m50;
+    }
+    w -= l->m50;
+    *ow = w;
+    *oh = l->m14;
+}
