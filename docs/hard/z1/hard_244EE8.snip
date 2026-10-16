@@ -1,0 +1,52 @@
+//@func 0x244EE8
+extern volatile s32 D_002B9D88;
+extern s32 D_002B9D84, D_002B9DBC, D_002B9D80, D_38F000, D_38F080, D_38F06C, D_002B9D90, D_002B9D98, D_38F074, D_38F070, D_38F07C, D_002B9D94;
+s32 Func235DE0(const char *fmt, ...);
+extern "C" void func_00243E58(s32 i);
+extern "C" s32 func_0022E5A8(s32);
+extern "C" s32 func_0022E560(s32);
+extern "C" s32 func_0022E518(s32);
+extern "C" s32 func_0022E4C8(s32);
+extern "C" s32 func_002669C0(void *, s32, s32, s32, s32);
+extern "C" void func_0022E618(s32, s32);
+extern "C" void func_00244040(s32);
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+extern "C" void func_00244EE8(void)
+{
+    s32 i, n;
+    if (D_002B9D84 < 0) return;
+    if (D_002B9DBC == 0 && func_0022E5A8(D_002B9D84) == 0) return;
+    i = 0;
+    while (1) {
+        n = MIN(func_0022E5A8(D_002B9D84), 0x8000);
+        n = MIN(n, func_0022E560(D_002B9D84) - func_0022E518(D_002B9D84));
+        i++;
+        n = func_002669C0(&D_38F000, func_0022E4C8(D_002B9D84), n, (D_002B9D80 + 0x3F) & ~0x3F, 0x180000);
+        func_0022E618(D_002B9D84, n);
+        D_002B9D88 -= n;
+        if (n <= 0 || i >= 2) break;
+    }
+    if (D_002B9DBC == 0 && D_38F080 < 2) {
+        for (i = 0; i < 4; i++) func_00243E58(i);
+        D_002B9DBC = 1;
+        Func235DE0("ready\n");
+    }
+    if (D_002B9DBC == 0) return;
+    if (D_38F06C == 0) {
+        if (D_002B9D90 != 0) goto flip;
+        D_002B9D98++;
+        if (D_38F080 < 4) {
+            D_38F080++;
+            D_38F07C = (D_38F07C + 5) % 4;
+            D_38F070 = 0;
+            D_38F074 = 1;
+        } else {
+            D_002B9D94 |= D_002B9D88 < 5;
+        }
+    }
+flip:
+    D_38F06C ^= 1;
+    D_38F070 ^= 1;
+    for (i = 0; i < 4; i++) func_00244040(i);
+}

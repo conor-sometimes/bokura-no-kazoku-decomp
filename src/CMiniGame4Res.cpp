@@ -316,3 +316,4 @@ INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1530);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001DE060);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E15A8);
 INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E15B8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E15C8);   // func_001D5550's const table: after the RTTI names, still this object

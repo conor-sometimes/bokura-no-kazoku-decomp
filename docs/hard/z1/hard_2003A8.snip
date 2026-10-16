@@ -1,0 +1,39 @@
+//@decl
+struct ChE52 { u8 pad0[0x4]; s32 m4; u8 pad8[0x14]; s32 m1C; u8 pad20[0x14]; };
+extern ChE52 *D_002A5D0C;
+extern s32 D_002A5D10;
+extern s32 *D_30E100;
+extern s32 D_30E140;
+extern const char D_002E26A0[];
+extern "C" u8 *func_00225058(void);
+extern "C" void func_00225040(u32 a);
+
+//@func 0x2003A8
+extern "C" void func_002003A8(void) {
+    s32 *p = D_30E100;
+    switch (((u32)p[0] & 0xC) >> 2) {
+    case 0:
+        D_002A5D0C[D_002A5D10].m4 = 0;
+        break;
+    case 2:
+        D_002A5D0C[D_002A5D10].m4 = D_002A5D0C[D_30E140 + p[3]].m4;
+        break;
+    default: {
+        u8 *src = (u8 *)p + p[3];
+        s32 n = *(s32 *)src;
+        u8 *dst;
+        s32 i;
+        if (D_002A5CD0) Func235DE0(D_002E26A0, n);
+        dst = func_00225058();
+        func_00225040(((u32)dst + n * 8 + 0x17) & ~0xF);
+        *(s32 *)dst = n;
+        D_002A5D0C[D_002A5D10].m4 = (s32)dst;
+        for (i = 0; i < n; i++) {
+            *(u16 *)(dst + 8 + i * 8) = *(u16 *)(src + 4 + i * 4);
+            *(u16 *)(dst + 10 + i * 8) = *(u16 *)(src + 6 + i * 4);
+            *(u16 *)(dst + 14 + i * 8) = 0x40;
+        }
+        break;
+    }
+    }
+}

@@ -42,7 +42,7 @@ public:
 class CStatusItem {
 public:
     void Func1A1B38() throw();  // throw(): retail compiled both before their callers (nothrow calls)
-    int Func1A1AA0() throw();
+    void Func1A1AA0() throw();
     void Fade(s32 mode, s32 total);
     void Func1A3378();
     void SetText(s32 i, const char *s);
@@ -78,7 +78,7 @@ public:
     s32 m_state;              // 0x20
     s32 m_count;              // 0x24
     CStatusEntry *m_entries;  // 0x28
-    u8 pad2C[0x4];
+    s32 m_unk2C;              // 0x2C
     s32 m_unk30;              // 0x30
     f32 m_unk34;              // 0x34
     s32 m_mapCount;           // 0x38
@@ -484,6 +484,9 @@ extern char D_002DDFE0[];
 // definitions (bnel there, docs/lessons.md nm), so CStatusWinSub1A4A40 was probably its own .cpp.
 extern "C" int SelMT(CStatusItem *, s32) asm("Select__11CStatusItemi");
 extern "C" void GetMT(CStatusItem *, f32 *, f32 *, s32) asm("GetMappedUnkC0__11CStatusItemPfT1i");
+
+extern "C" int func_001A1418(CStatusItem *p);
+extern "C" void func_001A3488(CStatusItem *p);
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DDEE0);
@@ -508,60 +511,6 @@ INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE0B0);
 INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE0D0);
 INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE100);
 INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE130);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE160);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE180);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE198);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE238);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3B8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3E0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3E8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3F0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3F8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE400);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE420);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE448);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE478);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE480);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE488);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE4E8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE548);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE5A8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE5D0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE600);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE630);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE660);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE680);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6A8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6C8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6F0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE720);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE758);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE788);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE7B8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE7E8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE818);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE848);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE878);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE8A8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE8D8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE908);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE938);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE968);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE9A0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE9D0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA00);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA30);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA60);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DEA90);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAC0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAF0);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAF8);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB00);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB10);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB20);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB40);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB60);
-INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEBA0);
 
 void CStatusWin::Func19E008() {
     s32 i;
@@ -1195,9 +1144,52 @@ void CStatusItem::Fade(s32 mode, s32 total) {
     m_unk30++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusItem", Func1A1AA0__11CStatusItem);
+void CStatusItem::Func1A1AA0() throw() {
+    switch (m_unk2C) {
+    case 1:
+        return (void)func_001A1418(this);
+    case 2:
+    case 3:
+        return Fade(0, D_002A4B60->Func1091B0(4));
+    case 0:
+    case 4:
+        func_001A3488(this);
+        break;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CStatusItem", Func1A1B38__11CStatusItem);
+void CStatusItem::Func1A1B38() throw() {
+    switch (m_unk2C) {
+    case 1:
+        return Fade(1, D_002A4B60->Func1091B0(3));
+    case 2:
+    case 4:
+        return Fade(1, D_002A4B60->Func1091B0(4));
+    case 0:
+    case 3:
+        ResetColors();
+        break;
+    }
+}
+
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE198);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE238);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3B8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3E0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3E8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3F0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE3F8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE400);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE420);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE448);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE478);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE480);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE488);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE4E8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE548);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE5A8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE5D0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DE600);
 
 // The (empty) constructor: new[] in CStatusWinSub1A0A10::LoadTable calls it.
 CStatusWinSub1A1BF0::CStatusWinSub1A1BF0() {
@@ -1240,7 +1232,77 @@ void CStatusItem::SetUnk34(f32 v) {
     m_unk34 = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusItem", func_001A3488);
+extern "C" void func_001A3488(CStatusItem *s) {
+    s32 i;
+    for (i = 0; i < s->m_count; i++) {
+        CStatusEntry *e = &s->m_entries[i];
+        switch (e->m_unkF4) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 9:
+            e->m_unk60[0] = e->m_pos[0];
+            e->m_unk60[1] = e->m_pos[1];
+            e->m_unk70[0] = e->m_unk10[0];
+            e->m_unk70[1] = e->m_unk10[1];
+            break;
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            e->m_unkD8 = 1;
+            break;
+        case 10:
+        case 11:
+            break;
+        }
+    }
+    s->m_unk34 = 1.0f;
+    if (s->m_mapCount) {
+        s32 j;
+        for (j = 0; j < s->m_mapCount; j++) {
+            s->m_entries[s->m_map[j]].m_unkDC = 0;
+            s->m_entries[s->m_map[j]].m_unkE0 = 0;
+        }
+    }
+    s->m_state = 2;
+}
+
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE660);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE680);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6A8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6C8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE6F0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE720);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE758);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE788);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE7B8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE7E8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE818);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE848);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE878);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE8A8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE8D8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE908);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE938);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE968);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE9A0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DE9D0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA00);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA30);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEA60);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", jtbl_002DEA90);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAC0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAF0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEAF8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB00);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB10);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB20);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB40);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEB60);
+INCLUDE_RODATA("asm/nonmatchings/CStatusItem", D_002DEBA0);
 
 void CStatusItem::ResetColors() {
     s32 i;

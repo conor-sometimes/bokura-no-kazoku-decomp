@@ -1205,11 +1205,6 @@ order, unsigned i, pointer/array spellings tried), plus one store pair swapped.
 - 0x28DA28 func_0028DA28 (Lib28D8B0, 1436 insns): _vfprintf_r: upstream newlib vfprintf.c (0.93 similar), jump table in ro_tail
 ## sm
 Lane sm (state.h machines, 2026-10-16). Recipe in docs/lessons.md ## sm; best attempts in docs/hard/sm/.
-- **0x1A7818** CMenuSysscr32::Update: DIFF 1 (one branch): the `m_state == 6` test is `bnel` (ours)
-  where retail has `bne` with `lui $2,%hi(D_002A5468)` in the slot; everything else matches (waits as
-  natural tests, `m_cmd->Update()` through a `void` view class). FreeBuf declared `throw()` (its call
-  then has REG_EH_REGION 0) did not change it. Needs `void Open(); void Select198290(s32);` and
-  `s32 m_state; // 0x4C` in include/CCommandBase.h (not committed).
 - **0x13D518** CEventObj commands 0x5C-0x60 (no machine loop: busy test, then a switch on the state):
   matches in utest (docs/hard/sm/hard_13D518.snip: four identical cases written out so GCC uses a jump
   table; `on = SlotAsInt(7, 1) != 0` before the m4 test; `goto busy` to a `return 1` at the end).
@@ -1413,16 +1408,6 @@ idiom once (it recurs in this parser) and both functions should fall.
   keeps the Play(4) copy, the PMF is `&CMenuSysscr02::LoadFlags` (a .rodata constant between the
   literals), func_00245818's int return through an asm-named declaration. Needs `s32 m_unkAC;
   s32 m_unkB4[3];` in the unit's class.
-- **0x1AA1B8** CMenuSysscr26::Update: DIFF 1, the same branch as 0x1A7818: the `m_state == 6` test
-  (before the V7 pad call) is `bnel` with `lui $2,%hi(D_002A5468)` from the target (reorg marks it
-  annulled; REG_BR_PROB 6001), retail `bne`. The fall-through is identical
-  (`m_state = 5; m_unk4C = -1;` in that order). Tried: return instead of goto end, an empty 6-path,
-  local order, done init. Needs `s32 m_unk5C..m_unk74` in the unit's CMenuSysscr26 (size 0x78).
-  **Matches if CMenuProcess::Update returns void** (tested: `virtual void Update() = 0;` in
-  include/CMenuProcess.h plus `void` in the unit's class and the snippet gives MATCH): with `s32`
-  the epilogue's `(use $2)` makes reorg think `$2` is live on the `goto end` path, so the `lui $2`
-  slot gets annulled. Not applied: every CMenuProcess screen's Update (≈45 units, several with
-  `return Func235DE0(...)`) would change with it; left for a cross-lane header pass.
 - **0x19F6C0** CStatusWin::Update19F6C0 (mode machine on m_state 0..5, states in do-while loops as
   0x19A9D8): DIFF 3, one register: retail compares `m_unk64 != 3` (in the moved `c3` block) with the
   register that already holds 3 for the `m_state == 3` test (`$4`); ours uses `m_state`'s register
@@ -1478,15 +1463,6 @@ idiom once (it recurs in this parser) and both functions should fall.
   `_$_8bad_cast` 0x29E800, `_$_10bad_typeid` 0x29E898, `_$_13bad_exception` 0x29ECE8, and
   `D_002EB680 = 0x002EB680` (.data refers to the table's start). With all that the image differs in those 4
   words only.
-- **0x13A2C8 / 0x13A790 / 0x13AC58** CEventObj command handlers (m_sm[1] / m_sm[2] / m_sm[0]): DIFF 1
-  each, one branch-likely choice. 0x13A2C8 and 0x13A790: the `if (m_FC50)` test before the
-  Func235DE0 log call is `bnel $3,$0,ret; daddu $2,0` in retail, ours `bnez` (same slot, not
-  annulled); the same bnel shows in 0x139440. 0x13AC58: its second wait (`while
-  (EvREmpty(D_002A0BE4))`) is `beqz $2,yield; li $2,-0x480` in retail, ours `beqzl`. Everything else
-  matches with the recipe in docs/lessons.md ## sm (Cmd13A100 family). Tried: return forms, shared
-  return labels, void/int callees, `!m_FC50` vs `== 0`, logging inlines; reorg's delay-slot liveness
-  (mark_target_live_regs) decides these, not the source shape found so far. Snippets:
-  docs/hard/sm/hard_13A2C8.snip, hard_13A790.snip, hard_13AC58.snip.
 - **0x13D6D8** CEventObj::Func13D6D8 (runs the m_FCB8 command queued by Cmd13D518: map flag /
   map-effect enable / sound fade / map-effect apply on two func_00134100 values): DIFF 71, same
   length; the busy test's temps (`ori $3` + flags in `$2` after `daddu $19,$2`) and the

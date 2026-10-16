@@ -62,7 +62,7 @@ inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
 #define IDS ((s32 *)pad70)
 #define M8C (*(s32 *)pad8C)
 //@func 0x18A548
-s32 CMenuChildStatus::Update() {
+void CMenuChildStatus::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     s32 done;

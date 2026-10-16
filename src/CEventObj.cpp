@@ -446,6 +446,12 @@ inline CEvRNode *EvRFirst(IResMgr *m) {
     return r;
 }
 inline int EvREmpty(IResMgr *m) { return EvRFirst(m) == 0; }
+
+extern char D_002D5A48[];
+inline int EvRAny(IResMgr *m) { return EvRFirst(m) != 0; }
+
+extern "C" int func_00138908(CEventObj *o, char *buf, CSvmWork *w, int id) throw();
+extern char D_002D5A68[];
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
@@ -936,7 +942,48 @@ r1:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013A2C8);
+int CEventObj::Cmd13A2C8(CSvmWork *w, int id, int reset) {
+    char buf[0x100];
+    s32 done;
+    if (reset) SmInit(&m_sm[1], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        int r = 0;
+        if (m_FD30 && m_FD34) r = (m_FD30->*m_FD34)(w, id, reset);
+        return r;
+    }
+    done = 0;
+    {
+    CStateMachine *sm = &m_sm[1];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0xC:
+    case 0xE:
+        if (m_FC58) return 0;
+        while (EvREmpty(D_002A0BE8)) {
+            sm->m_state = -0x32F; done = 1; goto loop;
+    case -0x32F:;
+        }
+        w->SlotGetStr(0, buf, 0x100, D_002D5928);
+        Call132F40(0, (int)buf, 0);
+        if (!buf[0]) return 0;
+        func_00250828(D_002A0BE8, buf);
+        if (!m_FC50) Func235DE0(D_002D5A48, buf);
+        return 0;
+    case 0x58:
+        sm->m_state = -0x34C;
+    case -0x34C:
+        done = 1; goto loop;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 int CEventObj::Cmd13A508(CSvmWork *w, int id, int reset) {
     s32 done;
@@ -979,7 +1026,51 @@ r1:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013A790);
+int CEventObj::Cmd13A790(CSvmWork *w, int id, int reset) {
+    s32 done;
+    if (reset) SmInit(&m_sm[2], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        int r = 0;
+        if (m_FD30 && m_FD34) r = (m_FD30->*m_FD34)(w, id, reset);
+        return r;
+    }
+    done = 0;
+    {
+    CStateMachine *sm = &m_sm[2];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0xC:
+    case 0xE:
+        if (m_FC58) return 0;
+        if (m_FC10) return 0;
+        while (EvREmpty(D_002A0BEC)) {
+            sm->m_state = -0x3D1; done = 1; goto loop;
+    case -0x3D1:;
+        }
+        w->SlotGetStr(0, (char *)m_FB5C, 0x20, D_002D5928);
+        w->SlotGetStr(1, (char *)m_FB5C + 0x20, 0x20, D_002D5928);
+        if (D_002A3AC0 && !((char *)m_FB5C)[0x20])
+            D_002A3AC0->Func173828((char *)m_FB5C, -1, (char *)m_FB5C + 0x20, 0, 0);
+        Call132F40(6, (int)(m_FB5C + 0x20), 0);
+        if (!IsNotDefault((char *)m_FB5C + 0x20)) return 0;
+        func_00250828(D_002A0BEC, (char *)m_FB5C + 0x20);
+        if (!m_FC50) Func235DE0(D_002D5A58, (char *)m_FB5C + 0x20);
+        return 0;
+    case 0x58:
+        sm->m_state = -0x3F0;
+    case -0x3F0:
+        done = 1; goto loop;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 int CEventObj::Cmd13AA80(CSvmWork *w, int id, int reset) {
     char buf[0x100];
@@ -1020,7 +1111,54 @@ r1:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013AC58);
+int CEventObj::Cmd13AC58(CSvmWork *w, int id, int reset) {
+    char buf[0x100];
+    s32 done;
+    if (reset) SmInit(&m_sm[0], id);
+    if ((u32)(id - 0x80) < 0x80) {
+        int r = 0;
+        if (m_FD30 && m_FD34) r = (m_FD30->*m_FD34)(w, id, reset);
+        return r;
+    }
+    done = 0;
+    {
+    CStateMachine *sm = &m_sm[0];
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0x10:
+    case 0x11:
+    case 0x12:
+    case 0x13:
+        if (!IsValidIndex(w->SlotAsInt(0, -1))) return 0;
+        while (m_F9B4.m18 <= 0) {
+            sm->m_state = -0x479; done = 1; goto loop;
+    case -0x479:;
+        }
+        while (EvREmpty(D_002A0BE4)) {
+            sm->m_state = -0x480; done = 1; goto loop;
+    case -0x480:;
+        }
+        if (!func_00138908(this, buf, w, id)) return 0;
+        if (!buf[0]) return 0;
+        func_00250810(D_002A0BE4, buf);
+        if (!m_FC50) Func235DE0(D_002D5A68, buf);
+        m_F9B4.m18--;
+        return 0;
+    case 0x58:
+        sm->m_state = -0x4A3;
+    case -0x4A3:
+        done = 1; goto loop;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 s32 CEventObj::GetSe13AF08(const char *name) {
     char buf[0x100];

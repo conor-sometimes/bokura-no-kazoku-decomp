@@ -116,7 +116,43 @@ extern SndSet2 D_002B9DF8[];
 extern "C" int vsprintf2(char *buf, const char *fmt, char *ap) asm("vsprintf");
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00243AB8);
+extern s32 D_38EF90;
+extern f32 D_38EFA8, D_38EFAC, D_38EFB0, D_38EFB4, D_38EFB8, D_38EFBC, D_38EFC0, D_38EFC4, D_38EFC8, D_38EFCC;
+extern "C" s32 func_00240C60(s32);
+extern "C" s32 func_00240CB8(s32);
+extern "C" s32 func_00241238(s32, s32 *, const char *, s32);
+extern "C" f32 func_00243338(s32);
+
+extern "C" void func_00243AB8(const char *s)
+{
+    f32 w = (f32)func_00240C60(D_38EF90);
+    func_00240CB8(D_38EF90);
+    f32 spx = D_38EFC8 * D_38EFC0 * D_38EFB0;
+    f32 spy = D_38EFCC * D_38EFC4 * D_38EFB4;
+    f32 ky = D_38EFB8 * D_38EFB0;
+    f32 kx = D_38EFBC * D_38EFB4;
+    while (*(const u8 *)s) {
+        s32 n = 0;
+        const char *p = s;
+        if (*p != 0 && *p != '\n') {
+            do { p++; n++; } while (*p != 0 && *p != '\n');
+        }
+        s32 *buf = (s32 *)__builtin_alloca(n * 4);
+        s32 cnt = func_00241238(D_38EF90, buf, s, n);
+        for (s32 i = 0; i < cnt; i++) {
+            s32 g = buf[i];
+            if (g) D_38EFAC += func_00243338(g) * kx;
+            else D_38EFAC += w * kx;
+            D_38EFAC += spx;
+        }
+        s += n;
+        if (*(const u8 *)s == '\n') {
+            s++;
+            D_38EFAC = 0;
+            D_38EFA8 -= w * ky + spy;
+        }
+    }
+}
 
 extern "C" void func_00243CF0(const char *fmt, ...) { char buf[0x1000]; char *ap; EE_VA_START(ap, fmt); vsprintf2(buf, fmt, ap); func_00243AB8(buf); }
 

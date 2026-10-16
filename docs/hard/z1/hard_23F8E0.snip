@@ -1,0 +1,42 @@
+//@func 0x23F8E0
+extern u32 *D_002B94E4;
+extern "C" void func_002375C0(void);
+extern "C" void func_00237408(s32);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" void func_002374B0(void);
+extern "C" void func_002377D8(void);
+
+
+extern "C" void func_0023F1C0(s32, Ch14 *) throw();
+
+inline void Put32(u32 v) { u32 *p = D_002B94E4; D_002B94E4 = p + 1; *p = v; }
+#define PUT32(v) Put32(v)
+
+extern "C" void func_0023F8E0(void)
+{
+    GEnt *e;
+    s32 n;
+    func_002375C0();
+    func_00237408(0x10);
+    D_38EF50 = (s32)(D_38EF54 = (u64 *)D_002B94E4);
+    for (e = (GEnt *)D_38EF58.m4; e != (GEnt *)&D_38EF58 && (e->mC & 1); e = e->m4) {
+        u32 f = e->mC;
+        if (!(f & 2)) {
+            func_0023F1C0(e->m16, e->m18);
+            f = e->mC |= 2;
+        }
+        e->mC = f & ~1;
+    }
+    *D_38EF54++ = 0x8000;
+    *D_38EF54++ = 0;
+    D_002B94E4 = (u32 *)D_38EF54;
+    func_00237460();
+    PUT32(0);
+    PUT32(0);
+    PUT32(0x11000000);
+    n = func_00237450();
+    PUT32(((n + 15) / 16 - 1) | 0x50000000);
+    func_002374B0();
+    return func_002377D8();
+}

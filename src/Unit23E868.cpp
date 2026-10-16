@@ -580,9 +580,31 @@ extern "C" s32 func_00240D10(s32 i) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_00240D68);
 
-INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_00240DF0);
+extern "C" u64 func_00240D68(s32 h)
+{
+    FEnt *e = FGet(h);
+    u64 r = 0;
+    if (e) {
+        if (e->m8 & 4) return func_0023F1B0();
+        if (e->m18 < 0) return 0;
+        r = func_0023AA40(e->m18);
+    }
+    return r;
+}
+
+
+extern "C" u64 func_00240DF0(s32 h)
+{
+    FEnt *e = FGet(h);
+    u64 r = 0;
+    if (e) {
+        if (e->m8 & 4) return e->m20;
+        if (e->m18 < 0) return 0;
+        r = func_0023BD80(e->m18);
+    }
+    return r;
+}
 
 extern "C" s32 func_00240E78(s32 i) {
     FEnt *e = FGet(i);

@@ -4,14 +4,11 @@
 class CMenuRecordWin;
 #include "CMenuProcess.h"
 #include "CBgWork.h"
-class CMenuAsksavequitObj {
-public:
-    void Release194300();
-};
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuRecord.
 class CMenuRecord : public CMenuProcess {
 public:
     CMenuRecord();
+    static CMenuRecord *Create();
     virtual ~CMenuRecord();
     virtual void Update();
     virtual s32 Draw();
@@ -134,10 +131,6 @@ struct CMenuRecordWinF { u8 pad0[0x34]; f32 m_unk34; };
 
 extern "C" void func_001A3DC8(CMenuRecordWin *w, s32 i, s32 v);
 
-class CUnk237E90 {
-public:
-    int Func237E90(int v);
-};
 u8 *Func237570(int n);
 void Func237A88(void *p, int v);
 void *Func237C30(void *p);
@@ -170,10 +163,6 @@ class CMenuLoadMemorialSub17A8D8b {
 public:
     int Draw17B1A8();
 };
-class CUnk1A4298 {
-public:
-    int Func1A4298();
-};
 #include "CTask.h"
 class CPhotoDraw : public CTask {
 public:
@@ -191,7 +180,407 @@ extern CPhotoDraw *D_002A3680;
 extern "C" int func_001B5E18(void *p);
 extern f32 D_002A5380[];
 extern char D_002DD808[];
+
+// From CMenuAsksavequit.cpp (lane lb moved its functions 0x1932B8.. here: their literals are this unit's)
+#include "CMenuProcess.h"
+
+class CMenuAsksavequitSub193E18 {
+public:
+    void ClearUnk10();
+
+    u8 pad0[0x10];
+    s32 m_unk10;              // 0x10
+};
+class CMenuAsksavequitSub193FC0 {
+public:
+    u64 SwapUnk0(u64 v);
+    u64 SwapUnk8(u64 v);
+
+    u64 m_unk0;               // 0x0
+    u64 m_unk8;               // 0x8
+};
+
+extern "C" void func_00194490(void *p);
+
+extern void (*D_002B91B0)(void *p);
+class CMenuAsksavequitSub193F80 {
+public:
+    void Free();
+    u8 pad0[0x10];
+    void *m_unk10;            // 0x10
+};
+
+#include "CChrBodyWin.h"
+extern CChrBodyWin *D_002A4308;
+extern "C" void func_00189270(void *p, s32 v);
+class CMenuLoadMemorialSub17A8D8 {
+public:
+    ~CMenuLoadMemorialSub17A8D8();
+};
+class CMenuLoadMemorialSub17CAB8 {
+public:
+    ~CMenuLoadMemorialSub17CAB8();
+};
+class CMenuAsksavequitObj {
+public:
+    void Release194300();
+    u8 pad0[0x64];
+    void *m_unk64;            // 0x64
+    void *m_unk68;            // 0x68
+    u8 pad6C[0x4];
+    CMenuLoadMemorialSub17CAB8 *m_unk70; // 0x70
+    u8 pad74[0x8];
+    CMenuLoadMemorialSub17A8D8 *m_unk7C; // 0x7C
+};
+
+#include "CMenuMgrSub1B6418.h"
+class CUnk1A4298 {
+public:
+    int Func1A4298();
+    u8 pad0[0x34];
+    f32 m_unk34;              // 0x34
+    f32 GetUnk34() { return m_unk34; }
+};
+class CUnk237E90 {
+public:
+    int Func237E90(int v);
+};
+extern CMenuMgrSub1B6418 *D_002A5538;
+extern "C" u8 *func_00237570(s32 v);
+extern "C" void func_00237A88(void *p, s32 v);
+extern "C" void *func_00237C30(void *p);
+extern "C" int func_00238158(void *p, s32 v);
+extern "C" int func_001B66E8(void *p);
+void Func225240(s32 v);
+class CMenuAsksavequitWin {
+public:
+    CMenuAsksavequitWin(int n);
+    int Func193D68();
+    u8 pad0[0x48];
+    CUnk1A4298 *m_unk48;     // 0x48
+};
+
+#include "CMenuMgrSub1B4768.h"
+extern CMenuMgrSub1B4768 *D_002A5530;
+extern "C" int func_001B4ED0(CMenuMgrSub1B4768 *p, s32 v);
+extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, s32 v);
+#include "CMenuRecordWin.h"
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuAsksavequit.
+class CMenuAsksavequit : public CMenuProcess {
+public:
+    CMenuAsksavequit();
+    virtual ~CMenuAsksavequit();
+    virtual void Update();
+    virtual s32 Draw();
+
+    CUnk1A4298 *m_unk58;      // 0x58
+    s32 m_unk5C;              // 0x5C
+};
+
+extern char D_002DD5F0[];
+extern char D_002DD600[];
+extern char D_002DD610[];
+extern char D_002DD630[];
+extern char D_002DD648[];
+extern "C" int sprintf(char *buf, const char *fmt, ...);
+extern "C" void *func_00248E48(const char *name);
+extern "C" void func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
+extern "C" void func_0023C048(s32 a, s32 b, s32 c);
+class CMiniGame6Obj {
+public:
+    int Func247B00();
+};
+extern "C" CMiniGame6Obj *func_002460C8();
+class CMenuAsksavequitImg {
+public:
+    int Load193E28(const char *name);
+    u8 pad0[0x10];
+    void *m_handle;           // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    s32 m_unk20;              // 0x20
+    s32 m_unk24;              // 0x24
+    s32 m_unk28;              // 0x28
+    s32 m_unk2C;              // 0x2C
+    s32 m_unk30;              // 0x30
+};
+
+// Sound player (global D_002A5468); slot 14 plays a system sound.
+class CSePlayer {
+public:
+    virtual ~CSePlayer();
+    virtual void F1();
+    virtual void F2();
+    virtual void F3();
+    virtual void F4();
+    virtual void F5();
+    virtual void F6();
+    virtual int F7(s32 *a, s32 *b, s32 *c);
+    virtual void F8();
+    virtual void F9();
+    virtual void F10();
+    virtual void F11();
+    virtual void F12();
+    virtual void F13();
+    virtual void Play(s32 id);
+};
+extern CSePlayer *D_002A5468;
+// Cursor of a selection list (the class is in the next unit; not identified yet).
+class CMenuCursorList {
+public:
+    void Up();
+    void Down();
+
+    u8 pad0[0x8C];
+    s32 m_cur;                // 0x8C
+    s32 m_prev;               // 0x90
+    u8 pad94[0x8];
+    s32 m_num;                // 0x9C
+    u8 padA0[0xA8];
+    s32 m_mute;               // 0x148
+};
+
+struct CGsTexInfo {
+    u64 tbp : 14;
+    u64 tbw : 6;
+    u64 pad20 : 12;
+    u64 psm : 6;
+    u64 pad38 : 26;
+};
+class CMenuAsksavequitTex {
+public:
+    int Draw193FE0();
+    void Draw194140(f32 x, f32 y, f32 s);
+
+    u64 m_tex;                // 0x0
+    u64 m_clut;               // 0x8
+    u8 pad10[0x4];
+    s32 m14;                  // 0x14
+    s32 m18;                  // 0x18
+    s32 m1C;                  // 0x1C
+    s32 m20;                  // 0x20
+    s32 m24;                  // 0x24
+    u8 pad28[0x4];
+    s32 m2C;                  // 0x2C
+    s32 m30;                  // 0x30
+};
+void Func225088();
+int Func2250C0();
+void Func2251E8();
+void Func227DC8(long a, s32 b, s32 c);
+extern "C" void func_00227BF0(u64 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+extern "C" void func_00227A20();
+extern "C" void func_00227AA8();
+extern "C" void func_00226DF8(s32 reg, u64 v);
+#define GS_SET_TEX0(tbp, tbw, psm, tw, th, tcc, tfx, cbp, cpsm, csm, csa, cld) \
+    ((u64)(tbp) | ((u64)(tbw) << 14) | ((u64)(psm) << 20) | ((u64)(tw) << 26) | ((u64)(th) << 30) | \
+     ((u64)(tcc) << 34) | ((u64)(tfx) << 35) | ((u64)(cbp) << 37) | ((u64)(cpsm) << 51) | \
+     ((u64)(csm) << 55) | ((u64)(csa) << 56) | ((u64)(cld) << 61))
+#define GS_SET_CLAMP(wms, wmt, minu, maxu, minv, maxv) \
+    ((u64)(wms) | ((u64)(wmt) << 2) | ((u64)(minu) << 4) | ((u64)(maxu) << 14) | \
+     ((u64)(minv) << 24) | ((u64)(maxv) << 34))
+
+struct CAqSprPkt {
+    s32 u0, v0, u1, v1;
+    s32 x0, y0, x1, y1;
+    s32 r, g, b, a;
+};
+inline void PutRGBA2(CAqSprPkt *p) { func_00226DF8(1, (u64)p->r | ((u64)p->g << 8) | ((u64)p->b << 16) | ((u64)p->a << 24)); }
+inline void PutXYZ2(s32 x, s32 y) { func_00226DF8(5, (u64)x | ((u64)y << 16)); }
+inline void PutUV2(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
+
+struct AsqWinV { s16 m0; s16 m2; s32 m4; u8 pad8[0x44]; s32 m4C; s32 m50; s32 m54; s32 m58; s32 m5C; };
+extern char D_002DBEB0[];
+#include "CFlagWork.h"
+extern CFlagWork *D_002A5358;
+
+class CStatusItem {
+public:
+    void Func1A3378();
+    void Func1A3628();
+    void Start();
+    void Func1A40C8();
+    int Select(s32 i);
+    void SetUnk34(f32 v);
+    u8 pad0[0x20];
+    s32 m_state;              // 0x20
+};
+class CStatusWinSub1A0A10 {
+public:
+    CStatusItem *Find(const char *name);
+};
+extern CStatusWinSub1A0A10 *D_002A5408;
+#include "CFlagWork.h"
+extern CFlagWork *D_002A4B60;
 // @decl-end
+
+CMenuAsksavequitWin::CMenuAsksavequitWin(int n) {
+    AsqWinV *v = (AsqWinV *)this;
+    v->m4 = -1; v->m2 = 0; v->m0 = 0;
+    if ((u32)n >= 3) { Func235DE0(D_002DBEB0, n); n = 0; }
+    v->m50 = n;
+    s32 f = D_002A5358->Func1091B0(0xF);
+    s32 lim = !v->m50 ? 10 : 20;
+    s32 c = f < lim ? f : lim;
+    v->m5C = -1; v->m4C = 0; v->m58 = 0;
+    v->m54 = c < 1 ? 1 : c;
+}
+
+INCLUDE_ASM("asm/nonmatchings/CMenuRecord", Func193358__19CMenuAsksavequitWin);
+
+int CMenuAsksavequitWin::Func193D68() {
+    u8 *p = func_00237570(0x40);
+    func_00237A88(p, 4);
+    func_00238158(func_00237C30(p + 0x30), 1);
+    ((CUnk237E90 *)(p + 0x10))->Func237E90(m_unk48->Func1A4298());
+    D_002A5538->SetUnk4C(m_unk48->GetUnk34());
+    ((CUnk237E90 *)(p + 0x20))->Func237E90(func_001B66E8(D_002A5538));
+    Func225088();
+    Func225240((s32)p);
+    return Func2250C0();
+}
+
+void CMenuAsksavequitSub193E18::ClearUnk10() {
+    m_unk10 = 0;
+}
+
+// Empty; real name and class unknown (a virtual no-op or a stub).
+extern "C" void func_00193E20() {
+}
+
+int CMenuAsksavequitImg::Load193E28(const char *name) {
+    char path[256];
+    int ok = 1;
+    sprintf(path, D_002DD5F0, D_002DD600, name);
+    void *h = func_00248E48(path);
+    if (h == 0) {
+        Func235DE0(D_002DD610, path);
+        ok = 0;
+        func_002460C8()->Func247B00();
+    } else {
+        m_handle = h;
+        func_00253048(h, &m_unk14, &m_unk18, &m_unk1C, &m_unk20, &m_unk24, &m_unk28, &m_unk2C, &m_unk30);
+        if (m_unk2C >= 17) func_0023C048(m_unk2C * m_unk30, m_unk24, m_unk24);
+        Func235DE0(D_002DD630, path, m_unk1C, m_unk20);
+        Func235DE0(D_002DD648, m_unk28, m_unk2C, m_unk30);
+    }
+    return ok;
+}
+
+void CMenuAsksavequitSub193F80::Free() {
+    if (m_unk10) {
+        D_002B91B0(m_unk10);
+        m_unk10 = 0;
+    }
+}
+
+u64 CMenuAsksavequitSub193FC0::SwapUnk0(u64 v) {
+    u64 old = m_unk0;
+    m_unk0 = v;
+    return old;
+}
+
+u64 CMenuAsksavequitSub193FC0::SwapUnk8(u64 v) {
+    u64 old = m_unk8;
+    m_unk8 = v;
+    return old;
+}
+
+int CMenuAsksavequitTex::Draw193FE0() {
+    Func225088();
+    if (m2C > 0) {
+        Func227DC8(m_clut, m2C * m30, m24);
+    }
+    m_tex = (m_tex & ~((u64)0x3F << 32)) | ((u64)(m18 & 0x3F) << 32);
+    func_00227BF0(m_tex, 0, 0, m1C, m20, m14);
+    func_00227A20();
+    func_00226DF8(0x14, 0x60);
+    func_00226DF8(6, GS_SET_TEX0(m_tex & 0x3FFF, (m_tex >> 14) & 0x3F, (m_tex >> 32) & 0x3F, 10, 10, 1, 0, m_clut & 0x3FFF, (m_clut >> 32) & 0x3F, 0, 0, 1));
+    func_00226DF8(8, GS_SET_CLAMP(2, 2, 0, m1C - 1, 0, m20 - 1));
+    func_00227AA8();
+    Func2251E8();
+    return Func2250C0();
+}
+
+void CMenuAsksavequitTex::Draw194140(f32 x, f32 y, f32 s) {
+    CAqSprPkt pkt;
+    Func225088();
+    func_00227A20();
+    pkt.a = (s32)(s * 128.0f);
+    pkt.u0 = 0;
+    pkt.v0 = 0;
+    pkt.u1 = m1C << 4;
+    pkt.v1 = m20 << 4;
+    pkt.x0 = (s32)(x * 16.0f) + 0x6C00;
+    pkt.y0 = (s32)(y * 16.0f) + 0x7200;
+    pkt.x1 = pkt.x0 + pkt.u1;
+    pkt.y1 = pkt.y0 + pkt.v1;
+    pkt.b = pkt.g = pkt.r = 0x80;
+    func_00226DF8(0, 0x156);
+    PutRGBA2(&pkt);
+    PutUV2(pkt.u0, pkt.v0);
+    PutXYZ2(pkt.x0, pkt.y0);
+    PutUV2(pkt.u1, pkt.v1);
+    PutXYZ2(pkt.x1, pkt.y1);
+    func_00227AA8();
+    Func2251E8();
+    Func2250C0();
+}
+
+CMenuRecord *CMenuRecord::Create() {
+    CMenuRecord *p = (CMenuRecord *)operator new(0x158);
+    func_00194490(p);
+    return p;
+}
+
+void CMenuAsksavequitObj::Release194300() {
+    if (m_unk68) {
+        func_00189270(m_unk68, 3);
+        m_unk68 = 0;
+    }
+    if (m_unk7C) {
+        delete m_unk7C;
+        m_unk7C = 0;
+    }
+    if (m_unk70) {
+        delete m_unk70;
+        m_unk70 = 0;
+    }
+    if (m_unk64) {
+        operator delete(m_unk64);
+        m_unk64 = 0;
+    }
+    D_002A4308->Func188BA8();
+}
+
+void CMenuCursorList::Up() {
+    if (m_num == 1) {
+        return;
+    }
+    m_prev = m_cur;
+    m_cur = m_cur - 1;
+    if (m_cur < 0) {
+        m_cur = m_num - 1;
+    }
+    if (m_prev != m_cur && !m_mute) {
+        D_002A5468->Play(0x17);
+    }
+}
+
+void CMenuCursorList::Down() {
+    if (m_num == 1) {
+        return;
+    }
+    m_prev = m_cur;
+    m_cur = m_cur + 1;
+    if (m_num - 1 < m_cur) {
+        m_cur = 0;
+    }
+    if (m_prev != m_cur && !m_mute) {
+        D_002A5468->Play(0x17);
+    }
+}
 
 CMenuRecord::CMenuRecord() {
     m_unk64 = 0;
@@ -585,331 +974,3 @@ s32 CMenuRecord::Draw() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_00196938);
-
-void CMenuRecordList::Func196B50() {
-    s32 i;
-    s32 n = D_002A5358->Func1091B0(0x1AE);
-    m_count = n;
-    m_count = n < 0 ? 0 : (n > 16 ? 16 : n);
-    for (i = 0; i < m_count; i++) {
-        s32 a = D_002A5358->Func1091B0(i + 0x1AF);
-        s32 b = D_002A5358->Func1091B0(i + 0x1BF);
-        s32 c = D_002A5358->Func1091B0(i + 0x1DF);
-        s32 d = D_002A5358->Func1091B0(i + 0x1CF) != 0;
-        s32 f = D_002A5358->Func1091B0(i + 0x1EF) != 0;
-        func_00196938(this, i, a, b, c, d, f);
-    }
-}
-
-void CMenuRecordList::Func196C70(s32 i) {
-    char buf[256];
-    char buf2[256];
-    if (m_win == 0) return;
-    if (i < 0 || m_count - 1 < i) return;
-    s32 k = PageRow(i) + 0x24;
-    m_win->Func1A3740(k, D_002DD7F8);
-    s32 o = i * 0x48 + 0x50;
-    CMenuRecordItem *e = (CMenuRecordItem *)((u8 *)this + o);
-    if (e->m_value == 0) return;
-    sprintf(buf, func_001A36B0(m_win, k), e->m_value);
-    m_win->Func1A3740(k, buf);
-    if (m_items[i].m_unk40 == 0) {
-        sprintf(buf2, D_002DD800, D_002DD928, buf);
-        m_win->Func1A3740(k, buf2);
-    }
-}
-
-void CMenuRecordList::Func196D78() {
-    char buf[0x100];
-    s32 i;
-    s32 a, b;
-    m_win->Func1A3740(0x21, func_001A36B0(m_win, 0x21));
-    m_win->Func1A3740(0x22, func_001A36B0(m_win, 0x22));
-    m_win->Func1A3740(0x23, func_001A36B0(m_win, 0x23));
-    for (i = 0; i < 10; i++) {
-        ((CMenuRecordSub196E68 *)this)->CallFunc1A3740(i);
-    }
-    GetRange2(&a, &b);
-    for (i = a; i < a + b; i++) {
-        Func196C70(i);
-    }
-}
-
-void CMenuRecordSub196E68::CallFunc1A3740(s32 v) {
-    m_win->Func1A3740(v + 0x24, D_002DD7F8);
-}
-
-void CMenuRecordList::Func196E90(s32 flag) {
-    s32 i, on, off;
-    if (flag == 0) {
-        func_001A3DC8(m_win, 0x21, 1);
-        func_001A3DC8(m_win, 0x22, 1);
-        func_001A3DC8(m_win, 0x23, 1);
-        on = 1;
-        off = 0;
-    } else {
-        func_001A3DC8(m_win, 0x21, 0);
-        func_001A3DC8(m_win, 0x22, 0);
-        func_001A3DC8(m_win, 0x23, 0);
-        on = 0;
-        off = 1;
-    }
-    for (i = 7; i < 20; i++) func_001A3DC8(m_win, i, on);
-    for (i = 20; i < 33; i++) func_001A3DC8(m_win, i, off);
-    for (i = 0x24; i < 0x28; i++) func_001A3DC8(m_win, i, on);
-    for (i = 0x28; i < 0x2E; i++) func_001A3DC8(m_win, i, off);
-}
-
-int CMenuRecordSub196FC8::IsUnk4D4InWindow() {
-    s32 v = m_unk4D4;
-    if (v >= 3) {
-        if (v < m_unk4D0 + 3) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void CMenuRecordList::SetOffset(s32 on) {
-    if (!m_win) return;
-    if (on == 1) {
-        m_win->Func1A39A8(&m_ofsX, (s32 *)&m_ofsY, 0x43);
-        ((CStatusWinSub1A40B8 *)m_win)->SetUnk80(m_ofsX, m_ofsY);
-    } else {
-        m_ofsX = m_ofsY = 0.0f;
-    }
-}
-
-void CMenuRecordList::TickItems() {
-    s32 i;
-    for (i = 0; i < m_count; i++) {
-        s32 t = m_items[i].m_timer;
-        if (t > 0 && t != 1000) {
-            m_items[i].m_timer = t - 1;
-        }
-    }
-}
-
-s32 CMenuRecordList::GetPage() {
-    if (m_cursor < 3) {
-        return m_cursor + 33;
-    }
-    return PageRow(m_cursor - 3) + 36;
-}
-
-int CMenuRecord::GetMenuId() {
-    return 0x31;
-}
-
-s32 CMenuRecordList::PageCol(s32 i) {
-    if (i < 4) {
-        return i * 2 + 11;
-    }
-    return (i - 4) % 6 * 2 + 20;
-}
-
-f32 CMenuRecordSub196E68::GetWinValueA() {
-    f32 v;
-    s32 n;
-    m_win->Func1A39A8(&v, &n, 1);
-    return v;
-}
-
-f32 CMenuRecordSub196E68::GetWinValueB() {
-    f32 v;
-    s32 n;
-    m_win->Func1A3B58(&v, &n, 1);
-    return v;
-}
-
-s32 CMenuRecordList::PageRow(s32 i) {
-    if (i < 10) {
-        return i;
-    }
-    return i - (i - 4) / 6 * 6;
-}
-
-void CMenuRecordList::GetRange(s32 *a, s32 *b) {
-    if (RowOf(m_cursor) == 0) {
-        *a = 0;
-        s32 v = m_count - 1;
-        *b = v < 4 ? v : 3;
-    } else {
-        *a = 4;
-        *b = m_count - 1;
-    }
-}
-
-void CMenuRecordList::GetRange2(s32 *a, s32 *b) {
-    if (m_cursor < 7) {
-        *a = 0;
-        *b = m_count < 5 ? m_count : 4;
-    } else {
-        s32 s = (m_cursor - 7) / 6 * 6 + 4;
-        *a = s;
-        if (m_count < s + 6) {
-            *b = m_count - s;
-        } else {
-            *b = 6;
-        }
-    }
-}
-
-INCLUDE_ASM("asm/nonmatchings/CMenuRecord", func_001972E8);
-
-int CMenuRecordList::Draw1974F8() {
-    f32 v[2];
-    u8 *pp = Func237570(0x30);
-    Func237A88(pp, 3);
-    CUnk237E90 *q = (CUnk237E90 *)(pp + 0x10);
-    Func238158(Func237C30(pp + 0x20), 1);
-    q->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x29)));
-    D_002A5530->Reset1B4D28();
-    f32 w = ((CMenuRecordWinF2 *)m_win)->m_unk34;
-    D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, w);
-    m_win->Func1A39A8(&v[0], (s32 *)&v[1], 0x2E);
-    D_002A5530->SetUnk20(v[0] + m_ofsX, v[1] + m_ofsY, 0.0f);
-    q->Func237E90(func_001B50B0(D_002A5530, 0x29));
-    m_win->Func1A39A8(&v[0], (s32 *)&v[1], 0x2F);
-    D_002A5530->SetUnk20(v[0] + m_ofsX, v[1] + m_ofsY, 0.0f);
-    D_002A5530->SetUnk58(2);
-    q->Func237E90(func_001B50B0(D_002A5530, 0x29));
-    D_002A5530->SetUnk58(0);
-    Func225088();
-    Func225240((s32)pp);
-    Func2250C0();
-}
-
-int CMenuRecordList::Draw1976A0() {
-    f32 x, y;
-    f32 cx, cy;
-    f32 sx, sy;
-    s32 a, b;
-    s32 i;
-    u8 *pp = Func237570(0x30);
-    Func237A88(pp, 3);
-    Func238158(Func237C30(pp + 0x20), 1);
-    D_002A5530->Reset1B4D28();
-    m_win->Func1A39A8(&sx, (s32 *)&sy, 0x51);
-    sx = sx / 100.0f;
-    sy = sy / 100.0f;
-    m_win->Func1A39A8(&cx, (s32 *)&cy, 0x50);
-    GetRange2(&a, &b);
-    for (i = a; i < a + b; i++) {
-        if ((u32)(m_items[i].m_unkC - 0x10) >= 9) continue;
-        m_win->Func1A39A8(&x, (s32 *)&y, PageRow(i) + 0x45);
-        D_002A3AF8->CallFunc17B3E8();
-        D_002A3AF8->SetUnk40(3.0f, 1.0f, 1);
-        D_002A3AF8->SetUnk10(x + cx + m_ofsX, y + cy + m_ofsY);
-        if (m_items[i].m_unk40) {
-            D_002A3AF8->SetUnk30(1.0f, 1.0f, 1.0f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
-        } else {
-            D_002A3AF8->SetUnk30(0.5f, 0.5f, 0.5f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
-        }
-        if (m_items[i].m_unkC == 0x18) {
-            D_002A3AF8->SetUnk20(1.0f, 1.0f);
-        } else {
-            D_002A3AF8->SetUnk20(sx, sy);
-        }
-        ((CUnk237E90 *)(pp + 0x10))->Func237E90(D_002A3AF8->Draw17B4D8(m_items[i].m_unkC));
-    }
-    Func225088();
-    Func225240((s32)pp);
-    Func2250C0();
-}
-
-void CMenuRecordList::Draw197950() {
-    s32 a, b;
-    f32 px, py;
-    f32 bx, by;
-    s32 i;
-    u8 *pp = Func237570(0x30);
-    Func237A88(pp, 3);
-    Func238158(Func237C30(pp + 0x20), 1);
-    D_002A5530->Reset1B4D28();
-    D_002A5530->SetUnk4C(((CMenuRecordWinF2 *)m_win)->m_unk34);
-    m_win->Func1A39A8(&bx, (s32 *)&by, 0x4F);
-    GetRange2(&a, &b);
-    for (i = a; i < a + b; i++) {
-        if (!m_items[i].m_unk44) continue;
-        m_win->Func1A39A8(&px, (s32 *)&py, PageRow(i) + 0x45);
-        D_002A5530->SetUnk20(px + bx + m_ofsX, py + by + m_ofsY, 0.0f);
-        ((CUnk237E90 *)(pp + 0x10))->Func237E90(func_001B50B0(D_002A5530, 0x2F));
-    }
-    Func225088();
-    Func225240((s32)pp);
-    Func2250C0();
-}
-
-int CMenuRecordList::Draw197AE0() {
-    s32 a, b;
-    f32 px, py;
-    f32 bx, by;
-    f32 sx, sy;
-    char buf[256];
-    u8 *pp = Func237570(0x30);
-    Func237A88(pp, 3);
-    CUnk237E90 *q = (CUnk237E90 *)(pp + 0x10);
-    Func238158(Func237C30(pp + 0x20), 1);
-    GetRange2(&a, &b);
-    D_002A5530->Reset1B4D28();
-    q->Func237E90(((CMenuMgr *)D_002A5530)->Func1B4ED0(D_002A5530->GetEntry0(0x18)));
-    D_002A5530->SetUnk4C(((CMenuRecordWinF2 *)m_win)->m_unk34);
-    m_win->Func1A39A8(&sx, (s32 *)&sy, 0x54);
-    D_002A5530->SetUnk30(sx / 100.0f, sy / 100.0f, 0.0f, 0.0f);
-    m_win->Func1A39A8(&bx, (s32 *)&by, 0x53);
-    {
-        s32 i;
-        for (i = a; i < a + b; i++) {
-            if (m_items[i].m_unk3C <= 0) continue;
-            if (m_items[i].m_unk40) {
-                D_002A5530->SetUnk40(1.0f, 1.0f, 1.0f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
-            } else {
-                D_002A5530->SetUnk40(0.5f, 0.5f, 0.5f, ((CMenuRecordWinF2 *)m_win)->m_unk34);
-            }
-            m_win->Func1A39A8(&px, (s32 *)&py, PageRow(i) + 0x45);
-            D_002A5530->SetUnk20(px + bx + m_ofsX, py + by + m_ofsY, 0.0f);
-            q->Func237E90(func_001B50B0(D_002A5530, 0x18));
-        }
-    }
-    D_002A5534->Reset();
-    D_002A5534->SetUnk30(1);
-    D_002A5534->SetUnk1C(((CMenuRecordWinF2 *)m_win)->m_unk34);
-    q->Func237E90(func_001B5E18(D_002A5534));
-    m_win->Func1A39A8(&sx, (s32 *)&sy, 0x56);
-    D_002A5534->SetUnk0(sx / 100.0f, sy / 100.0f);
-    m_win->Func1A39A8(&bx, (s32 *)&by, 0x55);
-    {
-        s32 j;
-        for (j = a; j < a + b; j++) {
-            if (m_items[j].m_unk3C <= 0) continue;
-            if (m_items[j].m_unk40) {
-                D_002A5534->SetUnk10(0.78f, 0.78f, 0.78f);
-            } else if (D_002A26E4->Func1091B0(0x1C) < m_items[j].m_unk3C) {
-                D_002A5534->SetUnk10(D_002A5380[0] * 0.5f, D_002A5380[1] * 0.5f, D_002A5380[2] * 0.5f);
-            } else {
-                D_002A5534->SetUnk10(0.39f, 0.39f, 0.39f);
-            }
-            m_win->Func1A39A8(&px, (s32 *)&py, PageRow(j) + 0x45);
-            sprintf(buf, D_002DD808, m_items[j].m_unk3C);
-            q->Func237E90(func_001B5FE0(D_002A5534, buf, px + bx + m_ofsX, py + by + m_ofsY));
-        }
-    }
-    Func225088();
-    Func225240((s32)pp);
-    Func2250C0();
-}
-
-int CMenuRecordList::Func197FA8() {
-    char buf[256];
-    f32 x, y;
-    m_win->Func1A39A8(&x, (s32 *)&y, 0x30);
-    s32 row = RowOf(m_cursor) + 1;
-    sprintf(buf, D_002DD810, row, NumRows());
-    D_002A5534->Reset();
-    D_002A5534->SetUnk30(1);
-    D_002A5534->SetUnk10(0.78f, 0.78f, 0.78f);
-    D_002A5534->SetUnk1C(((CMenuRecordWinF *)m_win)->m_unk34);
-    return func_001B5FE0(D_002A5534, buf, x + m_ofsX, y + m_ofsY);
-}

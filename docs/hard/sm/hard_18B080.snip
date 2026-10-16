@@ -55,7 +55,7 @@ inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
 #define M6C1 ((CStatusBaseSub19AE68 *)m_unk6C)
 #define M6C2 ((CStatusBaseSub19AD70 *)m_unk6C)
 //@func 0x18B080
-s32 CMenuCommon::Update() {
+void CMenuCommon::Update() {
     CStateMachine *sm = (CStateMachine *)this;
     s32 a, b, c;
     s32 done;

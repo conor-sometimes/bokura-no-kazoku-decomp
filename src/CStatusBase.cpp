@@ -180,6 +180,14 @@ public:
     virtual void V5();
 };
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDA38);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDA70);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDA78);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDA88);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDA98);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDAB8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDAE8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDB18);
 
 CStatusBase::CStatusBase() {
     m_unk50 = 0;
@@ -369,8 +377,24 @@ int IsBodyAlphaZero() {
     return r;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDB40);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", jtbl_002DDB70);
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019AFA8);
 
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDB88);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBA0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBA8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBB0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBB8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBC0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBC8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBD0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBD8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBE8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDBF8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC08);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC18);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC20);
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019B1F8);
 
 CStatusBaseSub19B8C8 *NewStatusSub19B8C8() {
@@ -424,6 +448,20 @@ void CStatusBaseSub19B8C8::Reset19B938() {
     m_unk18 = 1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC28);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC40);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC48);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC50);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC58);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC60);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC68);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDC90);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDCB8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDCE0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDCE8);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDD10);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDD30);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDD50);
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019BA00);
 
 void CStatusBaseSub19B8C8::Func19C0F0() {
@@ -475,6 +513,8 @@ void CStatusBaseSub19B8C8::SetUnk18(u32 v) {
     }
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDD70);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDD90);
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C278);
 
 void CStatusBaseSub19C400::Init() {
@@ -486,6 +526,8 @@ void CStatusBaseSub19C400::Init() {
 
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C428);
 
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDDB0);
+INCLUDE_RODATA("asm/nonmatchings/CStatusBase", D_002DDDD0);
 INCLUDE_ASM("asm/nonmatchings/CStatusBase", func_0019C730);
 
 int LerpInt(int a, int b, f32 t) {

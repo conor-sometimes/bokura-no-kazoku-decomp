@@ -1138,3 +1138,37 @@ end:;
   CMenuProcess::Update is probably `void` in retail; not changed here, see HARD.md 0x1AA1B8). Use
   `ushow.py` (under `.bokura-env/bin/bokura-env -c`) for exact per-word diffs, and the `-da` dumps'
   `REG_BR_PRED` notes to see what reorg predicted. *(bokura)*
+## sm2 (state.h machines, second pass, 2026-10-16)
+- **CMenuProcess::Update returns void.** With `s32`, the epilogue's `(use $2)` keeps `$2` live on
+  every path to the return, so reorg annuls slots that retail fills plainly (`bnel` for retail `bne`
+  with `lui $2` from the target). The header pass (every menu screen's Update, `return Func235DE0(...)`
+  error exits written as `{ Func235DE0(...); return; }`) left the build matching and matched
+  CMenuSysscr26 0x1AA1B8 at once. A virtual's return type is not in g++ 2.x's mangled name, so a
+  wrong `s32` on a virtual never shows up as a link error: suspect it when an Update's result is never
+  used by its callers.
+- **CMenuSysscr32::Update (0x1A7818) needed FreeBuf `throw()` as well**: FreeBuf is defined in
+  CMenuInputKanji.cpp (retail compiled it in the same .cpp as Sysscr32's Update). sm's test of
+  `throw()` alone (with `s32` Update) did not move it; both together match. Re-test the nothrow probe
+  after any return-type fix.
+- **`if (flag) return 0; log(...); return 0;` vs `if (!flag) log(...); return 0;`**: in the first
+  form if-conversion (find_if_case_1/2) speculates the then-block's `$2 = 0` before the branch (the
+  other path's call clobbers `$2`), and reorg puts that hoisted set in the slot (`bnez` + `daddu $2,0`).
+  Retail's `bnel ..., ret; daddu $2,0` (annulled, from the shared return block) is the second form, where
+  the return block has two predecessors and is not speculated (CEventObj 0x13A2C8, 0x13A790; the
+  `m_FC50` log tail of the command handlers). *(bokura)*
+- CEventObj 0x13AC58's `beqzl`/`beqz` on a wait was `func_00138908` (same unit, still asm) being
+  may-throw: `ntprobe.py` found it in one run.
+- **Counted waits** (`m4D8++; if (m4D8 > F(n)) exit; yield;` with the yield inline as the fall-through
+  and the exit as a `bnel` with the reset in its slot, CCommandIncDec 0x1995F0/0x199BC0): write each as
+  `do { case L: ...; m++; if (m <= F(n)) { yield } } while (0); m = 0;`. With `for (;;) { ... if (m > F(n))
+  break; yield; }` loop.c moves the yield out of the loop and the test branches straight to the shared
+  yield tail. Conversely, a wait whose test branches to the yield tail with the continuation falling
+  through (`bne c, tail; li state`) is a do-while whose yield is *not* its last statement
+  (`do { case L: if (c) { yield } m_state = 3; ... } while (0);`): moving one statement out of or into
+  the do-while flips between the two. `ok`/`cancel` blocks that leave the do-whiles land together
+  before the first loop (loop.c), as retail has them. *(bokura)*
+- A virtual whose vtable lands in `$3` and function in `$2` returns a value (declare it `int`), the
+  inverse of sm's `void` note. *(bokura)*
+- `bk port` prints `ported 1 into ...`: check for it. When the snippet's standalone compile fails (a
+  callee defined only in the unit, not declared in the snippet) port silently does nothing and mk.sh
+  still says OK.

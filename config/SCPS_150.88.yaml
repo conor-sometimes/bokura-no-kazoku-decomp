@@ -105,10 +105,10 @@ segments:
       - [0x79650, cpp, CPersGauge]   # menu gauges/widgets (literals before CMenuTutorSelect's)
       - [0x7EF38, cpp, CMenuTutorSelect]
       - [0x80D50, cpp, CMenuTutorSelected]
-      - [0x85CF8, cpp, CMenuExam]
+      - [0x83070, cpp, CMenuExam]   # starts with CMenuTutorSelected.cpp-looking code (its literals are this unit's)
       - [0x86648, cpp, CChrSchoolWin]   # starts with CMenuExam-looking helpers (their literals follow 9CMenuExam)
       - [0x88038, cpp, CChrBodyWin]
-      - [0x8B480, cpp, CMenuChildStatus]
+      - [0x88610, cpp, CMenuChildStatus]   # starts with CChrBodyWin.cpp-looking code (its literals are this unit's)
       - [0x8BF98, cpp, CMenuCommon]
       - [0x8C880, cpp, CMenuCommonRes]   # split off CMenuCommon.cpp (literals after its RTTI names)
       - [0x8F750, cpp, CMenuPTJobMoney]
@@ -119,15 +119,15 @@ segments:
       - [0x93658, cpp, CMenuContinue]
       - [0x939C8, cpp, CMenuAsksave]
       - [0x93D38, cpp, CMenuAsksavequit]
-      - [0x95490, cpp, CMenuRecord]
-      - [0x99080, cpp, CCommandBase]
+      - [0x942B8, cpp, CMenuRecord]   # starts with CMenuAsksavequit.cpp-looking code (its literals are this unit's)
+      - [0x97938, cpp, CCommandBase]   # starts with CMenuRecord.cpp-looking code (its literals are this unit's)
       - [0x99670, cpp, CCommandSelect]
-      - [0x9B5E8, cpp, CCommandIncDec]
-      - [0x9B830, cpp, CStatusBase]
+      - [0x99C70, cpp, CCommandIncDec]   # starts with CCommandSelect.cpp-looking code (its literals are this unit's)
+      - [0x9B830, cpp, CStatusBase]   # one object with CStatusWin in retail; separate units here (lane lb: the merged .cpp crashes cc1plus)
       - [0x9DD98, cpp, CStatusWin]
       - [0x9F008, cpp, CStatusItem]   # split off CStatusWin.cpp (literals after its RTTI names)
       - [0xA5F20, cpp, CMenuInputKanji]
-      - [0xA8758, cpp, CMenuSysscr32]
+      - [0xA8038, cpp, CMenuSysscr32]   # starts with CMenuInputKanji.cpp-looking code (its literals are this unit's)
       - [0xA8B68, cpp, CMenuSysscr31]
       - [0xA9E28, cpp, CMenuSysscr27]
       - [0xAA8C0, cpp, CMenuSysscr26]   # starts with CMenuSysscr27.cpp-looking code (its literals are this unit's)
@@ -345,7 +345,8 @@ segments:
       - {start: 0x1C2A18, type: .data, name: CMenuRecord, linker_section: .gnu.linkonce.d.*}
       - [0x1C2A40, data, vt_CCommandBase]
       - [0x1C2A60, data, vt_CCommandSelect]
-      - [0x1C2A80, data, vt_CCommandIncDec]   # also CStatusBase
+      - [0x1C2A80, data, vt_CCommandIncDec]
+      - [0x1C2AA0, data, vt_CStatusBase]
       - [0x1C2AE8, data, vt_CStatusWin]
       - [0x1C2B38, data, vt_CMenuInputKanji]
       - {start: 0x1C2B80, type: .data, name: CMenuSysscr32, linker_section: .gnu.linkonce.d.*}
@@ -452,7 +453,7 @@ segments:
       - [0x1DBB38, .rodata, CMenuExam]
       - [0x1DBD98, .rodata, CChrSchoolWin]
       - [0x1DBFD0, .rodata, CChrBodyWin]
-      - [0x1DC028, .rodata, CMenuChildStatus]
+      - [0x1DC038, .rodata, CMenuChildStatus]   # (lane lb) 11CStatusBase at 0x2DB028 ends CChrBodyWin's object
       - [0x1DC558, .rodata, CMenuCommon]
       - [0x1DC5E0, .rodata, CMenuCommonRes]
       - [0x1DCA30, .rodata, CMenuPTJobMoney]
@@ -466,11 +467,12 @@ segments:
       - [0x1DCE80, .rodata, CMenuRecord]
       - [0x1DE7D8, .rodata, CCommandBase]
       - [0x1DE928, .rodata, CCommandSelect]
-      - [0x1DE9B8, rodata, ro_CCommandIncDec]   # also CStatusBase
-      - [0x1DEA28, .rodata, CStatusWin]
+      - [0x1DE9C8, .rodata, CCommandIncDec] # with CCommandSelect.cpp's tail (lane lb)
+      - [0x1DEA38, .rodata, CStatusBase]   # (lane lb) CStatusBase's literals, then CStatusWin's piece
+      - [0x1DEDE8, .rodata, CStatusWin]
       - [0x1DEEE0, .rodata, CStatusItem]
       - [0x1DFBC8, .rodata, CMenuInputKanji]
-      - [0x1DFEB8, .rodata, CMenuSysscr32]
+      - [0x1E00B8, .rodata, CMenuSysscr32]   # (lane lb) with CMenuInputKanji.cpp's tail (CMenuSub1A7658)
       - [0x1E00F8, .rodata, CMenuSysscr31]
       - [0x1E0190, .rodata, CMenuSysscr27]
       - [0x1E0208, .rodata, CMenuSysscr26]
@@ -502,7 +504,7 @@ segments:
       - [0x1E1F00, .rodata, CMiniGame2Res]
       - [0x1E2190, .rodata, CMiniGame3Res]
       - [0x1E23A8, .rodata, CMiniGame4Res]
-      - [0x1E25C8, .rodata, CMiniGame5Res]
+      - [0x1E2630, .rodata, CMiniGame5Res]   # (lane lb) 0x2E15C8-0x2E1630 is CMiniGame4Res's const table (func_001D5550)
       - [0x1E28B0, .rodata, CMiniGame6Res]
       # ro_tail split per text unit (rodata refs are monotonic in unit order; .data-only and
       # unreferenced literals go with the unit before them)

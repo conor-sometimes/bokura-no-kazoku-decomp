@@ -6,7 +6,9 @@ struct GNode {
     GNode *parent; GNode *child; GNode *next; s32 mC;
     f32 m10, m14, m18, m1C, m20, m24, m28, m2C;
     s32 m30, m34, m38, m3C, m40, m44, m48, m4C;
-    f32 m50, m54; s32 m58; u8 pad5C[0x64];
+    f32 m50, m54; s32 m58; s32 m5C;
+    f32 m60, m64, m68, m6C, m70, m74, m78, m7C, m80, m84, m88, m8C;
+    f32 m90, m94, m98, m9C, mA0, mA4, mA8, mAC, mB0, mB4; u8 padB8[8];
     u8 mC0, mC1, mC2, mC3; u8 padC4[0x10]; s32 mD4; u8 padD8[0xC]; s32 mE4; u8 padE8[0x18];
     u64 m100;
 };
@@ -292,7 +294,24 @@ extern "C" void func_0023D2E8(void) {
     if (D_002B9504 >= 0) return func_0022DDE8(D_002B9504);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023D330);
+extern "C" s32 func_0023D330(s32 psm) {
+    switch ((u32)psm) {
+    case 0x00: return 0;
+    case 0x01: return 1;
+    case 0x30: return 5;
+    case 0x31: return 6;
+    case 0x1B: return 2;
+    case 0x24: return 3;
+    case 0x2C: return 4;
+    case 0x02: return 7;
+    case 0x32: return 8;
+    case 0x0A: return 9;
+    case 0x3A: return 10;
+    case 0x13: return 11;
+    case 0x14: return 12;
+    }
+    return 0;
+}
 
 extern "C" Ent16 *func_0023D3C8(s32 x) {
     return &D_002B9510[func_0023D330(x)];

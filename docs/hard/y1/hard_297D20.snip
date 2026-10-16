@@ -1,8 +1,0 @@
-//@decl
-struct W2Rand2 { u32 m_seed; u32 Next() { m_seed = m_seed * 0x19660D + 1; return (m_seed >> 12) & 0xFFFF; } };
-struct Y1RandOwner { u32 m0; W2Rand2 m_rand; u8 pad[0x291C - 8]; s32 m_fixI; f32 m_fixF; };
-inline f32 W2RandF(W2Rand2 *g, f32 lo, f32 hi) { u32 r = g->Next() << 16; r |= g->Next(); return (f32)(s32)(r & 0xFFFF) / 65535.0f * (hi - lo) + lo; }
-//@func 0x297D20
-extern "C" f32 func_00297D20(Y1RandOwner *p, f32 lo, f32 hi) {
-{{ if (p->m_fixF < 0.0f) return W2RandF(&p->m_rand, lo, hi); return p->m_fixF;@| f32 v = p->m_fixF; if (v < 0.0f) v = W2RandF(&p->m_rand, lo, hi); return v;@| if (p->m_fixF >= 0.0f) return p->m_fixF; return W2RandF(&p->m_rand, lo, hi);@| if (0.0f <= p->m_fixF) return p->m_fixF; return W2RandF(&p->m_rand, lo, hi);}}
-}

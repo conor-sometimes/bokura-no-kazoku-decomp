@@ -143,7 +143,6 @@ CMiniGame5Res::~CMiniGame5Res() {
     D_002A5538->SetUnkDC(0);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CMiniGame5Res", D_002E15C8);
 int CMiniGame5Res::Load(const char *dir) {
     u8 file[0x100];
     char key[0x100];

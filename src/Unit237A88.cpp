@@ -282,7 +282,35 @@ int Func238158(void *p, int f) {
     return (int)p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_002381C0);
+extern "C" s32 func_002381C0(u32 psm, s32 a, s32 b, s32 w, s32 h) {
+    s32 r = 0;
+    switch (psm) {
+    case 0x00:
+    case 0x30:
+        r = w * h >> 2;
+        break;
+    case 0x01:
+    case 0x31:
+        r = w * h * 3 >> 4;
+        break;
+    case 0x02:
+    case 0x0A:
+    case 0x32:
+    case 0x3A:
+        r = w * h >> 3;
+        break;
+    case 0x13:
+    case 0x1B:
+        r = w * h >> 4;
+        break;
+    case 0x14:
+    case 0x24:
+    case 0x2C:
+        r = w * h >> 5;
+        break;
+    }
+    return r;
+}
 INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5320);
 INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5330);
 

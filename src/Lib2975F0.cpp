@@ -84,6 +84,10 @@ extern const char D_002D5598[];
 
 #define FLD(T, p, off) (*(T *)((u8 *)(p) + (off)))
 struct W2N8 { s32 a; s32 b; };
+
+struct W2Rand2 { u32 m_seed; u32 Next() { m_seed = m_seed * 0x19660D + 1; return (m_seed >> 12) & 0xFFFF; } };
+struct Y1RandOwner { u32 m0; W2Rand2 m_rand; u8 pad[0x291C - 8]; s32 m_fixI; f32 m_fixF; };
+inline f32 W2RandF(W2Rand2 *g, f32 lo, f32 hi) { u32 r = g->Next() << 16; r |= g->Next(); return (f32)(s32)(r & 0xFFFF) / 65535.0f * (hi - lo) + lo; }
 // @decl-end
 
 extern "C" void func_002975F0(VDel_2975F0 *p) { delete p; }
@@ -233,7 +237,9 @@ extern "C" void func_00297C98(void *p, s32 v) { FLD(s32, p, 0x4) = v; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297CA0);
 
-INCLUDE_ASM("asm/nonmatchings/Lib2975F0", func_00297D20);
+extern "C" f32 func_00297D20(Y1RandOwner *p, f32 lo, f32 hi) {
+    return p->m_fixF >= 0.0f ? p->m_fixF : W2RandF(&p->m_rand, lo, hi);
+}
 
 extern "C" s32 func_00297DA0(void *p) { return FLD(s32, p, 0x291C); }
 
