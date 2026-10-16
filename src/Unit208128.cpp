@@ -88,7 +88,16 @@ extern "C" u32 func_00208228(u8 **pp) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00208260);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2EE0);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2EE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2F10);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2F40);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2F70);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2F90);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2FB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2FE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E2FF0);
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00208670);
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_002087E8);
@@ -138,7 +147,14 @@ extern "C" s32 func_00208B00(char *chunk) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00208B30);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3050);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3058);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3080);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E30A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E30C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E30F8);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3130);
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00208E48);
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00208F98);
@@ -445,6 +461,8 @@ extern "C" void func_00209F20(s32 v) {
     D_3148D0.m514 = t;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3140);
+INCLUDE_RODATA("asm/nonmatchings/Unit208128", D_002E3178);
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00209F50);
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_0020A098);

@@ -107,7 +107,7 @@ public:
 void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern const char D_002D5078[], D_002D5080[], D_002D5088[], D_002D5098[], D_002D50B0[];
 extern const char D_002D50B8[], D_002D50D0[], D_002D50F0[], D_002D5108[];
 // @decl-end

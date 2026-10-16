@@ -6,7 +6,7 @@
 #include "IUserFlagMgr.h"
 extern CFlagWork *D_002A5358;
 extern char D_002D9820[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);
 #include "CProcess.h"
 // The event-script base (CEventObj unit): fields up to 0xFEC4, then its vptr (one slot, the

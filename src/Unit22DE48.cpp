@@ -290,7 +290,15 @@ extern "C" s32 func_0022E880(s32 fd, u32 *out, u32 max, s32 len) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022E8E0);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E47F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4800);
 INCLUDE_ASM("asm/nonmatchings/Unit22DE48", func_0022EA08);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4828);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4850);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4868);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E4888);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E48A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit22DE48", D_002E48C0);
 
 extern "C" void func_0022EE38(FEnt *f, s32 x, s32 n) {
     f->mC8 |= 1;

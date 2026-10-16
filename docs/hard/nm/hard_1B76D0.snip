@@ -1,0 +1,46 @@
+//@func 0x1B76D0
+int CUnk2A55B0::Func1B76D0(void *p) {
+    char buf[0x100];
+    s32 sel = (s32)p;
+    s32 r, i;
+    r = func_001EDC18(D_002E0610, 0);
+    if (r < 0) goto done;
+    r = func_001EDF78(m_unk174, 1);
+    if (r < 0) goto done;
+    r = func_001EDC18(m_unk174, 0);
+    if (r < 0) goto done;
+    Func235DE0(D_002E0618);
+    r = func_001EDEE8(D_002E0630, 1);
+    if (r < 0) goto done;
+    if (m_unk58 == 0) {
+        Func235DE0(D_002E0640);
+        r = func_001EE4F8(D_002E0658, (s32)m_unk70, m_unk6C, 0);
+        if (r < 0) goto done;
+    }
+    for (i = 0; i < 10; i++) {
+        s32 v;
+        if (D_002A55AC->GetUnk34(i) && i != sel) continue;
+        sprintf(buf, D_002E0668, i);
+        if (i == sel) {
+            v = D_002A55AC->GetUnkC(i);
+        } else {
+            v = (s32)D_002A55AC->m_unk64;
+        }
+        Func235DE0(D_002E0678, buf, v);
+        r = func_001EE4F8(buf, v, D_002A55AC->m_unk8 * 3, D_002A55AC->m_unk8 * 3);
+        if (r < 0) goto done;
+    }
+    {
+        s32 a = (s32)D_002A55AC->m_unk4;
+        s32 b = D_002A55AC->m_unk0;
+        Func235DE0(D_002E0690, a, b);
+        r = func_001EE4F8(m_unk174, a, b, b);
+        if (r < 0) goto done;
+    }
+    Func235DE0(D_002E06B0);
+    r = func_001EE4F8(D_002E0630, (s32)D_002A55C0, 0x3C4, 0);
+    if (r >= 0) r = 0;
+done:
+    func_001EDC18(D_002E0610, 0);
+    return r;
+}

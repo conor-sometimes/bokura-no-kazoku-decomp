@@ -277,7 +277,18 @@ extern "C" s32 func_00266DE8(void *bs, PackHdr *h) {
 
 extern "C" s32 func_00266F38(void *p, void *h) { func_0026E5D8(p, 0x38); func_0026E5D8(p, 0x28); while (func_0026E520(p, 1) == 1) func_0026E5D8(p, 0x18); return 1; }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9318);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9330);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9358);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9388);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E93A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E93C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E93F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9418);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9440);
 INCLUDE_ASM("asm/nonmatchings/Dk265918", func_00266FA8);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E9480);
+INCLUDE_RODATA("asm/nonmatchings/Dk265918", D_002E94A8);
 
 extern "C" s32 func_00267558(void) {
     s32 r = func_0027BD20();

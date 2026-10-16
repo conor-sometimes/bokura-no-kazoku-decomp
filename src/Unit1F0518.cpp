@@ -158,6 +158,11 @@ extern "C" s32 func_00272F30(s32 id);
 extern "C" s32 func_0023E8F0();
 struct CRxThStatus { s32 m_status; void *m_func; void *m_stack; s32 m_stackSize; void *m_gp; s32 m_initPrio; s32 m_curPrio; s32 pad[5]; };
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit1F0518", D_002E21F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F0518", D_002E2200);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F0518", D_002E2230);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F0518", D_002E2250);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F0518", D_002E2280);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F0518", func_001F0518);
 

@@ -5,7 +5,7 @@ extern "C" int strcmp(const char *, const char *);
 struct BankEnt { u8 m0; u8 m1; u8 m2; u8 m3; s32 m4; s32 *m8; s32 *mC; s32 *m10; s32 *m14; char *m18; s32 m1C; s32 m20; s32 m24; char m28[0x40]; char m68[0x40]; };
 extern BankEnt D_324B00[256];
 extern "C" BankEnt *func_0020E758(u32);
-extern "C" s32 *func_0020E798(u32, s32);
+extern "C" s32 *func_0020E798(u32, s32) throw();  // nothrow in retail (same TU as Unit20CBF0's end?)
 struct E808 { s16 m0; s16 m2; s16 m4; s16 m6; };
 extern "C" E808 *func_0020E808(u32, s32);
 extern "C" void *func_0020EF18(u32, s32, s32);
@@ -71,8 +71,25 @@ inline void SetSRWait(u32 v) { do SetSR(v); while (GetSR() != v); }
 inline u32 DisableIntr() { u32 st; __asm__ volatile("sync.p"); __asm__ volatile("sync"); st = GetSR(); SetSRWait(st & ~1); return st; }
 inline void RestoreIntr(u32 st) { __asm__ volatile("sync.p"); __asm__ volatile("sync"); SetSRWait(st); }
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3400);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3440);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3478);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3498);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E34C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E34F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3500);
 
-INCLUDE_ASM("asm/nonmatchings/Unit20E938", func_0020E938);
+extern "C" s32 func_0020E938(u32 a, s32 k, const char *name) {
+    BankEnt *e;
+    s32 *t;
+    s32 i;
+    if ((e = func_0020E758(a)) == 0 || (t = func_0020E798(a, k)) == 0) return 0;
+    for (i = 0; i < t[1]; i++) {
+        char *s = e->m18 + t[2 + i];
+        if (!strcmp(s + 8, name)) return i;
+    }
+    return -1;
+}
 
 extern "C" void func_0020E9F8(u32 id, s32 k, s32 c, s32 *w, s32 *h) {
     E808 *p;

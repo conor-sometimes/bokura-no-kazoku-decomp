@@ -68,7 +68,7 @@ public:
 //@sym bsearch 0x289160
 extern "C" void *bsearch(const void *key, const void *base, unsigned int n, unsigned int size, int (*cmp)(const void *, const void *));
 void *operator new(unsigned int n);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern char D_002D5BC8[];
 int CompareEventMesNames(const char **a, const char **b);
 struct CEventMesKey { s32 id; u8 pad[0xC]; };

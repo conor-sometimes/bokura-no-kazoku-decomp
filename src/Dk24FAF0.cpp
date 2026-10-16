@@ -335,6 +335,9 @@ INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", __9CResCache);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", _$_9CResCache);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6920);
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Init250208__9CResCachePFv_viii);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Func250368__9CResCache);
@@ -400,8 +403,16 @@ INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250C28);
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250D28);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250DD8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E69F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6A10);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6A20);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6A30);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250EC8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6AA0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6AC8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6AF8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6B08);
 
 extern "C" void func_002512C0() {
     func_0023E088(D_393910.m0);

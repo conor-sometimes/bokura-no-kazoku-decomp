@@ -75,6 +75,7 @@ static __inline__ FreeEnt *W2AllocEnt(void) { FreeEnt *e = D_423F00; if (e) D_42
 
 int func_0027D938();
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Dk27C020", D_002EA110);
 
 SYSCALL(func_0027C020, 0x74)
 

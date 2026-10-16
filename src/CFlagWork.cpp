@@ -42,7 +42,7 @@ public:
 
 void *Func245D00(s32 n);
 void *Func24A4C0(const char *name);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 extern void (*D_002B91B0)(void *p);
 
 // Task base: objects run by the task list (0x24F5C0) come from its own heap.
@@ -423,97 +423,3 @@ void CFlagWork::CallFunc109738() {
     Func109738();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func109508__FPvPCc);
-
-s32 Load109508(const char *name) {
-    void *buf = Func24A4C0(name);
-    if (!buf) {
-        Func235DE0(D_002D1D40, name);
-        return 0;
-    }
-    s32 r = Func109508(buf, name);
-    D_002B91B0(buf);
-    return r;
-}
-
-void CFlagWork::Func109738() {
-    if (D_0029F330 >= 0) {
-        Func23B1D0(D_0029F330);
-        D_0029F330 = -1;
-    }
-}
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00109778);
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_001098A8);
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_00109C30);
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_0010A000);
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", func_0010A3E8);
-
-void CallFunc220A58() {
-    Func220A58(1.0f, 0.0f, 0.0f);
-}
-
-void CFlagWork::CallFunc10ACF0() {
-    Func10ACF0();
-}
-
-INCLUDE_ASM("asm/nonmatchings/CFlagWork", Func10A878__FPvPCc);
-
-s32 Load10A878(const char *name) {
-    void *buf = Func24A4C0(name);
-    if (!buf) {
-        Func235DE0(D_002D1E88, name);
-        return 0;
-    }
-    s32 r = Func10A878(buf, name);
-    D_002B91B0(buf);
-    return r;
-}
-
-void CFlagWork::Func10ACF0() {
-    if (D_0029F340 >= 0) {
-        Func23B1D0(D_0029F340);
-        D_0029F340 = -1;
-    }
-}
-
-void Func10AD30() {
-    Func220890(D_0029F340, 0, D_0029F348[0], D_0029F348[1], D_0029F350[0], D_0029F350[1]);
-    Func220680(Func2022A0());
-    Func2206C8(Func202308());
-    Func2206E8(Func202338());
-    Func220A18(D_0029F380[0], D_0029F380[1], D_0029F380[2], D_0029F380[3]);
-}
-
-// Empty; real name and class unknown (a virtual no-op or a stub).
-extern "C" void func_0010ADC0() {
-}
-
-// Empty; real name and class unknown (a virtual no-op or a stub).
-extern "C" void func_0010ADC8() {
-}
-
-void Func10ADD0() {
-    Func1EB828(1);
-    Func1EB838(D_002D1EB0);
-    Func1EB838(D_002D1EB8);
-    Func1EB838(D_002D1EC0);
-    Func1EB838(D_002D1EC8);
-    Func1EB838(D_002D1ED0);
-    Func1EB838(D_002D1ED8);
-    Func1EB838(D_002D1EE0);
-}
-
-void ClearFunc1EB828And1EB838() {
-    Func1EB828(0);
-    Func1EB838(0);
-}
-
-s32 AddPadMgr(CTaskList24F5C0 *list) {
-    CPadMgr *t = new CPadMgr;
-    return list->Func24F5C0(t, 0);
-}

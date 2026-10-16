@@ -246,9 +246,35 @@ extern "C" void func_002332C0(s32 k, s32 x, s32 f) {
     RestoreIntr(st);
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4A90);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4AB8);
 INCLUDE_ASM("asm/nonmatchings/Unit232B78", func_002333C0);
 
 INCLUDE_ASM("asm/nonmatchings/Unit232B78", func_002334B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B40);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B50);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B58);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B60);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B68);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B70);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B78);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B80);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B88);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B90);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4B98);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BA8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BB0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BC8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BD0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BD8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BE0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BF0);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4BF8);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4C20);
+INCLUDE_RODATA("asm/nonmatchings/Unit232B78", D_002E4C70);
 
 extern "C" void func_00233820(void) {
 }

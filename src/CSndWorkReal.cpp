@@ -244,7 +244,7 @@ public:
 
 extern "C" char *strstr(const char *s, const char *sub);
 #include "libc.h"
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 void Func270C50(CVec4 *dst, const CVec4 *src);
 void Func270CA0(CVec4 *dst, void *m);
 void Func270E48(CVec4 *v);

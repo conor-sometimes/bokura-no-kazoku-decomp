@@ -15,6 +15,7 @@ SDKC_RANGES=[(0x26CFB0,0x27FC30)]
 SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
 # libgcc and newlib built without -fno-strict-aliasing (Makefile LIBC_OBJS, lane w2)
 LIBC_RANGES=[(0x283858,0x292E20)]
+LIBC_C_RANGES=[(0x280098,0x2828C0),(0x283858,0x285F80),(0x287F98,0x288388),(0x2888C0,0x292E20)]  # Makefile LIBC_C_OBJS (compiled as C, lane w2)
 OD='mips-ps2-decompals-objdump'
 ctx=json.load(open(W+'/ctx.json'))
 rom=open(R+'/disc/SCPS_150.88','rb').read()
@@ -56,13 +57,14 @@ def flags_for(funcs):
     # the unit's compiler and flags, as the Makefile sets them per unit (ASG, SDK_OBJS, SDKC_OBJS)
     cc,base=CC,['-O2','-G0','-fno-strict-aliasing','-fno-exceptions']
     if funcs and all(any(lo<=a<hi for lo,hi in LIBC_RANGES) for a,b in funcs): base=['-O2','-G0','-fno-exceptions']  # Makefile LIBC_OBJS
+    if funcs and all(any(lo<=a<hi for lo,hi in LIBC_C_RANGES) for a,b in funcs): base=['-x','c','-O2','-G0','-fno-exceptions']  # Makefile LIBC_C_OBJS
     if funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs):  # Makefile SDK_OBJS
         cc,base=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS]
     sdk=funcs and all(any(lo<=a<hi for lo,hi in SDK_RANGES) for a,b in funcs)
     sdkc=funcs and all(any(lo<=a<hi for lo,hi in SDKC_RANGES) for a,b in funcs)
     if sdkc:  # Makefile SDKC_OBJS
         cc,base=R+'/tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc',['-x','c','-O2','-G0','-B'+SDKAS]
-    asg=['-Wa,-g'] if not sdkc and not sdk and any(a<0x1E91B8 or a>=0x245648 for a,b in funcs) else []  # Makefile ASG
+    asg=['-Wa,-g'] if not sdkc and not sdk and any((a<0x1E91B8 or a>=0x245648) and not (0x260A60<=a<0x262D28) for a,b in funcs) else []  # Makefile ASG (Dk260A60 without as -g, lane w2)
     mode=os.environ.get('BK_MODE')  # experiments: force a compiler setup (sdk, sdkc, 296, 296c)
     if mode=='sdk': cc,base,asg=SDKCC,['-O2','-G0','-fno-exceptions','-B'+SDKAS],[]
     elif mode=='sdkc': cc,base,asg=R+'/tools/compilers/ee-gcc2.9-991111-01/bin/ee-gcc',['-x','c','-O2','-G0','-B'+SDKAS],[]
@@ -101,7 +103,7 @@ def read_obj(path):
                 if info&0xff in R_MIPS: relocs[off]=R_MIPS[info&0xff]
     syms.sort()
     return syms,text,relocs,und
-def words(b,off,n): return [struct.unpack_from('<I',b,off+4*i)[0] for i in range(n)]
+def words(b,off,n): return [struct.unpack_from('<I',b,off+4*i)[0] if off+4*i+4<=len(b) else 0 for i in range(n)]
 def score(funcs,obj):
     # [(addr,name,bad,ours,theirs)]: bad = differing words (relocated fields masked), +1000 on size mismatch
     syms,text,relocs,und=obj; res=[]

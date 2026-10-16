@@ -159,13 +159,31 @@ static inline W2Fp *w2_fpdiv_parts(W2Fp *a, W2Fp *b)
 extern void func_00283EB8(void) __attribute__((noreturn));
 
 extern f32 func_002880A0(s32, u32, s32, u32);
+
+typedef struct Y1Fde { u32 length; s32 CIE_delta; void *pc_begin; void *pc_range; } Y1Fde;
+typedef struct { Y1Fde **array; u32 count; } Y1FdeVec;
+static __inline__ int y1_fde_compare(Y1Fde *x, Y1Fde *y) { return (int)x->pc_begin - (int)y->pc_begin; }
+extern void (*D_002BF22C)(void) __attribute__((noreturn));
+extern int strcmp(const char *, const char *);
 // @decl-end
 
 extern void __pure_virtual(void) { func_00283888(); return; }
 
 extern void func_00283870(void) { func_00288FF8(); return; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00283888);
+/* __terminate; defined under its own name so the callers below (declared W2Terminate) stay as retail saw them */
+void Y1Terminate(void) asm("func_00283888");
+void Y1Terminate(void)
+{
+    (*D_002BF22C)();
+}
+
+void *func_002838A0(void *catch_type, void *throw_type, void *obj)
+{
+    if (strcmp((const char *)catch_type, (const char *)throw_type) == 0)
+        return obj;
+    return 0;
+}
 
 extern void func_002838D0(void) {
 }
@@ -357,7 +375,6 @@ extern void *func_00284268(void *pc, W2ExcDesc *table, W2EhInfo *eh_info, int re
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002843A8);
 
-asm(".p2align 3");
 extern void func_00284438(s32 reg, void *u, void *t) { void *p = func_002843A8(reg, u, 0); void *q = func_002843A8(reg, t, 0); memcpy(q, p, D_424518[reg]); return; }
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_002844A0);
@@ -568,7 +585,26 @@ extern u8 *func_00285590(u8 *buf, u32 *r) { u32 shift = 0; u32 result = 0; while
 
 extern u8 *func_002855D8(u8 *buf, s32 *r) { u32 shift = 0; u32 result = 0; u32 byte; while (1) { byte = *buf++; result |= (byte & 0x7f) << shift; shift += 7; if ((byte & 0x80) == 0) break; } if (shift < 32 && (byte & 0x40) != 0) result |= -(1 << shift); *r = result; return buf; }
 
-INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00285630);
+void func_00285630(Y1FdeVec *v1, const Y1FdeVec *v2)
+{
+    u32 i1, i2;
+    Y1Fde *fde2;
+
+    i2 = v2->count;
+    if (i2 > 0) {
+        i1 = v1->count;
+        do {
+            i2--;
+            fde2 = v2->array[i2];
+            while (i1 > 0 && y1_fde_compare(v1->array[i1 - 1], fde2) > 0) {
+                v1->array[i1 + i2] = v1->array[i1 - 1];
+                i1--;
+            }
+            v1->array[i1 + i2] = fde2;
+        } while (i2 > 0);
+        v1->count += v2->count;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Lib283858", func_00285728);
 

@@ -88,6 +88,9 @@ extern char *strstr(const char *searchee, const char *lookfor)
 }
 
 INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028B970);
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB048);
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB050);
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB058);
 
 extern double func_0028C888(const char *s, char **e) { return func_0028B970(D_002BF5D0, s, e); }
 
@@ -157,4 +160,7 @@ INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028CB88);
 
 extern s32 func_0028CC40(W2F *fp, const char *fmt, void *ap) { do { if (fp->data == 0) fp->data = (W2Re *)D_002BF5D0; if (!fp->data->sdidinit) func_00290CB8(fp->data); } while (0); return func_0028CCB8(fp->data, fp, fmt, ap); }
 
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB060);
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB070);
+INCLUDE_RODATA("asm/nonmatchings/Lib28AE50", D_002EB080);
 INCLUDE_ASM("asm/nonmatchings/Lib28AE50", func_0028CCB8);

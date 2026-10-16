@@ -125,6 +125,20 @@ extern char D_002C5200[], D_002C82E8[], D_002C8300[], D_002CAE78[];
 extern const char D_002E3D18[], D_002E3D38[], D_002E3D58[], D_002E3D70[], D_002E3D88[], D_002E3DA0[], D_002E3DB8[];
 extern const char D_002E3DD0[], D_002E3DE8[], D_002E3E00[], D_002E3E18[], D_002E3E30[], D_002E3E48[], D_002E3E60[];
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D18);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D38);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D58);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D70);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3D88);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3DA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3DB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3DD0);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3DE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3E00);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3E18);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3E30);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3E48);
+INCLUDE_RODATA("asm/nonmatchings/Unit21D820", D_002E3E60);
 
 extern "C" void func_0021D820(s32 n, s32 a, s32 b, s32 c, s32 d) {
     PUT(0x6C028000); PUT(a); PUT(b); PUT(c); PUT(d);

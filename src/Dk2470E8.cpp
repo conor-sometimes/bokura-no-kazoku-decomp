@@ -427,7 +427,7 @@ CPushBuf::CPushBuf() {
     m_unk4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", _$_8CPushBuf);
+CPushBuf::~CPushBuf() { Func248E00(); }
 
 extern "C" void func_00248C30(CPushBuf *p) {
     p->Func248E00();
@@ -605,9 +605,41 @@ s32 Func249248(void *pname) {
     return 1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6108);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6120);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6150);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6178);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6198);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E61D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E61F8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6218);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6248);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6260);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6278);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E62B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E62E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E62E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E62F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6388);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63D8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E63F8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6400);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6428);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6450);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6478);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6488);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E64D8);
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", Func249348__Fv);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00249428);
+INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6530);
 
 extern "C" void func_002494B0(const char *sec, const char *key) {
     char buf[0x100];

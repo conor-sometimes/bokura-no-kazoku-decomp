@@ -108,6 +108,9 @@ typedef struct { int m0; void *(*func)(int, void *, int); void *buf; int size; i
 typedef struct { int m0, m4, m8, mC, m10, m14, m18; int m1C; int m20; } W2RpcRp;
 typedef struct { int src; int dest; int size; int attr; } W2DmaT;
 int func_00273560(W2DmaT *, int);
+
+typedef struct { u8 p0[0x10]; u32 m10; void *m14; int m18; struct Y1Rcv *m1C; int m20; int m24; int m28; } Y1In;
+typedef struct { u8 p0[0x10]; u32 m10; int m14; int m18; int m1C; u32 m20; int m24; int m28; int m2C; } Y1Out;
 // @decl-end
 
 s32 func_002752B8(s32 a, s32 b) { s32 old = D_41D198.mC; D_41D198.mC = a; D_41D198.m10 = b; return old; }
@@ -205,7 +208,20 @@ int func_00275B18(int a, int b, int c, Req *r)
     return func_00275510(0x80000008, (int)r, 0x40, r->m24, r->m28, r->m2C) ? 0 : 0x800;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275B58);
+void func_00275B58(Y1In *rd, void *pool)
+{
+    Y1Out *pkt;
+    if (rd->m10 & 4) pkt = (Y1Out *)func_00275A08b(pool, rd->m10 >> 16);
+    else pkt = (Y1Out *)func_002759D8b(pool);
+    pkt->m14 = (int)rd->m14;
+    pkt->m1C = (int)rd->m1C;
+    pkt->m20 = 0x8000000C;
+    pkt->m24 = rd->m20;
+    pkt->m28 = rd->m24;
+    pkt->m2C = rd->m28;
+    if (!func_00275510(0x80000008, (int)pkt, 0x40, rd->m20, rd->m24, rd->m28))
+        func_0027DAC8(0x800, func_00275B18, pkt);
+}
 
 int func_00275C28(RpcClient *cd, int a, int b, int c, int mode)
 {
@@ -260,7 +276,19 @@ int func_00275DD0(int a, int b, int c, Req *r)
     return func_00275510(0x80000008, (int)r, 0x40, 0, 0, 0) ? 0 : 0x800;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00275E10);
+void func_00275E10(Y1In *rd, void *pool)
+{
+    Y1Out *pkt = (Y1Out *)func_002759D8b(pool);
+    int *e;
+    pkt->m14 = (int)rd->m14;
+    pkt->m1C = (int)rd->m1C;
+    pkt->m20 = 0x80000009;
+    e = (int *)func_00275D80b(rd->m20, pool);
+    if (!e) { pkt->m24 = 0; pkt->m28 = 0; }
+    else { pkt->m24 = (int)e; pkt->m28 = e[2]; }
+    if (!func_00275510(0x80000008, (int)pkt, 0x40, 0, 0, 0))
+        func_0027DAC8(0x800, func_00275DD0, pkt);
+}
 
 int func_00275EE0(RpcClient *cd, int rpc, int mode)
 {
@@ -521,6 +549,8 @@ Slot *func_002768C0(u32 i)
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2752B8", func_00276930);
+INCLUDE_RODATA("asm/nonmatchings/Dk2752B8", D_002EA048);
+INCLUDE_RODATA("asm/nonmatchings/Dk2752B8", D_002EA050);
 
 void func_00276CE8(void)
 {

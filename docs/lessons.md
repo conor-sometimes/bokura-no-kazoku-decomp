@@ -748,17 +748,23 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - **`bk vtest` gives bogus 1000+ diffs here; separate snippets plus `bk utest` are reliable; `bk show`
   lacks unit context (a unit-context show helper was used instead).** *(bokura)*
 ## nm (near misses, 2026-10-16: the branch-likely group)
-- **`bnezl` vs `bnez` after/around calls is nothrow, not source shape**: EE-GCC 2.96 marks every
-  function it has compiled as nothrow (TREE_NOTHROW, even under `-fno-exceptions`), and a call to a
-  nothrow function gets a `REG_EH_REGION 0` note. For a call that may throw, reorg's liveness scan
-  (resource.c) does not see past it, so a register the branch's delay slot sets counts as live on the
-  path through the call and the slot gets the annulled (likely) form. Retail compiled the callees that
-  sit earlier in the same .cpp, so its calls to them were nothrow; ours are INCLUDE_ASM (or in another
-  unit) and may throw. Fix: declare the callee `throw()`. Seven of the eight DIFF-1/2 branch-likely
-  near misses matched this way (0x1513D0, 0x19AEC0, 0x1A40C8, 0x123D88, 0x234460, 0x234718; 0x1A4D28
-  the other way round). The 991111 compiler and C (`-x c`, where every call is nothrow) do not show it,
-  which is why the libgcc functions stuck on `bnez`/`bnezl` matched as C (lane w2). No compiler flag
-  changes it (`-fexceptions`, `-g`, scheduling, `-O1`, gcse, `-fno-reorder-blocks` all tried). *(bokura)*
+- **`bnezl` vs `bnez` next to calls is nothrow, not source shape**: EE-GCC 2.96 marks every function
+  it has compiled as nothrow (TREE_NOTHROW, even under `-fno-exceptions`), and a call to a nothrow
+  function gets a `REG_EH_REGION 0` note. Whether a call may throw changes the basic blocks reorg
+  works with, and with them its liveness answers, so the annulled (likely) or plain form of a nearby
+  branch flips, in either direction. Retail compiled the callees that sit earlier in the same .cpp, so
+  its calls to them were nothrow; ours are INCLUDE_ASM (or in another unit) and may throw. Fix: declare
+  the callee `throw()`. Seven of the eight DIFF-1/2 branch-likely near misses matched this way (0x1513D0,
+  0x19AEC0, 0x1A40C8, 0x123D88, 0x234460, 0x234718; 0x1A4D28 the other way round). The 991111
+  compiler and C (`-x c`, where every call is nothrow) differ, which is why the libgcc functions stuck on
+  `bnez`/`bnezl` matched as C (lane w2). No compiler flag changes it (`-fexceptions`, `-g`, scheduling,
+  `-O1`, gcse, `-fno-reorder-blocks` all tried). *(bokura)*
+- **Func235DE0 (the debug printf) is nothrow in every game C++ unit (0x100000-0x1E91B8)**: retail's
+  header must have declared it so (`throw()`); all those units now declare it `throw()`, the whole tree
+  still matches, and 0x198430, 0x142318, 0x148110 (DIFF 61 before) matched with no other change. In
+  the C-style units after CAppMain it is may-throw (Unit226AE8, Unit230578, Unit236130 and Dk2571C0
+  break with `throw()`), so those keep the plain declaration. New game units should declare
+  `Func235DE0(const char *fmt, ...) throw();`. *(bokura)*
 - **Where to put the `throw()`**: for an `extern "C"` or free function, a redeclaration with `throw()`
   right after the callee's INCLUDE_ASM line copies retail exactly (2.96 accepts it; callers above it
   stay may-throw), e.g. `extern "C" int func_00150EA8(CGameMain *p, s32 i) throw();` in CGameMain.cpp.
@@ -771,14 +777,12 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   aliases (`extern "C" int SelMT(CStatusItem *, s32) asm("Select__11CStatusItemi");`). So retail
   compiled it in a different .cpp from CStatusItem (a TU boundary somewhere between 0x1A40C8, which needs
   CStatusItem's callees nothrow, and 0x1A4D28). Likewise retail's Unit234318 saw func_00234108 (0x234108, our Unit232B78) as nothrow:
-  the boundary at 0x234318 is probably too late. Func235DE0 (the debug printf) is nothrow in
-  CStatusBase but may-throw in Unit226AE8, Unit230578, Unit236130 and Dk2571C0 (declaring it `throw()`
-  everywhere breaks those), so its declaration is per unit. Nothrow-ness is a cheap probe of TU
-  boundaries. *(bokura)*
+  the boundary at 0x234318 is probably too late. Nothrow-ness is a cheap probe of TU boundaries
+  (CStatusItem's code was already suspected to start another object, HARD.md 0x1A3488). *(bokura)*
 - **Diagnosing**: `tools/bk/ushow.py SNIP` (utest's in-unit compile side by side, `!!` on differing
   words; `BK_EXTRA="-flags"` for experiments, `BK_KEEP=1` keeps the spliced .cpp, `-dd` writes the
   reorg dump). A one-line `bnez`/`bnezl` diff whose fall-through or target path contains a `jal`:
-  try the callee `throw()` first. *(bokura)*
+  try the callee `throw()` first; `tools/bk/ntprobe.py SNIP ADDR` tries every free callee. *(bokura)*
 - **Old DIFF-1 likely/plain entries unlock as their neighbours get matched**: once a callee earlier in
   the unit is matched in C, calls to it become nothrow and the delay-slot choice flips. The `#if 0`
   best attempts of g1 for CUserFlagMgr 0x13F948 and CCommandSelect 0x198E40 matched unchanged (after
@@ -852,3 +856,64 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
 - Two saved registers swapped between variables assigned in both arms of an if: the order of the
   assignments inside one arm decides it (0x25C648: moving `type = e->m8` after a/b/c fixed the
   type/c swap; declaration order made no difference).
+## sm (state.h state machines, 2026-10-16)
+The Update functions built on `../dklib/include/state.h` (CStateMachine: u16 flags, u16 depth, s32
+state, s32 stack[16]) all have the same skeleton; this one matches (CMenuSysscr23/09/05/08/04/11/07/03/
+00/01/06/10/22/24/25, CMenuNosave, CMenuContinue, CMenuAsksave):
+```
+    s32 done = 0;                      // or `done = 0;` right before loop: (see below)
+    if (m_state == 6) { ...; goto end; }
+loop:
+    if (done) goto out;
+    { u32 fl = (u16)m_unk0; if ((fl >> 7) & 1) goto out; }
+    switch (m_unk4) {                  // states are -__LINE__ of the macro; -1 is the start
+    case -1: ...setup...
+    <waits>
+    }
+out: ...
+end:;
+```
+- **A wait comes in a few shapes, chosen by the retail block order** (the macro text is still unknown;
+  these are equivalent spellings that give GCC the same RTL):
+  - test, yield, then: `case L: if (!c) { m_unk4 = L; done = 1; goto loop; } then...`;
+  - the same with retail's lone `nop` before the case label (the label is 8-aligned although code
+    falls into it): wrap it in `do { case L: if (!c) { yield } } while (0);` (or
+    `for (;;) { case L: if (!c) { yield } goto next; } next:`). The LOOP_BEG note makes final align
+    the next label (LOOP_ALIGN 3 on the EE). Do not use `break` out of a `for (;;)`: a jump to the
+    loop's end label within its first 30 insns makes expand_end_loop rotate the loop.
+  - then-block before the test, test branches back to it (`beql c, then`), yield falls through:
+    a rotated loop, `for (;;) { case L: if (!c) break; then...; goto fin; } m_unk4 = L; done = 1; goto loop;`.
+    Rotation puts the test at the end; jump does not copy it back (duplicate_loop_exit_test) because the
+    case label sits inside the exit test (a CODE_LABEL). Code falling into the loop also needs a jump
+    (`goto x;` to a label `x:` next to the case label), or the loop's entry jump survives.
+  - test, then, yield after it, END after that: `case L: if (c) { then; goto fin; } yield; fin: m_unk4 = END;
+    case END: done = 1; goto loop;` (CMenuSysscr24 family).
+- **Retail's shared yield tail** (`li done,1; b loop; sw $2,4(this)` with the state in the branch delay
+  slot) is cross-jumping of the per-yield `m_unk4 = X; done = 1; goto loop;`; write every yield in full.
+- **`done` in a callee-saved register** when its `= 0` is before a constructor call: put `done = 0;`
+  after the local object's declaration (CMenuSysscr22's CEFontWork).
+- **Virtual slots whose results are unused** put the vtable in `$2` and the function in `$3`: declare
+  them `void` (CMenuInputKanji's Func1A4FE0/Func1A5048/Func1A50C8 in the name-input menus).
+- **A local struct's field store through its address register** (`sw $0,0($20)`) needs an inline
+  setter; a direct `font.m = 0` is sp-relative.
+- **Inline `strcpy(d + strlen(d), s)` helper** for strcat: the copy of `d` lands in its own register.
+- **Yields carry their case label after them**: `m_unk4 = L; done = 1; goto loop; case L:;` inside
+  ordinary C loops (`while (c) { ...; yield; case L:; }`, `for (...; ...; inc) { ...; yield; case L:; }`,
+  `do { yield; case L:; } while (c)`) gives retail's rotated layouts: the yield block before the test, the
+  case label on the test or the increment (CMovieObj, CInterfMgr, CMenuMemorial, CMenuExGetMoney).
+- **Cancel blocks that retail puts just before the next state's code** (reached by a backward branch):
+  write them there, `goto`-reached, as `if (0) { cancel: ...; goto x; }` right after the yield that ends
+  the previous state (CMenuExGetMoney's `Stop(0x4C); m4C = -1;` and `Play(3); m4C = -1;`). Code that
+  shares a tail with such a block (two cancels ending in the same stores) is written in full in each
+  place; cross-jumping merges them and CSE keeps the global's address in a register as retail.
+- **Two END-like cases (`case -0x50A: case -0x4E2: done = 1; goto loop;`) share one block**: each extra
+  `goto loop` makes another natural loop, and estimate_probability's first pass marks every dispatch
+  jump that leaves one of them PROB_VERY_LIKELY, so ifcvt hoists `done = 1` (and GCSE insertions) into
+  the dispatch. The END state falls into its own case (`m_unk4 = END; case END: done = 1; goto loop;`).
+- **state.h's stack**: `Push(n)`/`Pop(n)`, `Var(k)`/`Get(k)` (k-th slot below the top); a value stored
+  into a slot is evaluated before the check, so store through an inline `SetVar(sm, k, v)`; a return
+  state kept across calls is an inline function's parameter (`SmCall(sm, -0x7A)`).
+- `tools/bk/kfam.py` (scratch, not committed) generated the kanji-select family; the decl blocks of those
+  units now declare CMenuSub1A7658 with its ctor/Func1A7308/m_unk54/m_unk58. *(bokura)*
+- **utest counted a function's own .rodata lines** (strings at the top of its .s) as instructions,
+  shifting the relocation-symbol check by the number of strings; fixed in utest.target_refs. *(bokura)*

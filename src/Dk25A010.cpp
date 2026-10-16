@@ -529,7 +529,31 @@ s32 CSndMgr::Func25AF70(s32 a, const char *name, s32 b, void *src, s32 n) {
     return -1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7610);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7630);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7650);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7678);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7698);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E76B8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E76D8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E76E0);
 INCLUDE_ASM("asm/nonmatchings/Dk25A010", func_0025B048);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7708);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7720);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7730);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7738);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7740);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7748);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7750);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7758);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7768);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7798);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E77B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E77C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E77D8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E77E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7800);
+INCLUDE_RODATA("asm/nonmatchings/Dk25A010", D_002E7818);
 
 void CSndMgr::Func25B230(s32 i) {
     CSndEnt *e = Func25A478(i);

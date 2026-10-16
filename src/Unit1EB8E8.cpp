@@ -79,6 +79,8 @@ extern "C" void func_001EB8E8(s32 nocase)
     else { D_002A5BDC = (XmnCmpFn)strcmp; D_002A5BE0 = (XmnCmpFn)strcmp; }
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1EB8E8", D_002E2028);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EB8E8", D_002E2040);
 INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001EB920);
 
 extern "C" void func_001EC0E0(XmnCmpFn fn)
@@ -113,6 +115,7 @@ extern "C" s32 func_001EC948()
 INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001EC9A8);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001ECA58);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EB8E8", D_002E2118);
 
 extern "C" s32 func_001ECCA8(s32 i)
 {
@@ -159,6 +162,7 @@ extern "C" void func_001ED730(s32 i)
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EB8E8", func_001ED768);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EB8E8", D_002E2148);
 
 extern "C" s32 func_001ED7F8()
 {

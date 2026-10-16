@@ -41,7 +41,7 @@ const char *Func24AF10(void *src, const char *key);
 const char *Func24AFE8(const char *src, char *buf, s32 a, s32 n);
 const char *Func24A570(const char *src, char *buf, const char *a, const char *b);
 void *Func248E48(const char *name);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern "C" char *func_0024A710(const char *p, s32 *v, s32 def, const char *s1, const char *s2);
 extern "C" void func_0024B650(const char *path, s32 a, char *out, s32 b);
 extern "C" char *strncpy(char *d, const char *s, unsigned int n);

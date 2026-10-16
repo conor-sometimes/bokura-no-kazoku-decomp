@@ -65,6 +65,24 @@ extern const char *D_002A35B8[];
 extern "C" int strcmp(const char *, const char *);
 void Func16CB08(s32 type, s32 base, void *src);
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C30);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C58);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C60);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C68);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C70);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C78);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C80);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C88);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C90);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9C98);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CA0);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CA8);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CB0);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CB8);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CC8);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CD8);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CE0);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CE8);
 
 CNameDBMgr::CNameDBMgr() {
     D_002A35B0 = this;
@@ -193,3 +211,5 @@ CNameDBMgr *CNameDBMgr::Create(void *a) {
     func_0016CF98(p, a);
     return p;
 }
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9CF0);
+INCLUDE_RODATA("asm/nonmatchings/CNameDBMgr", D_002D9D00);

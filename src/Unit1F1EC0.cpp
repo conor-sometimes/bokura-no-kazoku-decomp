@@ -184,7 +184,9 @@ extern "C" s32 func_001F2170()
     return func_001F1D38();
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1F1EC0", D_002E22A8);
 INCLUDE_ASM("asm/nonmatchings/Unit1F1EC0", func_001F2230);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F1EC0", D_002E2318);
 
 extern "C" void func_001F23E8()
 {

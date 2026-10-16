@@ -1,6 +1,8 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
+#define CLISTTAG_INLINE_DTOR
 #include "CList.h"
 // CSwingBoneObj.cpp: vptr at 0x30.
 class CSwingBoneObj {
@@ -329,7 +331,7 @@ extern "C" s32 func_001EB920(s32 p, s32 i);
 extern "C" s32 func_001ECDC8(s32 h);
 void Func10ADD0();
 void ClearFunc1EB828And1EB838();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern const char D_002D3680[];
 
 extern f32 D_002A6800[];
@@ -433,7 +435,10 @@ CCharaObj::CCharaObj() {
     Func113128();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00113090);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CCharaObj::~CCharaObj() {
+    Release113758();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CCharaObj", Func113128__9CCharaObj);
 
@@ -908,7 +913,24 @@ s32 CCharaObj::Func115A98() {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCharaObj", func_00115B48);
+s32 CCharaObj::Func115B48() {
+    s32 r;
+    if (!Func1153E8()) return 0;
+    r = 0;
+    if (m_unk84 < 0.0f) {
+        s32 n = (s32)((1.0f - m_unk84) / m_unk88);
+        if (n < r) n = r;
+        r = n;
+    }
+    if (m_unk350 && !m_unk90) {
+        s32 k = Func113F38();
+        if (k >= 0) {
+            s32 n = (s32)((Func1EAC30(k) - 1.0f - m_unk7C) / m_unk80);
+            if (n >= r) r = n;
+        }
+    }
+    return r;
+}
 
 f32 Ease115C28(s32 type, s32 cur, s32 total) {
     f32 t = (f32)cur / (f32)total;

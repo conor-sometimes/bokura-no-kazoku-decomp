@@ -68,6 +68,8 @@ extern "C" void func_00270A30(CVec4 *d, const CVec4 *a, const CVec4 *b);
 
 struct P217 { u8 pad[0xC]; u16 mC; s16 mE; void *m10; void *m14; f32 m18; f32 m1C; };
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit217F50", D_002E39F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit217F50", D_002E3A28);
 
 extern "C" s32 func_00217F50(s32 strm, s32 x) {
     CbMsg5 m;

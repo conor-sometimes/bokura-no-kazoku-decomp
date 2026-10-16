@@ -99,6 +99,12 @@ extern "C" const char *func_0020E470(s32, s32);
 extern "C" s32 func_00212CF8(s32);
 extern const char D_002E3960[], D_002E3998[];
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E3938);
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E3960);
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E3998);
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E39D8);
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E39E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit215A38", D_002E39E8);
 
 extern "C" u8 func_00215A38(Play *e) {
     Work *w = e->m4;

@@ -61,7 +61,7 @@ extern char D_2EBF90[];
 extern const char D_002D5200[];
 extern const char D_002D5208[];
 extern const char D_002D5210[];
-int Func235DE0(const char *, ...);
+int Func235DE0(const char *, ...) throw();
 //@sym Load__7CSvmResP10CSvmHeader 0x12DEC0
 //@sym atoi 0x289118
 //@sym atoff 0x289100
@@ -125,51 +125,3 @@ void CSvmRes::Release() {
     m_unk1C = 0;
 }
 
-void CValue::Reset() {
-    m_type = -1;
-    m_u.i = 0;
-}
-
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", SetInt__6CValuei);
-
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", SetFloat__6CValuef);
-
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", Set12E1D8__6CValuei);
-
-int CValue::AsInt() {
-    switch (m_type) {
-    case 0: return m_u.i;
-    case 1: return (s32)m_u.f;
-    case 2: return atoi(m_u.s);
-    }
-    return 0;
-}
-
-f32 CValue::AsFloat() {
-    switch (m_type) {
-    case 0: return m_u.i;
-    case 1: return m_u.f;
-    case 2: return atoff(m_u.s);
-    }
-    return 0.0f;
-}
-
-int CValue::Get12E350() {
-    switch (m_type) {
-    case 0: sprintf(D_2EBF90, D_002D5200, m_u.i); return (int)D_2EBF90;
-    case 1: sprintf(D_2EBF90, D_002D5208, m_u.f); return (int)D_2EBF90;
-    case 2: return (int)m_u.s;
-    }
-    return (int)D_002D5210;
-}
-
-void CValue::Assign(CValue *o) {
-    switch (m_type) {
-    case 0: m_u.i = o->AsInt(); break;
-    case 1: m_u.f = o->AsFloat(); break;
-    case 2: return (void)strcpy(m_u.s, (char *)o->Get12E350());
-    default: *this = *o; break;
-    }
-}
-
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012E558);

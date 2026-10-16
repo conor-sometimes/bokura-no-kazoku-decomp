@@ -288,9 +288,64 @@ int func_00278B68(int fd, int b)
     return res;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2779D8", func_00278CC0);
+int func_00278CC0(const char *name, int arg)
+{
+    SemaParam sp;
+    int res;
+    int sema, ok, i;
+    McCmd *c = &D_41EC40;
+    func_00276D38(0xC);
+    if (D_002BDB34 == 0) func_00276E68();
+    for (i = 0; i < 0x400; i++)
+        if ((*((u8 *)c + i + 16) = ((const u8 *)name)[i]) == 0) break;
+    if (i == 0x400) {
+        c->u.fn.name[0x3FF] = 0;
+        i = 0x3FF;
+    }
+    c->u.fn.fd = arg;
+    sp.max_count = 1;
+    sp.init_count = 0;
+    sp.option = 0;
+    sema = func_002731A0(&sp);
+    c->dst = &res;
+    c->sema = sema;
+    c->size = 4;
+    if (func_002760B0(D_420340, 0xC, 0, &D_41EC40, i + 0x11, D_41F880, 4, 0, 0) < 0) {
+        func_002731B0(sema); func_00276D68(); return -11; }
+    ok = *(int *)((unsigned int)D_41F880 | 0x20000000);
+    func_00276D68();
+    if (ok == 0) { func_002731B0(sema); return -11; }
+    func_002731E0(sema); func_002731B0(sema);
+    return res;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk2779D8", func_00278E60);
+int func_00278E60(const char *name, void *stat, int mask)
+{
+    SemaParam sp;
+    int res;
+    int sema, ok, i;
+    McCmd *c = &D_41EC40;
+    func_00276D38(0xD);
+    if (D_002BDB34 == 0) func_00276E68();
+    for (i = 0; i < 0x400; i++)
+        if ((*((u8 *)c + i + 0x50) = ((const u8 *)name)[i]) == 0) break;
+    if (i == 0x400) {
+        c->u.cs.name[0x3FF] = 0;
+        i = 0x3FF;
+    }
+    c->u.cs.st = *(struct W2St64 *)stat;
+    c->u.cs.mask = mask;
+    sp.max_count = 1;
+    sp.init_count = 0;
+    sp.option = 0;
+    sema = func_002731A0(&sp);
+    c->dst = &res;
+    c->sema = sema;
+    c->size = 4;
+    func_00275698(&D_41EC40, 0x450);
+    RPC_TAIL(0xD, i + 0x51, -11)
+    return res;
+}
 
 int func_002790A0(const char *a, const char *b)
 {

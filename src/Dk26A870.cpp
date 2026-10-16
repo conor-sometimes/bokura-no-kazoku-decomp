@@ -79,6 +79,13 @@ INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026A870);
 INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026A988);
 
 INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026A9E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E9770);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E9790);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E97C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E97E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E9810);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E9830);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E9850);
 
 extern "C" void func_0026AA48(s32 a) { u32 *r = (u32 *)0x10002010; *r = (*r & 0xFF7FFFFF) | (a << 23); }
 
@@ -263,6 +270,9 @@ extern "C" s32 func_0026B408(u8 *d, s32 PMV[2][2][2], s32 *motion_type, s32 mvfs
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26A870", func_0026B4C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E98A0);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E98D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk26A870", D_002E98F8);
 
 extern "C" void func_0026B970(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector) {
     s32 lim, vec;

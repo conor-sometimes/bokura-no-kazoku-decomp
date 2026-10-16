@@ -220,7 +220,7 @@ struct CGameEventObjHead {
 };
 CGameEventObj *NewGameEventObj(s32 a);
 int Func251B88();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern "C" void func_00128870(void *p);
 extern "C" void func_0012C4A8(void *p);
 void InitResMgrs151F60();

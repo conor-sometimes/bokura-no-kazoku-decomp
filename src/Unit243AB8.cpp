@@ -222,7 +222,9 @@ extern "C" s32 func_00244240(s32 a, SndReq *q, Ring *r) {
     return ok;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit243AB8", D_002E5E40);
 INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_002442C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit243AB8", D_002E5EB8);
 
 extern "C" s32 func_00244470(s32 a, SndReq *q) {
     Func235DE0(D_002E5EB8, q->m4);

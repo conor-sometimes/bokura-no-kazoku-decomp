@@ -224,6 +224,7 @@ extern "C" s32 func_0020AD50(s32 v) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020AD90);
+INCLUDE_RODATA("asm/nonmatchings/Unit20A410", D_002E3208);
 
 extern "C" void func_0020AF80(s32 id) {
     StrmEnt **pp;
@@ -416,6 +417,7 @@ extern "C" s32 func_0020BDD0(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020BDF0);
+INCLUDE_RODATA("asm/nonmatchings/Unit20A410", D_002E32D8);
 
 extern "C" void func_0020C100(s32 id) {
     VoiceHdr **pp;

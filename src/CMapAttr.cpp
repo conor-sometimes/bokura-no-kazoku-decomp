@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -107,15 +108,74 @@ extern "C" void *func_0024A3D8(s32 n);
 extern "C" s32 func_002301B0(const char *path, char *buf, s32 n);
 extern void (*D_002B91B0)(void *p);
 void *Func24A4C0(const char *name);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3820);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3830);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3838);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3840);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3848);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3850);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3858);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3860);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3868);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3870);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3878);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3880);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3888);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3890);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38C8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38D0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38D8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38E0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38E8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D38F0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3900);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3930);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3938);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3940);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3958);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3960);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3970);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3980);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3988);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39A0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39B0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39B8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39D0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39E0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D39F8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A00);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A10);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A20);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A30);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A58);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A68);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A80);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3A88);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AA0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AA8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AB0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AB8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AC0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AC8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AD0);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3AD8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3B00);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3B28);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3B60);
 
 CMapAttr::CMapAttr() {
     func_00294308(mD0);
     Func1182B8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapAttr", func_00118248);
+extern "C" void func_00294330(void *arr, s32 flags);   // TArray<> destructor (linkonce)
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapAttr::~CMapAttr() {
+    CallFunc1182B8();
+    func_00294330(mD0, 2);
+}
 
 void CMapAttr::Func1182B8() {
     s32 i;
@@ -466,3 +526,6 @@ int CMapAttr::LoadFile(const char *path) {
 void CMapAttr::CallFunc1182B8() {
     Func1182B8();
 }
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3B90);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3BD8);
+INCLUDE_RODATA("asm/nonmatchings/CMapAttr", D_002D3C18);

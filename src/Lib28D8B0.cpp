@@ -33,7 +33,16 @@ INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028D8F8);
 
 extern s32 func_0028D9B0(W2File *fp, const char *fmt, void *ap) { do { if (fp->data == 0) fp->data = D_002BF5D0; if (!FLD(s32, fp->data, 0x38)) func_00290CB8(fp->data); } while (0); return func_0028DA28(fp->data, fp, fmt, ap); }
 
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB250);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB260);
 INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028DA28);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB280);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB298);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2A0);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2B8);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2D8);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB2E0);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", jtbl_002EB2F0);
 
 extern char *func_0028F098(void *data, double value, int ndigits, int flags, char *sign, int *decpt, int ch, int *length)
 {
@@ -173,4 +182,10 @@ extern int func_0028F4F8(W2Bi *b, W2Bi *S)
     return q;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB460);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB470);
 INCLUDE_ASM("asm/nonmatchings/Lib28D8B0", func_0028F728);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB480);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB488);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", D_002EB490);
+INCLUDE_RODATA("asm/nonmatchings/Lib28D8B0", jtbl_002EB4A0);

@@ -98,7 +98,7 @@ public:
     s32 m_unk0;               // 0x0
 };
 extern CEvClock *D_002A3568;
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 typedef int (CEvHost::*CEvCallback3)(int a, int b, int c);
 typedef void (CEvHost::*CEvCallback2)(int a, int b);
 class CSvmWork;

@@ -224,7 +224,11 @@ const char *CFontTextRes::Get(u32 id) {
     return p;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E70D0);
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_002556A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7100);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7108);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7128);
 
 void CFontTextRes::Clear(s32 page) {
     s32 i;
@@ -258,6 +262,9 @@ CFontBankRes::~CFontBankRes() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00255B20);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E71B8);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E71E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7200);
 
 s32 CFontBankRes::Load(s32 id, const char *a, const char *b) {
     s32 ok = 0;
@@ -463,6 +470,13 @@ void CFontWork::Func256988(const char *fmt, ...) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00256A00);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E73B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E73C0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E73D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E73E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E73F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7400);
+INCLUDE_RODATA("asm/nonmatchings/Dk254AA8", D_002E7410);
 
 INCLUDE_ASM("asm/nonmatchings/Dk254AA8", func_00256DC8);
 

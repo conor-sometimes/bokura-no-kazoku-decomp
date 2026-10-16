@@ -2,16 +2,17 @@
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 #include "CMenuProcess.h"
-
 class CMenuSub1A7658 {
 public:
+    CMenuSub1A7658(class CUnk1A4298 *w);
     int Func1A7658();
-    void Func1A7308(s32 n);
+    void Func1A7308(s32 v);
 
     u8 pad0[0x54];
     s32 m_unk54;              // 0x54
     s32 m_unk58;              // 0x58
 };
+
 // The kana/selection window object (CMenuInputKanji.cpp); same object as CMenuSub1A7658.
 class CMenuInputKanji {
 public:
@@ -65,7 +66,76 @@ CMenuContinue::~CMenuContinue() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuContinue", Update__13CMenuContinue);
+s32 CMenuContinue::Update() {
+    s32 done = 0;
+    CMenuSub1A7658 *k;
+    s32 st;
+    if (m_state == 6) {
+        if (m_unk58) {
+            delete m_unk58;
+            m_unk58 = 0;
+        }
+        m_state = 5;
+        m_unk4C = -1;
+        goto end;
+    }
+loop:
+    if (done) goto out;
+    {
+        u32 fl = (u16)m_unk0;
+        if ((fl >> 7) & 1) goto out;
+    }
+    st = m_unk4;
+    switch (st) {
+    case -1:
+        m_unk5C = D_002A5408->Find("savequit");
+        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window.\n", "savequit");
+        m_unk5C->Func1A3378();
+        m_unk5C->SetUnkF0(0x5, 0);
+        m_unk5C->SetUnkF0(0x6, 0x1);
+        k = new CMenuSub1A7658((CUnk1A4298 *)m_unk5C);
+        m_unk58 = k;
+        if (!k) {
+            Func235DE0("*** Can't Create SelectMenu\n");
+            m_state = 5;
+            m_unk4C = st;
+            goto fin;
+        }
+        ((CMenuInputKanji *)k)->SetUnk4C(0x1110);
+        if (m_unk50 < 0) m_unk58->Func1A7308(0);
+        else m_unk58->Func1A7308(m_unk50);
+    case -0x9F:
+    case -0xAA:
+        if (m_unk58->m_unk54 != 2) {
+            m_unk4 = -0xAA;
+            done = 1;
+            goto loop;
+        }
+        m_state = 4;
+        goto bb;
+        for (;;) {
+    case -0xBA:
+    bb:
+            if (m_unk58->m_unk54 != 3) break;
+            m_state = 5;
+            m_unk4C = m_unk58->m_unk58;
+            goto fin;
+        }
+        m_unk4 = -0xBA;
+        done = 1;
+        goto loop;
+    fin:
+        m_unk4 = -0xBE;
+        done = 1;
+        goto loop;
+    case -0xBE:
+    default:
+        goto out;
+    }
+out:
+    if (m_unk58) func_001A73B0(m_unk58);
+end:;
+}
 
 s32 CMenuContinue::Draw() {
     if (!m_unk58) {

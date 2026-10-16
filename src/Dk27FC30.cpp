@@ -16,6 +16,11 @@ extern "C" const float D_002EA27C;
 extern "C" const float D_002EA28C;
 extern "C" float func_00280070(float);
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Dk27FC30", D_002EA270);
+INCLUDE_RODATA("asm/nonmatchings/Dk27FC30", D_002EA27C);
+INCLUDE_RODATA("asm/nonmatchings/Dk27FC30", D_002EA280);
+INCLUDE_RODATA("asm/nonmatchings/Dk27FC30", D_002EA28C);
+INCLUDE_RODATA("asm/nonmatchings/Dk27FC30", D_002EA290);
 
 extern "C" float func_0027FC30(float x) { float w, s1, s2, z; s32 ix, hx, id; GET_FLOAT_WORD(hx, x); ix = hx & 0x7fffffff; if (ix >= 0x50800000) { if (hx > 0) return D_002EA27C + D_002EA28C; else return -D_002EA27C - D_002EA28C; } if (ix < 0x3ee00000) { if (ix < 0x31000000) { if (1.0e30f + x > 1.0f) return x; } id = -1; } else { x = func_00280070(x); if (ix < 0x3f980000) { if (ix < 0x3f300000) { id = 0; x = ((float)2.0 * x - 1.0f) / ((float)2.0 + x); } else { id = 1; x = (x - 1.0f) / (x + 1.0f); } } else { if (ix < 0x401c0000) { id = 2; x = (x - (float)1.5) / (1.0f + (float)1.5 * x); } else { id = 3; x = -(float)1.0 / x; } } } z = x * x; w = z * z; s1 = z * (D_002EA290[0] + w * (D_002EA290[2] + w * (D_002EA290[4] + w * (D_002EA290[6] + w * (D_002EA290[8] + w * D_002EA290[10]))))); s2 = w * (D_002EA290[1] + w * (D_002EA290[3] + w * (D_002EA290[5] + w * (D_002EA290[7] + w * D_002EA290[9])))); if (id < 0) return x - x * (s1 + s2); else { z = D_002EA270[id] - ((x * (s1 + s2) - D_002EA280[id]) - x); return (hx < 0) ? -z : z; } }
 

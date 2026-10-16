@@ -20,8 +20,10 @@ extern "C" s32 func_00289048(void (*)(void));
 extern "C" void func_002836D0(void);
 // @decl-end
 
+INCLUDE_RODATA("asm/nonmatchings/Dk2828C0", D_002EA980);
 INCLUDE_ASM("asm/nonmatchings/Dk2828C0", func_002828C0);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk2828C0", D_002EAA80);
 INCLUDE_ASM("asm/nonmatchings/Dk2828C0", func_00282E40);
 
 extern "C" float __floatdisf(s64 u) { double f; if (!(-((s64)1 << 53) < u && u < ((s64)1 << 53))) { if ((u64)u & (0x800 - 1)) u |= 0x800; } f = (s32)(u >> 32); f *= 65536.0; f *= 65536.0; f += (u32)(u & 0xFFFFFFFF); return (float)f; }

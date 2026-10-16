@@ -136,6 +136,11 @@ extern s32 D_33F608[2];
 extern u8 *D_002B8C28[2];
 #define TID func_001F1180()
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit226AE8", D_002E4008);
+INCLUDE_RODATA("asm/nonmatchings/Unit226AE8", D_002E4060);
+INCLUDE_RODATA("asm/nonmatchings/Unit226AE8", D_002E4090);
+INCLUDE_RODATA("asm/nonmatchings/Unit226AE8", D_002E40B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit226AE8", D_002E40D0);
 
 extern "C" void func_00226AE8(s32 a, s32 n) {
     D_33DE9C = 0;

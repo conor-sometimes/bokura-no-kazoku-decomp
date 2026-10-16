@@ -386,6 +386,8 @@ void func_002740D8(Ring *r)
     if (r->rd == r->buf + r->size) r->rd = r->buf;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk2735D0", D_002E9DD8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2735D0", D_002E9E00);
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274118);
 
 int func_002742B0(void *s_, int len)
@@ -470,6 +472,9 @@ void func_002746A8(int c)
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_002746E0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_00274778);
+INCLUDE_RODATA("asm/nonmatchings/Dk2735D0", D_002E9E98);
+INCLUDE_RODATA("asm/nonmatchings/Dk2735D0", D_002E9EA0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2735D0", D_002E9EA8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2735D0", func_002748E0);
 

@@ -68,7 +68,12 @@ def main(argv):
                            capture_output=True, text=True).stdout
         mine = [l.split('\t', 2)[-1] for l in d.splitlines() if re.match(r'\s+[0-9a-f]+:\t', l)]
         p = f"{R}/asm/nonmatchings/{c['unit']}/{c['name']}.s"
-        theirs = [re.sub(r'\s+', ' ', l.split('*/', 1)[1].strip()) for l in open(p) if re.search(r'/\* \w+ [0-9A-F]{8} [0-9A-F]{8} \*/', l)]
+        theirs, text = [], True
+        for l in open(p):
+            if l.startswith('.section'):
+                text = l.split()[1] == '.text'
+            if text and re.search(r'/\* \w+ [0-9A-F]{8} [0-9A-F]{8} \*/', l):
+                theirs.append(re.sub(r'\s+', ' ', l.split('*/', 1)[1].strip()))
         bad = 0
         rows = []
         for i in range(n):

@@ -192,6 +192,9 @@ void CMapDBMgr::Clear() {
     m_count = 0;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA200);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA208);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA210);
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173050);
 
 int CompareMapDBNames(const char **a, const char **b) {
@@ -199,12 +202,16 @@ int CompareMapDBNames(const char **a, const char **b) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173160);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA280);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA288);
 
 int CompareMapDBNames2(const char **a, const char **b) {
     return strcmp(*a, *b);
 }
 
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173578);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2B8);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2F0);
 
 INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173648);
 
@@ -264,3 +271,7 @@ CMenuNews *CMenuNews::Create() {
     func_00173A68(p);
     return p;
 }
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA320);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA360);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA370);
+INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA380);

@@ -119,7 +119,7 @@ struct CCharaMotMap {
     s32 m_num;                // 0x0
     CCharaMotEnt *m_ents;     // 0x4
 };
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 void Func10ADD0();
 void ClearFunc1EB828And1EB838();
 extern "C" s32 func_002462B0();

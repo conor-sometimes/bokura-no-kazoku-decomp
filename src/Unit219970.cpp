@@ -724,6 +724,19 @@ extern "C" void func_0021B8E8(s32 src, s32 n, s32 addr) {
 
 extern "C" void func_0021BA08(s32 a, s32 b, s32 c, s32 d) { s32 r = func_002390A0(); Func235DE0(D_002E3C30, a, b, d, c); func_00239088((s32)D_33C5B0); s32 s = func_002375C0(); func_0021B8E8(b, c, d); func_002377D8(); func_00239088(r); return func_0021B680(a, s); }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3A30);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3A50);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3A78);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3AC0);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3B08);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3B50);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3B78);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3BA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3BB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3BD8);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3BF8);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3C00);
+INCLUDE_RODATA("asm/nonmatchings/Unit219970", D_002E3C30);
 INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021BAC0);
 
 extern "C" void func_0021BC88(u32 i, u32 v) {

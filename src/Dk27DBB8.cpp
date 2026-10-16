@@ -176,6 +176,8 @@ void func_0027E578(void)
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027E7B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA160);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA188);
 
 int func_0027E8C8(int a)
 {
@@ -207,6 +209,15 @@ int func_0027EA08(void) { int i; for (i = 0; i < 4; i++) { D_424190[0][i].m10 = 
 int func_0027EAA8(void) { int r; D_424380[0] = 0xF; if (func_002760B0(D_424140, 1, 0, D_424380, 0x80, D_424380, 0x80, 0, 0) < 0) return 0; r = D_424380[3]; if (r == 1) D_002BF1F0 = 0; return r; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027EB28);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA210);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA218);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA220);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA228);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA238);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA240);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA250);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA258);
+INCLUDE_RODATA("asm/nonmatchings/Dk27DBB8", D_002EA260);
 
 INCLUDE_ASM("asm/nonmatchings/Dk27DBB8", func_0027ED10);
 

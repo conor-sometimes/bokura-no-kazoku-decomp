@@ -98,7 +98,7 @@ extern const char D_002E9270[];
 struct W2Clock8 { u8 b[8]; };
 struct W2Sema { s32 count, max_count, init_count, wait_threads; u32 attr, option; };
 extern "C" s32 func_002731A0(W2Sema *);
-extern "C" void func_002654B8(s32, s32, s32);
+extern "C" s32 func_002654B8(s32, s32 *, s32 *);
 struct W2CdVer { s32 m0, m4, m8; };
 extern W2CdVer D_41C080v asm("D_41C080");
 extern const char D_002E9290[];
@@ -142,6 +142,8 @@ INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263330);
 extern "C" s32 func_00263648(s32 a, s32 b) { return func_00263330(a, b, 0); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263668);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9120);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9130);
 
 extern "C" s32 func_002637D8(void) {
     s32 r;
@@ -178,8 +180,19 @@ INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263AF0);
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263BA0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00263E80);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E91C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E91E8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_00264078);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9218);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9230);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9240);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9250);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9270);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E9290);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E92A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E92D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2631E0", D_002E92F8);
 
 extern "C" s32 func_00264280(u32 lsn, u32 sectors, void *buf, u8 *mode) {
     W2CdRd *r = (W2CdRd *)D_002BBCC0;
@@ -464,7 +477,24 @@ extern "C" s32 func_00265340(s32 fd, const u8 *buf, s32 size) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2631E0", func_002654B8);
+extern "C" s32 func_002654B8(s32 mode, s32 *a, s32 *b)
+{
+    s32 ok;
+    if (D_002BD788 == 0) return -1;
+    ok = 0; if (func_002731F0(D_002BD790) < 0) ok = 1;
+    if (mode == 0 && ok) {
+        func_002731E0(D_002BD790);
+        ok = 0;
+    }
+    ok = !ok;
+    if (a) *a = D_002BD788;
+    if (ok) {
+        D_002BD788 = 0;
+        if (b) *b = D_41C080.m0;
+        func_002731C0(D_002BD78C);
+    }
+    return ok;
+}
 
 extern "C" void func_00265580(Rx *r) { r = (Rx *)((u32)r | 0x20000000); if (D_41AAE8) *D_41AAE8 = r->m0; if (D_41AAEC) *D_41AAEC = r->m4; if (D_41AAF0) *D_41AAF0 = r->m90; func_002731D0(D_002BD790); }
 

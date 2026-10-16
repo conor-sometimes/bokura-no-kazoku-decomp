@@ -124,7 +124,7 @@ extern void (*D_002B91B0)(void *p);
 void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 void Func270C50(CVec4 *dst, const CVec4 *src);
 
 extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);

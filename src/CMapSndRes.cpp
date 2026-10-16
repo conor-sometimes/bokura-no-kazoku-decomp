@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -105,7 +106,12 @@ CMapSndRes::CMapSndRes() {
     Func127928();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapSndRes", _$_10CMapSndRes);
+extern "C" void func_00295DC8(void *arr, s32 flags);   // TArray<> destructor (linkonce)
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapSndRes::~CMapSndRes() {
+    CallFunc127928();
+    func_00295DC8(&m_unk160, 2);
+}
 
 void CMapSndResSub1278F8::Reset() {
     m_unk0 = 0;

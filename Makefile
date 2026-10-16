@@ -48,12 +48,13 @@ $(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
 #   0x285CA0 loads the mutex before the list stores, _init_signal_r 0x28AB88 hoists the table pointer
 #   out of its clear loop, only with strict aliasing). Written as C++ (`return;` after a final void call
 #   gives the C sibcall).
-LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
+LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib287F98 Lib288388 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
 $(LIBC_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 # LIBC_C_OBJS: the LIBC units that are C, compiled by the C front end (`-x c`): libgcc2's EH builtins
 #   (__builtin_dwarf_cfa, __builtin_eh_return in __throw/__rethrow) are C-only, and newlib's bnez/bnezl
-#   choices after calls only match as C. Lib285F80 stays C++ (tinfo.cc classes).
-LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
+#   choices after calls only match as C. Lib285F80 and Lib288388 stay C++ (tinfo.cc classes); Lib287F98
+#   (__floatdidf, fp-bit helpers) is the C slice between them.
+LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib287F98 Lib2888C0 Lib28AE50 Lib28D8B0 Lib290990)
 $(LIBC_C_OBJS): CXXFLAGS = -x c -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld

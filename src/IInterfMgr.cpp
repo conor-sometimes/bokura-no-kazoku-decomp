@@ -176,7 +176,7 @@ inline f32 Clamp01(f32 v) { return (v < 1.0f ? v : 1.0f) < 0.0f ? 0.0f : (v < 1.
 #include "CTask.h"
 #include "libc.h"
 s32 GetSeHandle169718(s32 id);
-s32 Func235DE0(const char *fmt, ...);
+s32 Func235DE0(const char *fmt, ...) throw();
 struct CStr1 { char c[1]; };
 extern CStr1 D_002D9B30;
 extern char D_002D9B38[];

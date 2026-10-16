@@ -367,7 +367,7 @@ template <class T> inline T *FindById(T *tbl, s32 n, s32 id) {
 extern char D_002D7D80[];
 
 extern char D_002D8110[];
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 extern s32 D_002A2D98[];
 struct CGameDBNameRec {
     s32 m_id;                 // 0x0
@@ -577,6 +577,7 @@ extern const char *D_002A2C9C;
 extern const char D_002D82D0[], D_002D82D8[], D_002D82F8[], D_002D8318[];
 extern s32 D_002A29D0[], D_002A2A58[];
 extern char *D_002A2A40[];
+extern const char *D_002A2B30[];
 // @decl-end
 
 CGameDBMgr::CGameDBMgr() {
@@ -827,7 +828,29 @@ INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D8098);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D80A8);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D80B8);
 
-INCLUDE_ASM("asm/nonmatchings/CGameDBMgr", func_00148110);
+int CGameDBMgr::Func148110() {
+    void *data = 0;
+    s32 ok = 0;
+    u32 k = D_002A26E4->Func1091B0(0x16);
+    if (k < 3) {
+        data = Func24A4C0(D_002A2B30[k]);
+        if (!data) goto print;
+        m_num1D0 = Func148238(0, (const char *)data);
+        if (m_num1D0 >= 0) {
+            s32 i;
+            m_tbl1D0 = (CGameDBRec34 *)m_buf.Func248CC8(m_num1D0 * sizeof(CGameDBRec34), 1, 1);
+            Func148238(m_tbl1D0, (const char *)data);
+            for (i = 0; i < m_num1D0; i++) {
+                m_max1D8 = m_tbl1D0[i].m_id < m_max1D8 ? m_max1D8 : m_tbl1D0[i].m_id;
+            }
+            ok = 1;
+        }
+    }
+    if (data) D_002B91B0(data);
+print:
+    Func235DE0(" preset-event (%d, %d)\n", ok, m_max1D8);
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D80E0);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D80E8);
 INCLUDE_RODATA("asm/nonmatchings/CGameDBMgr", D_002D80F8);

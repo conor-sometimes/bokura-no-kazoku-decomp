@@ -24,6 +24,26 @@ public:
 
     u8 pad18[0xC4];
 };
+
+extern "C" s32 func_00251BA8();
+extern "C" void func_0024FA38(void *p, s32 a, s32 b, s32 c, s32 d);
+class CSndIf {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual void V8(s32 a, s32 b);
+    virtual void V9();
+    virtual void V10();
+    virtual void V11();
+    virtual s32 V12();
+};
+extern CSndIf *D_002A5468;
 // @decl-end
 
 CBootMain::CBootMain() {
@@ -32,9 +52,44 @@ CBootMain::CBootMain() {
 CBootMain::~CBootMain() {
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CBootMain", D_002D1800);
-INCLUDE_RODATA("asm/nonmatchings/CBootMain", D_002D1820);
-INCLUDE_ASM("asm/nonmatchings/CBootMain", Update__9CBootMain);
+void CBootMain::Update() {
+    s32 done = 0;
+    s32 v;
+    CStateMachine *sm = &m_sm;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_state) {
+    case -1:
+        D_002A5468->V8(0xE, -1);
+        for (;;) {
+    case -0x3F:
+            if (D_002A5468->V12() == 5) break;
+            sm->m_state = -0x3F;
+            done = 1;
+            goto loop;
+        }
+        sm->Push();
+        sm->Var() = func_00251BA8();
+        for (;;) {
+    case -0x42:
+            v = func_00251BA8();
+            if (v != sm->Get()) break;
+            sm->m_state = -0x42;
+            done = 1;
+            goto loop;
+        }
+        sm->Pop();
+        func_0024FA38(this, 0, 0, 0, 0);
+        sm->m_state = -0x45;
+    case -0x45:
+        done = 1;
+        goto loop;
+    }
+}
 
 void Func100588(void *a) {
     CLogoMain *p = new CLogoMain;

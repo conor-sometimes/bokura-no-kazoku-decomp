@@ -1,5 +1,6 @@
 #ifndef CTASK_H
 #define CTASK_H
+#pragma interface
 
 #include "common.h"
 

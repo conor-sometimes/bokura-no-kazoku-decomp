@@ -65,7 +65,7 @@ extern "C" void func_002942E0(void *p);
 void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 class CModelAccSub118168 {
 public:
     void Init();

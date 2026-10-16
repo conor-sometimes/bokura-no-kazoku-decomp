@@ -288,7 +288,15 @@ extern "C" void func_0020DF38(void) {
     }
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E3348);
 INCLUDE_ASM("asm/nonmatchings/Unit20CBF0", func_0020DFD8);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33D0);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33D8);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33E8);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit20CBF0", D_002E33F8);
 
 extern "C" void func_0020E1B8(u32 i) {
     func_001F15F0();

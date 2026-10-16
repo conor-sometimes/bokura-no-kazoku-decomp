@@ -89,13 +89,13 @@ struct CGameScheduleEnt {
     s32 m_unk4;               // 0x4
 };
 extern char D_002D9270[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 int Func15F080(int v);
 class CGameSchedule {
 public:
     s32 Init15D3E0();
     void Func15DD38(s32 k);
-    s32 Func159CF0(s32 a, s32 b, s32 c, s32 d);
+    s32 Func159CF0(s32 a, s32 b, s32 c, s32 d) throw();  // compiled before its callers in retail: nothrow calls (docs/lessons.md, nm)
     s32 Func15E638();
     s32 Func15E6E8();
     s32 Func15E2A8();
@@ -258,6 +258,7 @@ struct CSchedSortEnt {
 void SortSchedules15DAB0();
 
 struct SchedPair { s32 m0; s32 m4; };
+struct CGameDBRec24 { u8 pad0[0x24]; s32 m24; };
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159850);
@@ -291,7 +292,17 @@ void CGameScheduleSub159F58::Advance() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_00159F80);
+void CGameSchedule::Load159F80() {
+    s32 buf[0x100];
+    s32 n, i;
+    Reset159C50();
+    n = D_002A2988->Vf14BD00(D_002A26E4->Vf2991B0(), m_unk88, buf, 0x100);
+    for (i = 0; i < n; i++) {
+        CGameDBRec24 *r = (CGameDBRec24 *)D_002A2988->Find1D0(buf[i]);
+        Func159CF0(r->m24, 2, buf[i], 0);
+    }
+    if (m_unk88 == 1) Func159CF0(0x32, 0, 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", Func15A090__Fi);
 

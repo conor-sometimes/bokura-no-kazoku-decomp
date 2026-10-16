@@ -1,5 +1,6 @@
 #ifndef CPUSHBUF_H
 #define CPUSHBUF_H
+#pragma interface
 
 #include "common.h"
 

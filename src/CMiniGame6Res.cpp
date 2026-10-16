@@ -73,7 +73,7 @@ struct CMiniGame6Sprite {
 };
 extern "C" void *memcpy(void *dst, const void *src, unsigned int n);
 extern char D_002E1998[], D_002E19B0[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 // Byte queue (ring buffer) inside the board at 0x9EC.
 struct CMg6Queue {
     u8 pad0[0x8];
@@ -301,8 +301,15 @@ void Func1E35E0(void *a, s32 b, s32 c, s32 d) {
     func_0024F5C0(a, p, 0);
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E18B0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E18E0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E18E8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E18F8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1910);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1920);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3660);
 
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1998);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3978);
 
 void CMiniGame6Board::SetPos(f32 v) {
@@ -376,11 +383,19 @@ s32 CMiniGame6Board::FindFree(s32 row, s32 v) {
     }
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E19B0);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E3FF8);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E4630);
 
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1A58);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1A78);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E4C70);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1AC8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1AD0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1AD8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1B60);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1B68);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E6E80);
 
@@ -396,6 +411,12 @@ int DrawMg6Sprite(f32 x, f32 y, f32 s, f32 t, f32 a) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E72D0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BC0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BC8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BD0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BD8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BE0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1BE8);
 
 s32 GetMiniGame6Remaining() {
     return 0x400000 - Func23E290();
@@ -495,51 +516,6 @@ void Func1E8030() {
         }
     }
 }
-
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E80A0);
-
-void InitMiniGame6() {
-    func_00245880();
-    func_00251BB8();
-    D_002BA0B0->SetSize(0x280, 0x1C0);
-    D_002BA0B0->SetCell(0x10, 0x10);
-    D_002BA0B0->SetName(D_002E1CA0);
-    func_0024F298(Alloc1E7E58);
-    func_0024F2C0(CallMiniGame6Hook);
-    Func1E9168(D_002A5BB4 = func_0024F420());
-}
-
-void ExitMiniGame6() {
-    if (D_002A5BB4) {
-        func_0024F610(D_002A5BB4);
-    }
-    if (D_002BA0B0) {
-        D_002BA0B0->Release();
-    }
-    if (D_002B9E10) {
-        D_002B9E10->Release();
-    }
-}
-
-void Func1E8CA8() {
-    s32 n = D_002A5BA0;
-    n = n < 1 ? 1 : n;
-    n = n < 5 ? n : 4;
-    for (s32 i = 0; i < n; i++) {
-        func_0022CAB0();
-        func_0024F738(D_002A5BB4, 1, 0);
-        Func1E8030();
-        func_00251B78(func_00251B88() + 1);
-    }
-    func_0024F738(D_002A5BB4, 2, 0);
-    func_001E80A0();
-    func_00251B98(func_00251BA8() + 1);
-}
-
-INCLUDE_ASM("asm/nonmatchings/CMiniGame6Res", func_001E8D68);
-
-void Func1E9168(void *a) {
-    void *p = func_0024F2E8(0xC0);
-    func_001E91B8(p);
-    func_0024F5C0(a, p, 0);
-}
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1C00);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1C10);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame6Res", D_002E1C20);

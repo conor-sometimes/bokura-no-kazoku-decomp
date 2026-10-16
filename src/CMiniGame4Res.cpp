@@ -149,7 +149,7 @@ extern char D_002E1468[];
 extern char D_002E1470[];
 extern char D_002E1478[];
 extern "C" const char *func_0024A710(const char *p, s32 *v, s32 k, const char *s1, const char *s2);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 
 #include "CList.h"
 class CLayoutRes {
@@ -258,7 +258,19 @@ int CMiniGame4ResObj::ParseCfg1D4FA8() {
     return 0;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E13A8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E13E0);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E13E8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E13F8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1410);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1420);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1438);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1460);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1468);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1470);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1478);
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D5140);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E14A0);
 
 int CMiniGame4ResObj::Parse1D5360() {
     char buf[256];
@@ -277,5 +289,9 @@ int CMiniGame4ResObj::Parse1D5360() {
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D5420);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001D5550);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1510);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E1530);
 
 INCLUDE_ASM("asm/nonmatchings/CMiniGame4Res", func_001DE060);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E15A8);
+INCLUDE_RODATA("asm/nonmatchings/CMiniGame4Res", D_002E15B8);

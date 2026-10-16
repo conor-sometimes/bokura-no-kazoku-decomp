@@ -120,7 +120,13 @@ extern "C" void func_001F4F88()
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F5038);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F5158);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E2390);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E23B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", jtbl_002E23E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", jtbl_002E2400);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E2420);
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E2450);
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F5B70);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F5F28);
@@ -177,6 +183,7 @@ INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F86C0);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F8AA0);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E2468);
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F8E80);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001F94C8);
@@ -200,6 +207,7 @@ extern "C" s32 func_001FAE50(s32 i)
     return (fl >> 1) & 1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1F4918", D_002E2480);
 INCLUDE_ASM("asm/nonmatchings/Unit1F4918", func_001FAEA8);
 
 extern "C" s32 func_001FB288(s32 i)

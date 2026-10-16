@@ -122,7 +122,7 @@ public:
 //@sym memset 0x289FB0
 #include "libc.h"
 void *operator new(unsigned int n);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern CFlagWork *D_002A4638[6];
 extern CFlagWork *D_002A5358;
 extern CChrBodyWin *D_002A4308;
@@ -315,6 +315,12 @@ struct CChrTypeImgData {
     s32 m370;                 // 0x370
     int Load1884F0(const char *name);
 };
+extern "C" void CtorStatusWinV(void *p, s32 k) asm("__11CStatusWinVi");
+extern "C" void CtorStatusWin(void *p, s32 a, void *b, s32 c) asm("__10CStatusWiniii");
+extern "C" void CtorChrSchoolWin(void *p, s32 k) asm("__13CChrSchoolWini");
+extern "C" void CtorStatusSub(void *p, s32 k) asm("Init19AC20__20CStatusBaseSub19AE68i");
+extern "C" void func_00187038(void *p);
+extern char D_002DB3D8[];
 // @decl-end
 
 INCLUDE_RODATA("asm/nonmatchings/CChrBodyWin", D_002DAFD0);
@@ -799,7 +805,50 @@ int CChrBodyWin::Func188F30(f32 x, f32 y) {
     return Func2250C0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/CChrBodyWin", func_00189018);
+void CChrBodyWin::Init189018(s32 mode) {
+    void *p;
+    m_sm.m_state = -1;
+    m_sm.m_depth = 0;
+    m_sm.m_flags = 0;
+    switch (mode) {
+    case 0:
+        p = operator new(0x210); CtorStatusWinV(p, 0); m_status = (CStatusBase *)p;
+        p = operator new(0x184); CtorStatusWin(p, 0, m_status, 1); m_unk60 = p;
+        p = operator new(0x20); CtorStatusSub(p, 0); m_unk6C = (CStatusBaseSub19AE68 *)p;
+        p = operator new(0xD4); func_00187038(p); m_unk68 = p;
+        p = operator new(0x68); CtorChrSchoolWin(p, 0); m_unk70 = p;
+        break;
+    case 1:
+        p = operator new(0x210); CtorStatusWinV(p, 1); m_status = (CStatusBase *)p;
+        p = operator new(0x184); CtorStatusWin(p, 1, m_status, 1); m_unk60 = p;
+        p = operator new(0x20); CtorStatusSub(p, 1); m_unk6C = (CStatusBaseSub19AE68 *)p;
+        p = operator new(0xD4); func_00187038(p); m_unk68 = p;
+        p = operator new(0x68); CtorChrSchoolWin(p, 0); m_unk70 = p;
+        break;
+    case 2:
+        p = operator new(0x210); CtorStatusWinV(p, 1); m_status = (CStatusBase *)p;
+        p = operator new(0x184); CtorStatusWin(p, 1, m_status, 0); m_unk60 = p;
+        p = operator new(0x20); CtorStatusSub(p, 1); m_unk6C = (CStatusBaseSub19AE68 *)p;
+        p = operator new(0xD4); func_00187038(p); m_unk68 = p;
+        p = operator new(0x68); CtorChrSchoolWin(p, 1); m_unk70 = p;
+        break;
+    case 3:
+        p = operator new(0x210); CtorStatusWinV(p, 0); m_status = (CStatusBase *)p;
+        p = operator new(0x184); CtorStatusWin(p, 0, m_status, 0); m_unk60 = p;
+        p = operator new(0x20); CtorStatusSub(p, 0); m_unk6C = (CStatusBaseSub19AE68 *)p;
+        p = operator new(0xD4); func_00187038(p); m_unk68 = p;
+        p = operator new(0x68); CtorChrSchoolWin(p, 0); m_unk70 = p;
+        break;
+    default:
+        if (Func235DE0(D_002DB3D8, mode)) return;
+        return;
+    }
+    m_unk50 = mode;
+    m_unk48 = 0;
+    m_mode = 0;
+    m_unk54 = 0;
+    m_unk58b = 0;
+}
 
 CChrBodyData::~CChrBodyData() {
     if (m60) {

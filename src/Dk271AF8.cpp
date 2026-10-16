@@ -102,7 +102,17 @@ s32 func_00271C68(void) { u32 r; CFC2(r, vi29); return (r & 0xF) == 1; }
 
 void func_00271C80(void) { u32 r; CFC2(r, vi28); r |= 2; CTC2(r, vi28); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk271AF8", func_00271C98);
+int func_00271C98(void)
+{
+    int r = 0;
+    u32 v;
+    switch (func_00271DC8()) {
+    case 4: CF(v, 28); v |= 1; CT(v, 28);
+    case 0: case 3: r = 1; break;
+    case 1: case 2: break;
+    }
+    return r;
+}
 
 int func_00271CF8(void)
 {
@@ -305,7 +315,17 @@ Q16 func_00272170(u16 addr)
 
 void func_002721B8(void) { u32 r; CFC2(r, vi28); r |= 0x200; CTC2(r, vi28); }
 
-INCLUDE_ASM("asm/nonmatchings/Dk271AF8", func_002721D0);
+int func_002721D0(void)
+{
+    int r = 0;
+    u32 v;
+    switch (func_00272300()) {
+    case 4: CF(v, 28); v |= 0x100; CT(v, 28);
+    case 0: case 3: r = 1; break;
+    case 1: case 2: break;
+    }
+    return r;
+}
 
 int func_00272230(void)
 {

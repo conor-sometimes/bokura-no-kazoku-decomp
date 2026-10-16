@@ -226,6 +226,14 @@ void CCharaObjSub48::Func252BB8() {
 INCLUDE_ASM("asm/nonmatchings/Dk252208", Func252C08__FiPCc);
 
 INCLUDE_ASM("asm/nonmatchings/Dk252208", Func252CC0__FP9CBonePairii);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B48);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B50);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B60);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B68);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B70);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B78);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B80);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6B88);
 
 s32 CCharaObjSub48::Func252E18(s32 a, s32 b) {
     Func252BB8();
@@ -329,6 +337,15 @@ INCLUDE_ASM("asm/nonmatchings/Dk252208", func_002537E8);
 INCLUDE_ASM("asm/nonmatchings/Dk252208", func_002538A0);
 
 INCLUDE_ASM("asm/nonmatchings/Dk252208", Func2539A0__Fi);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6CE0);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6CE8);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6CF0);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6CF8);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6D00);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6D08);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6D10);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6D20);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6D30);
 
 s32 Func253A18(s32 fmt) { return Func2539A0(fmt) >> 3; }
 
@@ -356,6 +373,13 @@ s32 Func253B70(s32 fmt) { return D_002BA130[Func253B00(fmt)].m4; }
 s32 Func253BA8(s32 fmt) { return D_002BA130[Func253B00(fmt)].m0; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk252208", func_00253BE0);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6ED8);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6EE8);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6F00);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6F08);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6F10);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6F18);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E6F20);
 
 void CShareTex::Func253E30() {
     if (m_unk4 >= 0) {
@@ -392,7 +416,7 @@ CMemTex::CMemTex() {
     m_unk24 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk252208", _$_7CMemTex);
+CMemTex::~CMemTex() { Func2546F0(); }
 
 INCLUDE_ASM("asm/nonmatchings/Dk252208", func_00254248);
 
@@ -404,6 +428,7 @@ void CMemTex::Func2546F0() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk252208", Func254730__Fi);
+INCLUDE_RODATA("asm/nonmatchings/Dk252208", D_002E70B8);
 
 void Func254788(u64 tex0, s32 a, s32 b, s32 c, s32 d, s32 e, u8 *p) {
     s32 bpp = Func254730((s32)((tex0 >> 32) & 0x3F));

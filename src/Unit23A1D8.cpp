@@ -238,7 +238,13 @@ extern "C" s32 func_0023BFB8(void) {
     return D_002B94F4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023BFC8);
+extern "C" u64 func_0023BFC8(s32 n, u32 *x) {
+    u64 p = func_0023DD40(0, 0, 16, (n + 31) / 32 * 2);
+    if (p == 0) return 0;
+    if (!x) return p;
+    func_0023C0F8(p, n, x);
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit23A1D8", func_0023C048);
 

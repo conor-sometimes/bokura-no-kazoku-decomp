@@ -134,6 +134,10 @@ extern "C" void func_0025E438(u8 *u, const CSndPrm *src) {
     *(u8 *)(u + 0x1C) = 0;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7828);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7840);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7880);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7890);
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025E590);
 
 void *Func25EC68(s32 a, s32 b, s32 c, s32 d) {
@@ -197,6 +201,10 @@ extern "C" void func_0025EEB0(u8 *u, const CSndPrm *src) {
     *(u8 *)(u + 0x1C) = 0;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E78B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E78C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7908);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7918);
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025F028);
 
 void *Func25F6B8(s32 a, s32 b, s32 c, s32 d) {
@@ -289,6 +297,10 @@ extern "C" void func_0025FD30(u8 *u, const CSndPrm *src) {
     *(u8 *)(u + 0x1C) = 0;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7950);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E7968);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E79A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk25E340", D_002E79B8);
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_0025FE88);
 
 INCLUDE_ASM("asm/nonmatchings/Dk25E340", func_00260690);

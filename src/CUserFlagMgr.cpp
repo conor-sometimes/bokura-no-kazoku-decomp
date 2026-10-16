@@ -64,7 +64,7 @@ const char *Func24A570(const char *s, char *buf, const char *a, const char *b);
 const char *Func24AD10(const char *s, char *buf, int a, int n);
 const char *Func24AB90(const char *s, const char *set);
 void Func24ABE0(char *s, const char *set);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 class CUserFlagLog {
 public:
     void Dummy();
@@ -315,6 +315,8 @@ extern void *D_002A1950;
 extern "C" void func_0028A140(void *base, u32 n, u32 size, int (*cmp)(const char **, const char **));
 extern "C" void func_00248C70(CPushBuf *p);
 void Func249348();
+struct CEvGpEnt { s32 m_id; u8 pad4[0x14]; };
+struct CEvGp { u8 pad0[0x2C]; s32 m_num; CEvGpEnt *m_ents; };
 // @decl-end
 
 CUserFlagMgr::CUserFlagMgr() throw() {
@@ -1116,7 +1118,6 @@ int CUserFlagMgr::Func141F68(int a, u32 id, int b) {
 #endif
 INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func141F68__12CUserFlagMgriUii);
 
-#if 0 // DIFF 1 (g1): case 0x1F's bgez is bgezl in retail (the lui in its slot); needs m_unk5900/5904/58FC fields
 int CUserFlagMgr::Func142318(int a, u32 id, int b) {
     UserFlagEntry *e = m_entries[id];
     CSvmWork *w = (CSvmWork *)a;
@@ -1137,7 +1138,7 @@ int CUserFlagMgr::Func142318(int a, u32 id, int b) {
         Func1432E0(w, (UserFlagSvmArg *)e, D_002A26E4->Func1091B0(m_unk5900 + 0x156A) + D_002A26E4->Func1091B0(m_unk5900 + 0x226A));
         break;
     case 0x21: {
-        CEvGp *g = ((CEvGpDB *)D_002A2988)->Find1D0(m_unk5904);
+        CEvGp *g = (CEvGp *)D_002A2988->Find1D0(m_unk5904);
         s32 i, sum;
         if (!g) {
             Func235DE0("*** flag : unknow ev-gp (%d)\n", m_unk5904);
@@ -1167,8 +1168,6 @@ int CUserFlagMgr::Func142318(int a, u32 id, int b) {
     }
     return 0;
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CUserFlagMgr", Func142318__12CUserFlagMgriUii);
 
 int CUserFlagMgr::Func1425D8(int a, u32 id, int b) {
     UserFlagEntry *e = m_entries[id];

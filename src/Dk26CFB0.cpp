@@ -196,7 +196,11 @@ void func_0026DD58(void *m, void *addr, int n)
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DE80);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk26CFB0", D_002E9928);
+INCLUDE_RODATA("asm/nonmatchings/Dk26CFB0", D_002E9948);
+INCLUDE_RODATA("asm/nonmatchings/Dk26CFB0", D_002E9968);
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026DFC8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26CFB0", D_002E99B0);
 
 int func_0026E188(int ch, W2Feed *f)
 {
@@ -407,6 +411,7 @@ int func_0026EFD0(W2GsClear *cp, short ztest, short x, short y, short w, short h
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk26CFB0", func_0026F0D8);
+INCLUDE_RODATA("asm/nonmatchings/Dk26CFB0", D_002E9B20);
 
 int func_0026F2C0(W2GsStoreImage *sp, short sbp, short sbw, short spsm, short x, short y, short w, short h)
 {

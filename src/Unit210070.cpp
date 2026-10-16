@@ -684,6 +684,11 @@ extern "C" void func_00211598(void) {
     }
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit210070", D_002E3538);
+INCLUDE_RODATA("asm/nonmatchings/Unit210070", D_002E3570);
+INCLUDE_RODATA("asm/nonmatchings/Unit210070", D_002E35A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit210070", D_002E35B8);
+INCLUDE_RODATA("asm/nonmatchings/Unit210070", D_002E35C8);
 INCLUDE_ASM("asm/nonmatchings/Unit210070", func_002117D8);
 
 extern "C" void func_00211C48(s32 id, s32 x) {

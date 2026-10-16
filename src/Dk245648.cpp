@@ -185,7 +185,17 @@ CBgWork::CBgWork() {
     m_unk4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk245648", _$_7CBgWork);
+CBgWork::~CBgWork() {
+    if (m_unk0 >= 0) {
+        Func235DE0("warning : BG is working ...\n");
+        func_00245818(this, 1);
+        Func235DE0("warning : finish\n");
+    }
+}
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5F50);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5F60);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5F68);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5F70);
 
 extern "C" void func_002457A0(CBgWork *w, CBgTarget *obj, BgFunc f, s32 arg) {
     func_00245818(w, 1);
@@ -297,6 +307,7 @@ extern "C" s32 func_00245D40(s32 v) {
     return old;
 }
 
+asm(".p2align 3");
 extern "C" s32 func_00245DA0() {
     return D_002B9E18[func_001F1180()] != 0;
 }
@@ -387,6 +398,7 @@ extern "C" CMemHeap *func_00246088(CMemHeap *h) {
 extern "C" CMemHeap *func_002460C8() { return D_38F188.m_slot[func_001F1180()].m_heap; }
 
 INCLUDE_ASM("asm/nonmatchings/Dk245648", func_00246100);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5FE8);
 
 extern "C" s32 func_002462B0() {
     CMemHeap *h = D_38F188.m_slot[func_001F1180()].m_heap;
@@ -556,6 +568,8 @@ extern "C" void *func_00246BD8(u32 n) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk245648", func_00246C18);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E60B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E60D8);
 
 extern "C" CMemNode *func_00246CF0(CMemNode *n) {
     CMemHeap *h = n->m_heap;

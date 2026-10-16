@@ -87,7 +87,133 @@ CMenuGetMoney::CMenuGetMoney() {
 CMenuGetMoney::~CMenuGetMoney() {
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuGetMoney", Update__13CMenuGetMoney);
+s32 CMenuGetMoney::Update() {
+    s32 a, b, c;
+    char buf[0x200];
+    s32 done;
+    D_002A5468->V7(&a, &b, &c);
+    if (m_state == 6) {
+        m_state = 5;
+        goto end;
+    }
+    done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = (u16)m_unk0;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (m_unk4) {
+    case -1: {
+        m_unk58 = D_002A5408->Find("getmoney1");
+        if (!m_unk58) return Func235DE0("*** Can't Get %s Window\n", "getmoney1");
+        m_unk58->Func1A3378();
+        m_unk5C = D_002A5408->Find("getmoney2");
+        if (!m_unk5C) return Func235DE0("*** Can't Get %s Window\n", "getmoney2");
+        m_unk5C->Func1A3378();
+        D_002A5538->SetUnkE0(0);
+        m_unk58->Select(-1);
+        m_unk5C->Select(-1);
+        {
+            s32 x = D_002A5358->Func1091B0(0x24E);
+            s32 y = D_002A5358->Func1091B0(0x24F);
+            s32 z = D_002A5358->Func1091B0(0x250);
+            m_unk70 = 0;
+            m_unk68 = x + y + z;
+        }
+        m_unk74 = D_002A5358->Func1091B0(0x24D);
+        m_unk6C = m_unk74 + m_unk68;
+        m_unk78 = 1.0f;
+        m_unk60 = 0;
+        m_unk58->Func1A3628();
+    }
+    case -0xF5:
+        if (((CStatusItemX *)m_unk58)->m_state != 2) {
+            m_unk4 = -0xF5; done = 1; goto loop;
+        }
+        m_unk5C->Func1A3628();
+    case -0x103:
+        if (((CStatusItemX *)m_unk5C)->m_state != 2) {
+            m_unk4 = -0x103; done = 1; goto loop;
+        }
+        m_unk4 = -0x108; done = 1; goto loop;
+    case -0x108:
+        *(s32 *)&pad64 = 0;
+        m_unk60 = 1;
+        D_002A5468->Play(0x4C);
+        while (*(s32 *)&pad64 < D_002A4B60->Func1091B0(0x29)) {
+            if (a & 0x60) goto cA;
+            (*(s32 *)&pad64)++;
+            ((CMenuGetMoneyPart *)this)->SetRate((f32)*(s32 *)&pad64 / (f32)D_002A4B60->Func1091B0(0x29));
+            m_unk4 = -0x11D; done = 1; goto loop;
+    case -0x11D:;
+        }
+        m_unk4 = -0x123; done = 1; goto loop;
+        if (0) {
+    cA:
+            D_002A5468->Play(0x4D);
+            D_002A5468->Stop(0x4C);
+            m_unk4C = -1;
+            goto y140;
+        }
+    case -0x123:
+        *(s32 *)&pad64 = 0;
+        D_002A5468->Play(0x4D);
+        while (*(s32 *)&pad64 < D_002A4B60->Func1091B0(0x2A)) {
+            if (*(s32 *)&pad64 == D_002A4B60->Func1091B0(0x2F)) D_002A5468->Stop(0x4C);
+            if (a & 0x60) {
+                D_002A5468->Stop(0x4C);
+                m_unk4C = -1;
+                goto y140;
+            }
+            (*(s32 *)&pad64)++;
+            ((CMenuGetMoneyPart *)this)->SetScale((f32)*(s32 *)&pad64 / (f32)D_002A4B60->Func1091B0(0x2A));
+            m_unk4 = -0x13B; done = 1; goto loop;
+    case -0x13B:;
+        }
+    y140:
+        m_unk4 = -0x140; done = 1; goto loop;
+        if (0) {
+    c3:
+            D_002A5468->Play(3);
+            m_unk4C = -1;
+            goto s4;
+        }
+    case -0x140:
+        m_unk74 = m_unk6C;
+        m_unk70 = m_unk68;
+        m_unk60 = 0;
+        *(s32 *)&pad64 = 0;
+        for (;;) {
+    case -0x157:
+            if (a & 0x60) goto c3;
+            (*(s32 *)&pad64)++;
+            if (D_002A4B60->Func1091B0(0x2B) < *(s32 *)&pad64) {
+                m_unk4C = 0;
+                goto s4;
+            }
+            m_unk4 = -0x157; done = 1; goto loop;
+        }
+    s4:
+        m_state = 4;
+        m_unk58->Start();
+        m_unk5C->Start();
+        do {
+    case -0x16A:
+        if (((CStatusItemX *)m_unk58)->m_state != 0 || ((CStatusItemX *)m_unk5C)->m_state != 0) {
+            m_unk4 = -0x16A; done = 1; goto loop;
+        }
+        } while (0);
+        m_state = 5;
+        m_unk4 = -0x16E;
+    case -0x16E:
+        done = 1; goto loop;
+    }
+out:
+    m_unk58->Func1A40C8();
+    m_unk5C->Func1A40C8();
+end:;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CMenuGetMoney", D_002DBB08);
 INCLUDE_ASM("asm/nonmatchings/CMenuGetMoney", Draw__13CMenuGetMoney);

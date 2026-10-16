@@ -38,7 +38,7 @@ public:
     u8 pad80[0x800];
     char *m_nameBuf;          // 0x880
 };
-s32 Func235DE0(const char *fmt, ...);
+s32 Func235DE0(const char *fmt, ...) throw();
 
 void *operator new(unsigned int n);
 // CMenuSysscr32 (its unit starts after these functions): only the fields FreeBuf uses.
@@ -155,83 +155,6 @@ s32 CMenuInputKanji::Func1A4FE0() {
     delete this;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDED0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDEE0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF00);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF10);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF18);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF30);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF58);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF68);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF70);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF78);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDF98);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDFB8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDFE0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DDFE8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE018);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE040);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE070);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE088);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE090);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE0B0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE0D0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE100);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE130);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE160);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE180);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE198);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE238);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE3B8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE3E0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE3E8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE3F0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE3F8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE400);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE420);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE448);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE478);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE480);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE488);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE4E8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE548);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE5A8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE5D0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE600);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DE630);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE660);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE680);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE6A8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE6C8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE6F0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE720);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE758);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE788);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE7B8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE7E8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE818);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE848);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE878);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE8A8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE8D8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE908);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE938);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE968);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE9A0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DE9D0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEA00);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEA30);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEA60);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", jtbl_002DEA90);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEAC0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEAF0);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEAF8);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB00);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB10);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB20);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB40);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEB60);
-INCLUDE_RODATA("asm/nonmatchings/CMenuInputKanji", D_002DEBA0);
 s32 CMenuInputKanji::SetNameBuf(char *buf) {
     s32 i;
     if (!buf) {

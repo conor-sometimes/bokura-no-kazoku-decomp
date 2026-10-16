@@ -64,6 +64,10 @@ def unit_at(subs, a):
 def show(unit):
     subs, names = subsegments(), syms()
     u = find(subs, unit)
+    if 'vt' not in u and 'ro' in u:     # text/dklib/library units: .rodata only, vtables in vt_tail
+        print(f'{unit}: text {u["text"][0]:#x}-{u["text"][1]:#x}, no vtable piece, '
+              f'rodata {u["ro"][0]:#x}-{u["ro"][1]:#x} ({u["ro"][2]})')
+        return ro_status(unit, u, names, [])
     if 'vt' not in u:
         sys.exit(f'{unit}: no vt_{unit} piece in the yaml (merged into another unit, see the yaml comments)')
     print(f'{unit}: text {u["text"][0]:#x}-{u["text"][1]:#x}, vtables {u["vt"][0]:#x}-{u["vt"][1]:#x} '
@@ -186,8 +190,8 @@ def fix(unit):
     u = find(subs, unit)
     if u['ro'][2] != '.rodata':
         sys.exit(f'{unit}: .rodata is still asm (run apply first)')
-    rtti, v = [], u['vt'][0]
-    while v < u['vt'][1]:
+    rtti, v = [], u['vt'][0] if 'vt' in u else 0
+    while 'vt' in u and v < u['vt'][1]:
         m = re.match(r'_vt\$(\S+)', names.get(v, ''))
         if m:
             rtti.append(m.group(1))
@@ -195,7 +199,7 @@ def fix(unit):
         while w(a) or w(a + 4):
             a += 8
         v = a + 8
-    vt_obj = u['vt'][2] == '.data'
+    vt_obj = 'vt' in u and u['vt'][2] == '.data'
     missing = ro_status(unit, u, names, rtti if vt_obj else [], quiet=True)
     path = f'{R}/src/{unit}.cpp'
     lines = open(path).read().split('\n')
@@ -229,6 +233,7 @@ def fix(unit):
         if inc(l, 'INCLUDE_ASM'):
             fs = R + f'/asm/nonmatchings/{unit}/{l.split(", ")[1].rstrip(");")}.s'
             mig = [int(x, 16) for x in re.findall(r'glabel (?:D|jtbl)_([0-9A-F]+)', open(fs).read())] if os.path.exists(fs) else []
+            mig = [x for x in mig if x >= 0x2D1800]     # not the function's own in-text labels
             if mig:
                 em.append((i, i, min(mig), max(mig)))
         elif inc(l, 'INCLUDE_RODATA'):

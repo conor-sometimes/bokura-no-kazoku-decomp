@@ -23,7 +23,7 @@ public:
 };
 
 void *operator new(unsigned int n);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern char D_002D2BA8[];
 extern s32 D_002A0380[];
 extern void *D_002A028C;
@@ -149,7 +149,39 @@ int GetEFontUnkC() {
 
 INCLUDE_ASM("asm/nonmatchings/CEFontWork", func_0010C710);
 
-INCLUDE_ASM("asm/nonmatchings/CEFontWork", func_0010C798);
+extern "C" void func_0010C798() {
+    s32 i;
+    s32 *pp;
+    if (!D_002BA248) return (void)Func235DE0(D_002D2B70);
+    D_002A028C = D_002B91A4(0x200040);
+    D_002A0290 = ((u32)D_002A028C + 0x3F) & ~0x3F;
+    D_002A0294 = func_00206790(0x20000);
+    D_002A0298 = func_002070F8(0x1BAFC0);
+    func_00219620(D_002A0290, 0x200000);
+    func_002195D8(D_002A0294, 0x20000);
+    func_00219590(D_002A0298, 0x1BAFC0);
+    func_00219668(0x1C0000, 0x18000);
+    func_00219668(0x1E0000, 0x18000);
+    func_00219368(0xB);
+    func_00219430(D_002A02A0);
+    D_002BA248->Vf5(4, 0x40000);
+    D_002BA248->Vf6(2);
+    D_002BA248->Vf7(1);
+    D_002BA248->Vf16(D_0029F3A0);
+    D_002BA248->Vf34(100);
+    D_002BA248->Vf35(D_0029F470);
+    func_002063B0(1, 0);
+    LoadEFontSe();
+    for (i = 4, pp = D_002A0380; i >= 0; i--, pp++) {
+        void *p = operator new(0x6C);
+        func_0025C230(p);
+        *pp = (s32)p;
+    }
+    func_0025C438(D_002A0380[0], D_002A0380[1]);
+    func_0025C438(D_002A0380[0], D_002A0380[2]);
+    func_0025C438(D_002A0380[0], D_002A0380[3]);
+    func_0025C438(D_002A0380[0], D_002A0380[4]);
+}
 
 void FreeFontData() {
     if (D_002A028C) D_002B91B0(D_002A028C);

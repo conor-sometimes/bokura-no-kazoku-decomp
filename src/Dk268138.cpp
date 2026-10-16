@@ -206,7 +206,18 @@ extern "C" s32 func_00268D00(MpegSys *d, s32 mb, s32 cnt, s32 mbtype, s32 mtype,
     return 1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9588);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E95A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E95B8);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E95D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E95F8);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9618);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9648);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9660);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9698);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E96D0);
 INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00268F50);
+INCLUDE_RODATA("asm/nonmatchings/Dk268138", D_002E9758);
 
 INCLUDE_ASM("asm/nonmatchings/Dk268138", func_00269658);
 

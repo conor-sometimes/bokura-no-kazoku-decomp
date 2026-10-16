@@ -211,6 +211,15 @@ extern "C" s32 func_002365B0(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit236130", func_002365C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E5198);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51B8);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E51E8);
+INCLUDE_RODATA("asm/nonmatchings/Unit236130", D_002E5200);
 
 extern "C" void func_002367E8(void) {
     s32 i;

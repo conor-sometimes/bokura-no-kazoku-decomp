@@ -101,7 +101,7 @@ public:
     s32 m_unk40;              // 0x40
 };
 
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern "C" unsigned int strlen(const char *s);
 extern const char D_002DAB60[];
 extern const char D_002DACE0[];

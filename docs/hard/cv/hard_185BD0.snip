@@ -1,0 +1,56 @@
+//@decl
+extern char D_002DAE08[], D_002DAE28[], D_002DAE30[], D_002DAE68[];
+//@func 0x185BD0
+extern "C" void func_00185BD0(char *dst, s32 a1, u32 p2, s32 kind, s32 p4, s32 p5, s32 p6, s32 p7, s32 p8) {
+    CTextBuf buf;
+    char num[0x100];
+    if (!dst) return;
+    func_0010BF88(&buf);
+    buf.m0 = 0;
+    switch (kind) {
+    case 1:
+        if (p2 < 2) strcpy(dst, func_00256260(&buf, 0xA0));
+        else strcpy(dst, func_00256260(&buf, 0xA1));
+        return;
+    case 9: {
+        CExamRec *r = D_002A2988_exam->Get41(p4);
+        if (r) {
+            strcpy(dst, r->m_name);
+            if (p6 != 0x15) return;
+            if (p7 == 1) strcpy(dst, func_00256260(&buf, 0x9B));
+            else if (p8 == 1) strcpy(dst, func_00256260(&buf, 0x9C));
+            return;
+        }
+        Func235DE0(D_002DAE08, p2, kind, p4, p5);
+        *dst = D_002DAE28[0];
+        return;
+    }
+    case 2: {
+        CExamRec *r = D_002A2988_exam->Get40(p4);
+        if (r) {
+            sprintf(dst, D_002DAE00, r->m_name, func_00256260(&buf, p5 + 0xA3));
+            return;
+        }
+        Func235DE0(D_002DAE30, p2, kind, p4, p5);
+        *dst = D_002DAE28[0];
+        return;
+    }
+    case 7:
+    case 8: {
+        CExamRec *r = D_002A2988_exam->Get40(0x18);
+        sprintf(dst, D_002DAE58, r->m_name);
+        return;
+    }
+    default: {
+        CExamRec *r = D_002A2988_exam->Get40(p4);
+        if (r) {
+            char *s = func_0024BA08(num, p5 + 1);
+            sprintf(dst, D_002DAE60, r->m_name, s, func_00256260(&buf, 0xA2));
+            return;
+        }
+        Func235DE0(D_002DAE68, p2, kind, p4, p5);
+        *dst = D_002DAE28[0];
+        return;
+    }
+    }
+}

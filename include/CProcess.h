@@ -1,8 +1,10 @@
 #ifndef CPROCESS_H
 #define CPROCESS_H
+#pragma interface
 
 #include "CTask.h"
 #include "CBgWork.h"
+#include "state.h"
 
 // Base of the game's main tasks (CBootMain, CLogoMain, CTitleMain, CGameResort, ...). Derived
 // classes put their fields from 0x18, but CProcess's own dklib methods (lane d1) also use
@@ -19,19 +21,5 @@ public:
     s32 m_unk14;              // 0x14
 };
 
-// Nested state stack from ../dklib/include/state.h (inline; asserts print
-// "*** CStateMachine stack over or under flow").
-struct CStateMachine {
-    u16 m_flags;              // 0x00 (bit 7: busy)
-    u16 m_depth;              // 0x02
-    s32 m_state;              // 0x04
-    s32 m_stack[16];          // 0x08
-
-    CStateMachine() {
-        m_state = -1;
-        m_depth = 0;
-        m_flags = 0;
-    }
-};
 
 #endif

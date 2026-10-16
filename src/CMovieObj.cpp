@@ -21,6 +21,7 @@ public:
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMovieObj.
 class CMovieObj {
 public:
+    void Update13E938();
     CMovieObj();
     virtual ~CMovieObj();
     void SetName(const char *name);
@@ -32,7 +33,8 @@ public:
 
     CMovieObjHead m_head;     // 0x00
     CBgWork m_bg;             // 0x48
-    char m_name[0x104];       // 0x54
+    char m_name[0x100];       // 0x54
+    s32 m_unk154;             // 0x154
     s32 m_unk158;             // 0x158
     s32 m_unk15C;             // 0x15C
     s32 m_unk160;             // 0x160
@@ -86,6 +88,16 @@ extern char D_002D5D80[];
 
 int MovieBits13EC28(int psm);
 extern "C" void func_00227BF0(u64 tex, s32 a, s32 b, s32 w, s32 h, u8 *src);
+
+#include "state.h"
+int Func235DE0(const char *fmt, ...);
+typedef int (CMovieObjSub13E908::*CMovieInitFn)();
+extern CMovieInitFn D_002D5D88;
+extern "C" void func_002457A0(CBgWork *bg, void *obj, CMovieInitFn fn, s32 x);
+extern "C" int func_00244DE0(char *name, s32 v);
+extern "C" int func_002451A8();
+extern "C" int func_00245450();
+extern "C" s32 func_00251BA8();
 // @decl-end
 
 CMovieObj::CMovieObj() {
@@ -142,9 +154,61 @@ int CMovieObjSub13E908::Init() {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMovieObj", func_0013E938);
-INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5DB0);
-INCLUDE_RODATA("asm/nonmatchings/CMovieObj", D_002D5DD0);
+void CMovieObj::Update13E938() {
+    CStateMachine *sm = (CStateMachine *)&m_head;
+    s32 done;
+    s32 v;
+    if (!m_unk15C) return;
+    done = 0;
+loop:
+    if (done) return;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_state) {
+    case -1:
+        func_002457A0(&m_bg, this, D_002D5D88, 0);
+        while (func_00245818(&m_bg, 0)) {
+            sm->m_state = -0x8C; done = 1; goto loop;
+    case -0x8C:;
+        }
+        if (func_00244DE0(m_name, m_unk154) < 0) {
+            Func235DE0("*** failed to load mpeg (%s)\n", m_name);
+            goto fin;
+        }
+        while (!func_002451A8()) {
+            Apply13EBE8();
+            sm->m_state = -0x9C; done = 1; goto loop;
+    case -0x9C:;
+        }
+        m_unk158 = 1;
+        sm->Push();
+        sm->Var() = func_00251BA8();
+        for (;;) {
+    case -0xA3:
+            v = func_00251BA8();
+            if (v != sm->Get()) break;
+            sm->m_state = -0xA3;
+            done = 1;
+            goto loop;
+        }
+        sm->Pop();
+        while (!func_00245450()) {
+            Apply13EBE8();
+            sm->m_state = -0xAC; done = 1; goto loop;
+    case -0xAC:;
+        }
+    fin:
+        m_unk15C = 0;
+        func_00244EB0();
+        func_00244DD8();
+        sm->m_state = -0xB8;
+    case -0xB8:
+        done = 1;
+        goto loop;
+    }
+}
 
 void CMovieObj::Apply13EBE8() {
     s32 v = (s32)(m_unk16C * 128.0f);

@@ -191,7 +191,7 @@ public:
 extern CResortDBMgr *D_002A36E8;
 s32 Func1456A8(int who);
 int IsFlagKind(int v);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 
 // Event log (D_002A0D38), only the slots called here.
 class CEvLogR {

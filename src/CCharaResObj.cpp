@@ -78,7 +78,7 @@ extern "C" int sprintf(char *buf, const char *fmt, ...);
 void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
 s32 Func249248(void *buf);
 void Func249348();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern const char D_002D4ED8[], D_002D4EE0[], D_002D4EE8[], D_002D4EF8[], D_002D4F10[];
 extern const char D_002D4F18[], D_002D4F28[];
 // @decl-end

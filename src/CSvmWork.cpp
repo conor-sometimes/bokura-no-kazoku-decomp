@@ -16,17 +16,25 @@ struct CSvmRand {
 // A tagged value: 0 = int, 1 = float, 2 = string-like (converted by a helper).
 class CValue {
 public:
-    void Reset();                // 0x12E0B8
-    void SetInt(s32 v);          // 0x12E0C8
-    void SetFloat(f32 v);        // 0x12E130
-    void Set12E1D8(s32 v);       // 0x12E1D8, argument type unknown
-    int AsInt();                 // 0x12E260
-    float AsFloat();             // 0x12E2D8
-    int Get12E350();             // 0x12E350, return type unknown
+    void Reset();
+    int AsInt();
+    f32 AsFloat();
+    int Get12E350();                  // returns the value as a string (char *)
+    void Assign(CValue *o);
+    void SetInt(s32 v);
+    void SetFloat(f32 v);
+    void Set12E1D8(s32 v);
+    int Equals(CValue *o);
 
-    s32 m_type;                  // 0x0
-    s32 m_value;                 // 0x4
-    u8 pad8[0xFC];
+    s32 m_type;               // 0x0: 0 int, 1 float, 2 string
+    union {
+        s32 m_value;          // 0x4 (as CSvmWork's code reads it)
+        union {
+            s32 i;
+            f32 f;
+            char s[0x100];
+        } m_u;                // 0x4
+    };
 };
 
 class CValueHolder {
@@ -183,7 +191,7 @@ extern "C" double fmod(double x, double y);
 //@sym fmod 0x280260
 //@sym __extendsfdf2 0x284B98
 //@sym __truncdfsf2 0x285498
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 s32 Func297708(void *list);
 s32 *Func297710(void *list, s32 i);
 void Func2976E8(void *list, s32 v);
@@ -206,7 +214,111 @@ extern "C" void func_00297668(void *arr);
 //@sym fptodp 0x284B98
 //@sym dptofp 0x285498
 //@sym fmod 0x280260
+
+// From CSvmRes.cpp (lane cv moved its functions 0x12E0B8.. here: their literals are this unit's)
+
+class CSvmHeader {
+public:
+    int IsValid();
+
+    u32 m_magic;              // 0x0
+    s32 m_size;               // 0x4
+    s32 m_version;            // 0x8
+};
+// Vtable and typeinfo name come from this unit (docs/units.md): key method ~CSvmRes. The vptr
+// follows its own fields.
+class CSvmRes {
+public:
+    CSvmRes();
+    virtual ~CSvmRes();
+    void Release();
+    int Load(CSvmHeader *h);
+    int LoadFile(const char *name);
+
+    s32 m_unk0;               // 0x00
+    s32 m_unk4;               // 0x04
+    s32 m_unk8;               // 0x08
+    s32 m_unkC;               // 0x0C
+    s32 m_unk10;              // 0x10
+    s32 m_unk14;              // 0x14
+    s32 m_unk18;              // 0x18
+    s32 m_unk1C;              // 0x1C
+    // vptr 0x20
+};
+
+extern "C" int atoi(const char *);
+extern "C" float atoff(const char *);
+extern "C" int sprintf(char *, const char *, ...);
+extern "C" char *strcpy(char *, const char *);
+extern "C" int strcmp(const char *, const char *);
+extern "C" void *func_002303C0(const char *);
+extern void (*D_002B91B0)(void *p);
+extern char D_2EBF90[];
+extern const char D_002D5200[];
+extern const char D_002D5208[];
+extern const char D_002D5210[];
+int Func235DE0(const char *, ...) throw();
+//@sym Load__7CSvmResP10CSvmHeader 0x12DEC0
+//@sym atoi 0x289118
+//@sym atoff 0x289100
+//@sym fptodp 0x284B98
 // @decl-end
+
+void CValue::Reset() {
+    m_type = -1;
+    m_u.i = 0;
+}
+
+INCLUDE_ASM("asm/nonmatchings/CSvmWork", SetInt__6CValuei);
+
+INCLUDE_ASM("asm/nonmatchings/CSvmWork", SetFloat__6CValuef);
+
+INCLUDE_ASM("asm/nonmatchings/CSvmWork", Set12E1D8__6CValuei);
+
+int CValue::AsInt() {
+    switch (m_type) {
+    case 0: return m_u.i;
+    case 1: return (s32)m_u.f;
+    case 2: return atoi(m_u.s);
+    }
+    return 0;
+}
+
+f32 CValue::AsFloat() {
+    switch (m_type) {
+    case 0: return m_u.i;
+    case 1: return m_u.f;
+    case 2: return atoff(m_u.s);
+    }
+    return 0.0f;
+}
+
+int CValue::Get12E350() {
+    switch (m_type) {
+    case 0: sprintf(D_2EBF90, D_002D5200, m_u.i); return (int)D_2EBF90;
+    case 1: sprintf(D_2EBF90, D_002D5208, m_u.f); return (int)D_2EBF90;
+    case 2: return (int)m_u.s;
+    }
+    return (int)D_002D5210;
+}
+
+void CValue::Assign(CValue *o) {
+    switch (m_type) {
+    case 0: m_u.i = o->AsInt(); break;
+    case 1: m_u.f = o->AsFloat(); break;
+    case 2: return (void)strcpy(m_u.s, (char *)o->Get12E350());
+    default: *this = *o; break;
+    }
+}
+
+int CValue::Equals(CValue *o) {
+    switch (m_type) {
+    case 0: return m_u.i == o->AsInt();
+    case 1: return m_u.f == o->AsFloat();
+    case 2: return strcmp(m_u.s, (char *)o->Get12E350()) == 0;
+    }
+    return 0;
+}
 
 
 CSvmWork::CSvmWork() {
@@ -408,7 +520,24 @@ void ReadStr12EF08(u8 **pp, char *dst, s32 n) {
     (*pp)++;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5200);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5208);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5210);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5218);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5240);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5268);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D52A0);
 INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_0012EF68);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5320);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5328);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5348);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5360);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5380);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5388);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5390);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", jtbl_002D53B0);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D53D0);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D53F0);
 
 void CSvmWork::WriteBuf(s32 i, void *src, s32 n) {
     CSvmData *p = m_data;
@@ -725,6 +854,8 @@ void OpFloatSub130E28(CValue *a, CValue *b) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_00130E78);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5418);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5420);
 
 void OpStrOr130FB8(CValue *a, CValue *b) {
     a->Set12E1D8((s32)((*(char *)a->Get12E350() || *(char *)b->Get12E350()) ? D_002D5418 : D_002D5420));
@@ -826,7 +957,11 @@ void OpStrCopy1316E8(CValue *a, CValue *b) {
     a->Set12E1D8(b->Get12E350());
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5428);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5448);
 INCLUDE_ASM("asm/nonmatchings/CSvmWork", Func131720__8CSvmWork);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5560);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5598);
 
 void CSvmWork::CopyFrom(CSvmWork *o) {
     if (m_data != o->m_data) {
@@ -868,3 +1003,5 @@ void CSvmWork::Push131E90(s32 v) {
         }
     }
 }
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D55C8);
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D55F0);

@@ -1,5 +1,6 @@
 #ifndef CMEMTEX_H
 #define CMEMTEX_H
+#pragma interface
 
 #include "common.h"
 

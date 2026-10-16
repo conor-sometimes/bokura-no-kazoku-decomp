@@ -6,7 +6,7 @@
 
 #include "CFlagWork.h"
 int Func251B88();
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 // The movie object's constructor and destructor (CMovieObj unit, not named yet).
 extern "C" void *func_0013E668(void *p);

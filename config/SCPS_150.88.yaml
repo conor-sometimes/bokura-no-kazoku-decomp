@@ -45,8 +45,7 @@ segments:
       - [0x71F0, cpp, CDemoMain]
       - [0x88A8, cpp, CEndingMain]
       - [0x9320, cpp, CFlagWork]
-      - [0xBEB0, cpp, CPadMgr]
-      - [0xBF00, cpp, IPadMgr]
+      - [0xA508, cpp, CPadMgr]   # starts with CFlagWork.cpp-looking code (its literals are this unit's)
       - [0xC068, cpp, CFadeMgr]
       - [0xC108, cpp, IFadeMgr]
       - [0xC840, cpp, CSnapMgr]
@@ -81,7 +80,7 @@ segments:
       - [0x2E8E8, cpp, CEnvResObj]   # also CEnvResMgr
       - [0x2EC48, cpp, IEnvResMgr]
       - [0x2ED80, cpp, CSvmRes]
-      - [0x2F608, cpp, CSvmWork]
+      - [0x2F0B8, cpp, CSvmWork]   # starts with CSvmRes.cpp-looking code (its literals are this unit's)
       - [0x32F10, cpp, CEventRes]
       - [0x33270, cpp, CEventObj]
       - [0x3E910, cpp, CEventMesRes]   # also CEventMesMgr t5TList1Z12CEventMesRes
@@ -111,13 +110,15 @@ segments:
       - [0x77248, cpp, CMenuNosave]
       - [0x77598, cpp, CMenuMemorial]
       - [0x77B98, cpp, CMenuLoadMemorial]
+      - [0x79650, cpp, CPersGauge]   # menu gauges/widgets (literals before CMenuTutorSelect's)
       - [0x7EF38, cpp, CMenuTutorSelect]
       - [0x80D50, cpp, CMenuTutorSelected]
       - [0x85CF8, cpp, CMenuExam]
-      - [0x87DF0, cpp, CChrSchoolWin]
+      - [0x86648, cpp, CChrSchoolWin]   # starts with CMenuExam-looking helpers (their literals follow 9CMenuExam)
       - [0x88038, cpp, CChrBodyWin]
       - [0x8B480, cpp, CMenuChildStatus]
       - [0x8BF98, cpp, CMenuCommon]
+      - [0x8C880, cpp, CMenuCommonRes]   # split off CMenuCommon.cpp (literals after its RTTI names)
       - [0x8F750, cpp, CMenuPTJobMoney]
       - [0x90528, cpp, CMenuGetMoney]
       - [0x910B0, cpp, CMenuReviewResult]
@@ -132,11 +133,12 @@ segments:
       - [0x9B5E8, cpp, CCommandIncDec]
       - [0x9B830, cpp, CStatusBase]
       - [0x9DD98, cpp, CStatusWin]
+      - [0x9F008, cpp, CStatusItem]   # split off CStatusWin.cpp (literals after its RTTI names)
       - [0xA5F20, cpp, CMenuInputKanji]
       - [0xA8758, cpp, CMenuSysscr32]
       - [0xA8B68, cpp, CMenuSysscr31]
       - [0xA9E28, cpp, CMenuSysscr27]
-      - [0xAB118, cpp, CMenuSysscr26]
+      - [0xAA8C0, cpp, CMenuSysscr26]   # starts with CMenuSysscr27.cpp-looking code (its literals are this unit's)
       - [0xAB710, cpp, CMenuSysscr25]
       - [0xABB60, cpp, CMenuSysscr24]
       - [0xAC000, cpp, CMenuSysscr23]
@@ -158,14 +160,16 @@ segments:
       - [0xB3AB0, cpp, CMenuBoot]
       - [0xB4BA8, cpp, CMenuProcess]
       - [0xB4C68, cpp, CMenuMgr]
+      - [0xB5730, cpp, CMenuMgrSub1B4768]   # menu helpers (literals after 8IMenuMgr)
       - [0xB96A0, cpp, CLayoutRes]
       - [0xBAD40, cpp, CLayoutObj]
-      - [0xBE6A8, cpp, CMiniGame1Res]   # also CMiniGame1
+      - [0xBE188, cpp, CMiniGame1Res]   # starts with CLayoutObj.cpp-looking code (its literals are this unit's)
       - [0xC5100, cpp, CMiniGame2Res]   # also CMiniGame2
       - [0xCABB0, cpp, CMiniGame3Res]   # also CMiniGame3
       - [0xD5B50, cpp, CMiniGame4Res]   # also CMiniGame4
       - [0xDFA18, cpp, CMiniGame5Res]   # also CMiniGame5
       - [0xE43E8, cpp, CMiniGame6Res]   # also CMiniGame6
+      - [0xE90A0, cpp, Unit1E80A0]   # mini game 6 glue (free functions, own literals)
       - [0xEA1B8, cpp, CAppMain]   # C-style units from here on (no vtables): cut where no literal is shared, scripts/text_units.py
       - [0xEC8E8, cpp, Unit1EB8E8]
       - [0xEF008, cpp, Unit1EE008]
@@ -240,6 +244,8 @@ segments:
       - [0x1838C0, cpp, Dk2828C0]
       - [0x184858, cpp, Lib283858]   # libgcc, Sony SDK, linkonce code: cut by size alone (text_units.py --size-only)
       - [0x186F80, cpp, Lib285F80]
+      - [0x188F98, cpp, Lib287F98]   # libgcc2/fp-bit, C (split off Lib285F80)
+      - [0x189388, cpp, Lib288388]   # tinfo2, C++
       - [0x1898C0, cpp, Lib2888C0]
       - [0x18BE50, cpp, Lib28AE50]
       - [0x18E8B0, cpp, Lib28D8B0]
@@ -268,7 +274,7 @@ segments:
       - {start: 0x1C0B48, type: .data, name: CDemoMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0BA0, type: .data, name: CEndingMain, linker_section: .gnu.linkonce.d.*}
       - {start: 0x1C0BF8, type: .data, name: CFlagWork, linker_section: .gnu.linkonce.d.*}
-      - [0x1C0C20, data, vt_CPadMgr]   # also IPadMgr
+      - [0x1C0C20, data, vt_CPadMgr]   # also IPadMgr (merged into CPadMgr.cpp)
       - [0x1C0D10, data, vt_CFadeMgr]   # also IFadeMgr
       - [0x1C0E10, data, vt_CSnapMgr]   # also ISnapMgr
       - [0x1C0F10, data, vt_CEFontWork]
@@ -387,7 +393,7 @@ segments:
       - [0x1D2A48, .rodata, CDemoMain]
       - [0x1D2B38, .rodata, CEndingMain]
       - [0x1D2BC8, .rodata, CFlagWork]
-      - [0x1D2CB0, rodata, ro_CPadMgr]   # also IPadMgr
+      - [0x1D2CB0, .rodata, CPadMgr] # also IPadMgr (merged into CPadMgr.cpp)
       - [0x1D2F08, rodata, ro_CFadeMgr]   # also IFadeMgr
       - [0x1D2F28, rodata, ro_CSnapMgr]   # also ISnapMgr
       - [0x1D3008, .rodata, CEFontWork]
@@ -402,10 +408,10 @@ segments:
       - [0x1D4400, .rodata, CCharaRes]
       - [0x1D4588, .rodata, CCharaObj]
       - [0x1D4780, .rodata, CModelAccResMgr]
-      - [0x1D4820, rodata, ro_CMapAttr]
+      - [0x1D4820, .rodata, CMapAttr]
       - [0x1D4C28, .rodata, CMapRes]
       - [0x1D4D90, .rodata, CMapObj]
-      - [0x1D4E58, rodata, ro_CMapEffRes]
+      - [0x1D4E58, .rodata, CMapEffRes]
       - [0x1D5240, rodata, ro_CMapEffObjRes]   # also CMapEffObj
       - [0x1D5A08, .rodata, CMapSndRes]
       - [0x1D5C38, .rodata, CMapSndObj]
@@ -415,7 +421,7 @@ segments:
       - [0x1D5F70, rodata, ro_CMapResObj]   # also IMapResMgr
       - [0x1D6040, rodata, ro_CEnvResObj]   # also IEnvResMgr
       - [0x1D6160, .rodata, CSvmRes]
-      - [0x1D6200, rodata, ro_CSvmWork]
+      - [0x1D6200, .rodata, CSvmWork]
       - [0x1D6600, .rodata, CEventRes]
       - [0x1D6670, .rodata, CEventObj]
       - [0x1D68B0, .rodata, CEventMesRes]
@@ -431,25 +437,27 @@ segments:
       - [0x1DA590, .rodata, CGameEventObj]
       - [0x1DA8F8, .rodata, CGameResort]
       - [0x1DAAD0, rodata, ro_CInterfRes]   # also IInterfMgr
-      - [0x1DAC30, rodata, ro_CNameDBMgr]
+      - [0x1DAC30, .rodata, CNameDBMgr]
       - [0x1DAD10, rodata, ro_CPhotoEventObj]   # also IAlbumMgr
       - [0x1DAEC8, .rodata, CPhotoDBMgr]
       - [0x1DB058, .rodata, CResortDBMgr]
-      - [0x1DB200, rodata, ro_CMapDBExpr]
+      - [0x1DB200, .rodata, CMapDBExpr]
       - [0x1DB390, .rodata, CMenuNews]
       - [0x1DB440, .rodata, CMenuExGetMoney]
       - [0x1DB490, .rodata, CMenuConfig]
       - [0x1DB530, .rodata, CMenuNosave]
       - [0x1DB5A8, .rodata, CMenuMemorial]
       - [0x1DB648, .rodata, CMenuLoadMemorial]
-      - [0x1DB7B0, .rodata, CMenuTutorSelect]
+      - [0x1DB7B0, .rodata, CPersGauge]
+      - [0x1DBA28, .rodata, CMenuTutorSelect]
       - [0x1DBAB0, .rodata, CMenuTutorSelected]
       - [0x1DBB38, .rodata, CMenuExam]
-      - [0x1DBD98, rodata, ro_CChrSchoolWin]
+      - [0x1DBD98, .rodata, CChrSchoolWin]
       - [0x1DBFD0, .rodata, CChrBodyWin]
       - [0x1DC028, .rodata, CMenuChildStatus]
       - [0x1DC558, .rodata, CMenuCommon]
-      - [0x1DC5E0, .rodata, CMenuPTJobMoney]
+      - [0x1DC5E0, .rodata, CMenuCommonRes]
+      - [0x1DCA30, .rodata, CMenuPTJobMoney]
       - [0x1DCAC8, .rodata, CMenuGetMoney]
       - [0x1DCB28, .rodata, CMenuReviewResult]
       - [0x1DCBC0, .rodata, CMenuReviewSelect]
@@ -458,11 +466,12 @@ segments:
       - [0x1DCDB8, .rodata, CMenuAsksave]
       - [0x1DCE38, .rodata, CMenuAsksavequit]
       - [0x1DCE80, .rodata, CMenuRecord]
-      - [0x1DE7D8, rodata, ro_CCommandBase]
+      - [0x1DE7D8, .rodata, CCommandBase]
       - [0x1DE928, .rodata, CCommandSelect]
       - [0x1DE9B8, rodata, ro_CCommandIncDec]   # also CStatusBase
       - [0x1DEA28, .rodata, CStatusWin]
-      - [0x1DEED0, .rodata, CMenuInputKanji]
+      - [0x1DEEE0, .rodata, CStatusItem]
+      - [0x1DFBC8, .rodata, CMenuInputKanji]
       - [0x1DFEB8, .rodata, CMenuSysscr32]
       - [0x1E00F8, .rodata, CMenuSysscr31]
       - [0x1E0190, .rodata, CMenuSysscr27]
@@ -487,14 +496,85 @@ segments:
       - [0x1E0B70, .rodata, CMenuLoad]
       - [0x1E0CB8, .rodata, CMenuBoot]
       - [0x1E0DA0, .rodata, CMenuProcess]
-      - [0x1E0DB0, rodata, ro_CMenuMgr]
-      - [0x1E0F50, .rodata, CLayoutRes]
+      - [0x1E0DB0, .rodata, CMenuMgr]
+      - [0x1E0F50, .rodata, CMenuMgrSub1B4768]
+      - [0x1E1A10, .rodata, CLayoutRes]
       - [0x1E1BF0, .rodata, CLayoutObj]
-      - [0x1E1D50, rodata, ro_CMiniGame1Res]
+      - [0x1E1D50, .rodata, CMiniGame1Res]
       - [0x1E1F00, .rodata, CMiniGame2Res]
       - [0x1E2190, .rodata, CMiniGame3Res]
-      - [0x1E23A8, rodata, ro_CMiniGame4Res]
+      - [0x1E23A8, .rodata, CMiniGame4Res]
       - [0x1E25C8, .rodata, CMiniGame5Res]
-      - [0x1E28B0, rodata, ro_CMiniGame6Res]
-      - [0x1E2C20, rodata, ro_tail]   # C-style code and libraries, .gcc_except_table
+      - [0x1E28B0, .rodata, CMiniGame6Res]
+      # ro_tail split per text unit (rodata refs are monotonic in unit order; .data-only and
+      # unreferenced literals go with the unit before them)
+      - [0x1E2C48, .rodata, Unit1E80A0]
+      - [0x1E2D10, .rodata, CAppMain]
+      - [0x1E3028, .rodata, Unit1EB8E8]
+      - [0x1E3150, .rodata, Unit1EE008]
+      - [0x1E31F0, .rodata, Unit1F0518]
+      - [0x1E32A8, .rodata, Unit1F1EC0]
+      - [0x1E3368, .rodata, Unit1F4918]
+      - [0x1E35F0, .rodata, Unit1FF680]
+      - [0x1E3990, .rodata, Unit201DB0]
+      - [0x1E3B48, .rodata, Unit204500]
+      - [0x1E3C38, .rodata, Unit206508]
+      - [0x1E3E88, .rodata, Unit208128]
+      - [0x1E4188, .rodata, Unit20A410]
+      - [0x1E42E8, .rodata, Unit20CBF0]
+      - [0x1E4400, .rodata, Unit20E938]
+      - [0x1E4538, .rodata, Unit210070]
+      - [0x1E47D0, .rodata, Unit212790]
+      - [0x1E4848, .rodata, Unit214938]
+      - [0x1E4938, .rodata, Unit215A38]
+      - [0x1E49F0, .rodata, Unit217F50]
+      - [0x1E4A30, .rodata, Unit219970]
+      - [0x1E4CF8, .rodata, Unit21BEC0]
+      - [0x1E4D18, .rodata, Unit21D820]
+      - [0x1E4E80, .rodata, Unit21F250]
+      - [0x1E4FE8, .rodata, Unit221008]
+      - [0x1E5008, .rodata, Unit226AE8]
+      - [0x1E5100, .rodata, Unit228F78]
+      - [0x1E57F0, .rodata, Unit22DE48]
+      - [0x1E58C8, .rodata, Unit230578]
+      - [0x1E5A90, .rodata, Unit232B78]
+      - [0x1E5C80, .rodata, Unit234318]
+      - [0x1E6110, .rodata, Unit236130]
+      - [0x1E6230, .rodata, Unit237A88]
+      - [0x1E6468, .rodata, Unit23A1D8]
+      - [0x1E64C0, .rodata, Unit23C680]
+      - [0x1E6908, .rodata, Unit23E868]
+      - [0x1E6E40, .rodata, Unit243AB8]
+      - [0x1E6F18, .rodata, Dk245648]
+      - [0x1E7108, .rodata, Dk2470E8]
+      - [0x1E7540, .rodata, Dk2497C0]
+      - [0x1E78C8, .rodata, Dk24DE30]
+      - [0x1E78F0, .rodata, Dk24FAF0]
+      - [0x1E7B18, .rodata, Dk252208]
+      - [0x1E80D0, .rodata, Dk254AA8]
+      - [0x1E8420, .rodata, Dk2571C0]
+      - [0x1E8610, .rodata, Dk25A010]
+      - [0x1E8828, .rodata, Dk25E340]
+      - [0x1E89E0, .rodata, Dk260A60]
+      - [0x1EA048, .rodata, Dk262D28]
+      - [0x1EA070, .rodata, Dk2631E0]
+      - [0x1EA318, .rodata, Dk265918]
+      - [0x1EA588, .rodata, Dk268138]
+      - [0x1EA770, .rodata, Dk26A870]
+      - [0x1EA928, .rodata, Dk26CFB0]
+      - [0x1EAD30, .rodata, Dk26FC10]
+      - [0x1EADA0, .rodata, Dk271AF8]
+      - [0x1EADD8, .rodata, Dk2735D0]
+      - [0x1EAFE0, .rodata, Dk2752B8]
+      - [0x1EB058, .rodata, Dk27A100]
+      - [0x1EB110, .rodata, Dk27C020]
+      - [0x1EB118, .rodata, Dk27DBB8]
+      - [0x1EB270, .rodata, Dk27FC30]
+      - [0x1EB2D8, .rodata, Dk280098]
+      - [0x1EB980, .rodata, Dk2828C0]
+      - [0x1EBB80, rodata, ro_tail]   # libgcc, eh/tinfo RTTI names (linkonce users), Lib2888C0, newlib _ctype_, "C"
+      - [0x1EBF90, .rodata, Lib28AE50] # strtod.c, then the 0x28CCB8 object
+      - [0x1EC250, .rodata, Lib28D8B0] # vfprintf.c, dtoa.c
+      - [0x1EC4B8, rodata, ro_Lib290990]   # locale.c (lconv), mprec.c (p05, tens, bigtens, tinytens)
+      - [0x1EC680, rodata, ro_libtail]   # .gcc_except_table (Lib285F80 eh code)
   - [0x1EC6FC]

@@ -441,6 +441,10 @@ int func_0027B758(void)
     return func_00273610();
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk27A100", D_002EA058);
+INCLUDE_RODATA("asm/nonmatchings/Dk27A100", D_002EA060);
+INCLUDE_RODATA("asm/nonmatchings/Dk27A100", D_002EA070);
+
 INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027B798);
 
 INCLUDE_ASM("asm/nonmatchings/Dk27A100", func_0027B9C0);

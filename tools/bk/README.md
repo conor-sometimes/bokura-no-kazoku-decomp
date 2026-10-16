@@ -30,6 +30,9 @@ unit. All run on hokkaido from the repo root; scratch files live in `build/bk/` 
 - `tools/bk/ushow.py SNIP [ADDR] [-q]` (run inside bokura-env): utest's in-unit compile shown side by side
   (ours | retail, `!!` on differing words). `BK_EXTRA="-flag ..."` adds compiler flags and finds the function
   by symbol (for flag sweeps), `BK_CC` swaps the driver, `BK_KEEP=1` keeps the spliced .cpp.
+- `tools/bk/ntprobe.py SNIP ADDR` (inside bokura-env): re-tests the snippet in its unit with each free/extern "C"
+  callee redeclared `throw()` (then all of them), to see whether a callee's nothrow-ness explains the diff
+  (docs/lessons.md, nm). Members are not probed.
 - `tools/bk/bk hard [--port] [-j N]`: re-test every saved stuck function. When a function goes to
   HARD.md, save its best attempt as `docs/hard/<lane>/hard_<ADDR>.snip` (a normal snippet); after
   any discovery (a flag, a header, a trick), `bk hard` re-runs them all through utest and lists

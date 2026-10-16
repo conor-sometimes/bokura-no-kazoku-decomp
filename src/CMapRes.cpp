@@ -70,7 +70,7 @@ const char *Func24A570(const char *s, char *out, const char *sep, const char *ws
 const char *Func24AF10(void *p, const char *key);
 const char *Func24AFE8(const char *s, char *buf, s32 k, s32 size);
 extern void (*D_002B91B0)(void *p);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 extern char D_002D3C30[], D_002D3C80[], D_002D3C90[], D_002D3CB8[];
 extern const char *D_002A0620, *D_002A0628, *D_002A062C, *D_002A0630;
 s32 ParseMapAttr(CMapAttrSet *s, CMapPair *out, const char *p);

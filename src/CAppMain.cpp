@@ -308,7 +308,39 @@ extern "C" void func_001E9E00(CTaskList24F5C0 *l)
     AddPhotoEventObjSub16D4D8(l);
 }
 
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D10);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D30);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D48);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D60);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D70);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D80);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1D90);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DA0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DB0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DC0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DD8);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DE8);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1DF0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E00);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E08);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E10);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E28);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E40);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E58);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E70);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1E88);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1EA0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1EB8);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1EC0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1ED8);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1EE8);
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001E9E48);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F10);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F18);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F20);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F38);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F40);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F48);
 
 void CAppMain::Func4()
 {
@@ -386,8 +418,13 @@ extern "C" f32 func_001EAD38(s32 i, f32 t)
 
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EADA0);
 
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F60);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F70);
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAE70);
 
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F80);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1F90);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FA0);
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAF10);
 
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EAFF0);
@@ -407,8 +444,12 @@ extern "C" s32 func_001EB178(s32 mode)
 
 extern "C" s32 func_001EB1C0() { return ((s32 (*)())D_002A5BC4)(); }
 
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FB0);
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EB1E8);
 
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FC0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FD0);
+INCLUDE_RODATA("asm/nonmatchings/CAppMain", D_002E1FF8);
 INCLUDE_ASM("asm/nonmatchings/CAppMain", func_001EB4B0);
 
 void Func1EB828(int x) { D_002A5BD4 = x; }

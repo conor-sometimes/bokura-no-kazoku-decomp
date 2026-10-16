@@ -7,7 +7,7 @@
 #include "CList.h"
 extern "C" void *memset(void *p, int c, unsigned int n);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 int Func251B88();
 class CLayoutResSub1B8748 {
 public:

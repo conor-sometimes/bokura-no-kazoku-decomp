@@ -33,10 +33,76 @@ INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261470);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261668);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E79E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7A40);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7A70);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7AA0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7AB0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7BB0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7BC0);
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261888);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C08);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261AB0);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C18);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C24);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C28);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C64);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7C68);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7CF0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D00);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D08);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D10);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D20);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D30);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D50);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D90);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7D98);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7DA8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7DC8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7E08);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7E28);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7E30);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7E40);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7E60);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7EA0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E7F20);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8020);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8030);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8038);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8040);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8050);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8060);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8080);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E80D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8118);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8130);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8150);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8178);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E81B8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8238);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8338);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8380);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8398);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E83B8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E83E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8420);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E84A0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E85A0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E85E8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8600);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8620);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8648);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8688);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8708);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8808);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E883C);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8898);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E89D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8AD0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8CD0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8ED0);
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00261C18);
 
 INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262108);
@@ -83,4 +149,19 @@ extern "C" s32 func_00262BE8(const char *s) {
     return strcmp(s, D_002E8FF0) ? 0 : 0x12;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk260A60", func_00262CA0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8FD0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8FD8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8FE0);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8FE8);
+INCLUDE_RODATA("asm/nonmatchings/Dk260A60", D_002E8FF0);
+extern "C" const char *func_00262CA0(s32 m)
+{
+    switch (m) {
+    case 1: return D_002E8FD0;
+    case 2: return D_002E8FD8;
+    case 4: return D_002E8FE0;
+    case 8: return D_002E8FE8;
+    case 0x12: return D_002E8FF0;
+    }
+    return "UNKNOWN";
+}

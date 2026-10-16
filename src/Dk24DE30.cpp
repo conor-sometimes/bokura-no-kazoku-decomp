@@ -83,6 +83,9 @@ public:
 
 struct CV4 { f32 x, y, z, w; };
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68C8);
+INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24DE30", D_002E68D8);
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024DE30);
 
@@ -185,7 +188,14 @@ CTask::CTask() {
     ((CTaskTag *)p)->m_task = this;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", _$_5CTask);
+CTask::~CTask() {
+    func_0024F668(this);
+    CTaskTag *t = (CTaskTag *)m_unk0;
+    if (t) {
+        t->m_task = 0;
+        if (!t->m_parent) delete t;
+    }
+}
 
 extern "C" CRootTask *func_0024F420() {
     return new CRootTask;
@@ -268,7 +278,7 @@ CProcess::CProcess() {
     m_unk14 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24DE30", _$_8CProcess);
+CProcess::~CProcess() {}
 
 void CProcess::Func2() {
     func_0024F998(this, 1);

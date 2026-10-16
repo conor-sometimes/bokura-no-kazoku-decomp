@@ -14,8 +14,8 @@ float func_00281910(float, float, s32);
 float func_00280F58(float, float);
 s32 func_00280AD8(float, float *);
 
-const s32 D_002EA634[];
-const s32 D_002EA320[];
+extern const s32 D_002EA634[];
+extern const s32 D_002EA320[];
 float func_00280070(float);
 s32 func_002810A8(float *, float *, s32, s32, s32, const s32 *);
 /* from newlib-1.9.0 libm/math/ef_acos.c (fdlibm, Sun Microsystems): __ieee754_acosf */
@@ -43,6 +43,11 @@ extern const float D_002EA718[];
 float func_00280098(float);
 float func_00281A18(float, s32);
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA2D8);
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA320);
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA634);
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA708);
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA718);
 
 float func_00280098(float x) { s32 i0, j0; u32 i, ix; GET_FLOAT_WORD(i0, x); ix = (i0 & 0x7fffffff); j0 = (ix >> 23) - 0x7f; if (j0 < 23) { if (j0 < 0) { if (1.0e30f + x > (float)0.0) { if (i0 >= 0) { i0 = 0; } else if (!(ix < 0x800000)) { i0 = 0xbf800000; } } } else { i = (0x007fffff) >> j0; if ((i0 & i) == 0) return x; if (1.0e30f + x > (float)0.0) { if (i0 < 0) i0 += (0x00800000) >> j0; i0 &= (~i); } } } else { return x; } SET_FLOAT_WORD(x, i0); return x; }
 
@@ -369,6 +374,8 @@ long long func_00281B20(long long u, long long v)
     return w.ll;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA780);
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00281B98);
 
+INCLUDE_RODATA("asm/nonmatchings/Dk280098", D_002EA880);
 INCLUDE_ASM("asm/nonmatchings/Dk280098", func_00282230);

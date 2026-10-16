@@ -61,6 +61,14 @@ extern "C" void func_00215870(Play *, s32 *);
 
 struct PlayBits { u8 pad[0xE]; u8 b0 : 1; u8 b1 : 1; u8 b2 : 1; u8 rest : 5; };
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3848);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3870);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3890);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E38C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E38D8);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3910);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3918);
+INCLUDE_RODATA("asm/nonmatchings/Unit214938", D_002E3928);
 
 extern "C" void func_00214938(void) {
     QNode *h = (QNode *)&D_336E98;

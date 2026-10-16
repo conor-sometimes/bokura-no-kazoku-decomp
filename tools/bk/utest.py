@@ -54,9 +54,12 @@ def addr_of(name, table):
 def target_refs(c):
     """instruction index -> symbol the retail asm names there (from splat's .s)."""
     p = f"{R}/asm/nonmatchings/{c['unit']}/{c['name']}.s"
-    refs, i = {}, -1
+    refs, i, text = {}, -1, True
     for line in open(p):
-        if not re.search(r'/\* \w+ [0-9A-F]{8} [0-9A-F]{8} \*/', line):   # instructions only, not a migrated .asciz
+        if line.startswith('.section'):
+            text = line.split()[1] == '.text'
+        # instructions only: not a migrated .asciz or a jump table in the .s's own .rodata section
+        if not text or not re.search(r'/\* \w+ [0-9A-F]{8} [0-9A-F]{8} \*/', line):
             continue
         i += 1
         m = re.search(r'%(?:hi|lo)\(([A-Za-z_.$][\w.$]*)\)|\bjal\s+([A-Za-z_.$][\w.$]*)', line)
@@ -195,6 +198,9 @@ def utest(path, quiet=False):
             if not quiet:
                 print(f'{start + 4 * i:#x}: the rest of {unit} differs from here (a function above changed size, or a same-unit side effect)')
             break
+    if os.environ.get('BK_UT_KEEP'):   # keep the unit object for objdump (lane w2)
+        import shutil
+        shutil.copy(obj, os.path.join(W, 'ut.o'))
     os.remove(obj)
     os.remove(src)
     return res

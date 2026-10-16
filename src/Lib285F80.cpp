@@ -311,19 +311,3 @@ INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00287E50);
 INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00287EB8);
 
 extern "C" const char *func_00287F58(void *self) { void *t; if (self) t = ((void *(*)(void))FLD(void *, *(void **)self, 4))(); else t = func_00287EB8(); return *(const char **)t; }
-
-extern "C" double func_00287F98(s64 u) { double d; d = (s32)(u >> 32); d *= 65536.0; d *= 65536.0; d += (u32)(u & 0xFFFFFFFF); return d; }
-
-extern "C" void func_00288040(u32 *src, W2FpS *dst) { u32 v = *src; u32 frac = v & 0x7FFFFF; s32 exp = (v >> 23) & 0xFF; dst->sign = v >> 31; if (exp == 0) { dst->cls = 2; return; } dst->exp = exp - 127; dst->cls = 3; dst->frac = (frac << 7) | 0x40000000; }
-
-extern "C" float func_002880A0(s32 c, u32 s, s32 e, u32 f) { W2FpNumS n; n.cls = c; n.sign = s; n.exp = e; n.frac = f; return func_00288F40(&n); }
-
-extern "C" double func_002880D0(W2FpD *src) { u64 fraction = src->frac; s32 sign = src->sign; s32 exp = 0; W2DBits dst; if (w2d_isnan(src)) { exp = 0x7FF; fraction |= 1ULL << 51; } else if (w2d_isinf(src)) { exp = 0x7FF; fraction = 0; } else if (w2d_iszero(src)) { exp = 0; fraction = 0; } else if (fraction == 0) { exp = 0; } else { if (src->exp < -1022) { exp = 0; fraction = 0; } else if (src->exp > 1023) { exp = 0x7FF; fraction = 0; } else { exp = src->exp + 1023; fraction >>= 8; } } dst.b.frac = fraction; dst.b.exp = exp; dst.b.sign = sign; return dst.d; }
-
-extern "C" void func_002881A8(W2DBits *src, W2FpD *dst) { u64 fraction = src->b.frac; s32 exp = src->b.exp; dst->sign = src->b.sign; if (exp == 0) { dst->cls = W2C_ZERO; return; } if (exp == 0x7FF) { dst->exp = 0x3FF; if (fraction == 0) { dst->cls = W2C_INF; dst->frac = 1ULL << 60; return; } if (fraction & (1ULL << 51)) dst->cls = W2C_QNAN; else dst->cls = W2C_SNAN; dst->frac = fraction; return; } dst->exp = exp - 0x3FF; dst->cls = W2C_NUMBER; dst->frac = (fraction << 8) | (1ULL << 60); }
-
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_00288268);
-
-extern "C" s32 func_00288388(const char **a, const char **b) { return strcmp(*a, *b) < 0; }
-
-INCLUDE_ASM("asm/nonmatchings/Lib285F80", func_002883B0);

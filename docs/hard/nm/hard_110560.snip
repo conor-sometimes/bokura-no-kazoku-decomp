@@ -1,0 +1,48 @@
+//@decl
+struct CModelSlot;
+s32 LoadModel1102C8(CModelSlot *rec, const char *name, s32 tex, s32 *pA, s32 *pB);
+const char *Func24AF10(void *data, const char *name);
+const char *Func24AFE8(const char *s, char *buf, s32 a, s32 n);
+const char *Func24A570(const char *s, char *buf, const char *a, const char *b);
+extern "C" int atoi(const char *s);
+extern "C" int strcmp(const char *a, const char *b) throw();
+extern const char *D_002A03C4;
+extern const char *D_002A03C8;
+extern const char *D_002A03CC;
+extern char D_002D31D8[], D_002D31E0[];
+//@func 0x110560
+extern "C" s32 func_00110560(CModelRec *recs, s32 data, s32 name, s32 tex, s32 flags, s32 *pa, s32 *pb) {
+    char line[0x100];
+    char tok[0x100];
+    char sub[0x100];
+    char file[0x100];
+    char opt[0x100];
+    const char *p, *q;
+    s32 cnt;
+    CModelRec *r;
+    if (!name) name = (s32)D_002A03C4;
+    p = Func24AF10((void *)data, (const char *)name);
+    if (!*p) return 0;
+    cnt = 0;
+    r = recs;
+    while (p = Func24AFE8(p, line, 1, 0x100), *p || line[0]) {
+        q = Func24A570(line, tok, ",", D_002D31D8);
+        if (recs) {
+            r->m_id = atoi(tok);
+            Func24A570(q, sub, ",", D_002D31D8);
+            q = Func24A570(sub, file, D_002D31E0, D_002D31D8);
+            r->m_flags = flags;
+            while (q = Func24A570(q, opt, D_002D31E0, D_002D31D8), *q || opt[0]) {
+                if (!strcmp(opt, D_002A03CC)) {
+                    r->m_flags &= ~15;
+                } else if (!strcmp(opt, D_002A03C8)) {
+                    r->m_flags = (r->m_flags & ~15) | 1;
+                }
+            }
+            LoadModel1102C8((CModelSlot *)r, file, tex, pa, pb);
+        }
+        cnt++;
+        r++;
+    }
+    return cnt;
+}

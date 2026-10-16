@@ -1,0 +1,39 @@
+//@decl
+extern "C" char *strstr(const char *s, const char *t);
+extern "C" char *strcpy(char *dst, const char *src);
+extern "C" void *func_002303E0(const char *name);
+extern "C" void func_00228C38(void *arc);
+void *Func24A4C0(const char *name);
+int Func235DE0(const char *fmt, ...) throw();
+extern const char *D_002A03EC;
+extern const char *D_002A03F0;
+//@func 0x111BA8
+s32 CSwingBoneRes2::LoadFile(const char *name) {
+    char path[0x100];
+    void *arc = 0;
+    void *data = 0;
+    s32 ok = 0;
+    if (strstr(name, D_002A03EC)) {
+        arc = func_002303E0(name);
+        if (!arc) {
+            Func235DE0("*** failed to load file '%s'\n", name);
+        } else {
+            strcpy(path, name);
+            strcpy(strstr(path, D_002A03EC), D_002A03F0);
+            func_00228C38(arc);
+            s32 r = LoadFile(path);
+            func_00228C38(0);
+            if (r) ok = 1;
+        }
+    } else {
+        data = Func24A4C0(name);
+        if (!data) {
+            Func235DE0("*** failed to load file '%s'\n", name);
+        } else if (Load(data)) {
+            ok = 1;
+        }
+    }
+    if (data) D_002B91B0(data);
+    if (arc) D_002B91B0(data);
+    return ok;
+}

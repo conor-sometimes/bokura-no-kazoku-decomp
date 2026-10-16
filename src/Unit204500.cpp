@@ -175,6 +175,11 @@ extern "C" void func_00205350(char *d, const char *s) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit204500", func_00205398);
+INCLUDE_RODATA("asm/nonmatchings/Unit204500", D_002E2B88);
+INCLUDE_RODATA("asm/nonmatchings/Unit204500", D_002E2B90);
+INCLUDE_RODATA("asm/nonmatchings/Unit204500", D_002E2B98);
+INCLUDE_RODATA("asm/nonmatchings/Unit204500", D_002E2BA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit204500", D_002E2BA8);
 
 s32 Func205598(const char *name) {
     char tmp[0x40];

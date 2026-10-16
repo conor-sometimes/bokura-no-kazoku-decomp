@@ -172,6 +172,9 @@ inline s32 AllReady(Rec *p) {
     return 1;
 }
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Unit212790", D_002E37D0);
+INCLUDE_RODATA("asm/nonmatchings/Unit212790", D_002E3808);
+INCLUDE_RODATA("asm/nonmatchings/Unit212790", D_002E3840);
 
 extern "C" s32 func_00212790(s32 i) {
     return D_335568.e[i].m10;

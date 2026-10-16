@@ -329,6 +329,8 @@ extern "C" S310DA0 *func_002074F8(u32 i) {
     return &D_310DA0[i];
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit206508", D_002E2C38);
+INCLUDE_RODATA("asm/nonmatchings/Unit206508", D_002E2C60);
 INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00207530);
 
 INCLUDE_ASM("asm/nonmatchings/Unit206508", func_00207960);

@@ -49,6 +49,8 @@ extern int D_002E9D48[10];
 extern DmaRegs *D_002BDA10_c[10] __asm__("D_002BDA10");
 int func_0026FF38(void *);
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/Dk26FC10", D_002E9D30);
+INCLUDE_RODATA("asm/nonmatchings/Dk26FC10", D_002E9D48);
 
 short func_0026FC10(short psm, short w, short h) { unsigned long *p = (unsigned long *)func_0026E888(); int bw = (w + 63) / 64; int bh; if (psm & 2) bh = (h + 63) / 64; else bh = (h + 31) / 32; if ((*p & 0xFFFF0000FFFFUL) == 1) return bw * bh; return bw * bh * 2; }
 
@@ -99,6 +101,9 @@ int func_0026FE58(int mode)
     return en;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Dk26FC10", D_002E9D70);
+INCLUDE_RODATA("asm/nonmatchings/Dk26FC10", D_002E9D80);
+INCLUDE_RODATA("asm/nonmatchings/Dk26FC10", D_002E9D90);
 INCLUDE_ASM("asm/nonmatchings/Dk26FC10", func_0026FF38);
 
 S20 *func_00270110(S20 *d) { *d = D_41C440; return d; }

@@ -1,5 +1,6 @@
 #ifndef CBGWORK_H
 #define CBGWORK_H
+#pragma interface
 
 #include "common.h"
 

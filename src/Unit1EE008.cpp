@@ -201,6 +201,9 @@ INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE318);
 INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE4F8);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EE668);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EE008", D_002E2188);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EE008", D_002E2190);
+INCLUDE_RODATA("asm/nonmatchings/Unit1EE008", D_002E2198);
 
 extern "C" s32 func_001EE8D8(CRxMcReq *r) { s32 v = 0; if (r->m_fn) { do { v = r->m_fn(r->m_a, r->m_b, r->m_c, r->m_d); r++; if (v < 0) break; } while (r->m_fn); } return v; }
 
@@ -354,6 +357,7 @@ extern "C" void func_001EF140()
     D_2ED440 = -1;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit1EE008", D_002E21C0);
 INCLUDE_ASM("asm/nonmatchings/Unit1EE008", func_001EF210);
 
 extern "C" void func_001EF378()

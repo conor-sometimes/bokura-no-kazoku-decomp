@@ -93,7 +93,7 @@ public:
 };
 extern CSePlayer *D_002A5468;
 extern char D_002DD9E8[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 
 u8 *Func237570(s32 v);
 void Func237A88(void *p, s32 v);

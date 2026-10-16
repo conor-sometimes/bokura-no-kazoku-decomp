@@ -12,6 +12,7 @@ public:
     void SetUnkE0(s32 v);
     void GetDefaultSize(f32 *w, f32 *h);
     void SetUnkDC(u32 v);
+    void Update1B6570();
 };
 
 #endif

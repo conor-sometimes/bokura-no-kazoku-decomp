@@ -1,0 +1,61 @@
+//@decl
+class CTaskMgr390 {
+public:
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7();
+    virtual s32 V8();
+    s32 m_unk0;               // 0x0
+};
+extern CTaskMgr390 *D_0029F390;
+//@func 0x16BB20
+void CInterfMgr::Func16BB20() {
+    CInterfTimer *sm = &m_timer928;
+    s32 btn = D_0029F390->V8();
+    s32 done = 0;
+    f32 f;
+loop:
+    if (done) return;
+    {
+        u32 fl = (u16)sm->m_unk0;
+        if ((fl >> 7) & 1) return;
+    }
+    switch (sm->m_unk4) {
+    case -1:
+        sm->m_unk4 = -0x4E2; done = 1; goto loop;
+    case 0:
+        m_unkDF4 = 0.0f;
+        do {
+            sm->m_unk4 = -0x4E9; done = 1; goto loop;
+    case -0x4E9:;
+            m_unkDF4 += 0.25f;
+        } while (m_unkDF4 < 1.0f);
+        m_unkDF4 = 1.0f;
+        for (m_unkDEC = 0; m_unkDEC < m_unkDF0 && m_unkDE8; m_unkDEC++) {
+            if (m_unkDEC >= 11 && (btn & 0x60)) {
+                ((CSndWork *)((u8 *)this + 0x970))->Func25C648(3, 0);
+                break;
+            }
+            sm->m_unk4 = -0x4FC; done = 1; goto loop;
+    case -0x4FC:;
+        }
+        m_unkDE8 = 0;
+        m_unkDF4 = 1.0f;
+        do {
+            sm->m_unk4 = -0x504; done = 1; goto loop;
+    case -0x504:;
+            m_unkDF4 -= 0.25f;
+        } while (m_unkDF4 > 0.0f);
+        m_unkDF4 = 0.0f;
+        m_unkDE4 = 0;
+        sm->m_unk4 = -0x50A;
+    case -0x50A:
+    case -0x4E2:
+        done = 1; goto loop;
+    }
+}

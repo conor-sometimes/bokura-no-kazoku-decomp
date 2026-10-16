@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -21,13 +22,20 @@ public:
     void Func1291B8(s32 on, s32 dur);
 };
 // The fade manager (CFadeMgr unit, which shares this object); its slot functions sit in this
-// file. Only the fields used here.
-class CFadeMgr {
+// file. Only the fields used here. #pragma interface (top) keeps this unit from emitting the
+// vtables (asm data), so the key method ~CFadeMgr can be C++; ~IFadeMgr is inline in retail.
+class IFadeMgr : public CTask {
 public:
+    virtual ~IFadeMgr() {}
+};
+class CFadeMgr : public IFadeMgr {
+public:
+    virtual ~CFadeMgr();
     void Start(s32 type, s32 dur, s32 snd);
     void Update();
 
-    u8 pad0[0x10];
+    s32 *m8;                  // 0x8: owner's pointer slot
+    u8 padC[0x4];
     CVec4 m10;                // 0x10: target colour
     CVec4 m20;                // 0x20: start colour
     CVec4 m30;                // 0x30: current colour
@@ -39,7 +47,9 @@ public:
 };
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/IFadeMgr", func_0010B108);
+CFadeMgr::~CFadeMgr() {
+    *m8 = 0;
+}
 
 void CFadeMgr::Start(s32 type, s32 dur, s32 snd) {
     s32 on;

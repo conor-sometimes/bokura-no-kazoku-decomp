@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -139,7 +140,10 @@ CMapEffObj::CMapEffObj() {
     m_enabled = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMapEffObj", _$_10CMapEffObj);
+// Key method: #pragma interface (top) keeps this unit from emitting the vtables (asm data).
+CMapEffObj::~CMapEffObj() {
+    Release();
+}
 
 INCLUDE_ASM("asm/nonmatchings/CMapEffObj", func_00126E98);
 

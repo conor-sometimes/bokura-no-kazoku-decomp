@@ -86,6 +86,7 @@ INCLUDE_ASM("asm/nonmatchings/Unit1FF680", func_001FFF78);
 INCLUDE_ASM("asm/nonmatchings/Unit1FF680", func_00200130);
 
 INCLUDE_ASM("asm/nonmatchings/Unit1FF680", func_002003A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E26B8);
 
 extern "C" int func_00200560(HrcTbl *t) {
     s32 n = t->m_count;
@@ -127,6 +128,14 @@ extern "C" s32 func_00200A70(HrcObj *p, void *x, s32 y, s32 a, s32 b) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit1FF680", func_00200B28);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E2890);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E28A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E28C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E28E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E2900);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E2920);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E2940);
+INCLUDE_RODATA("asm/nonmatchings/Unit1FF680", D_002E2960);
 
 extern "C" s32 func_00201210(void *buf, s32 r) {
     func_001F1D80(D_002E2890);

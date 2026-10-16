@@ -140,6 +140,14 @@ extern "C" void func_00202410(s32 v) { D_002A5D60 = v; }
 
 extern "C" s32 func_00202420(void) { return D_002A5D60; }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E2990);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29D0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E29F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit201DB0", D_002E2A00);
 INCLUDE_ASM("asm/nonmatchings/Unit201DB0", func_00202430);
 
 extern "C" void func_002025E0(void) {

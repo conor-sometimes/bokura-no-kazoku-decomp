@@ -28,6 +28,6 @@ public:
 
 void Func225088();
 s32 Func2250C0();
-s32 Func235DE0(const char *fmt, ...);
+s32 Func235DE0(const char *fmt, ...) throw();
 
 #endif

@@ -1,14 +1,24 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
 extern "C" void *func_00251488();
 extern "C" void func_00227CB8(void *ctx, s32 x, s32 y, s32 w, s32 h, void *src);
-class CSnapMgr {
+#include "CTask.h"
+// #pragma interface (top) keeps this unit from emitting the vtables (asm data), so the key method
+// ~CSnapMgr can be C++; ~ISnapMgr is inline in retail.
+class ISnapMgr : public CTask {
 public:
+    virtual ~ISnapMgr() {}
+};
+extern void (*D_002B91B0)(void *p);
+extern s32 D_0029F398;
+class CSnapMgr : public ISnapMgr {
+public:
+    virtual ~CSnapMgr();
     void Update10B9E8();
     void Start10B950(s32 mode, s32 n, s32 flag);
     void Draw10BEF0();
-    u8 pad0[0x8];
     u8 *m_unk8;               // 0x8
     f32 m_unkC;               // 0xC
     f32 m_unk10;              // 0x10
@@ -39,7 +49,10 @@ int Func225088();
 int Func2250C0();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/ISnapMgr", func_0010B8B8);
+CSnapMgr::~CSnapMgr() {
+    if (m_unk8) D_002B91B0(m_unk8);
+    D_0029F398 = 0;
+}
 
 void CSnapMgr::Start10B950(s32 mode, s32 n, s32 flag) {
     if (m_unk20 == mode && m_unk24 == 0) return;

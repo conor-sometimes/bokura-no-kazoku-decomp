@@ -162,7 +162,7 @@ extern "C" const char *func_0024A778(const char *s, void *out, f32 def, const ch
 extern "C" const char *func_0024A710(const char *s, void *out, int a, const char *b, const char *c);
 extern "C" long atol(const char *s);
 extern char D_002E1258[], D_002E1260[], D_002E1268[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 
 CMiniGame3Res *NewCMiniGame3Res();
 

@@ -151,6 +151,8 @@ void Func257E40() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00257F40);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7470);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7490);
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00258110);
 
@@ -205,6 +207,18 @@ void Func259300() {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Dk2571C0", func_00259340);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7550);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7578);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7580);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7588);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E7598);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75A8);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75B0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75C0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75F0);
+INCLUDE_RODATA("asm/nonmatchings/Dk2571C0", D_002E75F8);
 
 extern "C" s32 func_00259600(s32 i, s32 a1, s32 end, s32 loop, s32 start, const char *name, s32 base, s32 t3, s32 size, s32 s88, s32 s90)
 {

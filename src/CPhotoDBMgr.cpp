@@ -132,7 +132,7 @@ extern "C" void *func_00248CC8(void *buf, s32 size, s32 a, s32 b);
 extern "C" char *func_00248DA8(void *buf);
 extern "C" const char *func_00248DC0(void *buf);
 extern "C" char *func_0024A6B0(char *s, char *out, const char *def, const char *a, const char *b);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 struct CPhotoStrRec {
     s32 m0;
     s32 m4;

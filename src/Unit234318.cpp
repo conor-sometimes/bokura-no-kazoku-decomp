@@ -328,7 +328,49 @@ extern "C" void func_00234CE8(void) {
         D_002B8D60 = *(s32 *)0x1FC00100;
 }
 
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4C80);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4C90);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CB0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CC0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CD0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CE0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4CF0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4D00);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4D78);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4D90);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4D98);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4DA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4DB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4DC8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4DE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4DF8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E10);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E20);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E40);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E48);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E68);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E80);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E90);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4E98);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EA0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EB0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EC8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4ED0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EE0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EE8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4EF8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4F08);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4F18);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4F20);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4F30);
 INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00234D40);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4FB0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4FD8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E4FF8);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E5010);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E5018);
 
 INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00234F40);
 
@@ -386,7 +428,25 @@ extern "C" s32 func_002353E0(char *p) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_002354A8);
+extern "C" s32 func_002354A8(char *out, char *s, s32 idx) {
+    s32 i = 0;
+    s32 eol;
+    *out = 0;
+    while (s = func_00233F88(s), eol = 0, *s != 0 && *s != '[') {
+        if (*s != '#') {
+            if (*s == '\r' || *s == '\n') eol = 1;
+            if (!eol) {
+                if (i == idx) {
+                    func_00235058(out, s);
+                    return strlen(out);
+                }
+                i++;
+            }
+        }
+        s = func_00233F48(s + func_00233EC8(s));
+    }
+    return 0;
+}
 
 extern "C" s32 func_002355A8(const char *a, const char *b) {
     char *p = func_00234F40(a, b);
@@ -537,9 +597,30 @@ extern "C" s32 func_00235AA0(const char *s) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00235B28);
+extern "C" char *func_00235B28(const char *s) {
+    const char *p;
+    if (s[1] == ':') return func_00234108(s);
+    if (!D_002B8D54) {
+        for (p = s; *p; p++) {
+            if (*p == ',') return (char *)p + 1;
+        }
+    }
+    for (p = s; *p; p++) {
+        if (*p == ':') return (char *)p + 1;
+    }
+    return (char *)s;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit234318", func_00235BF0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E5058);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E5080);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50D0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50E0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E50F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit234318", D_002E5100);
 
 extern "C" char *func_00235D80(void) {
     return D_36D540;

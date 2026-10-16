@@ -104,7 +104,7 @@ extern "C" void func_0024B650(const char *p, s32 a, char *buf, s32 b);
 extern "C" void func_0024B7B8(const char *p, char *dir, char *name);
 extern "C" unsigned int strlen(const char *s);
 char *Func24A4C0(const char *name);
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 struct CFaceTex {
     void *m_data;             // 0x0
     s32 m_psm;                // 0x4

@@ -1,19 +1,19 @@
 # Bokura no Kazoku decomp (private)
 
 <!-- status:begin -->
-![functions](https://img.shields.io/badge/functions-6023%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-41.5%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
+![functions](https://img.shields.io/badge/functions-6059%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-42.5%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
 
 Progress, 2026-10-16 (functions in C; the rest is still INCLUDE_ASM):
 
 | | Progress | |
 |---|---|---|
-| **Functions** | `█████████████████████░░░░` | 6,023 / 7,223 (83.4%) |
-| **Code bytes** (`.text`, 1.70 MB) | `██████████░░░░░░░░░░░░░░░` | 705.4 KB / 1700.4 KB (41.5%) |
-| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `████████░░░░░░░░░░░░░░░░░` | 1,848 / 2,303 functions, 33.1% of bytes |
-| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `████████████░░░░░░░░░░░░░` | 1,867 / 2,264 functions, 47.1% of bytes |
-| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `██████████████░░░░░░░░░░░` | 1,209 / 1,483 functions, 54.2% of bytes |
-| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `████████████████░░░░░░░░░` | 1,099 / 1,169 functions, 65.1% of bytes |
-| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 1,016 |
+| **Functions** | `█████████████████████░░░░` | 6,059 / 7,223 (83.9%) |
+| **Code bytes** (`.text`, 1.70 MB) | `███████████░░░░░░░░░░░░░░` | 722.0 KB / 1700.4 KB (42.5%) |
+| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `█████████░░░░░░░░░░░░░░░░` | 1,876 / 2,303 functions, 34.5% of bytes |
+| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `████████████░░░░░░░░░░░░░` | 1,871 / 2,264 functions, 47.4% of bytes |
+| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `██████████████░░░░░░░░░░░` | 1,212 / 1,483 functions, 54.8% of bytes |
+| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `████████████████░░░░░░░░░` | 1,100 / 1,169 functions, 65.4% of bytes |
+| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 1,082 |
 
 Build: Sony EE-GCC 2.96 for the game; parts of dklib and the Sony SDK were built with older
 SDK compilers (ee-gcc 2.9-991111 and -01), set per unit ([docs/compiler.md](docs/compiler.md)).
@@ -77,9 +77,41 @@ from the linker is wrapped in the retail ELF container by `scripts/mkelf.py` (he
 1. **Matching**: rebuilds the main ELF byte-for-byte. The reference.
 2. **Mod**: shiftable build from the same sources for tweaks.
 
-## Plan
+## Roadmap
 
-See GOALS.md.
+Where this is going, in order. Phases overlap; each builds on the one before. Milestones and
+their done-signals are tracked in GOALS.md.
+
+1. **Matching decompilation** (in progress, see the status above). Every function as C that
+   rebuilds the original executable byte for byte. The whole of `.text` after crt0 is already
+   split into source units; what is left is the large game code (menus and screens built on the
+   `state.h` state machines, draw routines, minigames), units whose data still comes from
+   assembly, and a tail of stuck functions recorded in HARD.md with their exact diffs.
+2. **Mod build.** The same sources built without the byte-for-byte constraint: every pointer a
+   symbol, so code and data can grow and move. Needs most functions in C and the data
+   (vtables, .rodata, tables) described in C, not complete matching. This is the base for
+   everything below.
+3. **English translation patch.** Groundwork is done: all ~9,400 strings (~280k Japanese
+   characters) are mapped, `tools/strings.py` extracts them per file for line-by-line
+   translation, and translations are kept in `translation/en/` without any Japanese
+   ([docs/translation.md](docs/translation.md)). The dialogue lives in plain-text message files
+   that scripts look up by label, so English can be any length. Still needed:
+   - an archive repacker (`tools/xap.py` extracts; it doesn't rebuild yet);
+   - a font check (Latin glyphs, glyph widths, how the renderer advances) and a fix if needed;
+   - message window widths and a re-wrap rule; vertical-text windows switched to horizontal;
+   - textures with drawn-in Japanese, edited;
+   - the ISO rebuilt with the patched archives;
+   - then the translation itself, file by file, with a shared glossary.
+   The patch ships as a delta against the user's own disc, never as game data.
+4. **Native PC port** (long term). With the game logic in C, it can be compiled for a PC instead
+   of the PS2, with the hardware layers replaced: the GS/VIF/VU graphics path by a modern
+   renderer, the SPU2/IOP sound and file I/O by host equivalents, pads by SDL. The Sony SDK
+   code (already isolated in its own units) is exactly what a port swaps out. Prior art: the
+   PS1/N64/PS2 decomps that grew PC ports. Requires the mod build first, and likely widescreen
+   and higher resolution as early wins.
+
+Like the decomp itself, none of this ships game code or assets: every build and patch starts
+from your own disc.
 
 ## Lessons learned
 

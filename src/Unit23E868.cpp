@@ -346,7 +346,24 @@ INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F1C0);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F458);
 
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5908);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5930);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5958);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5968);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5978);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5988);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E59B0);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E59D8);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A08);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A30);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A50);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A60);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A88);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5A90);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5AB8);
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F4A8);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5BA8);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5BE0);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_0023F770);
 
@@ -489,6 +506,14 @@ extern "C" Glyph *func_0023FEE8(FontCtx *ctx, s32 *src, s32 f) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit23E868", func_00240038);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5DB8);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5DE0);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E00);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E08);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E10);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E18);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E20);
+INCLUDE_RODATA("asm/nonmatchings/Unit23E868", D_002E5E28);
 
 extern "C" s32 func_002409C0(s32 a, const char *n1, const char *n2) {
     s32 r = -1;

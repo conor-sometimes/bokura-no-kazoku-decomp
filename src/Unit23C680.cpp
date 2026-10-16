@@ -225,6 +225,21 @@ extern "C" u8 *func_0023CEF0(GNode *n) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023CF18);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E54D0);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E54E8);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E54F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5500);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5510);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5520);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5530);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5540);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5550);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5560);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5570);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5580);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E5590);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E55A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit23C680", D_002E55B0);
 
 extern "C" s32 func_0023D030(s32 v) {
     s32 old;
@@ -295,6 +310,7 @@ INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023D470);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023D660);
 
+asm(".p2align 3");
 extern "C" s32 func_0023DAC0(u64 h) {
     s32 r;
     if (h == 0) return 0;

@@ -11,7 +11,7 @@ public:
 
 #include "libc.h"
 extern void (*D_002B91B0)(void *p);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 void *Func245D00(int size);
 struct CSwingBoneNode {
     s32 m0;                   // 0x0 (Apply111548: axis mask, bits 0-2)

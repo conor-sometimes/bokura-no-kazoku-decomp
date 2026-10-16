@@ -418,7 +418,7 @@ void Func225470(s32 v);
 void Func2255A8(s32 v);
 s32 Func251B88();
 s32 Func205598(const char *name);
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 f32 Func1EAC30(s32 h);
 void Func201D78(CVec4 *v);
 void Func201CC0(s32 i, CVec4 *v);

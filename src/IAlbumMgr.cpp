@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -72,9 +73,11 @@ struct CAlbumSceneSet {
     u8 pad30[0xB0];
 };
 // Album manager interface (vtable _vt$9IAlbumMgr, slots 7-8 pure).
+// #pragma interface (top) keeps this unit from emitting the vtables (asm data), so the key method
+// ~CAlbumMgr can be C++; ~IAlbumMgr is inline in retail.
 class IAlbumMgr : public CTask {
 public:
-    virtual ~IAlbumMgr();
+    virtual ~IAlbumMgr() {}
     virtual void Init16D660() = 0;
     virtual void Term16D768() = 0;
 };
@@ -95,7 +98,8 @@ public:
     virtual void Vf29A250();
 
     CAlbumSub8 m_unk8;        // 0x8
-    u8 pad10[0x4C];
+    u8 pad10[0x40];
+    u8 m_bg[0xC];             // 0x50: CBgWork (destroyed explicitly)
     void *m_buf;              // 0x5C
     void *m_bufA;             // 0x60
     void *m_bufB;             // 0x64
@@ -147,7 +151,7 @@ extern "C" void func_0012C5F0(void *p);
 extern "C" void func_00132208(void *p);
 void SetSndWorkRealInstance(void *p);
 extern char D_002D9D50[];
-int Func235DE0(const char *fmt, ...);
+int Func235DE0(const char *fmt, ...) throw();
 class CNameDBMgr {
 public:
     static CEventObj *Create(void *p);
@@ -234,7 +238,22 @@ struct CAlbumSlots { u8 pad[0x200]; s32 slot[2]; };
 inline void AlbClr(CAlbumSub8 *c) { c->m_unk4 = -1; c->m_unk2 = 0; c->m_unk0 = 0; }
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/IAlbumMgr", func_0016D548);
+extern "C" int func_00245818(void *p, s32 v);
+extern "C" void func_0012C4F0(void *p, s32 flags);
+extern "C" void func_00128BB0(void *p, s32 flags);
+extern "C" void AlbumEventResDtor(void *p, s32 flags) asm("_$_9CEventRes");
+extern "C" void AlbumBgWorkDtor(void *p, s32 flags) asm("_$_7CBgWork");
+extern s32 D_002A3680;
+
+CAlbumMgr::~CAlbumMgr() {
+    func_00245818(m_bg, 1);
+    CAlbumMgr::Term16D768();
+    D_002A3680 = 0;
+    func_0012C4F0(&m_scene, 2);
+    func_00128BB0(&m_sceneSet, 2);
+    AlbumEventResDtor(m_obj68, 2);
+    AlbumBgWorkDtor(m_bg, 2);
+}
 
 void CAlbumMgrSub16D618::Reset() {
     m_unk5C = 0;

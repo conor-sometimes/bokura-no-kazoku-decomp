@@ -52,7 +52,7 @@ public:
     s32 m_unk4E4;             // 0x4E4
 };
 
-void Func235DE0(const char *fmt, ...);
+void Func235DE0(const char *fmt, ...) throw();
 extern s32 D_002A5370[];
 extern char D_002DD838[];
 extern char D_002DD858[];
@@ -75,6 +75,19 @@ extern "C" const char *func_001A36B0(void *w, s32 v);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern char D_002DD820[];
 // @decl-end
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD7D8);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD7F8);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD800);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD808);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD810);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD818);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD820);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD838);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD858);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD878);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD8A0);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD8C8);
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD8F0);
 
 CCommandBase::CCommandBase() {
     s32 i;
@@ -169,7 +182,13 @@ s32 CCommandBase::GetRec40(s32 i) {
     return m_recs[i].m40;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CCommandBase", func_00198430);
+CCommandBaseRec *CCommandBase::GetRec(s32 i) {
+    if (i < 0 || i > m_num - 1) {
+        Func235DE0(D_002DD8C8, i);
+        return 0;
+    }
+    return &m_recs[i];
+}
 
 s32 CCommandBase::GetRec4(s32 i) {
     if (i < 0 || i > m_num - 1) {
@@ -215,3 +234,4 @@ s32 CCommandBase::PrevRowItem(s32 wrap) {
     }
     return D_002A5370[RowOf(m_cursor) - 1];
 }
+INCLUDE_RODATA("asm/nonmatchings/CCommandBase", D_002DD918);

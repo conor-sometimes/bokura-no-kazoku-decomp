@@ -283,6 +283,8 @@ int Func238158(void *p, int f) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_002381C0);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5320);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5330);
 
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_00238240);
 
@@ -429,6 +431,12 @@ extern "C" s32 func_002394F8(s32 ch, s32 a, s32 b) {
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_00239568);
 
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_002395A0);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5368);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5398);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E53C8);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E53F0);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5418);
+INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5440);
 
 extern "C" s32 func_00239698(u32 ch, s32 x) {
     s32 r = 0;

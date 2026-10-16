@@ -68,7 +68,7 @@ extern "C" unsigned int strlen(const char *s);
 inline void StrAdd(char *d, const char *s) { strcpy(d + strlen(d), s); }
 extern "C" char *strstr(const char *s, const char *t);
 void *Func248E48(const char *name);
-s32 Func235DE0(const char *fmt, ...);
+s32 Func235DE0(const char *fmt, ...) throw();
 extern "C" int func_00253048(void *p, s32 *a, s32 *b, s32 *c, s32 *d, s32 *e, s32 *f, s32 *g, s32 *h);
 extern "C" void func_0023C048(s32 a, s32 b, s32 c);
 struct CModelTex {

@@ -1,3 +1,4 @@
+#pragma interface
 #include "common.h"
 
 // @decl-begin (declarations for the matched functions; scripts regenerate this block)
@@ -6,11 +7,19 @@ public:
     void Init250208(void (*f)(), s32 a, s32 b, s32 c);
     void *Find250B08(s32 id);
     void Func250368();
+    ~CResCache();
 
     u8 pad0[0x13C];
 };
 // Vtable _vt$10CEnvResMgr (vptr at 0x13C, after CResCache); slots as IResMgr in CGameMain.cpp.
-class CEnvResMgr : public CResCache {
+// #pragma interface (top) keeps this unit from emitting the vtables (asm data), so the key method
+// ~CEnvResMgr can be C++; ~IEnvResMgr is inline in retail.
+class IEnvResMgr : public CResCache {
+public:
+    virtual ~IEnvResMgr() {}
+};
+extern void *D_002A0BEC;
+class CEnvResMgr : public IEnvResMgr {
 public:
     virtual ~CEnvResMgr();
     virtual void V1();
@@ -33,7 +42,9 @@ public:
 extern "C" void func_0012D8B0();
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/IEnvResMgr", func_0012DC48);
+CEnvResMgr::~CEnvResMgr() {
+    D_002A0BEC = 0;
+}
 
 s32 CEnvResMgr::GetItemUnk14(s32 id) {
     CEnvResItem *p = (CEnvResItem *)Find250B08(id);
