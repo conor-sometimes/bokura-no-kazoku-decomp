@@ -28,7 +28,7 @@ extern u8 D_41A788[];
 void *Func25C220();
 void Func25BD60(CSndPrm *p);
 
-struct CSndWorkM { u8 pad[0x6C]; };
+struct CSndWorkM { CSndWorkM() asm("func_0025C230"); u8 pad[0x6C]; };
 class CSndMgr;
 typedef s32 (CSndMgr::*CSndSaveFn)(char *buf);
 extern const CSndSaveFn D_002E7748f __asm__("D_002E7748");

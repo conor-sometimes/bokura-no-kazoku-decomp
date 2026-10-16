@@ -162,6 +162,9 @@ class CHeapObj {
 public:
     static void *operator new(unsigned int n);
 };
+
+inline void Y1ListInit(CMemNode *l) { l->m_prev = l; l->m_next = l; }
+inline void Y1ListIns(CMemNode *l, CMemNode *n) { n->m_prev = l; n->m_next = l->m_next; l->m_next = n; n->m_next->m_prev = n; }
 // @decl-end
 
 extern "C" void *__builtin_new(u32 n) {
@@ -397,7 +400,57 @@ extern "C" CMemHeap *func_00246088(CMemHeap *h) {
 
 extern "C" CMemHeap *func_002460C8() { return D_38F188.m_slot[func_001F1180()].m_heap; }
 
-INCLUDE_ASM("asm/nonmatchings/Dk245648", func_00246100);
+extern "C" CMemHeap *func_00246100(void *mem, s32 size, s32 nodes)
+{
+    CMemHeap *h = (CMemHeap *)mem;
+    u8 *end;
+    CMemBlk *b;
+    CMemNode *n, *nd;
+    s32 dsize;
+    if (!h || size < 0x50 || nodes <= 0) {
+        if (D_38F188.m_flags & 4) Func235DE0("*** memheap : invalid arg %X, %d, %d\n", h, size, nodes);
+        return 0;
+    }
+    memset(h, 0, 0x50);
+    nd = (CMemNode *)(h + 1);
+    end = (u8 *)h + size;
+    b = (CMemBlk *)(((u32)(nd + nodes) + 15) & ~15);
+    dsize = (end - (u8 *)b) & ~15;
+    h->m_usedNodes = 0;
+    h->m_list.m_prev = &h->m_list;
+    h->m_list.m_next = &h->m_list;
+    h->m_free.m_prev = &h->m_free;
+    h->m_data = (u8 *)b;
+    h->m_size = dsize;
+    h->m_used = 0;
+    h->m_count = 0;
+    h->m_magic = 0x484D454D;
+    h->m_free.m_next = &h->m_free;
+    h->m_nodes = nd;
+    h->m_numNodes = nodes;
+    if (dsize <= 0) {
+        if (D_38F188.m_flags & 4) Func235DE0("*** memheap : underflow size (%d)\n", dsize);
+        return 0;
+    }
+    b->m_req = 0;
+    b->m_size = dsize - 16;
+    b->m_tag = h->m_tag;
+    h->m_used += 16;
+    n = func_00245E18(h);
+    b->m_node = n;
+    n->m_blk = b;
+    n->m_heap = h;
+    { CMemNode *l = &h->m_list; n->m_prev = l; n->m_next = h->m_list.m_next; l->m_next = n; n->m_next->m_prev = n; }
+
+    h->m_first = n;
+    h->m_last = n;
+    {
+        CMemGlobal *g = &D_38F188;
+        g->m_lo = g->m_lo < (s32)h ? g->m_lo : (s32)h;
+        g->m_hi = (s32)end < g->m_hi ? g->m_hi : (s32)end;
+    }
+    return h;
+}
 INCLUDE_RODATA("asm/nonmatchings/Dk245648", D_002E5FE8);
 
 extern "C" s32 func_002462B0() {

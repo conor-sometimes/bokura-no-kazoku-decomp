@@ -70,6 +70,8 @@ inline void SetSR(u32 v) { __asm__ volatile("sync.p"); __asm__ volatile("mtc0 %0
 inline void SetSRWait(u32 v) { do SetSR(v); while (GetSR() != v); }
 inline u32 DisableIntr() { u32 st; __asm__ volatile("sync.p"); __asm__ volatile("sync"); st = GetSR(); SetSRWait(st & ~1); return st; }
 inline void RestoreIntr(u32 st) { __asm__ volatile("sync.p"); __asm__ volatile("sync"); SetSRWait(st); }
+
+inline u8 Flags(Strm *s) { return s->m19; }
 // @decl-end
 INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3400);
 INCLUDE_RODATA("asm/nonmatchings/Unit20E938", D_002E3440);
@@ -368,7 +370,13 @@ extern "C" void func_0020F4F8(u32 i, s32 x) {
     return;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20E938", func_0020F530);
+extern "C" u8 func_0020F530(u32 i) {
+    Strm *s;
+    if (i < 64 && Used(s = &D_32F300.e[i])) goto found;
+    return 0;
+found:
+    return Flags(s);
+}
 
 extern "C" void func_0020F580(u32 i, s32 v) {
     Strm *s;

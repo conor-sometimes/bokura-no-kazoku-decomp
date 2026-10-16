@@ -484,7 +484,17 @@ extern "C" void func_00228168(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_00228208);
+extern "C" void func_00228208(void) {
+    s32 i;
+    D_002B8C30 = 0x20;
+    D_33F5D8 = (Res *)D_002B91A4(0x600);
+    for (i = 0; i < D_002B8C30; i++) {
+        Res *e = &D_33F5D8[i];
+        e->flags = 0;
+    }
+    D_002B8C34 = 1;
+    D_002B8C38 = 0;
+}
 
 extern "C" void func_002282A8(void) {
     s32 i;
@@ -540,6 +550,7 @@ extern "C" s32 func_00228548(const char *name) {
     return r;
 }
 
+asm(".p2align 3");
 extern "C" s32 func_00228618(s32 off) {
     return *(s32 *)(D_33F5E0[TID] + off);
 }

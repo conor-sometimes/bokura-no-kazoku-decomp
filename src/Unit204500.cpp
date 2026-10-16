@@ -449,7 +449,12 @@ extern "C" s32 func_00206170(s32 a, s32 b, s32 c) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit204500", func_002061D8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit204500", func_002062B8);
+extern "C" s32 func_002062B8(s32 v) {
+    s32 old = D_002A5DE8;
+    s32 t = v < 0 ? 0 : (v < 2 ? v : 1);
+    D_002A5DE8 = t;
+    return old;
+}
 
 extern "C" void func_002062F0(s32 *out) {
     s32 buf[0x30];
@@ -483,6 +488,7 @@ extern "C" void func_002063F8(s32 *out) {
     for (i = 0; i < 0x30; i++) out[i] = buf[i];
 }
 
+asm(".p2align 3");
 extern "C" f32 func_00206458(s32 v) {
     s32 i;
     v = v < -4800 ? -4800 : (v > 4800 ? 4800 : v);

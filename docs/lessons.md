@@ -1213,6 +1213,55 @@ end:;
   its first window and "*** Can't Get %s Window" for the second, two copies of the same message.
 - **Self-deleting sounds**: the CSndUnitTg/Seq/Str updates (0x25E590 ...) fade out over m4E frames and
   then `delete this` from inside their own update.
+## sm3 (state.h machines, third pass, 2026-10-16)
+- **Which `return 0` copy an exit lands on: try `break;`** (to the switch's trailing `return 0`) as well
+  as `return 0;` and `goto ret0;`. CEventObj 0x13C2D0's command-1 exit `Pop(); break;` jumps to case
+  0's copy as retail; `goto ret0` (label in case 0) and `return 0` both landed on case 3's. The break
+  goes through the switch's end label, which jump threads to the first copy rather than cross-jumping
+  into the last one. A `{{a|b}}` variant tester over utest (build/bk/sm3/ts.py, scratch) found it in
+  one run of 24 combinations. *(bokura)*
+  CEventObj 0x13D6D8 (DIFF 35 in sm2) matched the same way: the two `if (!m4) goto ret0;` exits
+  as `break;`, and case 0x60's `if (!m4) return 0;` as `if (m4) m4->Apply(a, b); return 0;` (that
+  one gave retail's `beql` and stopped the dispatch's delay slot stealing case 0x60's first insn).
+
+- **A constant reused from another register instead of the compared variable's**: CStatusWin 0x19F6C0
+  `if (m_state == 3) goto c3; ... c3: if (m_unk64 != 3)` gave `bne m_unk64, <m_state reg>` where
+  retail reuses the `li $4,3` of the first test (DIFF 3 through two lanes). cse's follow-jumps
+  (cse_end_of_basic_block) follows a branch only if its label is preceded by a BARRIER, skipping
+  notes *except NOTE_INSN_LOOP_END*; following it lets cse record `m_state == 3` and substitute the
+  register; without it gcse does the job with the constant's pseudo. Putting the yield before `c3:`
+  inside the `do { } while (0)` (its last statement) puts a LOOP_END note in front of the label and
+  matched. Quick probe: `BK_EXTRA=-fno-cse-follow-jumps ushow.py` matching means "find the label that
+  must not be followed". *(bokura)*
+- **Register swaps between `done` and a hoisted global's hi part: count the yields**. CMenuCommon
+  0x18B080 (DIFF 9 in two lanes, `done` and D_002A5468's `lui` swapped between `$20`/`$21`) matched once
+  the -0xF5 and -0x13C waits shared one yield each (`if (a) goto y; if (b) { y: m_state = L; done = 1;
+  goto loop; }`): every written-out `done = 1` is a reference that global alloc's priority
+  (refs * log2(refs) / live length) counts, cross-jumped away or not. When `done` is in the wrong
+  s-register, try merging or splitting identical yields before anything else. *(bokura)*
+- **Porting a function removes its INCLUDE_RODATA lines**: the PMF constants and strings of
+  CMenuCommon::Update (D_002DB558..D_002DB590) came out of our object as $LC0..$LC5, so the build
+  shifted .rodata by 0x78 until those five INCLUDE_RODATA lines were deleted; utest does not show it. *(bokura)*
+- **Two s-registers swapped between GCSE pseudos: it can be a global-alloc tie broken by gcse's hash
+  table size.** global.c sorts allocnos by `floor_log2(refs) * refs / live_length` (integer division,
+  so long-lived values often tie at 0) and breaks ties by pseudo number. PRE (pre_delete) creates its
+  reaching registers while walking the expression hash table bucket by bucket, and the bucket is
+  `hash % size` with size = (insns at gcse time) / 2, made odd; the hash of a `symbol_ref` is computed
+  from the name's characters, so it is deterministic. Any source change that adds or removes a few
+  insns before gcse (a duplicated yield, a jump) can reorder those pseudos. Read the bucket count and
+  the PRE "reaching reg" lines from a `-dG` dump (`Expression hash table (177 buckets ...)`), and the
+  priorities from `-dl` (`Register N used R times across L insns`) plus `-dg` (allocation order,
+  dispositions). CTitleMain 0x1056A8: merging two identical yields took the table from 177 to 175
+  buckets and fixed a 20-word swap (D_0029F398's hi now ahead of `this + 0x6A0`). Scratch tools:
+  build/bk/sm3/tsg.py (variant tester that also prints the bucket count), regdump.sh. *(bokura)*
+- **Moving a .rodata boundary by hand works when every literal in the moved range is INCLUDE_RODATA'd**:
+  CEventObj's literals ran on to 0x2D5BB0 inside CEventMesRes's piece, which blocked 0x13D518 (its jump
+  table sat there). The yaml boundary moved to 0x1D6BB0, the 38 INCLUDE_RODATA lines moved from
+  CEventMesRes.cpp to CEventObj.cpp (path renamed), split around the jump table's function (the
+  literals below the table before it, D_002D5B98 after it), every moved symbol given
+  force_not_migration in config/rodata_syms.txt so splat keeps them as files; matched in one build
+  (scratch build/bk/sm3/romove.py). The compiled jump table landed 16-aligned by itself. *(bokura)*
+### Finds
 ## lb (structural blockers, 2026-10-16)
 - **A function-static (or file-static) const table comes after the object's RTTI names**: CMiniGame4Res's
   func_001D5550 table (0x2E15C8) and CMenuInputKanji's kana/romaji tables follow "13CMiniGame4Res" /
@@ -1361,3 +1410,67 @@ end:;
 - **objdiff counts linkonce code twice over**: the units' objects carry 88 weak `__tf*` typeinfo
   functions (`.gnu.linkonce.t`), counted per object by objdiff; the tree report counts each function
   once, at its linked address in `config/functions.txt`.
+## gb (overnight grind 2026-10-16/17: old HARD entries in the game units)
+- **A tested byte that retail loads twice** (`lbu; andi 1; andi 0xFF; bnez` then `lbu` again for the return):
+  the return goes through an inline getter too (`inline u8 Flags(StrmEnt *e) { return e->m18; }`,
+  `if (i < 32 && Used(e = &D[i])) goto found; return 0; found: return Flags(e);`). With `return e->m18;`
+  CSE reuses the tested load; volatile reloads but loses the delay-slot fill (0x20B0B8, 0x20C238, 0x20F530). *(bokura)*
+- **Clamp setters**: `s32 t = v < 1 ? 1 : (v < 3 ? v : 2); G = t;` (a temp for the store) gives retail's
+  per-path `lui` and shared `sw` tail where storing the ternary directly duplicates the tail (0x22C2A8,
+  0x2062B8; 0x184640 matched storing the ternary into a member). *(bokura)*
+- **GS register values built at run time** (`and; sltu; dsll 14`, `li 1; movn 3; dsll 12`): a u64 copy of the
+  parameter and if-assigned locals, `u64 f = flags; s32 af = 1; u64 d = 0; if (f & 0x10000000) af = 3; if (f &
+  0x2000000) d = 1; put((u64)af << 12 | d << 14 | 0x38001);`. `?:` and `!= 0` fold into the constants or turn
+  the bit test into a shift extract (0x1B9CE8). *(bokura)*
+- **An empty `beqz` slot after a `la reg, D(reg)` macro in a C-style unit (no `as -g`)**: compute the
+  compare into a local, then the unit's `NOSWAP()` (`.set noreorder/.set reorder`) before the `if`; gas then
+  cannot pull the macro's last `addu` into the slot (0x245398). *(bokura)*
+- **`bk port` names callees declared as C++ functions**: a stale `void Func226DF8(s32, u64);` in the unit got
+  `Func226DF8__FiUl = 0x226df8` added to symbol_addrs.txt ("1 renames"), which broke every other unit's
+  INCLUDE_ASM and callers of func_00226DF8. Watch port's rename count; call such callees by their
+  `func_` name. *(bokura)*
+- **utest's DIFF is positional**: once the instruction count differs, every later word counts, so a run of
+  variants all scoring the same DIFF says nothing. An aligned score (difflib over the masked words,
+  build/bk/gb/ascore.py) ranks near misses of different lengths. *(bokura)*
+- **A key-method destructor without converting the unit**: ~CResCacheUnit (0x24FAF0) matched as the
+  destructor of a view class (`class DlRUnit : public DlTagB { virtual ~DlRUnit() asm("func_0024FAF0"); ... }`)
+  whose base is a copy of CListTag with the inline unlink destructor; the unit's `#pragma interface`
+  keeps both vtables out of the object, and aliases.ld maps `_vt$7DlRUnit` / `_vt$6DlTagB` to the
+  retail `_vt$13CResCacheUnit` / `_vt$8CListTag`. Member and base destructors (`_$_7CBgWork(p, 2)`,
+  the unlink, `delete this` on in_chrg & 1) all come out of the compiler. `bk port` trips over the
+  standalone compile's `__rtti_user` reference; splice it in with utest's splice instead. *(bokura)*
+- **Unlink + push-back as one inline** (`DlMoveBack(&list, n) { unlink(n); push_back(&list, n); }`):
+  the list head is evaluated before the unlink loads, and the unlink's `n->next = n` store survives
+  because the push-back's `h->prev` load comes before its own `n->next = h` (0x250D28, 0x250DD8;
+  0x250978 to DIFF 5). *(bokura)*
+- **Store runs come out as a rotation of the source order**: two long-stuck store-order near misses
+  matched once the source was retail's output order *rotated* (the scheduler emitted the later part
+  of the run first): CDebOut's ctor (0x251BF0, output m28 m38 m10..m1C m4.. = source m4..m34 then
+  m28 m38 m10..m1C) and memheap init (0x246100, DIFF 2 through three lanes' hill climbs: source
+  starts at `usedNodes`, the output at `magic`). Hill-climbing perm over swaps never got there;
+  generating every rotation and every two-block swap of the output order (122 candidates, one vt
+  run) found it at once. Try this first for any field-init run. *(bokura)*
+- **Lessons from the Dk lanes carry over to the game units**: dl's CValue switch shape (`case 0: default:` for the
+  case that doubles as the default, cases in retail's block order, a final `sprintf`/`strcpy` kept as `jal` by
+  calling it through a block-scoped pointer copy `{ char *p = m_u.s; sprintf(p, ...); } break;`) matched
+  CSvmWork's SetInt/SetFloat/Set12E1D8 (0x12E0C8/0x12E130/0x12E1D8) at once; w1's integer-sum trick
+  (`(T *)((s32)n * 16 + (s32)t)`) fixed 0x237680's `addu n, t` order. *(bokura)*
+- **`addu base, off` in a clear loop**: `Res *e = &D_33F5D8[i]; e->flags = 0;` (a local element pointer) gives
+  retail's base-first add where `D_33F5D8[i].flags = 0` and every cast form put the offset first (0x228208). *(bokura)*
+- **Post-increment inside a call argument**: retail's `daddu $6,$18` (copy of i into the argument register)
+  followed by `addiu $18,$18,1` before the `jal` is `f(a, b, i++)` (0x211E30). *(bokura)*
+- **Store order after a null test**: `if (c) { m_unkC = c->m8; m_unk10 = (s32)c + 0x10; m_unk14 = c->mC; }`
+  (vt over the 6 orders) matched CSvmRes::Load; a separate block-scoped `c` per lookup kept each result in
+  `$2` as retail (0x12DEC0). Strings that dataconv lists as "in asm/.../func.s" become C literals. *(bokura)*
+- **Where a `return 0` lands decides `beql v0,0,ret; daddu v0,0` vs a bare branch**: when the zero
+  return is its own block, cse knows v0 is already 0 on the taken edge and drops the move (ours
+  `beqz v0, epilogue`); when the test jumps to a `return 0` shared with a path that clobbered v0 (an
+  error print), the block keeps `b ret; daddu v0,0` and reorg threads the branch through it as
+  `beql ... daddu v0,0`. Fold the test into the outer `if (a && b) {...} return 0;` (0x249428). The
+  same function's success print + `return 1` went last via `goto ok`. *(bokura)*
+- **Spill slots follow pseudo creation order**: 0x247FA8's two spilled quotients (`i0 / w`, `i1 / w`,
+  CSE temps) and a colour variable came out in swapped stack slots until the variable was declared
+  after the first use of the quotients (C++ allows the late declaration); pseudos for locals are
+  made when their declaration is expanded. *(bokura)*
+- **`return f(...)` on a void callee** in a void C++ function is how retail gets the sibcall `j f`
+  with the frame popped first (0x247FA8's single-row case). *(bokura)*

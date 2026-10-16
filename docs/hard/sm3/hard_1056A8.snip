@@ -74,12 +74,10 @@ loop:
     top:
         if (m_name[0] && strcmp(m_name, m_name + 0x200)) goto cp;
         do {
-            if (m_name[0x200] == 0) {
-                sm->m_state = -0x562; done = 1; goto loop;
-            }
+            if (m_name[0x200] == 0) goto y562;
             if (m_name[0] == 0) goto fadeout;
         } while (0);
-        sm->m_state = -0x562; done = 1; goto loop;
+        y562: sm->m_state = -0x562; done = 1; goto loop;
         do {
     cp:
         strcpy(m_name + 0x100, m_name);

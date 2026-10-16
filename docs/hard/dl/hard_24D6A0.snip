@@ -1,0 +1,30 @@
+//@decl
+extern s32 *D_002BA008[];
+extern "C" void func_0024BE38(CValue *d, CValue *s);
+//@func 0x24D6A0
+extern "C" s32 func_0024D6A0(CExpr *e, CValue *v, const char **pp, s32 level)
+{
+    CValue lhs;
+    CValue rhs;
+    char tok[0x100];
+    s32 k;
+{{N:@@    s32 next = level + 1;
+}}    func_0024BAE0(&lhs);
+    if (!D_002BA008[level]) return func_0024D460(e, v, pp);
+    lhs.m_type = v->m_type;
+    if (!func_0024D6A0(e, &lhs, pp, {{N:level + 1@@next}})) return 0;
+    while (**pp) {
+        const char *q;
+        func_0024BAE0(&rhs);
+        q = Func24A840(*pp, tok, (const char *)D_002B9E60, D_002E6780, 0x100);
+        k = func_0024D288(D_002B9E60, tok);
+        if (func_0024D248(D_002BA008[level], k) < 0) break;
+        *pp = q;
+        rhs.u.i = 0;
+        rhs.m_type = lhs.m_type;
+        if (!func_0024D6A0(e, &rhs, pp, {{N:level + 1@@next}})) return 0;
+        if (!D_002B9EB8[k][0](&lhs, &rhs, e)) return 0;
+    }
+    func_0024BE38(v, &lhs);
+    return 1;
+}

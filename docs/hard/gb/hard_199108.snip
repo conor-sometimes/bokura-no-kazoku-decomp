@@ -1,0 +1,27 @@
+//@decl
+struct CCsCol { u8 pad[0x500]; f32 r, g, b, a; };
+#define CC(k) ((CCsCol *)((u8 *)this + (k) * 32))
+//@func 0x199108
+void CCommandSelect::Func199108(s32 k, f32 x, f32 y, f32 w, f32 h) {
+    CCsRect *q = Rect(k);
+{{    q->h = h;
+    q->x = x;
+    q->y = y;
+    q->w = w;
+@@    q->x = x;
+    q->y = y;
+    q->w = w;
+    q->h = h;
+}}
+{{    CC(k)->r = 1.0f;
+    CC(k)->g = 1.0f;
+    CC(k)->b = 1.0f;
+    CC(k)->a = 1.0f;
+@@    CC(k)->r = CC(k)->g = CC(k)->b = CC(k)->a = 1.0f;
+@@    CC(k)->a = CC(k)->b = CC(k)->g = CC(k)->r = 1.0f;
+@@    CC(k)->a = 1.0f;
+    CC(k)->r = 1.0f;
+    CC(k)->g = 1.0f;
+    CC(k)->b = 1.0f;
+}}
+}

@@ -1,0 +1,9 @@
+//@decl
+extern s32 D_39391C;
+//@func 0x251398
+extern "C" void func_00251398(s32 field)
+{
+    s32 f = field != 0;
+    *(volatile u64 *)0x12000070 = ((func_0023C650(D_3936F0) & 0x3FFF) >> 5) | ((s64)D_39391C >> 6 << 9) | 0x8000;
+    *(volatile u64 *)0x12000090 = ((func_0023C650(D_3936F0) & 0x3FFF) >> 5) | ((u64)f << 43) | ((s64)D_39391C >> 6 << 9) | 0x8000;
+}

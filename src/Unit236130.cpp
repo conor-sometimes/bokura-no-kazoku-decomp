@@ -477,7 +477,23 @@ extern "C" DmaTag *func_002375C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit236130", func_002375D8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit236130", func_00237680);
+extern "C" DmaTag *func_00237680(s32 n) {
+    DmaTag *t;
+    u32 addr;
+    func_002375D8(0);
+    t = D_37BDB0;
+    TQ(t)->d0 = 0;
+    t->b.qwc = 0;
+    TQ(t)->d1 = 0;
+    t->b.id = 2;
+    addr = (u32)(t + n + 1);
+    if ((addr & 0x70000000) == 0x70000000) addr |= 0x80000000;
+    t->b.addr = addr;
+    t++;
+    D_37BDB0 = (DmaTag *)((s32)n * 16 + (s32)t);
+    D_002B94E4 = (u8 *)(D_37BDB0 + 1);
+    return t;
+}
 
 extern "C" u32 *func_00237720(u32 a, u32 b, u32 c, u32 d) {
     DmaTag *t;

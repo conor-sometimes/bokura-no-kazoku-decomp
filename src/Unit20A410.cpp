@@ -49,6 +49,9 @@ extern "C" void func_0020B160(u32 i, u16 *a, u16 *b, s32 n);
 
 struct S316200 { Node20 *free; StrmEnt e[32]; };
 extern S316200 D_316200;
+
+inline u8 Flags(StrmEnt *e) { return e->m18; }
+inline u8 Flags(VoiceEnt *e) { return e->m9; }
 // @decl-end
 
 extern "C" s32 func_0020A410(u32 i, s32 v) {
@@ -266,7 +269,13 @@ extern "C" void func_0020B078(void) {
     for (i = 0; i < 32; i++) func_0020AF80(i);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020B0B8);
+extern "C" u8 func_0020B0B8(u32 i) {
+    StrmEnt *e;
+    if (i < 32 && Used(e = &D_316204[i])) goto found;
+    return 0;
+found:
+    return Flags(e);
+}
 
 extern "C" s32 func_0020B100(u32 i) {
     StrmEnt *e;
@@ -538,7 +547,13 @@ extern "C" void func_0020C1F8(void) {
     for (i = 0; i < 48; i++) func_0020C100(i);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20A410", func_0020C238);
+extern "C" u8 func_0020C238(u32 i) {
+    VoiceEnt *e;
+    if (i < 48 && Used(e = &D_318DC4.m0[i])) goto found;
+    return 0;
+found:
+    return Flags(e);
+}
 
 extern "C" s32 func_0020C280(s32 i, s32 flag) {
     VoiceX *e;

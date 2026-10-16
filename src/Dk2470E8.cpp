@@ -187,7 +187,15 @@ extern "C" f32 func_002471D8() {
     return D_38F188.m_ratio[func_001F1180()];
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247210);
+extern "C" s32 func_00247210(void *lo, void *p, s32 align)
+{
+    s32 l, h;
+    if ((s32)p & (align - 1)) return 0;
+    l = lo ? (s32)lo : func_00246008();
+    h = func_00246018() - 1;
+    if ((s32)p < l || (s32)p > h) return 0;
+    return 1;
+}
 
 extern "C" s32 func_00247280(CMemHeap *h, s32 verbose) {
     if (!func_00247210(0, h, 4) || h->m_magic != 0x484D454D) {
@@ -429,7 +437,36 @@ extern "C" void func_00247D38(s32 x0, s32 y0, s32 x1, s32 y1, u32 c0, u32 c1, u3
     D_38F1B0.m_pkt = p + 19;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00247FA8);
+extern "C" void func_00247FA8(s32 x, s32 y, s32 w, s32 h, s32 i0, s32 i1, u32 c0, u32 c1)
+{
+    s32 e, s;
+    u32 cb, ta, tb;
+    f32 n;
+    if (i0 / w == i1 / w) {
+        return func_00247D38(x + i0 % w, y + i0 / w, x + i1 % w + 1, y + i0 / w + 1, c0, c1, c1, c0);
+    }
+    u32 ca;
+    e = i0;
+    s = i1;
+    ca = c0;
+    cb = c1;
+    if (i0 % w > 0) {
+        e += w - i0 % w;
+        ca = func_00247B60(cb, c0, (f32)(e - i0) / (f32)(i1 - i0));
+        func_00247D38(x + i0 % w, y + i0 / w, x + w, y + i0 / w + 1, c0, ca, ca, c0);
+    }
+    if (i1 % w > 0) {
+        s -= i1 % w;
+        cb = func_00247B60(cb, c0, (f32)(s - i0) / (f32)(i1 - i0));
+        func_00247D38(x, y + i1 / w, x + i1 % w, y + i1 / w + 1, cb, c1, c1, cb);
+    }
+    if (e < s) {
+        n = (f32)(i1 - i0);
+        ta = func_00247B60(c1, c0, (f32)(e + w - i0) / n);
+        tb = func_00247B60(c1, c0, (f32)(s - w - i0) / n);
+        func_00247D38(x, y + e / w, x + w, y + s / w, ca, ta, cb, tb);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00248298);
 
@@ -663,7 +700,18 @@ void Func249348()
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk2470E8", func_00249428);
+extern "C" s32 func_00249428(const char *sec, const char *key)
+{
+    char buf[0x100];
+    if (func_00235648(buf, sec, key) >= 0 && strstr(buf, D_002E64D0)) {
+        if (func_0024A128(buf, buf)) goto ok;
+        Func235DE0("*** not found (%s)\n", buf);
+    }
+    return 0;
+ok:
+    Func235DE0("link (%s)\n", buf);
+    return 1;
+}
 INCLUDE_RODATA("asm/nonmatchings/Dk2470E8", D_002E6530);
 
 extern "C" void func_002494B0(const char *sec, const char *key) {

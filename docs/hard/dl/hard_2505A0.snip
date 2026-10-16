@@ -1,0 +1,28 @@
+//@decl
+
+extern const char D_002E6968[];
+inline void DlMoveFront(RHead *h, CRU *n) { RUnlink(n); RPushFront(h, n); }
+//@func 0x2505A0
+extern "C" s32 func_002505A0(void *cv, const char *name, s32 mode)
+{
+    CResCache *c = (CResCache *)cv;
+    CRU *n;
+    for (n = Y1RFi(&c->m_free); n; n = Y1RN2(n))
+        if (!strcmp(n->m_name, name)) { DlMoveFront(&c->m_free, n); break; }
+    if (!n) {
+        for (n = Y1RFi(&c->m_used); n; n = Y1RN2(n))
+            if (!strcmp(n->m_name, name)) {
+                if (mode) DlMoveFront(&c->m_free, n); else DlMoveFront(&c->m_used, n);
+                break;
+            }
+        if (!n) {
+            n = Y1RLa(&c->m_used);
+            if (!n) { Func235DE0("*** empty free cache (%s)\n", name); return 0; }
+            func_0024FD28(n);
+            func_0024FCB0(n, name);
+            if (mode) DlMoveFront(&c->m_free, n); else DlMoveFront(&c->m_used, n);
+        }
+    }
+    if (mode) n->m58++;
+    return 1;
+}

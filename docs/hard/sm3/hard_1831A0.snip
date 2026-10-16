@@ -1,26 +1,4 @@
 //@decl
-#include "state.h"
-class CVec4 {
-public:
-    f32 x, y, z, w;
-};
-class CStatusItem {
-public:
-    void Func1A3378();
-    void Func1A3628();
-    void Start();
-    void Func1A40C8();
-    int GetColor(CVec4 *out, s32 i);
-    u8 pad0[0x20];
-    s32 m_state;              // 0x20
-};
-class CStatusWinSub1A0A10 {
-public:
-    CStatusItem *Find(const char *name);
-};
-extern CStatusWinSub1A0A10 *D_002A5408;
-inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
-inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
 //@func 0x1831A0
 void CMenuTutorSelectedSub182108::Update1831A0() {
     CStateMachine *sm = (CStateMachine *)this;

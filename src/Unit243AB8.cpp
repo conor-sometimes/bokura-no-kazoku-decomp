@@ -469,7 +469,12 @@ extern "C" s32 func_00245370(u32 i) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit243AB8", func_00245398);
+extern "C" void func_00245398(u32 i, s32 b, s32 c) {
+    SndCh *ch = &D_38F088[i];
+    u32 ok = i < 4;
+    NOSWAP();
+    if (ok) { ch->mC = b; ch->m10 = c; }
+}
 
 extern "C" s32 func_002453C8(u32 i) {
     s32 r = 0;

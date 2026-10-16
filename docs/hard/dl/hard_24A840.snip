@@ -1,0 +1,45 @@
+//@decl
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max);
+extern "C" int strncmp(const char *a, const char *b, unsigned int n);
+#define DL_ISIDENT(c) ((u32)((c) - '0') < 10 || (u32)((c) - 'a') < 26 || (u32)((c) - 'A') < 26 || (s8)(c) == '_')
+//@func 0x24A840
+const char *Func24A840(const char *src, char *dst, const char *delim, const char *skip, s32 max)
+{
+    const char **ops = (const char **)delim;
+    const char *s = func_0024AB90(src, skip);
+    u8 c = *s;
+    s32 n;
+    if (DL_ISIDENT(c)) {
+        while (DL_ISIDENT((u8)*s)) {
+            if (dst && max >= 2) { *dst++ = *s; max--; }
+            s++;
+        }
+    } else if ((s8)c == ' ' || (s8)c == '\n') {
+        while (*s && (*s == ' ' || *s == '\n')) {
+            if (dst && max >= 2) { *dst++ = *s; max--; }
+            s++;
+        }
+    } else if ((s8)c < 0) {
+        while (*s && *s < 0) {
+            if (dst && max >= 2) { *dst++ = *s; max--; }
+            s++;
+            if (dst && max >= 2) { max--; *dst++ = *s; }
+            s++;
+        }
+    } else {
+        for (; ops && *ops; ops++) {
+            n = strlen(*ops);
+            if (!strncmp(s, *ops, n)) {
+                if (dst && max >= 2) { memcpy(dst, *ops, n); max--; dst += n; }
+                s += n;
+                break;
+            }
+        }
+        if (*s && (!ops || !*ops)) {
+            if (dst && max >= 2) *dst++ = *s;
+            s++;
+        }
+    }
+    if (dst) *dst = 0;
+    return func_0024AB90(s, skip);
+}

@@ -287,9 +287,78 @@ inline CRU *Y1RF2(RHead *h) { CRU *n = h->next; return n->m_isHead ? 0 : n; }
 inline CRU *Y1RN2(CRU *p) { CRU *n = p->m_next; return n->m_isHead ? 0 : n; }
 inline s32 Y1Dec(s32 *p) { s32 v = *p - 1; if (v < 0) v = 0; *p = v; return v; }
 inline void Y1Dec2(s32 *p) { s32 v = *p - 1; if (v < 0) v = 0; *p = v; }
+
+inline CRU *Y1RLa(RHead *h) { CRU *n = h->prev; return n->m_isHead ? 0 : n; }
+inline void DlPushBack(RHead *h, CRU *n) {
+    n->m_prev = h->prev; n->m_next = (CRU *)h;
+    n->m_prev->m_next = n;
+    n->m_next->m_prev = n;
+}
+inline void DlUnlink2(CRU *n) {
+    n->m_prev->m_next = n->m_next; n->m_next->m_prev = n->m_prev;
+    n->m_next = n;
+    n->m_prev = n;
+}
+inline void DlMoveBack(RHead *h, CRU *n) { DlUnlink2(n); DlPushBack(h, n); }
+inline void DlMoveBack2(CRU *n, RHead *h) { DlUnlink2(n); DlPushBack(h, n); }
+
+inline CRU *Y1RIt(CRU *n) { return n->m_isHead ? 0 : n; }
+inline CRU *DlHeadNext(RHead *h) { return h->next; }
+class DlTagB {
+public:
+    s32 m_isHead;
+    DlTagB *m_prev;
+    DlTagB *m_next;
+    virtual ~DlTagB() {
+        m_prev->m_next = m_next;
+        m_next->m_prev = m_prev;
+        m_next = this;
+        m_prev = this;
+    }
+};
+class DlResObjV {
+public:
+    s32 a, b, c;
+    virtual ~DlResObjV();
+};
+class DlRUnit : public DlTagB {
+public:
+    virtual ~DlRUnit() asm("func_0024FAF0");
+    CBgWork m_bg;             // 0x10
+    DlResObjV *m_obj;         // 0x1C
+    void *m_mem;              // 0x20
+};
+
+extern u32 *D_002B94E4;
+extern u64 *D_39394C;
+extern "C" void *func_0023A0E8(void);
+extern "C" void *func_0023A2F0(void *p);
+extern "C" u64 func_0023C658(void *p);
+extern "C" void func_00237460(void);
+extern "C" s32 func_00237450(void);
+extern "C" void func_002374B0(void);
+extern "C" void func_002377D8(void);
+inline u32 *PktAlloc(s32 n) { u32 *p = D_002B94E4; D_002B94E4 = p + n; return p; }
+inline u64 *GifAlloc(s32 n) { u64 *p = D_39394C; D_39394C = p + n; return p; }
+inline s32 Y1RIndex(CResCache *c, CRU *u)
+{
+    CRU *p; s32 i; for (p = Y1RFi(&c->m_free), i = 0; p; p = Y1RIt(p->m_next), i++) if (p == u) return i; return -1;
+}
+class DlRUa : public CListTag {
+public:
+    DlRUa() asm("__13CResCacheUnit");
+    virtual ~DlRUa();
+    u8 pad10[0x5C - 0x10];
+};
 // @decl-end
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FAF0);
+DlRUnit::~DlRUnit()
+{
+    func_0024FD28((CRU *)this);
+    func_0024FC78((CRU *)this);
+    if (m_mem) (*D_002B91B0)(m_mem);
+    if (m_obj) delete m_obj;
+}
 
 extern "C" void func_0024FBD8(CResCacheUnit *u, CResObj *(*create)(), s32 size, s32 nodes) {
     u->m_obj = create();
@@ -329,7 +398,20 @@ extern "C" void func_0024FD28(CResCacheUnit *u) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_0024FD90);
+extern "C" void *func_0024FD90(u32 size)
+{
+    void *p;
+    s32 old = func_00246028(4);
+    p = func_00246B98(size);
+    func_00246028(old);
+    if (!p) {
+        CMemHeap *oh = func_00246088(D_002BA0A0);
+        p = func_00246B98(size);
+        func_00246088(oh);
+        if (p) D_002BA0A4 += size;
+    }
+    return p;
+}
 
 extern "C" void *func_0024FE28(u32 n) {
     CMemHeap *old = func_00246088(D_002BA0A8);
@@ -386,7 +468,22 @@ CResCache::~CResCache()
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F0);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E68F8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6920);
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", Init250208__9CResCachePFv_viii);
+s32 CResCache::Init250208(void (*create)(), int n, int size, int nodes)
+{
+    s32 i;
+    m_units = (CRU *)new DlRUa[n];
+    if (!m_units) {
+        Func235DE0("*** failed to allocate resource unit (num=%d)\n", n);
+        return 0;
+    }
+    m_count = n;
+    for (i = 0; i < n; i++) {
+        func_0024FBD8(&m_units[i], (CResObj *(*)())create, size, nodes);
+        DlMoveBack(&m_used, &m_units[i]);
+    }
+    *(s32 *)pad8 = size;
+    return 1;
+}
 
 void CResCache::Func250368()
 {
@@ -471,7 +568,15 @@ void *CResCache::Find250B08(int key)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250B80);
+extern "C" CRU *func_00250B80(CResCache *c, s32 idx)
+{
+    CRU *n;
+    s32 k, i;
+    
+    for (k = 0, i = 0; k < 2; k++)
+        for (n = Y1RIt(!k ? DlHeadNext(&c->m_free) : DlHeadNext(&c->m_used)); n; n = Y1RIt(n->m_next)) { if (idx == i) return n; i++; }
+    return 0;
+}
 
 extern "C" s32 func_00250BE0(CMemHeap *h) {
     CMemHeap *old = func_00246088(h);
@@ -480,11 +585,48 @@ extern "C" s32 func_00250BE0(CMemHeap *h) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250C28);
+extern "C" s32 func_00250C28(CResCache *c, s32 idx, u32 what)
+{
+    CRU *u = func_00250B80(c, idx);
+    if (!u) return 0;
+    switch (what) {
+    case 0: return (s32)u->m_name;
+    case 1: return u->m58;
+    case 2: return u->m50;
+    case 3: return func_00250BE0(u->m_heap);
+    case 4: return *(s32 *)c->pad8 - func_00250BE0(u->m_heap);
+    case 5: return Y1RIndex(c, u) >= 0;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250D28);
+extern "C" void *func_00250D28(CResCache *c)
+{
+    CRU *n = RLast(&c->m_used);
+    if (!n) return 0;
+    RUnlink(n);
+    func_0024FD28(n);
+    func_0024FC78(n);
+    DlMoveBack(&c->m_spare, n);
+    return n->m_mem;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00250DD8);
+extern "C" void func_00250DD8(CResCache *c, void *p)
+{
+    CRU *n;
+    for (n = Y1RFi(&c->m_spare); n; n = RNext(n)) {
+        if (n->m_mem == p) {
+            RUnlink(n);
+            func_0024FC38(n);
+            DlMoveBack(&c->m_used, n);
+            return;
+        }
+    }
+    Func235DE0("*** invalid rescache temp buffer (%X)\n", p);
+}
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E69D0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E69E0);
+INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E69E8);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E69F0);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6A10);
 INCLUDE_RODATA("asm/nonmatchings/Dk24FAF0", D_002E6A20);
@@ -601,7 +743,24 @@ extern "C" CDebOut *func_00251BB8() {
     return new CDebOut;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", __7CDebOut);
+CDebOut::CDebOut()
+{
+    m4 = -1;
+    m8 = 0;
+    mC = 0;
+    m20 = 0;
+    m24 = 0;
+    m2C = 1.0f;
+    m30 = 1.0f;
+    m34 = 1.0f;
+    m28 = -1;
+    m38 = 1.0f;
+    m10 = 0x280;
+    m14 = 0xE0;
+    m18 = 0x10;
+    m1C = 8;
+    D_002BA0B0 = this;
+}
 
 CDebOut::~CDebOut() {
     D_002BA0B0 = 0;
@@ -631,4 +790,22 @@ void CDebOut::Release() {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_00251DC0);
 
-INCLUDE_ASM("asm/nonmatchings/Dk24FAF0", func_002520C8);
+extern "C" void func_002520C8(void)
+{
+    u64 v = func_0023C658(func_0023A2F0(func_0023A0E8()));
+    s32 n;
+    *D_39394C++ = 0x1000000000000001LL;
+    { u64 *q = D_39394C; q[0] = 0xE; D_39394C = q + 2; q[1] = ((v & 0x3FFF) >> 5) | (((v >> 32) & 0x3F) << 24); }
+    *D_39394C++ = 0x4E;
+    *D_39394C++ = 0x8000;
+    *D_39394C++ = 0;
+    D_002B94E4 = (u32 *)D_39394C;
+    func_00237460();
+    *PktAlloc(1) = 0;
+    *PktAlloc(1) = 0;
+    *PktAlloc(1) = 0x11000000;
+    n = func_00237450();
+    { u32 x = ((n + 15) / 16 - 1) | 0x50000000; *PktAlloc(1) = x; }
+    func_002374B0();
+    func_002377D8();
+}

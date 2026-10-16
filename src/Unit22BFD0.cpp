@@ -142,7 +142,11 @@ extern "C" s32 func_0022C1D0(void) {
     return func_0027EAA8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit22BFD0", func_0022C2A8);
+extern "C" void func_0022C2A8(s32 v)
+{
+    s32 t = v < 1 ? 1 : (v < 3 ? v : 2);
+    D_33FE80 = t;
+}
 
 extern "C" s32 func_0022C2D8(void) {
     return D_33FE80;

@@ -34,7 +34,7 @@ extern "C" u32 func_00211300(u32);
 extern "C" void func_0022E618(s32);
 extern "C" void func_00210C58(u32, s32);
 extern "C" s32 func_0022E4C8(s32);
-extern "C" s32 func_00210DF8(s32);
+extern "C" s32 func_00210DF8(u32);
 extern "C" s32 func_0022DEA8(s32);
 extern "C" u8 func_00210E38(u32);
 extern "C" void func_0022E2C8(s32, s32);
@@ -436,7 +436,13 @@ extern "C" void func_00210B18(u32 i) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00210B88);
+extern "C" void func_00210B88(u32 i, u32 pos) {
+    MemStrm *m;
+    if (i < 64 && (m = &D_331E58.m[i])->used) {
+        m->pos = pos < m->size ? pos : m->size;
+        if (m->pos == m->size) m->eof = 1;
+    }
+}
 
 extern "C" s32 func_00210BD8(u32 i) {
     MemStrm *m;
@@ -460,9 +466,21 @@ found:
 
 INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00210C58);
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00210DF8);
+extern "C" s32 func_00210DF8(u32 i) {
+    MemStrm *m;
+    if (i < 64 && (m = &D_331E58.m[i])->used) goto found;
+    return 0;
+found:
+    return m->base + m->pos;
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00210E38);
+extern "C" u8 func_00210E38(u32 i) {
+    MemStrm *m;
+    if (i < 64 && (m = &D_331E58.m[i])->used) goto found;
+    return 0;
+found:
+    return m->eof;
+}
 
 extern "C" s32 func_00210E70(u32 i, void *vsrc, s32 n, s32 x) {
     MarkData *src = (MarkData *)vsrc;
@@ -575,7 +593,13 @@ found:
     return cnt;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit210070", func_00211300);
+extern "C" u32 func_00211300(u32 i) {
+    MemStrm *m;
+    if (i < 64 && (m = &D_331E58.m[i])->used) goto found;
+    return 0;
+found:
+    return m->size;
+}
 
 extern "C" void func_00211338(void) {
     func_00210958();

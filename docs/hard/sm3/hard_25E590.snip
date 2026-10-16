@@ -68,10 +68,12 @@ inline s32 SndNumCh(CSndUnitU *u) { return (u->m54 & 4) ? 2 : 1; }
 //@func 0x25E590
 // CSndUnitTg's update: start the voices, follow them, fade out over m4E frames, then delete itself.
 extern "C" void func_0025E590(CSndUnitU *u, const CSndPrm *prm) {
-    CSndSm *sm = &u->m_sm;
+    CSndSm *sm;
     s32 i;
     s32 done;
+    sm = &u->m_sm;
     if (u->m1D && !u->m64) {
+        sm = &u->m_sm;
         sm->m_depth = 0;
         sm->m_flags = 0;
         sm->m_state = 0;

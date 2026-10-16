@@ -456,7 +456,13 @@ extern "C" s32 func_002394F8(s32 ch, s32 a, s32 b) {
     return ch;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_00239568);
+extern "C" s32 func_00239568(s32 ch, s32 v) {
+    u32 *r;
+    if (ch != 8 && ch != 9) return 0;
+    r = ch == 8 ? (u32 *)0x1000D000 : (u32 *)0x1000D400;
+    r[0x20] = v;
+    return v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/Unit237A88", func_002395A0);
 INCLUDE_RODATA("asm/nonmatchings/Unit237A88", D_002E5368);

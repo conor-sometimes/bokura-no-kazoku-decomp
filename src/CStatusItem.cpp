@@ -100,6 +100,7 @@ void Func270C50(CVec4 *dst, const CVec4 *src);
 // the methods from 0x19F200 on, with the same first fields, no virtuals and 0x58 a plain field.
 class CStatusWin {
 public:
+    void Update19F6C0();
     void Func19E8B0(const char *a, const char *b);
     void Draw19FC30();
     void Draw19FA50();
@@ -872,7 +873,96 @@ void CStatusWin::Func19F668() {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CStatusItem", func_0019F6C0);
+void CStatusWin::Update19F6C0() {
+    CStateMachine *sm = &m_sm;
+    s32 done = 0;
+loop:
+    if (done) goto out;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto out;
+    }
+    switch (sm->m_state) {
+    case -1:
+        Func19F400();
+    case -0x340:
+    a340:
+        if (m_state != 1) {
+            sm->m_state = -0x340; done = 1; goto loop;
+        }
+        do {
+    case -0x349:
+    a349:
+            if (m_item->m_state == 2) goto x34E;
+            if (m_state == 5) goto s5;
+            sm->m_state = -0x349; done = 1; goto loop;
+        } while (0);
+    x34E:
+        m_state = 2;
+        sm->m_state = -0x34E; done = 1; goto loop;
+        do {
+    case -0x34E:
+    case -0x357:
+            if (m_state == 3) goto c3;
+            if (m_state == 4) {
+                m_unk7C = 1.0f;
+                m_unk54 = 0;
+                m_unk58 = 0;
+                m_unk5C = 0;
+                sm->m_state = -0x366; done = 1; goto loop;
+            }
+            if (m_state == 5) goto s5;
+        sm->m_state = -0x357; done = 1; goto loop;
+        } while (0);
+    c3:
+        if (m_unk64 != 3) goto x34E;
+        m_unk54 = 0;
+        goto s39A;
+        do {
+    case -0x366:
+    case -0x387:
+            if (m_state == 5) goto s5;
+            if (m_state == 2) goto x34E;
+            if (m_unk5C++ > D_002A4B60->Func1091B0(0x28)) {
+                if (m_unk7C == 1.0f) m_unk7C = 2.0f;
+                else m_unk7C = 1.0f;
+                m_unk5C = 0;
+            }
+            if (Func19E5C8(m_unk7C, m_unk58)) {
+                Func19E5C8(1.0f, -1);
+                m_unk58 = -1;
+                goto x34E;
+            }
+            if (m_unk54++ > D_002A4B60->Func1091B0(0x27)) {
+                m_unk58++;
+                m_unk54 = 0;
+            }
+            sm->m_state = -0x387; done = 1; goto loop;
+        } while (0);
+    case -0x39A:
+    s39A:
+        if (m_state == 5) goto s5;
+        {
+            f32 t = (f32)m_unk54 / (f32)D_002A4B60->Func1091B0(0x22);
+            m_unk78 = (func_00251BA8() & 1) ? 1.0f : 2.0f - t;
+        }
+        m_unk54++;
+        if (D_002A4B60->Func1091B0(0x22) < m_unk54) goto x34E;
+        sm->m_state = -0x39A; done = 1; goto loop;
+        do {
+    case -0x3A8:
+    s5:
+            if (m_state == 1) goto a349;
+            if (m_item->m_state == 0) {
+                m_state = 0;
+                goto a340;
+            }
+            sm->m_state = -0x3A8; done = 1; goto loop;
+        } while (0);
+    }
+out:
+    m_item->Func1A40C8();
+}
 
 void CStatusWin::Draw19FA50() {
     u8 *p;

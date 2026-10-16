@@ -139,8 +139,13 @@ extern char D_002DAEB8[];
 struct CGsRect { s32 x0, y0, x1, y1; };
 
 #include "state.h"
+class CVec4 {
+public:
+    f32 x, y, z, w;
+};
 class CStatusItem {
 public:
+    int GetColor(CVec4 *out, s32 i);
     void Func1A3378();
     void Func1A3628();
     void Start();
@@ -243,6 +248,7 @@ public:
     s32 GetEntry(u32 i);
     void GetCursorPos(f32 *x, f32 *y);
     void SetPage(s32 m);
+    void Update1831A0();
 
     CTutorTimer m_timer;      // 0x0
     u8 pad8[0x40];
@@ -496,7 +502,10 @@ void CMenuTutorSelectedSub1843F0::Close() {
     m_state = 3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMenuExam", func_00184640);
+extern "C" void func_00184640(CMenuTutorSelectedSub1843F0 *p, s32 mode)
+{
+    p->m_mode = mode < 0 ? 0 : (mode < 2 ? mode : 1);
+}
 
 void CMenuTutorSelectedSub1843F0::GetPos(f32 *x, f32 *y) {
     CTextBuf buf;

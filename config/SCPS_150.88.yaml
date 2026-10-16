@@ -423,7 +423,7 @@ segments:
       - [0x1D6200, .rodata, CSvmWork]
       - [0x1D6600, .rodata, CEventRes]
       - [0x1D6670, .rodata, CEventObj]
-      - [0x1D68B0, .rodata, CEventMesRes]
+      - [0x1D6BB0, .rodata, CEventMesRes]
       - [0x1D6D60, .rodata, CMovieObj]
       - [0x1D6EE0, .rodata, CUserFlagMgr]
       - [0x1D7930, rodata, ro_CSysFlag]   # also ISysFlag

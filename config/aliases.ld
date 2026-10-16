@@ -430,3 +430,5 @@ dptoul = 0x002854F0; /* = func_002854F0 (fp-bit __fixunsdfsi, the soft-float lib
 D_316200 = 0x00316200; /* lane z1: free Node20 list head right before D_316204 (Unit20A410 0x20B5A0) */
 __8CSndWork = 0x0025C230; /* func_0025C230 (sound object ctor), CInterfMgr members (lane lb) */
 _$_8CSndWork = 0x0025C2C0; /* func_0025C2C0 (sound object dtor), CInterfMgr members (lane lb) */
+_vt$7DlRUnit = 0x002C2518; /* = _vt$13CResCacheUnit: view class of ~CResCacheUnit 0x24FAF0 (lane dl) */
+_vt$6DlTagB = 0x002BFFC0; /* = _vt$8CListTag: inline-dtor view of CListTag for ~CResCacheUnit (lane dl) */

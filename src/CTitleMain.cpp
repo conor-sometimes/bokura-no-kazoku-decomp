@@ -83,7 +83,8 @@ public:
     char m_name[0x300];       // 0x3A0
     CSndWorkReal m_snd;       // 0x6A0
     CMapObj m_map;            // 0x780
-    u8 pad7B4[0x10];
+    u8 pad7B4[0xC];
+    f32 m_unk7C0;             // 0x7C0
     s32 m_unk7C4;             // 0x7C4
     s32 m_unk7C8;             // 0x7C8
 };

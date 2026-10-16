@@ -263,6 +263,8 @@ int Func235DE0(const char *, ...) throw();
 //@sym atoi 0x289118
 //@sym atoff 0x289100
 //@sym fptodp 0x284B98
+
+extern "C" double func_002890E8(const char *);
 // @decl-end
 
 void CValue::Reset() {
@@ -270,11 +272,30 @@ void CValue::Reset() {
     m_u.i = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", SetInt__6CValuei);
+void CValue::SetInt(s32 v) {
+    switch (m_type) {
+    case 0: default: m_u.i = v; m_type = 0; break;
+    case 1: m_u.f = v; break;
+    case 2: { char *p = m_u.s; sprintf(p, D_002D5200, v); } break;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", SetFloat__6CValuef);
+void CValue::SetFloat(f32 f) {
+    switch (m_type) {
+    case 0: m_u.i = (s32)f; break;
+    case 1: default: m_u.f = f; m_type = 1; break;
+    case 2: { char *p = m_u.s; sprintf(p, D_002D5208, f); } break;
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", Set12E1D8__6CValuei);
+void CValue::Set12E1D8(s32 v) {
+    const char *s = (const char *)v;
+    switch (m_type) {
+    case 0: m_u.i = atoi(s); break;
+    case 1: m_u.f = func_002890E8(s); break;
+    case 2: default: m_type = 2; { char *p = m_u.s; strcpy(p, s); } break;
+    }
+}
 
 int CValue::AsInt() {
     switch (m_type) {

@@ -66,6 +66,11 @@ int Func235DE0(const char *, ...) throw();
 //@sym atoi 0x289118
 //@sym atoff 0x289100
 //@sym fptodp 0x284B98
+
+struct CSvmChunk { s32 m_id; s32 m_size; };
+
+extern "C" CSvmChunk *func_0012DE40(CSvmHeader *h, s32 id);
+struct CSvmChunkX { s32 m_id; s32 m_size; s32 m8; s32 mC; };
 // @decl-end
 
 CSvmRes::CSvmRes() {
@@ -92,10 +97,42 @@ int CSvmHeader::IsValid() {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", func_0012DE40);
+extern "C" CSvmChunk *func_0012DE40(CSvmHeader *h, s32 id) {
+    s32 off;
+    if (!h->IsValid()) return 0;
+    for (off = 0; off < h->m_size; ) {
+        u8 *p = (u8 *)h + 0x10;
+        CSvmChunk *c = (CSvmChunk *)(p + off);
+        if (c->m_id == id) return c;
+        off += c->m_size + 8;
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/CSvmRes", D_002D5160);
-INCLUDE_ASM("asm/nonmatchings/CSvmRes", Load__7CSvmResP10CSvmHeader);
+int CSvmRes::Load(CSvmHeader *h) {
+    Release();
+    if (!h->IsValid()) {
+        Func235DE0("*** invalid event script data %X\n", h->m_magic);
+        return 0;
+    }
+    {
+        CSvmChunkX *c = (CSvmChunkX *)func_0012DE40(h, 0x41544144);
+        if (!c) { Func235DE0("*** not found data chunk\n"); return 0; }
+        m_unk18 = (s32)c + 0xC;
+
+        m_unk1C = c->m8;
+    }
+    {
+        CSvmChunkX *c = (CSvmChunkX *)func_0012DE40(h, 0x504D554A);
+        if (c) { m_unk4 = (s32)c + 0xC; m_unk8 = c->m8; }
+    }
+    {
+        CSvmChunkX *c = (CSvmChunkX *)func_0012DE40(h, 0x44474552);
+        if (c) { m_unkC = c->m8; m_unk10 = (s32)c + 0x10; m_unk14 = c->mC; }
+    }
+    return 1;
+}
 
 int CSvmRes::LoadFile(const char *name) {
     int ok = 0;

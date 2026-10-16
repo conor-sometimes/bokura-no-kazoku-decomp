@@ -79,7 +79,7 @@ public:
 extern "C" int strcmp(const char *a, const char *b);
 extern void (*D_002B91B0)(void *p);
 const char *Func24ADE0(const char *p, char *buf, s32 n);
-void Func226DF8(s32 a, u64 b);
+extern "C" void func_00226DF8(s32 reg, u64 v);
 const char *Func24AF10(void *p, const char *key);
 const char *Func24AFE8(const char *p, char *buf, s32 a, s32 n);
 long Func289140(const char *s);
@@ -389,4 +389,11 @@ s32 CLayoutResSub1B8748::ReadInts(const char *key, s32 *out, s32 n) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CLayoutRes", func_001B9CE8);
+extern "C" void func_001B9CE8(void *p, s32 flags) {
+    u64 f = flags;
+    s32 af = 1;
+    u64 d = 0;
+    if (f & 0x10000000) af = 3;
+    if (f & 0x2000000) d = 1;
+    func_00226DF8(0x47, (u64)af << 12 | d << 14 | 0x38001);
+}

@@ -1,0 +1,21 @@
+//@func 0x24B650
+extern "C" char *DlPathSplit(const char *path, char *dir, char *base, char *ext) asm("func_0024B650");
+extern "C" char *DlPathSplit(const char *path, char *dir, char *base, char *ext)
+{
+    s32 dot = -1, slash = -1, i, n;
+    for (i = 0; path[i]; i++) { if (path[i] == '\\' || path[i] == '/') { slash = i + 1; dot = -1; } if (path[i] == '.') dot = i; }
+    if (dir) {
+        if (slash >= 0) { memcpy(dir, path, slash); dir[slash] = 0; }
+        else *dir = 0;
+    }
+    if (base) {
+        if (slash < 0) slash = 0;
+        if (dot < 0) n = strlen(path) - slash; else n = dot - slash;
+        memcpy(base, path + slash, n);
+        base[n] = 0;
+    }
+    if (ext) {
+        if (dot >= 0) return strcpy(ext, path + dot);
+        *ext = 0;
+    }
+}

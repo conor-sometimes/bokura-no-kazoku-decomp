@@ -1,0 +1,9 @@
+//@decl
+inline CRU *Y1RL2(RHead *h) { CRU *n = h->prev; return n->m_isHead ? 0 : n; }
+//@func 0x250978
+void CResCache::Func250978()
+{
+    CRU *n, *it, *nx;
+    it = RLast(&m_used); if (!(n = it)) return;
+    do { nx = RPrev(it); it = nx; if (n->m58 <= 0 && n->m50 && n->m54) { func_0024FD28(n); DlMoveBack(&m_used, n); } n = nx; } while (nx);
+}

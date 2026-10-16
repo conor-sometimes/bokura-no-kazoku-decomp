@@ -146,6 +146,7 @@ struct CEvWait {
 };
 class CEventObj {
 public:
+    int Cmd13D518(CSvmWork *w, int id, int reset);
     int Cmd13AC58(CSvmWork *w, int id, int reset);
     int Cmd13A508(CSvmWork *w, int id, int reset);
     int Cmd13A790(CSvmWork *w, int id, int reset);
@@ -452,6 +453,93 @@ inline int EvRAny(IResMgr *m) { return EvRFirst(m) != 0; }
 
 extern "C" int func_00138908(CEventObj *o, char *buf, CSvmWork *w, int id) throw();
 extern char D_002D5A68[];
+
+extern char D_002D5B08[], D_002D5B28[], D_002D5B68[], D_002D5B70[];
+extern "C" void SvSetResultInt(CSvmWork *w, s32 v) asm("SetResultInt__8CSvmWorki");
+extern "C" int func_00251BA8();
+extern "C" void func_00133140(void *self, CEvQueue *q, s32 v);
+extern "C" void func_001333D8(void *self, CEvQueue *q, s32 v);
+// state.h's machine with the literals this code uses.
+struct CEvSm {
+    u16 m_flags;              // 0x00
+    u16 m_depth;              // 0x02
+    s32 m_state;              // 0x04
+    s32 m_stack[16];          // 0x08
+    void Check(s32 v, const char *file, s32 line) {
+        if (!((u32)v < 16)) Func235DE0(D_002D5B28, m_depth, file, line);
+    }
+    void Push(s32 n = 1) {
+        Check(m_depth + n, D_002D5B08, 68);
+        m_depth += n;
+    }
+    void Pop(s32 n = 1) {
+        Check(m_depth - n, D_002D5B08, 70);
+        m_depth = (s16)m_depth - n;
+    }
+    s32 &Var(s32 k = 0) {
+        s32 *p;
+        Check(m_depth - k, D_002D5B08, 72);
+        p = m_stack;
+        return p[m_depth - k];
+    }
+    s32 Get(s32 k = 0) {
+        Check(m_depth - k, D_002D5B08, 76);
+        return m_stack[m_depth - k];
+    }
+};
+inline void EvSetVar(CEvSm *sm, s32 k, s32 v) { sm->Var(k) = v; }
+// The movie/sound players polled here (vptr at 0x4).
+class CEvPlayer {
+public:
+    s32 m0;
+    virtual void V0();
+    virtual void V1();
+    virtual void V2();
+    virtual void V3();
+    virtual void V4();
+    virtual void V5();
+    virtual void V6();
+    virtual void V7(s32 a, s32 b, s32 c);
+    virtual int V8();
+    virtual int V9();
+    virtual void V10();
+    virtual void V11(s32 a);
+    virtual void V12();
+    virtual void V13(s32 a);
+};
+extern CEvPlayer *D_0029F394;
+extern CEvPlayer *D_0029F398;
+#define FD3C (*(CEvHost **)((u8 *)p + 0xFD3C))
+#define FD40 (*(CEvCallbackW *)((u8 *)p + 0xFD40))
+
+class CMapEffObj {
+public:
+    void SetEnable(int a, int on);
+    void Apply(int a, int b);
+};
+class CMapObj {
+public:
+    void SetFlag11B070(int i);
+    void ClearEntry11B0B0(int i);
+    u8 pad0[0x4];
+    CMapEffObj *m4;           // 0x4
+};
+struct CSceneItem {
+    u8 pad0[0x50];
+    CMapObj *m50;             // 0x50
+};
+class CSndWorkReal;
+extern char D_002D5B98[];
+extern "C" s32 func_00134100(void *self, CEvQueue *q, s32 def);
+
+struct CVec4 { f32 x, y, z, w; };
+class CSndWorkRealV {
+public:
+    void SetUnkA8(int on) asm("SetUnkA8__12CSndWorkReali");
+    void SetPos(const CVec4 *a, const CVec4 *b, f32 f) asm("SetPos__12CSndWorkRealPC5CVec4T1f");
+};
+extern "C" void func_00133140(void *self, CEvQueue *q, s32 v);
+extern "C" void func_001333D8(void *self, CEvQueue *q, s32 v);
 // @decl-end
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00132270);
@@ -1235,13 +1323,237 @@ r1:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013C2D0);
+extern "C" int func_0013C2D0(CEventObj *p, CSvmWork *w, int id, int reset) {
+    CEvSm *sm = (CEvSm *)((u8 *)p + 0xF804);
+    char buf[0x100];
+    s32 done = 0;
+loop:
+    if (done) goto r1;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0:
+        p->m_FB48 = 1;
+    ret0:
+        return 0;
+    case 1: {
+        s32 n;
+        if (p->m_FC20) return 0;
+        n = w->SlotAsInt(0, 0);
+        p->m_FB4C[0] = n < 1 ? 1 : n;
+        p->m_FB4C[0] = p->SkipTime(15, 30, p->m_FB4C[0]);
+        ((CEvPlayer *)D_002A3568)->V13(p->m_FB4C[0]);
+        sm->Push();
+        for (EvSetVar(sm, 0, p->m_FB4C[0]); sm->Get(0) > 0; EvSetVar(sm, 0, sm->Get(0) - 1)) {
+            sm->m_state = -0x3C; done = 1; goto loop;
+    case -0x3C:;
+        }
+        sm->Pop();
+        break;
+    }
+    case 2:
+        if (FD3C && FD40) {
+            while ((FD3C->*FD40)(w, id, reset)) {
+                sm->m_state = -0x4A; done = 1; goto loop;
+    case -0x4A:;
+            }
+        }
+        return 0;
+    case 3:
+        w->SlotGetStr(0, buf, 0x100, D_002D5B68);
+        p->Log135458(D_002D5B70, buf);
+        return 0;
+    case 4:
+    case 5:
+        func_00133140(p, (CEvQueue *)&p->m_FC9C, id);
+        func_001333D8(p, (CEvQueue *)&p->m_FC9C, w->SlotAsInt(0, 0x2D));
+        func_001333D8(p, (CEvQueue *)&p->m_FC9C, w->SlotAsInt(1, 1));
+        return 0;
+    case 6: {
+        s32 n = w->SlotAsInt(0, 0x2D);
+        func_00133140(p, (CEvQueue *)&p->m_FC80, 6);
+        func_001333D8(p, (CEvQueue *)&p->m_FC80, n);
+        return 0;
+    }
+    case 8:
+    case 10:
+        func_00133140(p, (CEvQueue *)&p->m_FC80, id);
+        func_001333D8(p, (CEvQueue *)&p->m_FC80, w->SlotAsInt(0, 0x2D));
+        return 0;
+        do {
+    case 7:
+    case -0x87:
+            if (D_0029F394->V8()) {
+                sm->m_state = -0x87; done = 1; goto loop;
+            }
+            if (D_0029F398->V8()) {
+                sm->m_state = -0x87; done = 1; goto loop;
+            }
+            if (D_0029F398->V9()) goto v7;
+        } while (0);
+        D_0029F398->V11(-1);
+        sm->Push();
+        EvSetVar(sm, 0, func_00251BA8());
+        while (func_00251BA8() == sm->Get(0)) {
+            sm->m_state = -0x90; done = 1; goto loop;
+    case -0x90:;
+        }
+        sm->Pop();
+    v7:
+        D_0029F398->V7(1, 0, 1);
+        return 0;
+    case 11: {
+        s32 n = w->SlotAsInt(0, 0);
+        n = n < 0 ? 0 : (n < 4 ? n : 3);
+        SvSetResultInt(w, ((s32 *)p->m_FD08)[n]);
+        return 0;
+    }
+    }
+    return 0;
+r1:
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/CEventObj", Func13CA58__9CEventObjUii);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_0013D518);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D58B0);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D58C8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D58E0);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D58E8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D58F8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5908);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5918);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5920);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5928);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5930);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5940);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5948);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5950);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5960);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5968);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5970);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5988);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5998);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D59A8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D59B0);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D59D0);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A10);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A18);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A30);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A48);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A58);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A68);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A78);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A80);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5A90);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5AA0);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5AA8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5AC8);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5B08);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5B28);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5B68);
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5B70);
+int CEventObj::Cmd13D518(CSvmWork *w, int id, int reset) {
+    CStateMachine *sm = (CStateMachine *)padF804;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto busy;
+    }
+    switch (sm->m_state) {
+    case 0x5F: {
+        CVec4 a, b;
+        f32 f;
+        s32 on;
+        a.x = w->SlotAsFloat(0, 0.0f);
+        a.y = w->SlotAsFloat(1, 0.0f);
+        a.z = w->SlotAsFloat(2, 0.0f);
+        b.x = w->SlotAsFloat(3, 0.0f);
+        b.y = w->SlotAsFloat(4, 0.0f);
+        b.z = w->SlotAsFloat(5, 0.0f);
+        f = w->SlotAsFloat(6, 45.0f);
+        on = w->SlotAsInt(7, 1) != 0;
+        if (m4) {
+            ((CSndWorkRealV *)m4)->SetUnkA8(on);
+            ((CSndWorkRealV *)m4)->SetPos(&a, &b, f);
+        }
+        return 0;
+    }
+    case 0x5C:
+        func_00133140(this, (CEvQueue *)&m_FC64, id);
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(0, 0));
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(1, 0));
+        return 0;
+    case 0x5D:
+        func_00133140(this, (CEvQueue *)&m_FC64, id);
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(0, 0));
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(1, 0));
+        return 0;
+    case 0x5E:
+        func_00133140(this, (CEvQueue *)&m_FC64, id);
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(0, 0));
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(1, 0));
+        return 0;
+    case 0x60:
+        func_00133140(this, (CEvQueue *)&m_FC64, id);
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(0, 0));
+        func_001333D8(this, (CEvQueue *)&m_FC64, w->SlotAsInt(1, 0));
+        return 0;
+    }
+    return 0;
+busy:
+    return 1;
+}
+INCLUDE_RODATA("asm/nonmatchings/CEventObj", D_002D5B98);
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", Func13D6D8__9CEventObjUii);
+int CEventObj::Func13D6D8(u32 id, int x) {
+    CSceneItem *it;
+    CStateMachine *sm;
+    if (!m8 || !m8->FindA(0)) {
+        Log1353F0(D_002D5B98, id);
+    ret0:
+        return 0;
+    }
+    it = (CSceneItem *)m8->FindA(0);
+    sm = &m_FCB8;
+    {
+        u32 fl = sm->m_flags;
+        if ((fl >> 7) & 1) goto r1;
+    }
+    switch (sm->m_state) {
+    case 0x5C: {
+        int a = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        int b = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        if (b) it->m50->SetFlag11B070(a);
+        else it->m50->ClearEntry11B0B0(a);
+        return 0;
+    }
+    case 0x5D: {
+        int a = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        int b = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        if (!it->m50->m4) break;
+        it->m50->m4->SetEnable(a, b != 0);
+        return 0;
+    }
+    case 0x5E: {
+        int a = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        int b = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        if (!m4) break;
+        ((CSndWorkReal *)m4)->FadeTo(b, (f32)a * 0.0078125f);
+        return 0;
+    }
+    case 0x60: {
+        int a = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        int b = func_00134100(this, (CEvQueue *)&m_FC64, 0);
+        if (it->m50->m4) it->m50->m4->Apply(a, b);
+        return 0;
+    }
+    }
+    ret00: return 0;
+r1:
+    return 1;
+}
 
 // Empty; real name and class unknown (a virtual no-op or a stub).
 extern "C" void func_0013D908() {
