@@ -13,8 +13,11 @@ public:
     void Func25C840(s32 a, s32 b = 0, s32 c = 0);
     int Func25C990(s32 a);
     int Func25CAC0(s32 a);
-    void Func25CB90(s32 a, s32 b, s32 c);
+    s32 Func25CB90(s32 a, s32 b, s32 c);
+    void Func25CC18(s32 a, s32 b, s32 c);
     void Func25C648(s32 a, s32 b);
+    void Func25CDC0(s32 a, f32 f);
+    void Func25C910(s32 a, s32 b, s32 c);
     void SetVol(s32 h, s32 x) {
         if (x >= 0) Func25CB90(h, x, x);
         else Func25CB90(h, x, -x);
@@ -32,6 +35,9 @@ public:
 };
 extern "C" void func_00250828(void *cache, const char *name);
 extern "C" s32 func_0025CEA0(void *snd);
+extern "C" s32 func_0025CA58(void *snd, s32 h);
+extern "C" s32 func_0010CDD0(s32 a, s32 b);
+extern "C" s32 func_0010CE40(s32 a, s32 b);
 extern "C" s32 func_0025CEE8(void *snd, s32 i);
 extern CResCache *D_002A0BEC;
 
@@ -197,7 +203,8 @@ public:
     void SetPlaying(s32 on, s32 dur);
     CSndEntry *Func1292E0(const char *name, s32 v);
     void Stop129AE0(const char *name, s32 t);
-    void Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan);
+    int Play1296F0(const char *name, f32 f);
+    int Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan);
     void StartAll();
     void Func1295E8() throw();  // compiled before its callers in retail: nothrow calls (docs/lessons.md, nm)
     int Func129848();
@@ -493,30 +500,33 @@ s32 IsSndPrefixed(const char *s) {
     return strstr(s, D_002A0BB0) == s;
 }
 
-#if 0 // DIFF 2 (g1): retail stores m_unkA4 before the printf format lui, ours after
-int CSndWorkRealY::Play1296F0(const char *name, f32 f) {
+class CSndDrvC {
+public:
+    virtual void Vf0(); virtual void Vf1(); virtual void Vf2(); virtual void Vf3(); virtual void Vf4();
+    virtual void V5(s32 a, s32 b);
+};
+int CSndWorkReal::Play1296F0(const char *name, f32 f) {
     s32 h;
-    CSndWork2 *snd;
+    CSndWork *snd;
     if (!IsSndPrefixed(name)) return 0;
     if (IsUnkA4Set()) return 0;
     h = Func129CC8(name);
     if (!h) return 0;
-    snd = GetVolume(name);
+    snd = (CSndWork *)GetVolume(name);
     if (!snd) return 0;
     if (!snd->Func25C990(h)) {
         ((CSndDrvC *)D_002BA248)->V5(5, 0x40000);
         snd->Func25C648(h, 0);
-        func_0025CDC0(snd, h, f);
-        func_0025C910(snd, h, 1, 0);
+        snd->Func25CDC0(h, f);
+        snd->Func25C910(h, 1, 0);
         ((CSndDrvC *)D_002BA248)->V5(4, 0x40000);
         m_unkA0 = snd;
         m_unkA4 = h;
         Func235DE0("SND Resv %s : %X\n", name, h);
+        return 0;
     }
     return 0;
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_001296F0);
 
 int CSndWorkReal::Func129848() {
     if (!m_unkA0 || !m_unkA4 || !m_unkA0->Func25C990(m_unkA4)) return 1;
@@ -531,30 +541,28 @@ void CSndWorkReal::StopSound() {
     m_unkA4 = 0;
 }
 
-#if 0 // DIFF 3 (g1): arg moves around the m_unkA4/m_unkA0 clears scheduled differently
-void CSndWorkReal::Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan) {
+int CSndWorkReal::Play129900(const char *name, f32 f, s32 a, s32 b, s32 pan) {
     CSndWork *snd = (CSndWork *)GetVolume(name);
     s32 h;
-    if (!snd) return;
+    if (!snd) return 0;
     h = Func129CC8(name);
     Func235DE0("SND Play %s : %X,%X\n", name, m_unkA4, h);
     if (h == m_unkA4 && func_0025CA58(snd, h)) {
         m_unkA0 = 0;
         m_unkA4 = 0;
-        func_0025C910(snd, h, 0, 0);
+        snd->Func25C910(h, 0, 0);
     } else {
         StopSound();
         ((CSndDrvC *)D_002BA248)->V5(5, 0x40000);
         snd->Func25C648(h, 0);
-        func_0025CDC0(snd, h, f);
+        snd->Func25CDC0(h, f);
         ((CSndDrvC *)D_002BA248)->V5(4, 0x40000);
     }
-    func_0025CC18(snd, h, 0, 0);
-    func_0025CC18(snd, h, a, b);
+    snd->Func25CC18(h, 0, 0);
+    snd->Func25CC18(h, a, b);
     return snd->Func25CB90(h, func_0010CDD0(0x80, pan), func_0010CE40(0x80, pan));
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CSndWorkReal", func_00129900);
+
 
 void CSndWorkReal::Stop129AE0(const char *name, s32 t) {
     CSndWork *snd;

@@ -353,7 +353,7 @@ public:
     int IsUnkA4Set();
     void FadeTo(int t, f32 v);
 };
-extern "C" void func_001296F0(s32 snd, f32 v, const char *s);
+extern "C" void func_001296F0(s32 snd, f32 v, const char *s) asm("Play1296F0__12CSndWorkRealPCcf");
 extern char D_002D5920[];
 extern char D_002D5AA0[];
 // Command handlers' state machines (m_sm[i]): reset on a new command.

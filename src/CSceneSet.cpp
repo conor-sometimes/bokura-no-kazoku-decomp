@@ -44,6 +44,7 @@ extern "C" void func_002966B0(void *arr, s32 n);
 extern "C" CSceneSetItemB *func_002966D0(void *arr, s32 i);
 extern "C" CSceneSetItemB *func_002966E8(void *arr, s32 i);
 class CSndNode;
+class CCharaRes;
 class CSndWorkReal {
 public:
     void CallFunc129458(const char *s, s32 v);
@@ -96,6 +97,8 @@ public:
     void Func113860(s32 v);
     void SetPart24Unk18(s32 v);
     void SetUnk150(s32 v);
+    void Func114C78(s32 v);
+    s32 Func1135F0(CCharaRes *res);
 
     u8 pad0[0xC];
 };
@@ -104,7 +107,7 @@ struct CCharaObjBody {
     u8 pad0[0x1C8];
     s32 m_unk1C8;             // 0x1C8
 };
-extern "C" void func_00112FE0(void *p);
+extern "C" void __9CCharaObj(void *p);
 void *operator new(unsigned int n);
 class CResCache {
 public:
@@ -138,6 +141,20 @@ extern CResCache *D_002A0BEC;
 extern "C" void func_00250828(CResCache *c, const char *name);
 extern "C" void func_00129020(CSndWorkReal *s, const char *name, s32 c, s32 a, s32 b, f32 vol);
 extern "C" void func_0011ADD0(void *p);
+class CFaceResSub10F938 {
+public:
+    s32 GetFirst();
+};
+class CModelAccV {
+public:
+    virtual void V0(); virtual void V1(); virtual void V2();
+    virtual s32 V3();
+    virtual s32 V4();
+    virtual s32 V5();
+};
+extern CModelAccV *D_002A05D0;
+extern "C" s32 func_00113C38(CCharaObj *c, s32 a, s32 b);
+extern "C" void func_00113978(CCharaObj *c, s32 a, s32 b);
 
 extern u8 SceneSet_vt[] asm("_vt$9CSceneSet");
 extern "C" void func_00296620(void *p, s32 flags);
@@ -315,7 +332,35 @@ s32 CSceneSet::GetAUnk50(s32 id) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSceneSet", func_0012CD30);
+CSceneSetItemB *CSceneSet::Func12CD30(s32 id, const char *name) {
+    CSceneSetItemB *p;
+    s32 res;
+    if (id < 0 || m_list.Func296570() - 1 < id) return 0;
+    res = (s32)((IResMgrS2 *)D_002A0BE4)->FindRes(name);
+    if (!res) return 0;
+    p = func_002966D0(&m_list, id);
+    if (p->m_used) Func12CF40(id);
+    func_00250828(D_002A0BE4, name);
+    strcpy((char *)p, name);
+    p->m_unk20 = res;
+    CCharaObj *c = (CCharaObj *)operator new(0x370);
+    __9CCharaObj(c);
+    p->m_unk24 = (s32)c;
+    ((CCharaObj *)p->m_unk24)->Func1135F0((CCharaRes *)p->m_unk20);
+    if (D_002A05D0) {
+        ((CCharaObj *)p->m_unk24)->Func113860(D_002A05D0->V3());
+        func_00113C38((CCharaObj *)p->m_unk24, D_002A05D0->V4(), -1);
+        func_00113978((CCharaObj *)p->m_unk24, D_002A05D0->V5(), -1);
+    }
+    ((CCharaObjBody *)p->m_unk24)->m_unk1C8 = id;
+    if (GetAUnk4C(0)) {
+        ((CCharaObj *)p->m_unk24)->SetPart24Unk18(*(s32 *)(*(s32 *)(GetAUnk4C(0) + 0x18) + 0x150));
+    }
+    if (m_unk30) m_unk30->MoveToList((CSndNode *)p->m_unk24);
+    ((CCharaObj *)p->m_unk24)->Func114C78(((CFaceResSub10F938 *)*(s32 *)(p->m_unk20 + 0x1C))->GetFirst());
+    ((CCharaObj *)p->m_unk24)->SetUnk150(1);
+    return p;
+}
 
 void CSceneSet::Func12CF40(s32 id) {
     CSceneSetItemB *p = FindB(id);
