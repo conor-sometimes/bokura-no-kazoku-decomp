@@ -1,0 +1,15 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Bokura no Kazoku",
+  "wikidata": "Q11277991",
+  "system": "PS2",
+  "type": "decomp",
+  "original": { "region": "Japan", "serial": "SCPS-15088" },
+  "project": "Bokura no Kazoku decomp",
+  "status": "in-progress",
+  "toolchain": "Splat",
+  "approach": "Matching decompilation to C++ (EE-GCC 2.96); splat round-trip, byte-identical ELF rebuild.",
+  "maintainers": [{ "name": "conor-sometimes", "link": "https://github.com/conor-sometimes" }],
+  "tags": ["ps2", "c++", "matching"],
+  "notes": "88.6% of functions matched (6404 of 7223); the full executable rebuilds byte-for-byte. Remaining work is the hard-tail near-misses (EE-GCC 2.96 register allocation and instruction scheduling)."
+}
