@@ -1,0 +1,42 @@
+//@decl
+#include "IGameDBMgr.h"
+//@func 0x151120
+void CGameMain::Func151120(s32 slot, s32 name, s32 delta, s32 useSaved, s32 e) {
+    s32 idx;
+    CGameMainFlagDef *rec;
+    f32 out[5];
+    idx = Func1456A8(name);
+    if (idx < 0) return;
+    for (rec = D_002A2DB0; rec->m0 >= 0; rec++) {
+        s32 v;
+        if (useSaved) {
+            v = ((CGameMain2 *)this)->m27C[idx * 23 + rec->m8];
+        } else {
+            v = D_002A26E4->Func1091B0(rec->m0 + idx);
+        }
+        if (rec->m0 == 0x34) {
+            v += delta;
+            if (v < 0) v = 0;
+        }
+        if (slot == 0 && e && rec->m20) v = 0;
+        D_002A4638[slot]->Func108FF0(rec->m4 + idx, v);
+        if (slot != 0 && rec->m18 >= 0 && rec->m1C >= 0) {
+            s32 w;
+            if (e && rec->m20) {
+                w = D_002A26E4->Func1091B0(((volatile CGameMainFlagDef *)rec)->m0 + idx);
+            } else {
+                w = D_002A26E4->Func1091B0(rec->m18 + idx);
+            }
+            D_002A4638[slot]->Func109108(rec->m1C + idx, w);
+        }
+    }
+    D_002A2988->Func14DB70(out, idx);
+    D_002A4638[slot]->Func108FF0(idx + 0xCC, (s32)out[0]);
+    D_002A4638[slot]->Func108FF0(idx + 0xD2, (s32)out[1]);
+    D_002A4638[slot]->Func108FF0(idx + 0xD8, (s32)out[2]);
+    D_002A4638[slot]->Func108FF0(idx + 0xDE, (s32)out[3]);
+    D_002A4638[slot]->Func108FF0(idx + 0xE4, (s32)out[4]);
+    D_002A4638[slot]->Func108FF0(idx, 1);
+    if (slot == 4) D_002A4638[4]->Func108FF0(idx + 0x60, 1);
+    if (slot != 0) D_002A26E4->Vf145A28(idx);
+}
