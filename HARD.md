@@ -1535,3 +1535,9 @@ SIBLING LEAD: the 0x144270 recipe (see lessons) should unlock 0x144378, 0x144C60
 ### w2 fourth pass (2026-10-28, after the hard-tail lessons)
 Matched: 0x21ADB0 (Unit219970): evaluation order of call arguments loaded from memory is set with temps: `{ f32 b = m[0]; f32 a = m[1]; out->z = func_0021ACA8(a, b); }` (retail loads the second argument first).
 Return-type flips (void->s32, u8/s8/u32 on the callee) via asm-label aliases did not move 0x239BD8 (8), 0x117668 (5) or 0x267E58 (3). 0x1EF210 (3): reordering the m_func store only worsens it (5-11). 0x25A098 (6): all 720 orders of the six ctor stores tried by bk perm. 0x113978: `r = 0; r += Range()` gives 81+.
+
+### w2 fifth pass (2026-10-28)
+Matched (layout lesson): when retail puts the default return (`li -1` / 0) block between the tests and the call block, write the call at the END behind a goto and the default return before it:
+`if (i < 64 && Used(s = &D_32F300.e[i])) { if (s->ops->f14) goto call; } return -1; call: return s->ops->f14(s->m4C);`
+That matched 0x20F9E8, 0x20FAC8 (Unit20E938) and 0x219818/0x219880/0x2198E8 (Unit217F50, `if (p && (p->m2 == 2 || p->m2 == 5)) goto call; return 0; call: return (s32)D_002A67E8[p->m2](p, 0, n);`, needs `asm(".p2align 3")` before the first). 0x20E698 (Unit20CBF0) matched as the plain `if (i < 256 && used) { if (!name) return -1; k = 0; n = f(i); if (n > 0) { do { if (!strcmp(f2(i, k), name)) return k; k++; } while (k < n); } } return -1;` plus `.p2align 3` (utest shows DIFF 1 from the GNU as lui bug, so `bk port` refuses; port by hand and check luibug.py).
+Left: 0x22C680 (pad repeat; real semantics found: rep block is `n = m12 + 100`, `mA = mC`; best C is DIFF 36, retail puts the tail block before the rep block and computes the slot term of the index first); 0x2379D0 (DMA call tag, needs two pointer copies; best DIFF 28); 0x23C048 (retail dsrl for `(i & 0x10) >> 1` not reproducible; src walked in place).

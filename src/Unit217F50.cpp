@@ -453,11 +453,30 @@ extern "C" s32 func_00219800(void) {
     return func_00219BA8(2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_00219818);
+asm(".p2align 3");
+extern "C" s32 func_00219818(s32 a, s32 n) {
+    Rec4 *p = func_00219B68(a);
+    if (p && (p->m2 == 2 || p->m2 == 5)) goto call;
+    return 0;
+call:
+    return (s32)D_002A67E8[p->m2](p, 0, n);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_00219880);
+extern "C" s32 func_00219880(s32 a, s32 n) {
+    Rec4 *p = func_00219B68(a);
+    if (p && (p->m2 == 1 || p->m2 == 4)) goto call;
+    return 0;
+call:
+    return (s32)D_002A67E8[p->m2](p, 0, n);
+}
 
-INCLUDE_ASM("asm/nonmatchings/Unit217F50", func_002198E8);
+extern "C" s32 func_002198E8(s32 a, s32 n) {
+    Rec4 *p = func_00219B68(a);
+    if (p && (p->m2 == 0 || p->m2 == 3)) goto call;
+    return 0;
+call:
+    return (s32)D_002A67E8[p->m2](p, 0, n);
+}
 
 extern "C" void func_00219950(s32 a) {
     func_0021A380(2, a);

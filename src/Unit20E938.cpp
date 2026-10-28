@@ -500,7 +500,15 @@ found:
     return s->mC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20E938", func_0020F9E8);
+extern "C" s32 func_0020F9E8(u32 i) {
+    Strm *s;
+    if (i < 64 && Used(s = &D_32F300.e[i])) {
+        if (s->ops->f14) goto call;
+    }
+    return -1;
+call:
+    return s->ops->f14(s->m4C);
+}
 
 extern "C" void func_0020FA60(u32 i, s32 x) {
     Strm *s;
@@ -509,7 +517,15 @@ extern "C" void func_0020FA60(u32 i, s32 x) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit20E938", func_0020FAC8);
+extern "C" s32 func_0020FAC8(u32 i) {
+    Strm *s;
+    if (i < 64 && Used(s = &D_32F300.e[i])) {
+        if (s->ops->f1C) goto call;
+    }
+    return 0;
+call:
+    return s->ops->f1C(s->m4C);
+}
 
 extern "C" u8 func_0020FB40(u32 i) {
     Strm *s;
