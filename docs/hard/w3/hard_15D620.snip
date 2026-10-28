@@ -1,0 +1,28 @@
+//@func 0x15D620
+// needs symbol Func15D620__13CGameSchedule + alias. Scheduling: lui of D_002A26E4 hoisted above if(!rec).
+s32 CGameSchedule::Func15D620() {
+    CGameDBRecAct *rec = (CGameDBRecAct *)D_002A2988->Find1DC(m_unkCC->m_unk18);
+    s32 bits, v;
+    if (!rec) {
+        Func235DE0("*** unknown action id %d\n", m_unkCC->m_unk18);
+        return 0;
+    }
+    bits = 0xFF;
+    v = D_002A26E4->Func1091B0(rec->m0 + 0x1362);
+    if (v != 0x18) bits = 1 << (v - 0x10);
+    strcpy(m_name, rec->mC);
+    m_unk240 = rec->m0;
+    m_unk244 = -1;
+    m_unk248 = bits;
+    m_unk24C = v;
+    m_unk250 = rec->m30;
+    m_unk254 = -1;
+    m_unk258 = -1;
+    m_unk25C = -1;
+    D_002A26E4->MoveMoney(rec->m2C);
+    if (D_002A26E4->Func1091B0(rec->m0 + 0x1262) != 0x7F) D_002A26E4->Func109108(rec->m0 + 0x1262, -1);
+    D_002A26E0->Vf143FA8(D_002A26E4->Func1091B0(0x16), 0, rec->m0, 0, 1);
+    D_002A26E4->IncCur(rec->m0);
+    D_002A26E4->IncCur2(rec->m0);
+    return 1;
+}

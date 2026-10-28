@@ -1,0 +1,26 @@
+//@func 0x150EA8
+// needs: CGameMain2 *p (not CGameMain*) in the unit's func_00150EA8 decl (+throw()), caller cast; asm(".p2align 3") before. Remaining diff: s-register numbering.
+asm(".p2align 3");
+extern "C" int func_00150EA8(CGameMain2 *p, s32 k) throw() {
+    s32 i, id;
+    CGameMainFlagDef *e;
+    if (k < 0) {
+        for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+            if (func_00150EA8(p, i)) return 1;
+        }
+        return 0;
+    }
+    id = Func1456A8(k);
+    if (id < 0) return 0;
+    if (p->m4A4 - 1 < id) return 0;
+    i = 0;
+    goto test;
+body:
+    if (!e->m24) goto test;
+    if (p->m27C[id * 23 + e->m8] != D_002A26E4->Func1091B0(e->m0 + id)) return 1;
+test:
+    e = &D_002A2DB0[i];
+    i++;
+    if (e->m0 >= 0) goto body;
+    return 0;
+}

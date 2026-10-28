@@ -1,0 +1,22 @@
+//@func 0x1C4CA0
+// needs symbol LoadLevel__10CMiniGame2 (+alias func_001C4CA0). Remaining diff: this in s1, &mD6C in s0 in retail.
+int CMiniGame2::LoadLevel() {
+    char buf[0x100];
+    s32 lv;
+    const char *s = Func24AF10(((CMiniGame2Text *)D_002A59FC)->m_text, "LEVEL");
+    if (!*s) return 0;
+    mD70 = 0;
+    mD78 = 0;
+    for (;;) {
+        const char *p;
+        s = Func24AFE8(s, buf, 1, 0x100);
+        if (!*s && !buf[0]) break;
+        p = func_0024A710(buf, &lv, 0, D_002E0FC0, D_002E0FC8);
+        p = func_0024A710(p, &mD78, 0, D_002E0FC0, D_002E0FC8);
+        func_0024A710(p, &mD6C, 0, D_002E0FC0, D_002E0FC8);
+        if (lv == m30) return 1;
+        mD70 += mD6C;
+    }
+    Func235DE0("*** level data error\n");
+    return 0;
+}

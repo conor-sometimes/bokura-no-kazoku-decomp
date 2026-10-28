@@ -1,0 +1,36 @@
+//@func 0x12A510
+// extern C; scheduling only: retail computes &s->m28 after the lw of m0.
+struct CSndSrc12A510 {
+    s32 m0;
+    u8 pad4[0xC];
+    CVec4 m10;
+    f32 m20, m24;
+    s32 m28[6];
+    f32 m40;
+};
+extern "C" void func_00270710(CVec4 *d, const CVec4 *a);
+extern "C" s32 func_00294408(void *p, s32 i);
+extern "C" s32 func_002943C8(void *p);
+extern "C" f32 func_0012A420(s32 a, s32 b, const CVec4 *c, f32 f);
+extern "C" f32 func_0012A510(CVec4 *out, CSndSrc12A510 *s, const CVec4 *l) {
+    f32 att = 1.0f;
+    s32 h;
+    switch (s->m0) {
+    case 1:
+        Func270C50(out, &s->m10);
+        out->w = 0;
+        break;
+    case 2: {
+        CVec4 *p = &s->m10;
+        func_00270A98(out, l, p);
+        func_00270710(out, out);
+        att = SndAtten12A340(p, l, s->m20, s->m24);
+        out->w = 0;
+        break;
+    }
+    default:
+        return 0.0f;
+    }
+    h = func_00294408(s->m28, 0);
+    return att * func_0012A420(h, func_002943C8(s->m28), l, s->m40);
+}

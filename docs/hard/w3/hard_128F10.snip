@@ -1,0 +1,28 @@
+//@func 0x128F10
+// needs member decl `void Unlink128F10(CSndNode *n);` in CSndWorkReal + symbol_addrs/aliases. Remaining diff: retail keeps a separate iterator copy per step.
+inline s32 IndexOfChara128(CCharaObj *p, CSndNode *n) {
+    s32 i = 0;
+    for (; p; p = LiveChara(p->m_next), i++) {
+        if ((CSndNode *)p == n) return i;
+    }
+    return -1;
+}
+void CSndWorkReal::Unlink128F10(CSndNode *n) {
+    CSndNode *h = &m_list;
+    if (n) {
+        if (IndexOfChara128(LiveChara((CCharaObj *)m_list.m_next), n) >= 0) {
+            n->m_prev->m_next = n->m_next;
+            n->m_next->m_prev = n->m_prev;
+            n->m_prev = n;
+            n->m_next = n;
+        }
+    } else {
+        CSndNode *q;
+        while ((q = (CSndNode *)LiveChara((CCharaObj *)h->m_prev))) {
+            q->m_prev->m_next = q->m_next;
+            q->m_next->m_prev = q->m_prev;
+            q->m_prev = q;
+            q->m_next = q;
+        }
+    }
+}

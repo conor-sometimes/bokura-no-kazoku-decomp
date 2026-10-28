@@ -1,0 +1,11 @@
+//@func 0x19CCF8
+// scheduling only: retail xor before sw.
+extern "C" s32 func_0019CCF8(s32 *out, s32 *cur, s32 base, s32 n, f32 t) {
+    f32 v = (f32)n * Clamp01(t);
+    s32 k = base + (s32)(n >= 0 ? v + 0.5f : v - 0.5f);
+    s32 changed = *cur != k;
+    *cur = k;
+    if (k >= 10) k = 9; else if (k < 0) k = 0;
+    *out = k;
+    return changed;
+}

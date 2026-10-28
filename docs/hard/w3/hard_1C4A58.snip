@@ -1,0 +1,11 @@
+//@func 0x1C4A58
+// needs symbol SetCursor__10CMiniGame2 + alias. Retail keeps 1 in a reg for movn; ours sltu.
+void CMiniGame2::SetCursor() {
+    s32 i;
+    for (i = 0; i < 3; i++) {
+        s32 v = 0;
+        if (i != mD60) v = 1;
+        mDB4[i] = v;
+    }
+    D_002A5538->Move1B6488(((CMiniGame2 *)((u8 *)this + mD60 * 16))->m_pos[0].x, ((CMiniGame2 *)((u8 *)this + mD60 * 16))->m_pos[0].y);
+}
