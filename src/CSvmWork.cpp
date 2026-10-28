@@ -889,7 +889,20 @@ void OpFloatSub130E28(CValue *a, CValue *b) {
     a->SetFloat(a->AsFloat() - b->AsFloat());
 }
 
-INCLUDE_ASM("asm/nonmatchings/CSvmWork", func_00130E78);
+void OpRand130E78(CValue *a, CValue *b, CSvmWork *w) {
+    f32 lo = a->AsFloat();
+    f32 hi = b->AsFloat();
+    f32 v;
+    if (w->m_randFloat >= 0.0f) v = w->m_randFloat;
+    else {
+        u32 r = w->m_rand.Next() << 16;
+        r |= w->m_rand.Next();
+        v = (f32)(u16)r / 65535.0f * (hi - lo) + lo;
+    }
+    a->SetFloat(v);
+    if (w->m_debug) Func235DE0(D_002D5400, (double)a->AsFloat(), (double)b->AsFloat(), (double)v);
+}
+INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5400);
 INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5418);
 INCLUDE_RODATA("asm/nonmatchings/CSvmWork", D_002D5420);
 

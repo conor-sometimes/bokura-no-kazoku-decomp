@@ -126,6 +126,7 @@ D_002D5388 = 0x002D5388; // force_not_migration:True
 D_002D5390 = 0x002D5390; // force_not_migration:True
 D_002D53D0 = 0x002D53D0; // force_not_migration:True
 D_002D53F0 = 0x002D53F0; // force_not_migration:True
+D_002D5400 = 0x002D5400; // force_not_migration:True
 D_002D5418 = 0x002D5418; // force_not_migration:True
 D_002D5420 = 0x002D5420; // force_not_migration:True
 D_002D5428 = 0x002D5428; // force_not_migration:True

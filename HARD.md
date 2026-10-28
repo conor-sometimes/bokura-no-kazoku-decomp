@@ -1487,3 +1487,32 @@ Lane sm3 (state.h machines, third pass, 2026-10-16). Recipe in docs/lessons.md #
 - 0x257DC8 (AT3 node free-list init): DIFF 16 with `CAt3Node **fl = &D_002BA1E4` + the push-front loop: retail gives fl $2 and the loop values $3..$6 (every register one above ours, the same pattern as 0x27CF30); declaration orders, loop spellings and store orders tried.
 - 0x27CF30 (alarm alloc): retried compilers (991111, 991111-01, 2.96) and -O levels: still every register one above ours ($7/$6/$5 vs a2/a1/a0). Same pattern as 0x257DC8: something takes the lowest register first in retail.
 - 0x252C08 (find bone name in an XMD name table): in progress when the lane stopped; build/bk/dl/a252C08.snip (needs strcmp declared in the snippet). No new result.
+
+## w2 (lane w2 of 3, 2026-10-28)
+
+Matched: CMiniGame3 Set1 0x1CA4C8 and Set2 0x1CA3B8: write the stores through the existing accessors
+(`Anim(i)->Set(..); CMiniGame3Ent *e = Ent(i); e->m0 = e->m4 (Set1) / Ent(i)->m0 = 9 (Set2); *ScaleX(i) = 1.0f;
+*ScaleY(i) = 1.0f;`), not `m_ent[i].S18(..)`: that gives retail's three base copies. Set2 needed
+`Set2__10CMiniGame3Ui = 0x001ca3b8` in symbol_addrs.txt (the asm Layout calls it).
+Tried and left:
+- 0x144C60 (CCurFlag::Set144C60, DIFF 47-50): nested `if (q >= 0) { if (q <= 15)` / goto forms keep two compares
+  (the `||` form folds to one `sltiu`), but retail copies q/mask to a2/a3 and r to a0 before the bltz and puts
+  the printf tail first; ours keeps r in a3 and sinks the copies. Same family as 0x144378/0x144D68/0x144270.
+- 0x172ED8 (CMapDBExpr digit check, DIFF 19-21): while/for/do-while/inline-IsNum forms all emit the first
+  `lbu` before the loop and keep the loop-carried char in v0; retail keeps `lb` test, then `lbu` + `daddu $3,$2`.
+- 0x147130: if-conversion of the last `if (call()) ok = 1` persists in && chain, nested-if, `ok = chain`, goto
+  and `asm volatile("")` in the then-block (36, worse) forms; best docs/hard/w2/hard_147130.snip (DIFF 6).
+- 0x10E5E0 (ParseFaceParts): docs/hard/w2/hard_10E5E0.snip reaches DIFF 24 with the body prologue matching
+  (part = &parts[n] and `name = part->m_name` computed in the loop condition via the comma expression, which
+  is what puts `daddu $4,$29` / `addiu $5,$17,4` before the bnez). Left: the eight `lhu`/`sh` stores stay
+  hoisted (all loads first; u16 casts, volatile destination, temps, pointer setter tried) and the loop header
+  (`lui/addiu D_002A03A4`, `lb`) schedules one slot apart.
+- 0x187038 CChrBodyWin ctor: needs the class split first (see above); 0x128F10: not retried.
+
+### w2 second pass (2026-10-28)
+Matched: CSvmWork float rand 0x130E78 (`if (w->m_randFloat >= 0.0f) v = w->m_randFloat; else { v = (f32)(u16)r / 65535.0f * (hi - lo) + lo; }`,
+mirroring the int version 0x130718; `v = w->m_randFloat; if (!(v >= 0))` gave DIFF 61). Porting needed `D_002D5400 = 0x002D5400; // force_not_migration:True`
+in config/rodata_syms.txt plus an INCLUDE_RODATA before D_002D5418 (the literal lived inside the function's .s file) and `OpRand130E78__FP6CValueT0P8CSvmWork` in symbol_addrs.txt.
+Tried again, no change: 0x229300 (s32 vs u32 v, split/copy temps, shift-or order: DIFF 15-18); 0x113368 (DIFF 2: bltz target / bnezl, `if (i < 0) goto fail` first, fail returns: unchanged);
+0x267E58 (DIFF 3: ternary, `ok = 0; if (...) ok = 1`, u32 ok, `ok + 0*skip`: 3-19); 0x117668 (DIFF 5: pointer laundering `asm("" : "+r"(po))`, offset, separate arg temps: 5-6).
+Tip: `for f in docs/hard/*/*.snip: ushow.py $f | head -1` ranks every saved snippet by DIFF; `bk hard` only prints the closest five.

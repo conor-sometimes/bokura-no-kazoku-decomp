@@ -1,0 +1,31 @@
+//@decl
+void Func2491A8(void *buf, const char *path, s32 a, s32 b, s32 c);
+s32 Func249248(void *buf);
+void Func249348();
+extern "C" void func_00248C30(void *buf);
+extern "C" void func_00248C70(void *buf) throw();
+extern s32 D_002A298C, D_002A2990, D_002A2994;
+//@func 0x147130
+s32 CGameDBMgr::Func147130(const char *path) {
+    char buf[256];
+    s32 ok = 0;
+    Init();
+    Func2491A8(buf, path, D_002A298C, D_002A2990, D_002A2994);
+    if (Func249248(buf)) {
+        Func235DE0("game database...\n");
+        func_00248C30(&m_buf);
+        m_unk34 = 8;
+        m_charas = (CGameDBChara *)m_buf.Func248CC8(0x69E0, 1, 1);
+        if (m_unk10) {
+            if (Func149670() && Func149DC8() && Func14AE30()) ok = 1;
+        } else {
+            if (Func1473B0() && Func147500() && Func1478E8() && Func148110() && Func148C50() && Func1490F8() && Func149670() && Func149DC8() && Func14A0F8() && Func14A370() && Func14A8C0() && Func14AAD0() && Func14AE30() && Func14B4C8()) {
+                if (Func14B890()) ok = 1;
+            }
+        }
+    }
+    func_00248C70(&m_buf);
+    Func249348();
+    Func235DE0("size=%d\n", m_buf.GetUsed());
+    return ok;
+}

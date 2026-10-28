@@ -1,0 +1,23 @@
+//@decl
+//@func 0x10E5E0
+s32 ParseFaceParts(CFacePart *parts, const char *p) {
+    char buf[256];
+    CFacePart *part;
+    char *name;
+    s32 n = 0, a = 0, b = 0, c, d, e, f, g;
+    while ((p = Func24A570(p, buf, D_002D2DC8, D_002D2DD0), part = &parts[n], name = part->m_name, *p) || buf[0]) {
+        if (parts) {
+            const char *q = Func24A570(buf, name, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &c, 1, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &a, a, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &b, b, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &d, 0, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &e, 0, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &f, -1, D_002A03A4, D_002D2DD0);
+            q = func_0024A710(q, &g, -1, D_002A03A4, D_002D2DD0);
+            SetFacePart(part, c, a, b, d, e, f, g);
+        }
+        n++;
+    }
+    return n;
+}

@@ -312,17 +312,14 @@ void CMiniGame3::Set3(u32 i) {
     }
 }
 
-#if 0 // DIFF 3 (g1): retail stores m0 through a copy of the entry base and m18 through a copy of that copy (nested inline?); ours recomputes the base for the inline S18
 void CMiniGame3::Set2(u32 i) {
     if (i < 16) {
         Anim(i)->Set(mBA8[0], 2);
-        m_ent[i].m0 = 9;
-        m_ent[i].S18(1.0f);
-        m_ent[i].m1C = 1.0f;
+        Ent(i)->m0 = 9;
+        *ScaleX(i) = 1.0f;
+        *ScaleY(i) = 1.0f;
     }
 }
-#endif
-INCLUDE_ASM("asm/nonmatchings/CMiniGame3Res", func_001CA3B8);
 
 void CMiniGame3::Set5(u32 i) {
     if (i < 16) {
@@ -343,7 +340,15 @@ void CMiniGame3::Set4(u32 i, f32 t) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMiniGame3Res", func_001CA4C8);
+void CMiniGame3::Set1(u32 i) {
+    if (i < 16) {
+        Anim(i)->Set(0, 1);
+        CMiniGame3Ent *e = Ent(i);
+        e->m0 = e->m4;
+        *ScaleX(i) = 1.0f;
+        *ScaleY(i) = 1.0f;
+    }
+}
 
 #if 0 // DIFF 2 (g1): retail loads 16 (the inline Rand's divisor) after the LCG constant's ori, ours before
 void CMiniGame3::Shuffle() {
