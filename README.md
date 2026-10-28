@@ -32,31 +32,26 @@ Check your dump against these (Redump's formats plus SHA-256); `setup.sh` itself
 
 The boot executable inside it, `SCPS_150.88`: SHA-1 `621ffd58de52794eaa3d33885ba1288f36e19365`.
 
-## Disc (recon, 2026-10-13)
+## Disc (recon)
 
 | | |
 | --- | --- |
 | Serial / boot ELF | `SCPS_150.88` (SYSTEM.CNF: `cdrom0:\SCPS_150.88;1`, VER 1.00, NTSC) |
-| ISO | 2,091,941,888 bytes, SHA-1 `f2a8187457148a66fbbb3841032fe430cb5572d4` (check against Redump) |
-| ELF | 2,018,020 bytes, SHA-1 `621ffd58de52794eaa3d33885ba1288f36e19365`, statically linked, stripped |
-| Built | 2005-01-28 (file dates) |
+| ELF | 2,018,020 bytes, statically linked, stripped, built 2005-01-28 (file dates) |
 | SDK | 2.8 era (`MODULES/IOPRP280.IMG`), Sony libraries (libsd, libmc, libpad, libmtap, libmpeg, libgraph) |
-| Language | C++: GCC 2.9x name mangling (`t6TArray3Z14CSceneCharaSeti_16_Z...`), `.eh_frame` + `.gcc_except_table` |
-| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, `as -g` for the C++ units and dklib; the C-style units without `as -g`; parts of dklib and the Sony SDK with ee-gcc 2.9-991111 / 2.9-991111-01 (docs/compiler.md) |
+| Language | C++: GCC 2.9x name mangling, `.eh_frame` + `.gcc_except_table` |
+| Compiler | Sony EE-GCC 2.96 (`2.96-ee-001003-1`), `-O2 -G0 -fno-strict-aliasing -fno-exceptions`, `as -g` for the C++ units and dklib; the C-style units without `as -g`; parts of dklib and the Sony SDK with ee-gcc 2.9-991111 / -01 ([docs/compiler.md](docs/compiler.md)) |
 | VU code | `.vutext` / `.vudata` (VU microcode, `dvp-as`): stays assembly |
 | Game data | `DATA/*.XAP` archives (MAP 140 MB, CHR 86 MB, ENV 33 MB, MENU 18 MB, ...) |
 
-ELF sections: `.text` from 0x100000 (about 1.6 MB of code), `.data`, `.rodata`,
-`.sbss`, `.bss`. No debug info left (`.mdebug.eabi64` is empty); worth a ccc
-`stdump` pass anyway, and on any other ELF/IRX.
+`.text` starts at 0x100000 (~1.6 MB of code); no debug info is left (`.mdebug.eabi64` is empty).
 
 ## Environment
 
 `bokura-env` from [decomp-nix](https://github.com/conor-sometimes/decomp-nix):
 [projects/bokura-no-kazoku/default.nix](https://github.com/conor-sometimes/decomp-nix/blob/main/projects/bokura-no-kazoku/default.nix),
 built on the shared [lib/mkDecompEnv.nix](https://github.com/conor-sometimes/decomp-nix/blob/main/lib/mkDecompEnv.nix):
-an FHS environment with gcc multilib, Python and the permuter's packages. Builds run on hokkaido.
-Recon came from the `decomp-recon` skill.
+an FHS environment with gcc multilib, Python and the permuter's packages.
 
 ## Build
 
@@ -69,54 +64,28 @@ You need your own disc image; nothing from it is committed.
 
 `make` ends with `OK: build/SCPS_150.88 matches (...)` or a `FAIL:` line. Python tools are pinned
 in `requirements.txt`; the R5900 binutils (decompals v0.10) come from bokura-env. The flat image
-from the linker is wrapped in the retail ELF container by `scripts/mkelf.py` (header values from
-`readelf -lS`).
+from the linker is wrapped in the retail ELF container by `scripts/mkelf.py`.
 
 ## Two builds
 
 1. **Matching**: rebuilds the main ELF byte-for-byte. The reference.
-2. **Mod**: shiftable build from the same sources for tweaks.
+2. **Mod**: a shiftable build from the same sources, for tweaks.
 
 ## Roadmap
 
-Where this is going, in order. Phases overlap; each builds on the one before. Milestones and
-their done-signals are tracked in GOALS.md.
+Tracked with done-signals in GOALS.md. Each phase builds on the one before.
 
-1. **Matching decompilation** (in progress, see the status above). Every function as C that
-   rebuilds the original executable byte for byte. The whole of `.text` after crt0 is already
-   split into source units; what is left is the large game code (menus and screens built on the
-   `state.h` state machines, draw routines, minigames), units whose data still comes from
-   assembly, and a tail of stuck functions recorded in HARD.md with their exact diffs.
-2. **Mod build.** The same sources built without the byte-for-byte constraint: every pointer a
-   symbol, so code and data can grow and move. Needs most functions in C and the data
-   (vtables, .rodata, tables) described in C, not complete matching. This is the base for
-   everything below.
-3. **English translation patch.** Groundwork is done: all ~9,400 strings (~280k Japanese
-   characters) are mapped, `tools/strings.py` extracts them per file for line-by-line
-   translation, and translations are kept in `translation/en/` without any Japanese
-   ([docs/translation.md](docs/translation.md)). The dialogue lives in plain-text message files
-   that scripts look up by label, so English can be any length. Still needed:
-   - an archive repacker (`tools/xap.py` extracts; it doesn't rebuild yet);
-   - a font check (Latin glyphs, glyph widths, how the renderer advances) and a fix if needed;
-   - message window widths and a re-wrap rule; vertical-text windows switched to horizontal;
-   - textures with drawn-in Japanese, edited;
-   - the ISO rebuilt with the patched archives;
-   - then the translation itself, file by file, with a shared glossary.
-   The patch ships as a delta against the user's own disc, never as game data.
-4. **Native PC port** (long term). With the game logic in C, it can be compiled for a PC instead
-   of the PS2, with the hardware layers replaced: the GS/VIF/VU graphics path by a modern
-   renderer, the SPU2/IOP sound and file I/O by host equivalents, pads by SDL. The Sony SDK
-   code (already isolated in its own units) is exactly what a port swaps out. Prior art: the
-   PS1/N64/PS2 decomps that grew PC ports. Requires the mod build first, and likely widescreen
-   and higher resolution as early wins.
+1. **Matching decompilation** (in progress — see the status above). Every function as C that rebuilds the original executable byte for byte. What is left is the large game code, units whose data still comes from assembly, and the stuck tail in HARD.md.
+2. **Mod build.** The same sources built without the byte-for-byte constraint — every pointer a symbol, so code and data can move. The base for everything below.
+3. **English translation patch.** Strings are mapped and extracted per file (`tools/strings.py`, `translation/en/`, [docs/translation.md](docs/translation.md)); still needs an archive repacker, a font/width pass, and the translation itself. Ships as a delta against your own disc.
+4. **Native PC port** (long term). With the logic in C and the Sony SDK layers already isolated, the game can target PC with the GS/VIF/VU, SPU2/IOP and pad layers swapped out. Needs the mod build first.
 
-Like the decomp itself, none of this ships game code or assets: every build and patch starts
-from your own disc.
+None of this ships game code or assets: every build and patch starts from your own disc.
 
 ## Lessons learned
 
 Project gotchas live in [docs/lessons.md](docs/lessons.md): read it before matching, and add to it
-whenever something here takes more than a few minutes to figure out.
+whenever something takes more than a few minutes to figure out.
 
 ## Licence
 

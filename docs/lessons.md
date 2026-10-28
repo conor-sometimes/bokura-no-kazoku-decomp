@@ -834,7 +834,7 @@ Cross-project lessons (other decomps, the method) also go to the `decomp` skill'
   question (bk perm can't fix them).
 - In SDKC units, reading $gp with `asm volatile("move %0, $28" : "=r"(gp))` keeps the following
   store in place; `register void *gp asm("$28")` lets it float.
-- Upstream sources are on hokkaido (~/Projects/decomps/refsrc: gcc-2.95.2 libgcc2.c, fp-bit.c,
+- Upstream sources are kept with the decomp (refsrc: gcc-2.95.2 libgcc2.c, fp-bit.c,
   frame.c; newlib-1.9.0). __muldi3 (0x281B20) and dptofp (__truncdfsf2, 0x285498) matched straight
   from them; __muldi3 needed its unit (Dk280098) on the C front end, which kept every already-matched
   libm function identical.
