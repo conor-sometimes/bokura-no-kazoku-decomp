@@ -1,0 +1,38 @@
+//@func 0x1C4260
+// extern C func_001C4260 (decls prepended: CMg2Q, Func24A4C0, func_0024AD80, Func245D00). Remaining: ours enters the loop with a jump and hoists lui differently; retail falls straight into a do-while.
+struct CMg2Q { s32 a, b, c, d, e, f; };
+char *Func24A4C0(const char *path);
+extern "C" s32 func_0024AD80(const char *s, s32 k);
+void *Func245D00(int size);
+extern "C" int func_001C4260(CMiniGame2Res *r, const char *name) {
+    int ok = 0;
+    void *f = Func24A4C0(name);
+    if (f) {
+        const char *s = Func24AF10(f, "DATA");
+        if (*s) {
+            s32 i = 0;
+            r->m5C = func_0024AD80(s, 1);
+            r->m58 = Func245D00(r->m5C * sizeof(CMg2Q));
+            Func235DE0("QuestionData %d\n", r->m5C);
+            if (r->m5C > 0 && *s) {
+                do {
+                    char buf[0x100];
+                    const char *p;
+                    s32 off;
+                    s = Func24AFE8(s, buf, 1, 0x100);
+                    off = i * sizeof(CMg2Q);
+                    i++;
+                    p = func_0024A710(buf, &((CMg2Q *)((u8 *)r->m58 + off))->a, 0, D_002E0FC0, D_002E0FC8);
+                    p = func_0024A710(p, &((CMg2Q *)((u8 *)r->m58 + off))->b, 0, D_002E0FC0, D_002E0FC8);
+                    p = func_0024A710(p, &((CMg2Q *)((u8 *)r->m58 + off))->c, 0, D_002E0FC0, D_002E0FC8);
+                    p = func_0024A710(p, &((CMg2Q *)((u8 *)r->m58 + off))->d, 0, D_002E0FC0, D_002E0FC8);
+                    p = func_0024A710(p, &((CMg2Q *)((u8 *)r->m58 + off))->e, 0, D_002E0FC0, D_002E0FC8);
+                    func_0024A710(p, &((CMg2Q *)((u8 *)r->m58 + off))->f, 0, D_002E0FC0, D_002E0FC8);
+                } while (i < r->m5C && *s);
+            }
+            ok = 1;
+        }
+        D_002B91B0(f);
+    }
+    return ok;
+}
