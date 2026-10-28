@@ -1,6 +1,7 @@
 /* Old func_XXXXXXXX names still called from C (extern "C") after the function got a real name in
    symbol_addrs.txt (parallel lanes, 2026-10-14). Cleanup: declare the real callee and drop the line. */
 func_001089D0 = 0x001089D0; /* Save__9CFlagWorkPUc (CMenuMgr) */
+func_0013E800 = 0x0013E800; /* Init13E800__9CMovieObj (w2) */
 func_0024F5C0 = 0x0024F5C0; /* Func24F5C0__15CTaskList24F5C0Pvi (CGameDBMgr) */
 func_0024F2E8 = 0x0024F2E8; /* __nw__5CTaskUi (CGameDBMgr) */
 func_00248E48 = 0x00248E48; /* Func248E48__FPCc (CMenuMgr) */

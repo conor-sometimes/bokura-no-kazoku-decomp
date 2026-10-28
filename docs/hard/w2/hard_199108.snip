@@ -1,0 +1,17 @@
+//@decl
+//@func 0x199108
+// DIFF 15 (w2): rect half (q=Rect(k), disp 0-0xC) matches; colour stores give the daddu copy chain
+// but ours folds 0x500 into the index (this+(k*32+0x500)) where retail keeps this+k*32 with disp 0x500.
+// Chained assignment collapses to one base (wrong order); separate m_rect[k] stores fold the 0x500.
+// Cannot steer GCC addressing to split base/disp the way retail does. Addressing wall.
+void CCommandSelect::Func199108(s32 k, f32 x, f32 y, f32 w, f32 h) {
+    CCsRect *q = Rect(k);
+    q->h = h;
+    q->x = x;
+    q->y = y;
+    q->w = w;
+    m_rect[k].r = 1.0f;
+    m_rect[k].g = 1.0f;
+    m_rect[k].b = 1.0f;
+    m_rect[k].a = 1.0f;
+}

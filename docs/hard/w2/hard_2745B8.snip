@@ -1,0 +1,7 @@
+//@decl
+//@func 0x2745B8
+int func_002745B8(int c) {
+    while (*(volatile u32 *)0x1000F130 & 0x8000);
+    *(volatile u8 *)0x1000F180 = c;
+    return c;
+}

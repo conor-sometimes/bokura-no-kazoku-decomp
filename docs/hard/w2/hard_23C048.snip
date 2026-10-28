@@ -1,0 +1,14 @@
+//@decl
+//@func 0x23C048
+extern "C" void func_0023C048(s32 n, u32 *dst, u32 *src) {
+    u32 tmp[0x200];
+    s32 i;
+    if (dst == src) {
+        for (i = 0; i < n; i++) tmp[i] = src[i];
+        src = tmp;
+    }
+    for (i = 0; i < n; i++) {
+        s32 idx = ((i / 32) * 2 + ((i & 8) >> 3)) * 16 + ((i >> 1) & 8) + (i & 7);
+        dst[idx] = src[i];
+    }
+}

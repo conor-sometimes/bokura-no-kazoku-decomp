@@ -1,0 +1,9 @@
+//@decl
+extern "C" s32 func_00234938(void);
+extern s32 D_002B8CC8[4];
+//@func 0x233CC0
+extern "C" s32 func_00233CC0(s32 id) {
+    s32 i = (id == -1) ? func_00234938() : id;
+    i = i < 0 ? 0 : (i < 4 ? i : 3);
+    return D_002B8CC8[i];
+}

@@ -261,7 +261,22 @@ extern "C" s32 func_00209160(char **a, s32 *b, char *c, s32 d) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit208128", func_002091F0);
 
-INCLUDE_ASM("asm/nonmatchings/Unit208128", func_00209250);
+extern "C" s32 func_00209250(char **out, s32 *outsz, char *base, s32 key) {
+    s32 off = 0;
+    if (*(volatile s32 *)(base + 8) > 0) {
+        char *b10 = base + 0x10;
+        do {
+            s32 *ent = (s32 *)(b10 + off);
+            if (ent[0] == key) {
+                *out = (char *)ent + 0x10;
+                *outsz = ent[2];
+                return 1;
+            }
+            off += ent[2] + 0x10;
+        } while (off < *(volatile s32 *)(base + 8));
+    }
+    return 0;
+}
 
 extern "C" SeqHdr *func_002092B0(char *chunk, s32 id) {
     char *data;

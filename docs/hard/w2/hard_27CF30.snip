@@ -1,15 +1,16 @@
+//@decl
 //@func 0x27CF30
-int func_0027CF30(void)
-{
-    volatile AlarmSys *s = &D_002BF138;
-    AlarmEnt *e = s->free;
-    if (e == 0) return 0x80008005;
-    s->used++;
-    s->free = e->next;
+int func_0027CF30(void) {
+    AlarmEnt *e = D_002BF138.free;
+    if (e) goto body;
+    return 0x80008005;
+body:
+    D_002BF138.used++;
     e->handler = 0;
+    D_002BF138.free = e->next;
     e->flags = 0;
-    s->seq++;
     e->elapsed = 0;
-    e->seq = ((s->seq << 1) & 0x3FE) | 1;
-    return ((int)e << 4) | ((volatile AlarmEnt *)e)->seq;
+    D_002BF138.seq++;
+    e->seq = ((D_002BF138.seq << 1) & 0x3FE) | 1;
+    return ((int)e << 4) | e->seq;
 }

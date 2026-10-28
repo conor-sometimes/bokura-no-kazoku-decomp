@@ -466,7 +466,11 @@ extern "C" s32 func_00228008(PTbl *p, s32 i) {
     return p->e[i].x;
 }
 
-INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_00228020);
+extern "C" void func_00228020(PTbl *t, s32 i, s32 x, s64 v) {
+    t->e[i].x = x;
+    t->e[i].lo = (s32)v;
+    t->e[i].hi = (s32)(v >> 32);
+}
 
 extern "C" void func_00228058(void) {
     s32 a, r;
