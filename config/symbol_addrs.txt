@@ -2416,3 +2416,6 @@ Func166F80__14CGameResortObji = 0x00166f80; // type:func
 Func15F1B0__13CGameScheduleiii = 0x0015f1b0; // type:func
 Vf144270__8CSysFlagiiii = 0x00144270; // type:func
 Func15F780__13CGameScheduleiii = 0x0015F780; // type:func
+Get144378__8CSysFlagiii = 0x00144378; // type:func
+Set144C60__8CCurFlagiiii = 0x00144C60; // type:func
+Vf144D68__8CCurFlagiii = 0x00144D68; // type:func

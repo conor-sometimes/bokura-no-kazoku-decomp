@@ -438,3 +438,6 @@ func_00166F80 = 0x00166F80; /* Func166F80__14CGameResortObji */
 func_0015F1B0 = 0x0015F1B0; /* Func15F1B0__13CGameScheduleiii */
 func_00144270 = 0x00144270; /* Vf144270__8CSysFlagiiii */
 func_0015F780 = 0x0015F780; /* Func15F780__13CGameScheduleiii */
+func_00144378 = 0x00144378; /* Get144378__8CSysFlagiii */
+func_00144C60 = 0x00144C60; /* Set144C60__8CCurFlagiiii */
+func_00144D68 = 0x00144D68; /* Vf144D68__8CCurFlagiii */

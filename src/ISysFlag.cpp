@@ -170,7 +170,20 @@ void CSysFlag::Vf144270(s32 base, int name, s32 b, s32 set) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144378);
+asm(".p2align 3");
+int CSysFlag::Get144378(s32 base, s32 a, s32 b) {
+    s32 id = Func145738(a, 1);
+    s32 t = base + id * 16 - 0x100;
+    if (id < 0) return 0;
+    s32 q = b / 7;
+    s32 mask = 1 << (b % 7);
+    s32 hi;
+    if (q < 0 || (hi = 15, hi < q)) {
+        Func235DE0(D_002D7940, b, q, mask);
+        return 0;
+    }
+    return (Func1091B0(t + q) & mask) != 0;
+}
 
 void CSysFlag::Merge144440(CFlagWork *w) {
     s32 i;
@@ -259,9 +272,40 @@ s32 CCurFlag::Get144B68(s32 base, s32 name, s32 b) {
     return Func1091B0(base + k + i);
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144C60);
+asm(".p2align 3");
+void CCurFlag::Set144C60(s32 base, s32 a, s32 b, s32 set) {
+    s32 id = Func1456A8(a);
+    if (id >= 0) {
+        s32 q = b / 7;
+        s32 mask = 1 << (b % 7);
+        s32 hi;
+        if (q < 0 || (hi = 15, hi < q)) {
+            Func235DE0(D_002D7940, b, q, mask);
+        } else {
+            s32 t = base + id * 16;
+            s32 idx = t + q;
+            s32 v = Func1091B0(idx);
+            if (set) v |= mask;
+            else v &= ~mask;
+            Func108FF0(idx, v);
+        }
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144D68);
+asm(".p2align 3");
+int CCurFlag::Vf144D68(s32 base, int name, s32 b) {
+    s32 id = Func1456A8(name);
+    if (id < 0) return 0;
+    s32 t = base + id * 16;
+    s32 q = b / 7;
+    s32 mask = 1 << (b % 7);
+    s32 hi;
+    if (q < 0 || (hi = 15, hi < q)) {
+        Func235DE0(D_002D7940, b, q, mask);
+        return 0;
+    }
+    return (Func1091B0(t + q) & mask) != 0;
+}
 
 void CCurFlag::Set144E28(int name, s32 v) {
     s32 id = Func1456A8(name);
