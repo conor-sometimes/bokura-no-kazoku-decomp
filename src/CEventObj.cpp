@@ -980,7 +980,55 @@ int CEventObj::IsValidIndex(int i) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CEventObj", func_00138908);
+#include "CFlagWork.h"
+extern char D_002D5930[], D_002D5940[], D_002D5948[], D_002D5950[], D_002D5960[];
+extern "C" int func_00138908(CEventObj *o, char *buf, CSvmWork *w, int id) throw() {
+    char tmp[0x100];
+    s32 a = w->SlotAsInt(0, -1);
+    s32 n;
+    switch (id) {
+    case 0:  // dummy case: gives the retail compare tree (17 as root)
+    default:
+        w->SlotGetStr(1, buf, 0x100, D_002D5928);
+        n = w->SlotAsInt(2, 0);
+        break;
+    case 0x11:
+        if ((u32)(a - 0x10) < 8) {
+            if (D_002A26E4->GetNamed(0x28, a) <= 0) return 0;
+        }
+        {
+            s32 b = w->SlotAsInt(1, -1);
+            s32 c = w->SlotAsInt(2, -1);
+            sprintf(buf, D_002D5930, b, c);
+        }
+        n = w->SlotAsInt(3, 0);
+        break;
+    case 0x12:
+        if ((u32)(a - 0x10) < 8) {
+            if (D_002A26E4->GetNamed(0x28, a) <= 0) return 0;
+        }
+        sprintf(buf, D_002D5940, w->SlotAsInt(1, -1));
+        n = w->SlotAsInt(2, 0);
+        break;
+    case 0x13:
+        if ((u32)(a - 0x10) < 8) {
+            if (D_002A26E4->GetNamed(0x28, a) <= 0) return 0;
+        }
+        sprintf(buf, D_002D5948, w->SlotAsInt(1, -1));
+        n = w->SlotAsInt(2, 0);
+        break;
+    }
+    if (!o->Call132F40(1, (int)buf, a)) {
+        o->Log1353F0(D_002D5950, buf);
+        return 0;
+    }
+    if (buf[0] && n > 0) {
+        sprintf(tmp, D_002D5960, n);
+        strcpy(buf + strlen(buf), tmp);
+    }
+    return 1;
+}
+
 
 int IsNotDefault(const char *s) {
     int r = 0;

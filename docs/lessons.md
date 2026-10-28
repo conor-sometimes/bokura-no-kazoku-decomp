@@ -1595,3 +1595,7 @@ Return types and liveness steer scheduling more than body shape at this stage.
 - `if (x >= 0) { p = ...; do {} while }` makes the pointer inits land after the first test (sinks them, as retail does).
 - `(hi = 15, hi < q)` gets `li; slt` instead of `slti` and keeps two compares, instead of folding to one unsigned compare.
 - When a C method replaces INCLUDE_ASM, check where it lands: `.p2align 3` before it may be needed.
+- **A dummy `case` changes the switch compare tree.** gcc 2.96 roots a 3-case switch (17,18,19) at the median (18); retail's `beq 17; slti <18 -> default; beq 18; beq 19` is the tree of a switch that has one more far-away case. Adding `case 0:` (falls into `default:`) gave the retail tree (CEventObj 0x138908). Put `default:` first in the source when retail lays the default body out before the cases.
+- A `return 1;` merged after `if (buf[0] && n > 0) {...}` instead of two returns fixed a `lb $3` vs `lb $2` choice (the loaded byte reuses $2 when the constant return is set in the branch delay slot).
+- To force a reload that gcse would remove (retail re-reads `rec->m0` in a later branch), read the field through a `volatile` cast: `((volatile T *)rec)->m0` (CGameMain 0x151120 went from DIFF 138 to 46).
+
