@@ -1531,3 +1531,7 @@ Each has working-ish C; remaining diff is pure scheduling/regalloc. Permuter can
 - 0x1B4418, 0x1CA3B8, 0x1CA528, 0x12A420, 0x113978 (w1): all DIFF 2, single-reg/delay-slot scheduling.
 
 SIBLING LEAD: the 0x144270 recipe (see lessons) should unlock 0x144378, 0x144C60, 0x144D68, 0x145160 (same CSysFlag family; in other lanes partitions).
+
+### w2 fourth pass (2026-10-28, after the hard-tail lessons)
+Matched: 0x21ADB0 (Unit219970): evaluation order of call arguments loaded from memory is set with temps: `{ f32 b = m[0]; f32 a = m[1]; out->z = func_0021ACA8(a, b); }` (retail loads the second argument first).
+Return-type flips (void->s32, u8/s8/u32 on the callee) via asm-label aliases did not move 0x239BD8 (8), 0x117668 (5) or 0x267E58 (3). 0x1EF210 (3): reordering the m_func store only worsens it (5-11). 0x25A098 (6): all 720 orders of the six ctor stores tried by bk perm. 0x113978: `r = 0; r += Range()` gives 81+.

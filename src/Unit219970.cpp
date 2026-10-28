@@ -106,6 +106,10 @@ extern const char D_002E3B50[];
 extern "C" Ent14 *func_0021A6F8(void);
 extern const char D_002E3A30[];
 extern const char D_002E3A50[];
+
+extern "C" f32 func_0021ACA8(f32 a, f32 b);
+struct Mat16 { f32 m[16]; } __attribute__((aligned(16)));
+#define VU_GET_MAT2(t) asm volatile("move $2, %0\n\tvcallms 0x0\n\tqmfc2.i $0, $vf0\n\tsqc2 $vf24, 0x0($2)\n\tsqc2 $vf25, 0x10($2)\n\tsqc2 $vf26, 0x20($2)\n\tsqc2 $vf27, 0x30($2)" : : "r"(&t) : "$2", "memory")
 // @decl-end
 
 extern "C" void func_00219970(s32 a) {
@@ -574,7 +578,20 @@ extern "C" f32 func_0021ACA8(f32 a, f32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021ACD8);
 
-INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021ADB0);
+extern "C" void func_0021ADB0(s32 o, void *pm) {
+    RotV *out = (RotV *)o; f32 *m = (f32 *)pm;
+    Mat16 t;
+    f32 r;
+    asm volatile("vcallms 0x30\n\tqmfc2.i $0, $vf0\n\tlqc2 $vf4, 0x0(%0)\n\tlqc2 $vf5, 0x10(%0)\n\tlqc2 $vf6, 0x20(%0)\n\tlqc2 $vf7, 0x30(%0)\n\tvnop\n\tvnop\n\tvcallms 0x50" : : "r"(m));
+    { f32 b = m[0]; f32 a = m[1]; out->z = func_0021ACA8(a, b); } VU_ROT2(0xF0, -out->z);
+    VU_GET_MAT2(t);
+    r = func_0021ACA8(t.m[2], t.m[0]);
+    out->y = -r;
+    VU_ROT2(0x100, r);
+    VU_GET_MAT2(t);
+    out->x = func_0021ACA8(t.m[6], t.m[5]);
+    asm volatile("vcallms 0x40");
+}
 
 extern "C" void func_0021AF10(void *m, RotV *a) {
     asm volatile("vcallms 0x30");
