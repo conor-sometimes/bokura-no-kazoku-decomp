@@ -1,5 +1,9 @@
 //@func 0x150EA8
-// needs: CGameMain2 *p (not CGameMain*) in the unit's func_00150EA8 decl (+throw()), caller cast; asm(".p2align 3") before. Remaining diff: s-register numbering.
+// needs: CGameMain2 *p (not CGameMain*) in the unit func_00150EA8 decl (+throw()), caller cast; asm(".p2align 3") before.
+// STALE NOTE CORRECTED (w3 Opus 2026-10-28): in-context build is +0x10 bytes (4 extra insns), ushow DIFF 52
+// -- NOT just s-register numbering. The strength-reduction of p->m27C[id*23+...] and the interleaving of the
+// D_002A26E4->Func1091B0 call differ structurally from retail (retail builds id*23 as ((id*2+id)<<3)-id with
+// the call woven in). Structurally far; not a near-miss.
 asm(".p2align 3");
 extern "C" int func_00150EA8(CGameMain2 *p, s32 k) throw() {
     s32 i, id;

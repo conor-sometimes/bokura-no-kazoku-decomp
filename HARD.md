@@ -1543,3 +1543,25 @@ That matched 0x20F9E8, 0x20FAC8 (Unit20E938) and 0x219818/0x219880/0x2198E8 (Uni
 Left: 0x22C680 (pad repeat; real semantics found: rep block is `n = m12 + 100`, `mA = mC`; best C is DIFF 36, retail puts the tail block before the rep block and computes the slot term of the index first); 0x2379D0 (DMA call tag, needs two pointer copies; best DIFF 28); 0x23C048 (retail dsrl for `(i & 0x10) >> 1` not reproducible; src walked in place).
 - **Lane w1 pass 3**: **0x110560** CModelRes parser: the only diff is retail's `lui $3,%hi(D_002A03C8)` sitting in the first strcmp block (before the `bnez`) instead of the second; if/else, early-continue, local-pointer and `a = strcmp()` shapes do not move it (the nop before the second block is just the realignment that follows). **0x151120**: `((volatile CGameMainFlagDef *)rec)->m0` for the reloaded value gives DIFF 46 (same size, registers only: retail copies the loop pointer from $5 to $16 after the entry test, `if (rec->m0 >= 0) { do {} while }` variants 41-46); the rest is s-register numbering. **0x141F68**: reproduced with CActRec/CActRec2 stubs and `func_00142B38` asm-labelled `SingleBit__12CUserFlagMgrUii`; the 3 words are retail's `daddu $6,$2,$0` in the jal delay slot vs ours hoisted before the `lui`; a temp, direct call argument and cast do not change it. **0x126E98**: retail uses `func_00295170(m_unk0, i++)`-style post-increment with the old i kept in $5 for the second call (loop.c ran); not retried.
 
+
+## w3 hard-tail pass (Opus, 2026-10-28)
+- **1C4CA0 CMiniGame2::LoadLevel is a real regalloc wall at DIFF 25.** Only s0/s1 are swapped
+  (ours this=s0/&mD6C=s1, retail this=s1/&mD6C=s0) plus a coupled bnezl-vs-beqz on the top
+  `if(!*s)return 0`. gcc2.96 local-alloc gives the shorter-lived loop-invariant &mD6C the lower
+  reg; the matched sibling LoadColor (same unit) uses the indexed &m_color[i] and matches, the
+  fixed-member &mD6C here does not. Explicit `s32 *q=&mD6C` -> DIFF 70; `if(*s){...}return 0;`
+  fixes the branch to beqz but reorders the pointer setup -> DIFF 68; `m30==lv` -> DIFF 26. The
+  branch-likely and s0/s1 choice are entangled. C++ permuter (statement reorder only) stuck at
+  ~1175/base 2035, never 0 over 7600 iters. Left INCLUDE_ASM. (full analysis: docs/hard/w3/hard_1C4CA0.snip)
+- **Two prior w3 "near-miss" notes were optimistic/stale.** 0x150EA8 (CGameMain func_00150EA8):
+  porting the saved snip builds +0x10 bytes, ushow DIFF 52 -- the `p->m27C[id*23+...]` strength
+  reduction and the woven-in Func1091B0 call differ structurally, not just register numbering.
+  0x128F10 (CSndWorkReal unlink): ushow DIFF 45 -- retail inlines LiveChara as movn/movz with a
+  different loop/branch tree than the IndexOfChara128 helper; not a near-miss. Notes corrected in
+  the snips.
+- **permute.py base won't parse some bodies.** `&((T*)((u8*)p+off))->m` trips pycparser (rewrite
+  via an intermediate typed pointer), and a `do{...}while` body made the spliced C++ fail to
+  compile (0x1C4260). Its score metric also does not track ushow DIFF, so chasing the permuter's
+  best cosmetic mutations back into the snip is not reliable.
+- **No new w3 matches this pass** -- the remaining in-partition near-misses are genuine
+  scheduling/regalloc walls already driven to within a few registers by earlier passes.

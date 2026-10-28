@@ -1,5 +1,16 @@
 //@func 0x1C4CA0
-// needs symbol LoadLevel__10CMiniGame2 (+alias func_001C4CA0). Remaining diff: this in s1, &mD6C in s0 in retail.
+// needs symbol LoadLevel__10CMiniGame2 (+alias func_001C4CA0). In-context DIFF 25 (ushow, 2026-10-28, w3 Opus).
+// TWO coupled issues; everything else matches:
+//  (a) s0/s1 swap: OURS this=s0 and &mD6C=s1; RETAIL this=s1 and &mD6C=s0. A gcc2.96 local-alloc
+//      priority inversion (priority ~ n_refs/live_length): retail gives the shorter-lived loop-invariant
+//      &mD6C the lower reg. The matched sibling LoadColor (just above in the unit) uses &m_color[i]
+//      (indexed) and matches; the fixed-member &mD6C here does not. An explicit s32 *q=&mD6C makes it
+//      WORSE (DIFF 70); the m30==lv operand swap = DIFF 26.
+//  (b) the top if(!*s)return 0 compiles to bnezl(into-loop) here vs retail beqz(to the shared return-0).
+//      Writing it if(*s){...} return 0; (one shared return 0) fixes the branch to beqz but reorders the
+//      D_002E0FC0/8 pointer setup and costs more than it saves (DIFF 68). Branch-likely and the s0/s1
+//      choice are entangled. Regalloc wall: permuter (statement reorder) stuck ~1175/base2035, never 0
+//      over 7600 iters. Left INCLUDE_ASM.
 int CMiniGame2::LoadLevel() {
     char buf[0x100];
     s32 lv;

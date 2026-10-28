@@ -1,5 +1,8 @@
 //@func 0x128F10
-// needs member decl `void Unlink128F10(CSndNode *n);` in CSndWorkReal + symbol_addrs/aliases. Remaining diff: retail keeps a separate iterator copy per step.
+// needs member decl void Unlink128F10(CSndNode *n); in CSndWorkReal + symbol_addrs/aliases.
+// STALE NOTE CORRECTED (w3 Opus 2026-10-28): ushow in-context DIFF 45 -- structurally different, not a
+// near-miss. Retail inlines LiveChara (p->m_unk0?0:p) as movn/movz and walks the list with a different
+// loop/branch tree than the IndexOfChara128 helper here. The n==0 vs n!=0 branch structure differs too.
 inline s32 IndexOfChara128(CCharaObj *p, CSndNode *n) {
     s32 i = 0;
     for (; p; p = LiveChara(p->m_next), i++) {
