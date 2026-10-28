@@ -2412,3 +2412,7 @@ Update19F6C0__10CStatusWin = 0x0019f6c0; // type:func
 Cmd13D518__9CEventObjP8CSvmWorkii = 0x0013d518; // type:func
 Set2__10CMiniGame3Ui = 0x001ca3b8; // type:func
 OpRand130E78__FP6CValueT0P8CSvmWork = 0x00130e78; // type:func
+Func166F80__14CGameResortObji = 0x00166f80; // type:func
+Func15F1B0__13CGameScheduleiii = 0x0015f1b0; // type:func
+Vf144270__8CSysFlagiiii = 0x00144270; // type:func
+Func15F780__13CGameScheduleiii = 0x0015F780; // type:func

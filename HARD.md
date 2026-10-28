@@ -1516,3 +1516,18 @@ in config/rodata_syms.txt plus an INCLUDE_RODATA before D_002D5418 (the literal 
 Tried again, no change: 0x229300 (s32 vs u32 v, split/copy temps, shift-or order: DIFF 15-18); 0x113368 (DIFF 2: bltz target / bnezl, `if (i < 0) goto fail` first, fail returns: unchanged);
 0x267E58 (DIFF 3: ternary, `ok = 0; if (...) ok = 1`, u32 ok, `ok + 0*skip`: 3-19); 0x117668 (DIFF 5: pointer laundering `asm("" : "+r"(po))`, offset, separate arg temps: 5-6).
 Tip: `for f in docs/hard/*/*.snip: ushow.py $f | head -1` ranks every saved snippet by DIFF; `bk hard` only prints the closest five.
+
+## Hard-tail near-misses (lanes w1/w3, 2026-10-28)
+
+Each has working-ish C; remaining diff is pure scheduling/regalloc. Permuter candidates.
+
+- 0x12A510: switch on m0 (cases 1,2, default return 0.0f). Retail computes &s->m28 (addiu after lw of m0); ours schedules it earlier.
+- 0x19CCF8: else-if chain (k>=10 -> 9, k<0 -> 0) in-place; only xor/sw scheduling differs.
+- 0x15D620: C complete (Find1DC -> CGameDBRecAct, MoveMoney, Func109108, Vf143FA8, IncCur, IncCur2). Diff = &D_002A26E4 lui hoisted above if(!rec); s1/s3 save order.
+- 0x159E18: C written; loop/remove-block layout wrong, first ScheduleUnit not branchy.
+- 0x129020: structure/returns right; order of 3 stores to m2C/m30/m34 off, plus retail move v0,zero at top.
+- 0x1C4A58: retail keeps 1 in a reg for movn where ours emits sltu; inline helper with on-param did not help.
+- 0x150EA8 (w1): CGameMain recursive flag compare, ~1 word off; ours clones loop-test sll into the beqz delay slot. Best C in docs/hard/w1/hard_150EA8.snip.
+- 0x1B4418, 0x1CA3B8, 0x1CA528, 0x12A420, 0x113978 (w1): all DIFF 2, single-reg/delay-slot scheduling.
+
+SIBLING LEAD: the 0x144270 recipe (see lessons) should unlock 0x144378, 0x144C60, 0x144D68, 0x145160 (same CSysFlag family; in other lanes partitions).

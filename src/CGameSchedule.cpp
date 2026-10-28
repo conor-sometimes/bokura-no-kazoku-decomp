@@ -679,11 +679,66 @@ extern "C" int func_0015F0D8(const void *pa, const void *pb) {
     return a->m4 - b->m4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F1B0);
+s32 CGameSchedule::Func15F1B0(s32 a, s32 b, s32 c) {
+    SchedPair pairs[0x20];
+    s32 k = D_002A3480[0];
+    s32 n = 0;
+    if (k >= 0) {
+        s32 *p = D_002A3480;
+        SchedPair *o = pairs;
+        do {
+            s32 slot = FindResortSlot(a, k);
+            if (slot >= 0) {
+                o->m0 = slot;
+                o->m4 = Func15F030(a, k) << Func15F080(k);
+                n++;
+                o++;
+            }
+            k = *++p;
+        } while (k >= 0);
+    }
+    if (n <= 0) return 0;
+    func_0028A140(pairs, n, 8, func_0015F0D8);
+    return Func15F9E0(pairs[n - 1].m0, Func145738(a, 1), c, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F2C8);
 
-INCLUDE_ASM("asm/nonmatchings/CGameSchedule", func_0015F780);
+s32 CGameSchedule::Func15F780(s32 b, s32 c, s32 d) {
+    SchedPair pairs[0x20];
+    s32 n = 0;
+    s32 k = D_002A3480[0];
+    if (k >= 0) {
+        s32 *p = D_002A3480;
+        do {
+            s32 j;
+            for (j = 0; j < D_002A26E4->Func1091B0(0x27); j++) {
+                s32 slot, v, i;
+                if (Func1456A8(b) == j) continue;
+                slot = FindResortSlot(j, k);
+                if (slot < 0) continue;
+                v = Func15F030(j, k);
+                for (i = 0; i < n; i++) {
+                    if (pairs[i].m0 == slot) break;
+                }
+                if (i < n) {
+                    pairs[i].m4 += v;
+                } else {
+                    pairs[n].m0 = slot;
+                    pairs[n].m4 = v;
+                    n++;
+                }
+            }
+            k = *++p;
+        } while (k >= 0);
+    }
+    if (n <= 0) return 0;
+    func_0028A140(pairs, n, 8, func_0015F0D8);
+    for (s32 m = n - 1; m >= 0; m--) {
+        if (Func15F9E0(pairs[m].m0, 0x18, d, 1)) return 1;
+    }
+    return 0;
+}
 
 s32 CGameSchedule::Func15F958(s32 a, s32 b, s32 c) {
     s32 r = D_002A36E8->Vf172A60(a, b, 1);

@@ -151,7 +151,24 @@ int CSysFlag::GetOption(int k) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144270);
+asm(".p2align 3");
+void CSysFlag::Vf144270(s32 base, int name, s32 b, s32 set) {
+    s32 id = Func145738(name, 1);
+    if (id >= 0) {
+        s32 q = b / 7;
+        s32 mask = 1 << (b % 7);
+        s32 hi;
+        if (q < 0 || (hi = 15, hi < q)) {
+            Func235DE0(D_002D7940, b, q, mask);
+        } else {
+            s32 t = base + id * 16 - 0x100; s32 idx = t + q;
+            s32 v = Func1091B0(idx);
+            if (set) v |= mask;
+            else v &= ~mask;
+            Func108FF0(idx, v);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/ISysFlag", func_00144378);
 

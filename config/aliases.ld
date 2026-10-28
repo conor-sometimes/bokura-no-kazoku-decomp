@@ -433,3 +433,8 @@ _$_8CSndWork = 0x0025C2C0; /* func_0025C2C0 (sound object dtor), CInterfMgr memb
 _vt$7DlRUnit = 0x002C2518; /* = _vt$13CResCacheUnit: view class of ~CResCacheUnit 0x24FAF0 (lane dl) */
 _vt$6DlTagB = 0x002BFFC0; /* = _vt$8CListTag: inline-dtor view of CListTag for ~CResCacheUnit (lane dl) */
 D_38EF50 = 0x0038EF50; /* lane gb: .bss word before D_38EF54 (Unit23E868 0x23FCB8) */
+func_00129900 = 0x00129900; /* Play129900__12CSndWorkRealPCcfiii */
+func_00166F80 = 0x00166F80; /* Func166F80__14CGameResortObji */
+func_0015F1B0 = 0x0015F1B0; /* Func15F1B0__13CGameScheduleiii */
+func_00144270 = 0x00144270; /* Vf144270__8CSysFlagiiii */
+func_0015F780 = 0x0015F780; /* Func15F780__13CGameScheduleiii */

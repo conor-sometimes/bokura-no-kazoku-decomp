@@ -1578,3 +1578,20 @@ end:;
 - **A heap-usage overlay in dklib** (0x248298, 0x248760 family): debug code draws each memheap block as
   a coloured bar (allocated blocks one colour, the first/last free node highlighted), a leftover
   memory visualiser.
+
+## Hard-tail lessons (lanes w1/w3, 2026-10-28)
+
+Return types and liveness steer scheduling more than body shape at this stage.
+
+- A discarded callee result still steers regalloc/scheduling. For a near-miss differing only in a temp register or delay slot around a call, flip the callee return type (void -> s32) before rewriting the body.
+- `j callee` after the epilogue means the function (and that callee) return a value; `void` + `jal`/`jr` is the wrong signature.
+- A duplicated `return 0;` inside a branch changes the epilogue and branch layout.
+- Un-strength-reduced loop (index recomputed each iteration): write `goto test; body: ...; test: e = &T[j++]; if (e->k >= 0) goto body;`. `while ((e = &T[j++])->k >= 0)` gets reduced to a pointer step.
+- Port out of INCLUDE_ASM with string literals in the C, not the extern `D_xxx` names: the strings vanish with the asm file and the link comes up exactly their size short.
+- A vtable slot at retail offset +0x30 is virtual index 5: declare five dummy virtuals before it.
+- After a `make` with a ported function removed from asm, the matching `.s` is deleted; run `make` again to regenerate it before `bk utest`.
+- A `this` spilled to the stack in retail means one extra live variable (e.g. keep `out` alongside a separate walker `o`).
+- A single index variable shared by two loops, one of which crosses calls, steals an s-register; give each loop its own variable.
+- `if (x >= 0) { p = ...; do {} while }` makes the pointer inits land after the first test (sinks them, as retail does).
+- `(hi = 15, hi < q)` gets `li; slt` instead of `slti` and keeps two compares, instead of folding to one unsigned compare.
+- When a C method replaces INCLUDE_ASM, check where it lands: `.p2align 3` before it may be needed.

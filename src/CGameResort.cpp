@@ -155,6 +155,7 @@ s32 Func145738(s32 a, s32 b);
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern "C" void func_00250828(void *p, const char *name);
 extern "C" int func_00289118(const char *s);
+extern "C" int atoi(const char *s);
 extern const s32 D_002D9940[];
 class CCharaObj {
 public:
@@ -308,7 +309,21 @@ void CGameResortObj::Func166B68() {
 INCLUDE_RODATA("asm/nonmatchings/CGameResort", D_002D9940);
 INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166D40);
 
-INCLUDE_ASM("asm/nonmatchings/CGameResort", func_00166F80);
+void CGameResortObj::Func166F80(s32 flag) {
+    s32 i;
+    for (i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {
+        CCharaObj *c;
+        char buf[0x20];
+        s32 n;
+        if (!((m_unk5D4 >> i) & 1)) continue;
+        c = (CCharaObj *)m_unk78->m_set.GetBUnk24(i);
+        if (!c) continue;
+        *(s32 *)buf = D_002D9940[0]; buf[4] = ((const char *)D_002D9940)[4];
+        D_002A28D8->Get(2, buf, Func145738(i, 1));
+        n = atoi(buf);
+        if (c->m74 != n) c->Func115938(0, flag ? 2 : n, 1.0f / 30.0f, 1.0f);
+    }
+}
 
 int CGameResortObj::Func1670A8() {
     for (s32 i = 0; i < D_002A26E4->Func1091B0(0x27); i++) {

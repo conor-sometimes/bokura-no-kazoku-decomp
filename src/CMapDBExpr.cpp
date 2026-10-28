@@ -266,7 +266,29 @@ extern "C" s32 func_00173578(CMapDBMgr *m) {
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2B8);
 INCLUDE_RODATA("asm/nonmatchings/CMapDBExpr", D_002DA2F0);
 
-INCLUDE_ASM("asm/nonmatchings/CMapDBExpr", func_00173648);
+extern "C" s32 func_00173648(CMapDBMgr *m, const char *p, CMapDBPair *out) {
+    char buf[0x400];
+    const char *s;
+    s32 n = 0, count = 0;
+    CMapDBPair *o = out;
+    for (;;) {
+        p = func_0024AD10(p, buf, 1, 0x400);
+        if (!*p && !buf[0]) break;
+        s = buf;
+        for (;;) {
+            s = Func24A570(s, func_00248DA8(&m->m_buf), D_002DA210, D_002DA280);
+            if (!*s && !*func_00248DA8(&m->m_buf)) break;
+            if (out) {
+                o->m0 = func_00248DC0(&m->m_buf);
+                o->m4 = n;
+            }
+            o++;
+            count++;
+        }
+        n++;
+    }
+    return count;
+}
 
 void CMapDBMgr::Init() {
     m_buf.Func248E00();
