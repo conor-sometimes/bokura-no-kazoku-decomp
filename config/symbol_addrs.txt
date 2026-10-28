@@ -2419,3 +2419,4 @@ Func15F780__13CGameScheduleiii = 0x0015F780; // type:func
 Get144378__8CSysFlagiii = 0x00144378; // type:func
 Set144C60__8CCurFlagiiii = 0x00144C60; // type:func
 Vf144D68__8CCurFlagiii = 0x00144D68; // type:func
+Init13E800__9CMovieObj = 0x0013e800; // type:func

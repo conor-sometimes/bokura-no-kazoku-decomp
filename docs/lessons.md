@@ -1599,3 +1599,13 @@ Return types and liveness steer scheduling more than body shape at this stage.
 - A `return 1;` merged after `if (buf[0] && n > 0) {...}` instead of two returns fixed a `lb $3` vs `lb $2` choice (the loaded byte reuses $2 when the constant return is set in the branch delay slot).
 - To force a reload that gcse would remove (retail re-reads `rec->m0` in a later branch), read the field through a `volatile` cast: `((volatile T *)rec)->m0` (CGameMain 0x151120 went from DIFF 138 to 46).
 
+
+## w1 (2026-10-28)
+- **Tied same-register stores: later-in-source is emitted first**: two `swc1 $f0` of `1.0f`
+  (CMovieObj::Init13E800 0x13E800, m_unk170 / m_unk16C) share one `mtc1 $f0` and have equal
+  scheduler priority. GCC 2.96 Haifa tie-break schedules the HIGHER-LUID (later-in-source) one
+  first, so the two stores come out in reverse source order. Retail emits 0x170 then 0x16C, so
+  m_unk170 must be the LAST store in the source. No statement reorder of the other fields and no
+  chained a = b = 1.0f flips it (both still CSE to $f0); only moving m_unk170 after m_unk16C in
+  source matched (DIFF 2 -> 0, whole build byte-exact). Applies to any pair of equal-priority
+  stores reading the same register. *(bokura)*

@@ -98,6 +98,8 @@ extern "C" int func_00244DE0(char *name, s32 v);
 extern "C" int func_002451A8();
 extern "C" int func_00245450();
 extern "C" s32 func_00251BA8();
+
+extern "C" void func_00244D68();
 // @decl-end
 
 CMovieObj::CMovieObj() {
@@ -133,7 +135,23 @@ void CMovieObj::SetName(const char *name) {
     strcpy(m_name, name);
 }
 
-INCLUDE_ASM("asm/nonmatchings/CMovieObj", func_0013E800);
+void CMovieObj::Init13E800() {
+    Func13E888();
+    func_00244910(0x280, 0x1E0);
+    func_00244D68();
+    func_002452B8(1);
+    func_002452A0(0);
+    func_00245200(0);
+    m_head.m_unk4 = -1;
+    m_head.m_unk2 = 0;
+    m_head.m_unk0 = 0;
+    m_unk158 = 0;
+    m_unk15C = 1;
+    m_unk168 = 1;
+    m_unk160 = 0;
+    m_unk16C = 1.0f;
+    m_unk170 = 1.0f;
+}
 
 void CMovieObj::Func13E888() {
     func_00244EB0();
