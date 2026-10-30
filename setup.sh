@@ -13,7 +13,7 @@ cd "$ROOT"
 
 ISO=${1:-${BOKURA_ISO:-}}
 
-# R5900 binutils (decompals v0.10) come from bokura-env (decomp-nix), on PATH.
+# R5900 binutils (decompals v0.10) come from bokura-env (workbench), on PATH.
 command -v mips-ps2-decompals-as >/dev/null || { echo "setup: mips-ps2-decompals-as not on PATH; run inside bokura-env" >&2; exit 1; }
 mips-ps2-decompals-as --version | head -1
 

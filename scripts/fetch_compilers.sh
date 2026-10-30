@@ -23,10 +23,10 @@ for name in "${names[@]}"; do
     sum=${SHA[$name]:-}
     [[ -n $sum ]] || { echo "fetch_compilers: unknown compiler $name" >&2; exit 1; }
     dest=$ROOT/tools/compilers/$name
-    # decomp-nix's PS2 envs carry the same pinned builds under $DECOMP_COMPILERS: link, don't download.
+    # workbench's PS2 envs carry the same pinned builds under $DECOMP_COMPILERS: link, don't download.
     if [[ -n ${DECOMP_COMPILERS:-} && -f $DECOMP_COMPILERS/$name/.sha256 && $(<"$DECOMP_COMPILERS/$name/.sha256") == "$sum" ]]; then
         mkdir -p "$ROOT/tools/compilers"; rm -rf "$dest"; ln -s "$DECOMP_COMPILERS/$name" "$dest"
-        echo "$name: linked from decomp-nix"; continue
+        echo "$name: linked from workbench"; continue
     fi
     if [[ -f $dest/.sha256 && $(<"$dest/.sha256") == "$sum" ]]; then
         echo "$name: already there"; continue

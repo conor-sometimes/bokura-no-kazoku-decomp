@@ -115,7 +115,7 @@ def do_setup(snip, addr):
     os.chmod(sh, 0o755)
     open(os.path.join(d, "settings.toml"), "w").write(
         'func_name = "%s"\ncompiler_type = "gcc"\n' % func_name)
-    run = "nix run ~/Projects/nix/decomp-nix#bokura-no-kazoku -- -c 'permuter %s%s'"
+    run = "nix run ~/Projects/nix/workbench#bokura-no-kazoku -- -c 'permuter %s%s'"
     print("scratch dir:", d)
     print("func_name:  ", func_name)
     print("sanity:     ", run % (d, " --debug --stop-on-zero"))

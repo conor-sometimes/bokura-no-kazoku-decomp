@@ -48,9 +48,9 @@ The boot executable inside it, `SCPS_150.88`: SHA-1 `621ffd58de52794eaa3d33885ba
 
 ## Environment
 
-`bokura-env` from [decomp-nix](https://github.com/conor-sometimes/decomp-nix):
-[projects/bokura-no-kazoku/default.nix](https://github.com/conor-sometimes/decomp-nix/blob/main/projects/bokura-no-kazoku/default.nix),
-built on the shared [lib/mkDecompEnv.nix](https://github.com/conor-sometimes/decomp-nix/blob/main/lib/mkDecompEnv.nix):
+`bokura-env` from [workbench](https://github.com/conor-sometimes/workbench):
+[projects/bokura-no-kazoku/default.nix](https://github.com/conor-sometimes/workbench/blob/main/projects/bokura-no-kazoku/default.nix),
+built on the shared [lib/mkDecompEnv.nix](https://github.com/conor-sometimes/workbench/blob/main/lib/mkDecompEnv.nix):
 an FHS environment with gcc multilib, Python and the permuter's packages.
 
 ## Build

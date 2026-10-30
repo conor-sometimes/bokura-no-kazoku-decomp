@@ -4,7 +4,7 @@ Phases from the decomp skill; each has a clear done signal.
 
 - [x] **0. Recon**: boot ELF `SCPS_150.88`, SDK 2.8, C++ with Sony EE-GCC 2.9x (see README).
 - [ ] **0b. Symbols**: ccc `stdump` on the ELF and IRX modules; Redump hash check of the ISO.
-- [ ] **1. Repo + environment**: `bokura-env` from decomp-nix; pinned tools (splat, spimdisasm,
+- [ ] **1. Repo + environment**: `bokura-env` from workbench; pinned tools (splat, spimdisasm,
       R5900 binutils, objdiff); `make` checks the disc image hash before extracting.
 - [x] **2. Round-trip the ELF as pure assembly** with splat (`platform: ps2`). Done: the rebuilt
       `SCPS_150.88` matches the original SHA-1.
