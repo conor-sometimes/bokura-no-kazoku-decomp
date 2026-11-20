@@ -7,6 +7,9 @@
 # objdiff-cli (pinned, SHA-256 checked) validates it, and it is uploaded as SCPS_150.88_report,
 # the artifact bytematch.dev reads from main. The report holds unit and function names,
 # addresses, sizes and percentages only: no game bytes. (After lombyte-project/Lombyte.)
+#
+# The same run checks the code rules (tools/bk/rules.py) and uploads its findings as
+# SCPS_150.88_rules: names, lines and rule numbers only.
 name: progress
 
 on:
@@ -43,4 +46,19 @@ jobs:
         with:
           name: SCPS_150.88_report
           path: build/progress/report.json
+          if-no-files-found: error
+
+      # The code rules (docs/code-rules.md, AGENTS.md): a function written in C counts as matched only
+      # when it also passes every [match] rule. Tree only, like the report above. The step reports the
+      # second progress number and the findings; it fails only if the checker itself is broken.
+      - name: Check the code rules
+        run: |
+          python3 -I tools/bk/rules.py --selftest
+          python3 -I tools/bk/rules.py --json build/rules/report.json --md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the rule findings
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: SCPS_150.88_rules
+          path: build/rules/report.json
           if-no-files-found: error
