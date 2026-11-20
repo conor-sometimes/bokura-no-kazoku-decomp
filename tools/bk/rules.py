@@ -23,6 +23,7 @@ and base classes. Limits, also listed there: the checker reads tokens, not types
 follow `p->q->r` into a type the function never names.
 """
 import argparse
+import copy
 import json
 import os
 import re
@@ -1166,7 +1167,9 @@ class Project(object):
                 for f in v.funcs:
                     if f.inline or v.src.is_header:
                         inlines.setdefault(f.name, []).append(f)
-            for f in u.funcs:
+            # a function a header defines out of line is compiled into every unit that includes it
+            shared = [copy.copy(f) for v in tu[1:] for f in v.funcs if not f.inline]
+            for f in u.funcs + shared:
                 if f.inline:
                     continue
                 found, seen, stack = {}, set(), [f]
