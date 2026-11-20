@@ -64,6 +64,22 @@ Units whose data comes from their object (docs/units.md "Data: vtables and .roda
 - `bk perm`/`bk show` need the function in `build/bk/ctx.json`, i.e. still INCLUDE_ASM'd: to
   permute a C++ function, put it back to INCLUDE_ASM (by its symbol_addrs name) and re-run mk.sh.
 
+## Code rules
+
+- `python3 -I tools/bk/rules.py`: the rule checker (docs/code-rules.md; the project's profile is
+  AGENTS.md). From committed files only, like progress_report.py. Prints both progress numbers, bytes
+  matched and **matched under the rules**, and how many functions each [match] rule (R1, R2, R4, R13,
+  R17, R18) holds back. A byte-identical function that fails one is MATCH-PENDING.
+  `--pending [UNIT...]` lists those functions with the rules they break; `-v [UNIT...]` prints every
+  finding as `file:line: rule [tier] function: text` (`--rule R17` for one rule, `--match-only` without
+  the advisory rows); `--json FILE` writes everything; `--md` the summary as Markdown.
+  `--selftest` runs each row against built-in cases: fakes that must fire, era idioms that must not.
+- Before porting a snippet, run `rules.py --pending UNIT` and leave the unit with no new entry: no new
+  `extern` in the unit, no new copy of a class, no `pad`, no offset cast (AGENTS.md, "Working order").
+- `.github/workflows/progress.yml` runs the self-test and the checker on every push and pull request,
+  writes the summary to the run's page and uploads the full findings as artifact `SCPS_150.88_rules`.
+  It reports; it does not fail the run on findings.
+
 ## Progress report (bytematch.dev)
 
 - `python3 -I tools/bk/progress_report.py [-o build/progress/report.json]`: the progress report in
