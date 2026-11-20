@@ -88,7 +88,7 @@ the rest is the tree's own choice, recorded here as invented.
 | free function, game code | `PascalCase` | `AddSnapMgr` | invented |
 | library function | upstream's own name and style, as each is identified (most are still `func_XXXXXXXX`) | `__register_frame_info`, `_vfprintf_r` | published source: recorded |
 | struct, enum type | as the class style in C++ units; upstream's in library units | | |
-| enum value, constant, flag | `UPPER_SNAKE`, a shared prefix per set, flags in hex | | default (style table 2) |
+| enum value, constant, flag | `UPPER_SNAKE`, a shared prefix per set, flags in hex | | default ([style-defaults.md](docs/style-defaults.md), table 2) |
 | local, parameter | short `lowerCamel` | `i`, `type`, `dur`, `owner` | default |
 | unit | named after its first class (`CFadeMgr.cpp`); `Unit<addr>`, `Dk<addr>`, `Lib<addr>` until the original file is known | | RTTI; placeholders otherwise |
 
@@ -185,7 +185,7 @@ commit:
 2. each [checked] or [evidence] change with its per-function check and `make`;
 3. a change that breaks the match is reverted or reshaped, never kept.
 
-[docs/code-rules.md](docs/code-rules.md) ends with the order that clears the most MATCH-PENDING
+[docs/code-rules-status.md](docs/code-rules-status.md) ends with the order that clears the most MATCH-PENDING
 functions per change.
 
 ## Rule changes

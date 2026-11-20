@@ -96,7 +96,8 @@ python3 -I tools/bk/rules.py    # no build needed
 
 On 2026-11-20: 6,429 functions match byte for byte, **1,687 of them under the rules** (23.4% of
 7,219). Most of the gap is declarations, not code: globals and classes declared per unit instead of
-once in a header. [docs/code-rules.md](docs/code-rules.md) has the breakdown and the order of work.
+once in a header. [docs/code-rules-status.md](docs/code-rules-status.md) has the breakdown and the order of
+work.
 
 ## Lessons learned
 

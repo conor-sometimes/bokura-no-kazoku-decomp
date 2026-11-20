@@ -67,7 +67,7 @@ Units whose data comes from their object (docs/units.md "Data: vtables and .roda
 ## Code rules
 
 - `python3 -I tools/bk/rules.py`: the rule checker (docs/code-rules.md; the project's profile is
-  AGENTS.md). From committed files only, like progress_report.py. Prints both progress numbers, bytes
+  AGENTS.md; its rows, findings and the order of work are in docs/code-rules-status.md). From committed files only, like progress_report.py. Prints both progress numbers, bytes
   matched and **matched under the rules**, and how many functions each [match] rule (R1, R2, R4, R13,
   R17, R18) holds back. A byte-identical function that fails one is MATCH-PENDING.
   `--pending [UNIT...]` lists those functions with the rules they break; `-v [UNIT...]` prints every

@@ -16,7 +16,7 @@ tree alone (no build, no ELF, stock Python 3.8+), like tools/bk/progress_report.
     python3 -I tools/bk/rules.py --selftest           each row against built-in cases (fakes that must
                                                       fire, era idioms that must not)
 
-What each row tests is listed in docs/code-rules.md ("What the checker tests"); the rows are narrow on
+What each row tests is listed in docs/code-rules-status.md; the rows are narrow on
 purpose, so a finding is a fact about the text, not an opinion. Findings in a declaration (a type,
 a global, a macro, an inline helper) count against every function that names it, through helpers
 and base classes. Limits, also listed there: the checker reads tokens, not types, so it does not
