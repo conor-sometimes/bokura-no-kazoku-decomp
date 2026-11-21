@@ -40,20 +40,20 @@ Limits. The checker reads tokens, not types:
 Each can only make the checker miss a finding, never invent one. `rules.py --selftest` runs every row
 against cases that must fire and era idioms that must not.
 
-## Where the tree stands (2026-11-20, at 9bfc11f)
+## Where the tree stands (2026-11-20)
 
 | | functions |
 |---|---:|
 | in `.text` (crt0's 4 are `ORIGINAL-ASM`, in neither count) | 7,219 |
 | bytes matched | 6,429 (89.1%) |
-| **matched under the rules** | **1,687 (23.4%)** |
-| MATCH-PENDING | 4,749 |
+| **matched under the rules** | **1,691 (23.4%)** |
+| MATCH-PENDING | 4,745 |
 
 | [match] rule | functions it holds back | by this rule alone | what it is, mostly |
 |---|---:|---:|---|
-| R2 | 2,903 | 1,757 | 3,230 `extern` globals declared in units |
-| R1 | 2,226 | 469 | 604 definitions of classes that another file defines differently |
-| R17 | 1,851 | 240 | 921 `pad` members, 126 `do { } while (0)`, 49 unused locals, 33 `volatile` carriers |
+| R2 | 2,861 | 1,753 | 3,167 `extern` globals declared in units |
+| R1 | 2,226 | 470 | 604 definitions of classes that another file defines differently |
+| R17 | 1,851 | 244 | 921 `pad` members, 126 `do { } while (0)`, 49 unused locals, 33 `volatile` carriers |
 | R4 | 360 | 249 | 87 offset casts, 26 offset macros (`FLD` in 21 library units) |
 | R18 | 22 | 12 | assembly bodies in the SDK vector and math units, a few game helpers (`sqrt.s`) |
 | R13 | 2 | 0 | `CBoneDupMap::KeyStub`, a virtual the vtable does not have |

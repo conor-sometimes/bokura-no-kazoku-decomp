@@ -170,6 +170,7 @@ free, with three exceptions:
 | per-function check | `tools/bk/bk utest SNIP` (the unit's own compiler and flags, relocations included); `tools/bk/ushow.py SNIP [ADDR]` for the side-by-side |
 | byte gate | `.bokura-env/bin/bokura-env -c 'make -j'` → `OK: build/SCPS_150.88 matches (…)` |
 | data gate | `python3 -I tools/bk/rocheck.py`, `python3 -I tools/bk/imgdiff.py` |
+| gate for changes that must not change code | `python3 -I tools/bk/sgate.py [BASE]` (compiler output of every unit, both revisions; no disc needed) |
 | rule checker | `python3 -I tools/bk/rules.py` (no build needed); `--selftest` checks the checker |
 | progress | `python3 -I tools/bk/progress_report.py` (bytes), `python3 -I tools/bk/rules.py` (rules) |
 
