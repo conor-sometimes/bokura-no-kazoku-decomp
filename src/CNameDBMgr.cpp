@@ -34,7 +34,6 @@ public:
 extern "C" void func_0016CF98(void *p, void *a);
 extern CNameDBMgr *D_002A35B0;
 
-extern CFlagWork *D_002A5358;
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);
 extern "C" const char *func_00109158(CFlagWork *w, s32 id);
 extern "C" void *func_0024A570(void *a, char *buf, const char *s1, const char *s2);

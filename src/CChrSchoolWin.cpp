@@ -48,7 +48,6 @@ public:
 #include "CStatusWinSub1A40B8.h"
 #include "CStatusWin.h"
 extern CStatusWin *D_002A5408;
-extern CFlagWork *D_002A5358;
 extern char D_002DAF80[], D_002DAF88[], D_002DAF90[];
 struct CSchoolRec {
     u8 pad0[0x8];
@@ -141,7 +140,6 @@ public:
 
 // From CMenuExam.cpp (functions 0x185648-0x186DF0 moved here: their literals follow 9CMenuExam)
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern "C" void func_00185648(s32 i);
 extern "C" void func_00185868(s32 i, s32 a, s32 b);
 s32 Func145738(s32 a, s32 b);

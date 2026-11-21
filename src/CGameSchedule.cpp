@@ -78,7 +78,6 @@ public:
     virtual CResortEntry *GetEntryA(s32 id);
 };
 extern CResortDBMgr *D_002A36E8;
-extern CFlagWork *D_002A5358;
 struct CGameScheduleRec {
     s32 m_unk0;               // 0x0
     u8 pad4[0x18];

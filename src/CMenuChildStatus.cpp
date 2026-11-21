@@ -189,7 +189,6 @@ public:
 void *operator new(unsigned int n);
 int Func235DE0(const char *fmt, ...) throw();
 extern CFlagWork *D_002A4638[6];
-extern CFlagWork *D_002A5358;
 extern CChrBodyWin *D_002A4308;
 extern void (*D_002B91B0)(void *p);
 extern char D_002DB400[], D_002DB380[], D_002DB310[];
@@ -249,7 +248,6 @@ void Func249348();
 void Func225088();
 int Func2250C0();
 
-extern CFlagWork *D_002A4B60;
 
 struct CChrBodySub {
     void *m0;

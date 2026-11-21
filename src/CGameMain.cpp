@@ -241,7 +241,6 @@ struct CGameDBRec5Cv {
 #include "CUserFlagMgr.h"
 extern "C" void ResetAllFlags__Fv(void *p);
 extern "C" int func_00150EA8(CGameMain *p, s32 i);
-extern CFlagWork *D_002A5358;
 // @decl-end
 
 CGameMain::CGameMain(s32 k) {

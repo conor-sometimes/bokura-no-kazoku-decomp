@@ -82,6 +82,23 @@ Tracked with done-signals in GOALS.md. Each phase builds on the one before.
 
 None of this ships game code or assets: every build and patch starts from your own disc.
 
+## Code rules
+
+Matching bytes prove the source is faithful; readable source is the point. A function counts as
+matched when its bytes match **and** it passes the [match] rules of
+[docs/code-rules.md](docs/code-rules.md): one declaration per type and per global, typed members
+instead of offset casts, real vtables, no fake code, no assembly bodies. Byte-identical source that
+fails one is MATCH-PENDING. The project's own choices are in [AGENTS.md](AGENTS.md).
+
+```sh
+python3 -I tools/bk/rules.py    # no build needed
+```
+
+On 2026-11-20: 6,429 functions match byte for byte, **1,691 of them under the rules** (23.4% of
+7,219). Most of the gap is declarations, not code: globals and classes declared per unit instead of
+once in a header. [docs/code-rules-status.md](docs/code-rules-status.md) has the breakdown and the order of
+work.
+
 ## Lessons learned
 
 Project gotchas live in [docs/lessons.md](docs/lessons.md): read it before matching, and add to it

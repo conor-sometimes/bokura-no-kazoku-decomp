@@ -29,7 +29,6 @@ public:
 };
 
 #include "CMenuMgrSub1B6BA8.h"
-extern CMenuMgrSub1B6BA8 *D_002A55AC;
 class CMenuTutorSelectedSub182108 {
 public:
     void GetCursorPos(f32 *x, f32 *y);
@@ -83,7 +82,6 @@ public:
 };
 extern CSndIf *D_002A5468;
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
 inline void Inc(CStateMachine *sm) { SetVar(sm, 0, sm->Get(0) + 1); }
 // @decl-end
