@@ -34,7 +34,6 @@ public:
 };
 
 #include "CChrBodyWin.h"
-extern CChrBodyWin *D_002A4308;
 extern "C" void func_00189270(void *p, s32 v);
 class CMenuLoadMemorialSub17A8D8 {
 public:
@@ -216,7 +215,6 @@ inline void PutUV2(s32 u, s32 v) { func_00226DF8(3, (u64)u | ((u64)v << 16)); }
 struct AsqWinV { s16 m0; s16 m2; s32 m4; u8 pad8[0x44]; s32 m4C; s32 m50; s32 m54; s32 m58; s32 m5C; };
 extern char D_002DBEB0[];
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 
 class CStatusItem {
 public:
@@ -235,7 +233,6 @@ public:
 };
 extern CStatusWinSub1A0A10 *D_002A5408;
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 // @decl-end
 
 CMenuAsksavequit::CMenuAsksavequit() {

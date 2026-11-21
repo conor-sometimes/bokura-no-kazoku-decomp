@@ -36,8 +36,6 @@ public:
 };
 #include "CMenuMgrSub1B6BA8.h"
 #include "CUnk2A55B0.h"
-extern CMenuMgrSub1B6BA8 *D_002A55AC;
-extern CUnk2A55B0 *D_002A55B0;
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuLoadMemorial.
 class CMenuLoadMemorial : public CMenuProcess {
@@ -201,7 +199,6 @@ public:
 };
 extern CMenuMgr *D_002A5530;
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern char D_002DA7B0[], D_002DA7C0[], D_002DA7E8[], D_002DA808[], D_002DA830[], D_002DA840[], D_002DA868[], D_002DA898[], D_002DA900[], D_002DA9A8[], D_002DA9B8[];
 void *operator new(unsigned int n);
 class CMenuLoadMemorialSub17A8D8b {

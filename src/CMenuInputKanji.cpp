@@ -119,7 +119,6 @@ extern void (*D_002B91B0)(void *p);
 //@sym Func1A7038__14CMenuSub1A7658 0x1A7038
 
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 // Sound player (global D_002A5468, as in CMenuAsksavequit.cpp); slot 14 plays a system sound.
 class CSePlayer {
 public:

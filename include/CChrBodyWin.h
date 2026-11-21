@@ -22,4 +22,7 @@ public:
     void Set189348(int a, int b);
 };
 
+// The body window the menus share (owner not known yet).
+extern CChrBodyWin *D_002A4308;
+
 #endif

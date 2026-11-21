@@ -31,8 +31,6 @@ public:
 };
 #include "CMenuMgrSub1B6BA8.h"
 #include "CUnk2A55B0.h"
-extern CMenuMgrSub1B6BA8 *D_002A55AC;
-extern CUnk2A55B0 *D_002A55B0;
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuSave.
 class CMenuSave : public CMenuProcess {

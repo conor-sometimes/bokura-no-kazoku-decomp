@@ -38,9 +38,7 @@ public:
 };
 extern CStatusWinSub1A0A10 *D_002A5408;
 extern CMenuLoadMemorialSub17B3A0 *D_002A3AF8;
-extern CChrBodyWin *D_002A4308;
 extern void *D_002A53D4;
-extern CFlagWork *D_002A4B60;
 extern void *D_002A551C;
 extern void *D_002A5528;
 extern void (*D_002B91B0)(void *p);
@@ -574,7 +572,6 @@ inline s32 Ftoi15(f32 x) {
     return i;
 }
 extern CMenuMgr *D_002A5468;
-extern CFlagWork *D_002A5358;
 extern CFlagWork *D_002A4638[6];
 extern char D_002A4B68[], D_002A4650[], D_002A43B8[];
 void *NewStatusWinSub1A0A10();

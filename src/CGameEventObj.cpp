@@ -4,7 +4,6 @@
 #include "CFlagWork.h"
 #include "CGameDBMgr.h"
 #include "IUserFlagMgr.h"
-extern CFlagWork *D_002A5358;
 extern char D_002D9820[];
 int Func235DE0(const char *fmt, ...) throw();
 extern "C" void func_00108EA0(CFlagWork *w, s32 id, const char *s);

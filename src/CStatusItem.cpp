@@ -90,7 +90,6 @@ public:
 };
 
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 int Func235DE0(const char *fmt, ...) throw();
 void Func270C50(CVec4 *dst, const CVec4 *src);
 
@@ -273,7 +272,6 @@ extern const char D_002DE788[];
 
 //@sym SetUnkF0__11CStatusItemii 0x1A3DC8
 #include "libc.h"
-extern CFlagWork *D_002A5358;
 extern "C" void func_00185AA0(void *p, s32 k, s32 a, s32 b, s32 c, s32 d, s32 e);
 extern const char D_002DDEE0[];
 extern const char D_002DE090[];

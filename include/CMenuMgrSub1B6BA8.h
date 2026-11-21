@@ -11,4 +11,7 @@ public:
     int Check1B7428(u32 i);
 };
 
+// Shared by the menu units (owner not known yet).
+extern CMenuMgrSub1B6BA8 *D_002A55AC;
+
 #endif

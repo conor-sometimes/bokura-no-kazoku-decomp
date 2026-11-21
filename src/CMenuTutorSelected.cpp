@@ -4,7 +4,6 @@
 #include "CMenuProcess.h"
 #include "CBgWork.h"
 #include "CChrBodyWin.h"
-extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);
 
@@ -148,10 +147,8 @@ extern "C" const char *func_00256260(CTextBuf *p, s32 id);
 extern "C" void func_002565B0(CTextBuf *p, f32 *w, f32 *h, const char *fmt, ...);
 extern "C" void func_002564B8(CTextBuf *p, f32 *w, f32 *h, const char *s);
 #include "CUnk2A55B0.h"
-extern CUnk2A55B0 *D_002A55B0;
 #include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
-extern CFlagWork *D_002A4B60;
 extern char D_002DAC90[], D_002DACB8[], D_002DAB40[];
 extern "C" void func_001A3DC8(void *win, s32 a, s32 b);
 

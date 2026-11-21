@@ -136,8 +136,6 @@ public:
 };
 extern CSndIf *D_002A5468;
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
-extern CFlagWork *D_002A5358;
 #include "CMenuMgrSub1B6418.h"
 extern CMenuMgrSub1B6418 *D_002A5538;
 extern "C" void func_001A98F8(void *p);

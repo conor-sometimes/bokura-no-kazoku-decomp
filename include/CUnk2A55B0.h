@@ -11,4 +11,7 @@ public:
     s32 Size1B8500();
 };
 
+// Shared by the menu units (owner not known yet).
+extern CUnk2A55B0 *D_002A55B0;
+
 #endif

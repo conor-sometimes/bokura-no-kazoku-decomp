@@ -124,8 +124,6 @@ public:
     u8 pad0[0x48];
     s32 m48;
 };
-extern CChrBodyWin *D_002A4308;
-extern CFlagWork *D_002A4B60;
 extern CFlagWork *D_002A4638[6];
 extern CMenuMgrSub1B6418 *D_002A5538;
 void Func185A28(int a, int b);

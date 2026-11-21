@@ -38,7 +38,6 @@ public:
 
 #include "libc.h"
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern char D_002DF518[], D_002DF520[];
 CMenuInputKanji *CreateStatusWinSub1A4F20(u32 kind);
 inline void Strcat(char *d, const char *s) { strcpy(d + strlen(d), s); }
