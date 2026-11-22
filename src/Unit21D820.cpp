@@ -315,7 +315,6 @@ extern "C" s32 func_0021E6B8(u32 i) {
     return r;
 }
 
-asm(".p2align 3");
 
 extern "C" s32 func_0021E6E0(u32 i) {
     s32 r = 0;

@@ -310,7 +310,6 @@ extern "C" s32 func_00245D40(s32 v) {
     return old;
 }
 
-asm(".p2align 3");
 extern "C" s32 func_00245DA0() {
     return D_002B9E18[func_001F1180()] != 0;
 }
@@ -388,7 +387,6 @@ extern "C" CMemHeap *func_00246050(s32 i, CMemHeap *h) {
     return old;
 }
 
-asm(".p2align 3");
 extern "C" CMemHeap *func_00246070(s32 i) { return D_38F188.m_slot[i].m_heap; }
 
 extern "C" CMemHeap *func_00246088(CMemHeap *h) {

@@ -24,6 +24,7 @@ tools/gcc-*/
 tools/ee-*/
 __pycache__/
 tools/compilers/
+tools/as/
 tools/objdiff/
 
 # Game text pulled out for translation (tools/strings.py): game data, never committed

@@ -407,7 +407,6 @@ extern "C" u8 *func_002373E0(s32 i) {
     return D_37BDB8[(D_002B94D0 + i) & 31];
 }
 
-asm(".p2align 3");
 extern "C" u8 *func_00237408(s32 n) {
     s32 sp = (D_002B94D0 - 1) & 31;
     u8 *p = D_002B94E4;

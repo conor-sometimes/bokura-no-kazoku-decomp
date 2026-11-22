@@ -515,8 +515,6 @@ extern "C" s32 func_001F1850(s32 i)
     return D_2FDA30[i].m_unk8;
 }
 
-// GNU as 2.10 assembled the lui of this function's %hi/%lo pair as a copy of the following lw without it.
-asm(".p2align 3");
 extern "C" s32 func_001F1870(s32 i)
 {
     if (i < 0) return 0;

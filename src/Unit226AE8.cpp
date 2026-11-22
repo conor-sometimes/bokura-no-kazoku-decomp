@@ -580,7 +580,6 @@ extern "C" s32 func_00228548(const char *name) {
     return r;
 }
 
-asm(".p2align 3");
 extern "C" s32 func_00228618(s32 off) {
     return *(s32 *)(D_33F5E0[TID] + off);
 }
@@ -597,7 +596,6 @@ extern "C" void func_00228658(u8 *base) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit226AE8", func_00228710);
 
-asm(".p2align 3");
 extern "C" s32 func_002288A0(char *name) {
     s32 i;
     s32 r;

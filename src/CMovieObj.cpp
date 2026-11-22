@@ -234,9 +234,6 @@ void CMovieObj::Apply13EBE8() {
     func_00244EE8();
 }
 
-// GNU as 2.10 assembles the jump-table lui as a copy of the following lw unless the function
-// starts on its own .p2align (docs/lessons.md, CNameDBMgr).
-asm(".p2align 3");
 s32 MovieBits13EC28(s32 psm) {
     switch (psm) {
     case 0: return 32;

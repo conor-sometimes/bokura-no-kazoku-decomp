@@ -488,7 +488,6 @@ extern "C" void func_002063F8(s32 *out) {
     for (i = 0; i < 0x30; i++) out[i] = buf[i];
 }
 
-asm(".p2align 3");
 extern "C" f32 func_00206458(s32 v) {
     s32 i;
     v = v < -4800 ? -4800 : (v > 4800 ? 4800 : v);

@@ -767,7 +767,6 @@ extern "C" s32 func_0021BCC0(s32 i) {
 
 INCLUDE_ASM("asm/nonmatchings/Unit219970", func_0021BCF8);
 
-asm(".p2align 3");
 extern "C" s32 func_0021BDD0(u32 a, s32 b) {
     if (a >= 2) return -1;
     if (b == 0) b = D_002B6810[a] * 8;

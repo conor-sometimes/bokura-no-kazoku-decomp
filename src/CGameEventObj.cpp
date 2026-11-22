@@ -208,8 +208,6 @@ s32 CheckFlags163B98(s32 a, s32 b) {
 INCLUDE_ASM("asm/nonmatchings/CGameEventObj", func_00163DD0);
 INCLUDE_RODATA("asm/nonmatchings/CGameEventObj", D_002D9820);
 
-// GNU as 2.10 assembles a lui here as lw unless the function starts on a fresh .p2align (docs/lessons.md).
-asm(".p2align 3");
 void CGameEventObj::Func1640E0(s32 k) {
     s32 v;
     if (m_ids[k] == 0x401) {

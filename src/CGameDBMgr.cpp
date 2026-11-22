@@ -2178,8 +2178,6 @@ int CGameDBMgr::TestBits14F478(s32 id) {
     return 0;
 }
 
-// GNU as 2.10 assembles a lui here as lw unless the function starts on a fresh .p2align (docs/lessons.md).
-asm(".p2align 3");
 s32 CGameDBMgr::Func14F550(s32 name, s32 kind, s32 bit) {
     s32 k, j;
     CGameDBBits *b;

@@ -329,7 +329,6 @@ INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023D470);
 
 INCLUDE_ASM("asm/nonmatchings/Unit23C680", func_0023D660);
 
-asm(".p2align 3");
 extern "C" s32 func_0023DAC0(u64 h) {
     s32 r;
     if (h == 0) return 0;

@@ -149,7 +149,6 @@ s32 Func24E0F0(const char *ppts, int n, int pp) {
 
 INCLUDE_ASM("asm/nonmatchings/Dk24DE30", func_0024E240);
 
-asm(".p2align 3");
 extern "C" void func_0024E560(CVec4 *out, CVec4 *a, CVec4 *b, CVec4 *p)
 {
     CVec4 d, e, f;

@@ -1060,7 +1060,6 @@ void CMenuMgrSub1B6418::GetDefaultSize(f32 *w, f32 *h) {
     *h = 24.0f;
 }
 
-asm(".p2align 3");
 void CMenuMgrSub1B6418::Update1B6570() {
     m_unk50++;
     if (m_unk50 >= D_002A4B60->Func1091B0(0x17)) {
@@ -1389,8 +1388,6 @@ int CUnk2A55B0::Start1B7E70(s32 a, s32 b) {
     return 1;
 }
 
-// GNU as 2.10 assembles the jump-table lui as a lw without this (docs/lessons.md).
-asm(".p2align 3");
 // The memory card system's request machine (McSys); returns whether it is still working.
 extern "C" int func_001B7EF8(CUnk2A55B0 *p) {
     CStateMachine *sm = (CStateMachine *)p;

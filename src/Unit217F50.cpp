@@ -453,7 +453,6 @@ extern "C" s32 func_00219800(void) {
     return func_00219BA8(2);
 }
 
-asm(".p2align 3");
 extern "C" s32 func_00219818(s32 a, s32 n) {
     Rec4 *p = func_00219B68(a);
     if (p && (p->m2 == 2 || p->m2 == 5)) goto call;

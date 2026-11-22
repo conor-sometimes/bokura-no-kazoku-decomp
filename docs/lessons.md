@@ -1609,3 +1609,22 @@ Return types and liveness steer scheduling more than body shape at this stage.
   chained a = b = 1.0f flips it (both still CSE to $f0); only moving m_unk170 after m_unk16C in
   source matched (DIFF 2 -> 0, whole build byte-exact). Applies to any pair of equal-priority
   stores reading the same register. *(bokura)*
+
+## as (2026-11-22: the GNU as 2.10 `lui` bug, fixed)
+- **The "lui bug" was an overlapping memcpy in the assembler.** EE-GCC 2.96's GNU as 2.10-ee moves a
+  relaxed frag's bytes down in `md_convert_frag` (gas/config/tc-mips.c) with `memcpy` over overlapping
+  memory. glibc picks a memcpy variant per CPU, and some depend on the addresses, so on some hosts and
+  process environments a `lui` came out as a copy of the next instruction (`sw`, `lw`). lemiur (PR #2)
+  showed untouched main failing on WSL2, with a different set of sites when stderr went to /dev/null.
+  Found with 32-bit valgrind (`nixpkgs#pkgsi686Linux.valgrind`): "Source and destination overlap in
+  memcpy ... md_convert_frag".
+- **Fix:** `scripts/fix_as.py` writes `tools/as/as`, the same binary with the 12-byte argument setup and
+  `call memcpy@plt` replaced by an inline forward copy (`rep movsb`; the destination is always below the
+  source). Input and output are SHA-256 checked. The Makefile and `tools/bk/bk.py` pass `-B tools/as/`
+  to every compiler (2.96 and both 2.9 SDK compilers).
+- **Proof:** patched, the build matches with all 29 `asm(".p2align 3")` workarounds removed, also with
+  stderr to /dev/null; unpatched without them it fails (f2ee7c51...). The workarounds are gone; ignore the
+  older lane notes above about placing or moving `.p2align` for the lui bug, and `tools/bk/luibug.py`.
+- **Replacing the assembler did not work:** binutils 2.40 behind a translating wrapper assembles and
+  links, but differs in ~200 objects (64-bit `la`/`addu` macros under eabi, hazard nops after `mtc1`,
+  `break` encoding, `li.d` literals, `uld` expansion). Fixing the original binary is the right move.

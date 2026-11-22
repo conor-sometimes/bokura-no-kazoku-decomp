@@ -151,7 +151,6 @@ int CSysFlag::GetOption(int k) {
     return 0;
 }
 
-asm(".p2align 3");
 void CSysFlag::Vf144270(s32 base, int name, s32 b, s32 set) {
     s32 id = Func145738(name, 1);
     if (id >= 0) {
@@ -170,7 +169,6 @@ void CSysFlag::Vf144270(s32 base, int name, s32 b, s32 set) {
     }
 }
 
-asm(".p2align 3");
 int CSysFlag::Get144378(s32 base, s32 a, s32 b) {
     s32 id = Func145738(a, 1);
     s32 t = base + id * 16 - 0x100;
@@ -272,7 +270,6 @@ s32 CCurFlag::Get144B68(s32 base, s32 name, s32 b) {
     return Func1091B0(base + k + i);
 }
 
-asm(".p2align 3");
 void CCurFlag::Set144C60(s32 base, s32 a, s32 b, s32 set) {
     s32 id = Func1456A8(a);
     if (id >= 0) {
@@ -292,7 +289,6 @@ void CCurFlag::Set144C60(s32 base, s32 a, s32 b, s32 set) {
     }
 }
 
-asm(".p2align 3");
 int CCurFlag::Vf144D68(s32 base, int name, s32 b) {
     s32 id = Func1456A8(name);
     if (id < 0) return 0;

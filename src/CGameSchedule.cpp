@@ -648,8 +648,6 @@ s32 Func15F030(int name, s32 base) {
     return v < 5 ? 5 - v : v - 4;
 }
 
-// GNU as 2.10 mis-assembles the jump-table lui here without this (docs/lessons.md, CNameDBMgr).
-asm(".p2align 3");
 int Func15F080(int v) {
     switch (v) {
     case 0x9A:

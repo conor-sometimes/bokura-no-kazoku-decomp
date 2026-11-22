@@ -1426,7 +1426,6 @@ s32 CExpr::Func24DB98(int isrc, const char *delim, int cont) {
     return 1;
 }
 
-asm(".p2align 3");
 extern "C" s32 func_0024DC40(CExpr *e, const char *s) {
     CValue val;
     char name[0x100];

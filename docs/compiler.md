@@ -136,3 +136,9 @@ identical output to decompals' binutils except for VU0 macro-mode instructions
 rejects. A unit containing such a function needs those instructions as `.word`s or a
 syntax rewrite (not needed yet). Modern GNU as is not a drop-in replacement: it encodes
 `move` as `or` (retail: `daddu`) and adds COP1 hazard `nop`s.
+
+The build uses a fixed copy of that assembler, `tools/as/as` (`scripts/fix_as.py`, passed with
+`-B` to every compiler): GNU as 2.10-ee moves relaxed frags with an overlapping `memcpy` in
+`md_convert_frag`, which on some hosts turned a `lui` into a copy of the next instruction. The fix
+replaces that call with an inline forward copy; nothing else in the binary changes
+(docs/lessons.md "## as").

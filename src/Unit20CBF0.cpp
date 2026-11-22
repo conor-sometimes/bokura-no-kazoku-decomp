@@ -485,7 +485,6 @@ extern "C" const char *func_0020E668(s32 a) {
     return p ? p->mC : D_002E33F0;
 }
 
-asm(".p2align 3");
 extern "C" s32 func_0020E698(u32 i, const char *name) {
     s32 k, n;
     if (i < 256 && D_324B00[i].m0) {

@@ -286,7 +286,6 @@ extern u8 *func_002863F8(u8 *p, W2DwState *s)
 
 INCLUDE_RODATA("asm/nonmatchings/Lib285F80", D_002EABA0);
 INCLUDE_RODATA("asm/nonmatchings/Lib285F80", D_002EABA8);
-asm(".p2align 3");
 u8 *Y1execute_cfa_insn(u8 *p, W2FS *state, W2CieInfo *info, void **pc)
 {
     unsigned insn = *p++;

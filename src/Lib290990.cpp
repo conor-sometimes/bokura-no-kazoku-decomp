@@ -459,7 +459,6 @@ extern void *func_00291DD0(void *r, s32 i) { void *b = func_00291980(r, 1); FLD(
 
 extern W2Bg2 *func_00291E08(void *ptr, W2Bg2 *a, W2Bg2 *b) { W2Bg2 *c; s32 k, wa, wb, wc; u32 carry, y, z; u32 *x, *xa, *xae, *xb, *xbe, *xc, *xc0; u32 z2; if (a->wds < b->wds) { c = a; a = b; b = c; } k = a->k; wa = a->wds; wb = b->wds; wc = wa + wb; if (wc > a->maxwds) k++; c = (W2Bg2 *)func_00291980(ptr, k); for (x = c->x, xa = x + wc; x < xa; x++) *x = 0; xa = a->x; xae = xa + wa; xb = b->x; xbe = xb + wb; xc0 = c->x; for (; xb < xbe; xb++, xc0++) { if ((y = *xb & 0xffff) != 0) { x = xa; xc = xc0; carry = 0; do { z = (*x & 0xffff) * y + (*xc & 0xffff) + carry; carry = z >> 16; z2 = (*x++ >> 16) * y + (*xc >> 16) + carry; carry = z2 >> 16; (((u16 *)xc)[1] = (u16)z2, ((u16 *)xc)[0] = (u16)z, xc++); } while (x < xae); *xc = carry; } if ((y = *xb >> 16) != 0) { x = xa; xc = xc0; carry = 0; z2 = *xc; do { z = (*x & 0xffff) * y + (*xc >> 16) + carry; carry = z >> 16; (((u16 *)xc)[1] = (u16)z, ((u16 *)xc)[0] = (u16)z2, xc++); z2 = (*x++ >> 16) * y + (*xc & 0xffff) + carry; carry = z2 >> 16; } while (x < xae); *xc = z2; } } for (xc0 = c->x, xc = xc0 + wc; wc > 0 && !*--xc; --wc); c->wds = wc; return c; }
 
-asm(".p2align 3");
 extern W2Bg2 *func_00292018(void *ptr, W2Bg2 *b, s32 k) { W2Bg2 *b1, *p5, *p51; s32 i; if ((i = k & 3) != 0) b = func_00291A58(ptr, b, D_002EB4FC[i], 0); if (!(k >>= 2)) return b; if (!(p5 = *(W2Bg2 **)((u8 *)ptr + 0x48))) { p5 = *(W2Bg2 **)((u8 *)ptr + 0x48) = (W2Bg2 *)func_00291DD0(ptr, 625); p5->next = 0; } for (;;) { if (k & 1) { b1 = func_00291E08(ptr, b, p5); func_00291A28((W2Re *)ptr, (W2Big *)b); b = b1; } if (!(k >>= 1)) break; if (!(p51 = p5->next)) { p51 = p5->next = func_00291E08(ptr, p5, p5); p51->next = 0; } p5 = p51; } return b; }
 
 extern W2Bg2 *func_00292118(void *ptr, W2Bg2 *b, s32 k) { s32 i, k1, n, n1; W2Bg2 *b1; u32 *x, *x1, *xe, z; n = k >> 5; k1 = b->k; n1 = n + b->wds + 1; for (i = b->maxwds; n1 > i; i <<= 1) k1++; b1 = (W2Bg2 *)func_00291980(ptr, k1); x1 = b1->x; for (i = 0; i < n; i++) *x1++ = 0; x = b->x; xe = x + b->wds; if (k &= 0x1f) { k1 = 32 - k; z = 0; do { *x1++ = *x << k | z; z = *x++ >> k1; } while (x < xe); if ((*x1 = z) != 0) ++n1; } else do *x1++ = *x++; while (x < xe); b1->wds = n1 - 1; func_00291A28((W2Re *)ptr, (W2Big *)b); return b1; }
@@ -521,7 +520,6 @@ W2Bg2 *Y1d2b(void *ptr, double _d, int *e, int *bits)
 
 extern double func_00292858(void *a, void *b) { W2DU da, db; s32 k, ka, kb; da.d = func_00292538(a, &ka); db.d = func_00292538(b, &kb); k = ka - kb + 32 * (FLD(s32, a, 0x10) - FLD(s32, b, 0x10)); if (k > 0) da.i[1] += k * 0x100000; else { k = -k; db.i[1] += k * 0x100000; } return da.d / db.d; }
 
-asm(".p2align 3");
 extern double func_00292928(s32 dig) { double v = 1.0; if (dig < 24) return D_002EB510[dig]; while (dig > 0) { v *= 10; dig--; } return v; }
 
 extern s32 func_00292998(double x) { s32 hx, lx; EXTRACT_WORDS(hx, lx, x); hx &= 0x7fffffff; hx |= (u32)(lx | (-lx)) >> 31; hx = 0x7ff00000 - hx; return 1 - (s32)((u32)(hx | (-hx)) >> 31); }

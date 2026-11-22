@@ -235,7 +235,6 @@ extern "C" s32 func_0021C610(u32 i) {
 }
 
 /* GNU as 2.10 corrupts the lui of the next lw macro here without this (docs/lessons.md) */
-asm(".p2align 3");
 extern "C" s32 func_0021C638(u32 i) {
     s32 r = 0;
     if (i < 6) r = D_002B8A28[i].b;

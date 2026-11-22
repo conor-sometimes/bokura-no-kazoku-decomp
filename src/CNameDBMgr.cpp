@@ -184,10 +184,6 @@ void CNameDBMgr::Func16CBD0(s32 kind) {
     D_002A5358->Func108FF0(15, cnt);
 }
 
-// GNU as 2.10 bug: without a fresh frag here it assembles the `lui` of `lw $19, D_002A3610($2)`
-// as a copy of the following `lw` (position-dependent; appeared when the ctor became C++). The
-// function is 8-aligned anyway, so this emits nothing.
-asm(".p2align 3");
 void CNameDBMgr::Push16CDC0(s32 kind, const char *name) {
     s32 idx = func_0016C6D8(kind);
     if (idx < 0) return;

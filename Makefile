@@ -20,6 +20,10 @@ ASFLAGS  := -EL -march=r5900 -mabi=eabi -no-pad-sections -G 0 -Iinclude
 # Game C++: Sony EE-GCC 2.96 (2.96-ee-001003-1), -O2 -G0 -fno-strict-aliasing -fno-exceptions, as -g (docs/compiler.md). The driver runs
 # cc1plus and its own GNU as 2.10-ee, which also assembles the INCLUDE_ASM'd functions.
 EECC     := tools/compilers/ee-gcc2.96/bin/ee-gcc
+# Every compile assembles with tools/as/as (-B): the same GNU as 2.10-ee with its overlapping memcpy in
+# md_convert_frag fixed (scripts/fix_as.py). Unfixed, it turned some `lui`s into copies of the next
+# instruction, depending on the host's memcpy and the process environment (docs/lessons.md "## as").
+GAS      := tools/as/
 # as -g only for the C++ units: the C-style units from CAppMain on (scripts/text_units.py) match
 # only without it, so they were built differently (docs/compiler.md).
 ASG      := -Wa,-g
@@ -35,7 +39,7 @@ build/src/CAppMain.cpp.o build/src/Unit%.cpp.o build/src/Dk260A60.cpp.o: ASG :=
 #   libkernel, ...), C through 2.9-991111-01's cc1 -O2 -G0, assembled by the game compiler's GNU as 2.10 (-B:
 #   2.9's own as fills fewer delay slots and adds COP2 hazard nops). Their .cpp files compile as C.
 SDKCC    := tools/compilers/ee-gcc2.9-991111/bin/ee-gcc
-SDKAS    := tools/compilers/ee-gcc2.96/ee/bin/
+SDKAS    := $(GAS)
 SDK_OBJS := $(patsubst %,build/src/%.cpp.o,Dk262D28 Dk2631E0 Dk265918 Dk268138 Dk26A870)
 $(SDK_OBJS): EECC := $(SDKCC)
 $(SDK_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -B$(SDKAS) -Iinclude -Wa,-Iinclude
@@ -50,10 +54,10 @@ $(SDKC_OBJS): CXXFLAGS = -x c -O2 -G0 -B$(SDKAS) -Iinclude -Wa,-Iinclude
 #   out of its clear loop, only with strict aliasing). Written as C++ (`return;` after a final void call
 #   gives the C sibcall).
 LIBC_OBJS := $(patsubst %,build/src/%.cpp.o,Lib283858 Lib285F80 Lib286B20 Lib287920 Lib287F98 Lib288388 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
-$(LIBC_OBJS): CXXFLAGS = -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+$(LIBC_OBJS): CXXFLAGS = -B$(GAS) -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 # Lib287920 (exception.cc) was built with -fexceptions: __check_eh_spec, __throw_bad_cast and __throw_bad_typeid
 #   have try/catch landing pads (__rethrow calls with .gcc_except_table labels) (lane lb).
-build/src/Lib287920.cpp.o: CXXFLAGS = -O2 -G0 -fexceptions -Iinclude -Wa,-Iinclude $(ASG)
+build/src/Lib287920.cpp.o: CXXFLAGS = -B$(GAS) -O2 -G0 -fexceptions -Iinclude -Wa,-Iinclude $(ASG)
 # LIBC_C_OBJS: the LIBC units that are C, compiled by the C front end (`-x c`): libgcc2's EH builtins
 #   (__builtin_dwarf_cfa, __builtin_eh_return in __throw/__rethrow) are C-only, and newlib's bnez/bnezl
 #   choices after calls only match as C. Lib286B20 and Lib288388 stay C++ (tinfo.cc classes); Lib287F98
@@ -61,11 +65,11 @@ build/src/Lib287920.cpp.o: CXXFLAGS = -O2 -G0 -fexceptions -Iinclude -Wa,-Iinclu
 #   Lib285F80 (frame.c, 0x285F80-0x286B20) is C (lane y1): init_object
 #   and __frame_state_for match only as C (C++ hoists &local stack addresses out of their call loops).
 LIBC_C_OBJS := $(patsubst %,build/src/%.cpp.o,Dk280098 Lib283858 Lib285F80 Lib287F98 Lib2888C0 Lib28AE50 Lib28D8B0 Lib28F4F8 Lib290990)
-$(LIBC_C_OBJS): CXXFLAGS = -x c -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+$(LIBC_C_OBJS): CXXFLAGS = -B$(GAS) -x c -O2 -G0 -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 # Lib28AE50 (vfiprintf.c), Lib28D8B0 (vfprintf.c), Lib28F4F8 (dtoa.c): built with -g, which changes cc1's delay-slot filling around the
 #   dpcmp libcalls in _vfprintf_r (lane cv).
-build/src/Lib28AE50.cpp.o build/src/Lib28D8B0.cpp.o build/src/Lib28F4F8.cpp.o: CXXFLAGS = -x c -O2 -G0 -g -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
-CXXFLAGS  = -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+build/src/Lib28AE50.cpp.o build/src/Lib28D8B0.cpp.o build/src/Lib28F4F8.cpp.o: CXXFLAGS = -B$(GAS) -x c -O2 -G0 -g -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
+CXXFLAGS  = -B$(GAS) -O2 -G0 -fno-strict-aliasing -fno-exceptions -Iinclude -Wa,-Iinclude $(ASG)
 LDSCRIPT := build/$(TARGET).ld
 SPLIT    := build/.split
 
@@ -102,12 +106,14 @@ build/asm/%.s.o: asm/%.s include/macro.inc
 
 # C++ units; each rebuilds when one of its INCLUDE_ASM files changes.
 .SECONDEXPANSION:
-build/src/%.cpp.o: src/%.cpp $(wildcard include/*.h) $$(wildcard asm/nonmatchings/$$*/*.s) $(EECC)
+build/src/%.cpp.o: src/%.cpp $(wildcard include/*.h) $$(wildcard asm/nonmatchings/$$*/*.s) $(EECC) $(GAS)as
 	@mkdir -p $(dir $@)
 	$(EECC) $(CXXFLAGS) -c -o $@ $<
 
 $(EECC):
 	scripts/fetch_compilers.sh
+$(GAS)as: $(EECC) scripts/fix_as.py
+	python3 -I scripts/fix_as.py && touch $@
 $(SDK_OBJS): $(SDKCC)
 $(SDKC_OBJS): $(SDKC01CC)
 $(SDKC01CC):

@@ -12,7 +12,7 @@ SDKCC=R+'/tools/compilers/'+os.environ.get('BK_SDK','ee-gcc2.9-991111')+'/bin/ee
 SDK_RANGES=[(0x262D28,0x26CFB0)]
 # Sony SDK libraries (Makefile SDKC_OBJS): C through 2.9's cc1, assembled by the 2.96 GNU as (-B)
 SDKC_RANGES=[(0x26CFB0,0x27FC30),(0x292E20,0x2930A0)]  # + Lib292E20 (libkernel dcache, lane lb)
-SDKAS=R+'/tools/compilers/ee-gcc2.96/ee/bin/'
+SDKAS=R+'/tools/as/'  # GNU as 2.10-ee with the overlapping-memcpy fix (scripts/fix_as.py); every compile uses it
 # libgcc and newlib built without -fno-strict-aliasing (Makefile LIBC_OBJS, lane w2)
 LIBC_RANGES=[(0x283858,0x292E20)]
 EXC_RANGES=[(0x287920,0x287F98)]  # Makefile: Lib287920 (exception.cc) built with -fexceptions (lane lb)
@@ -79,7 +79,7 @@ def compile_(decl,funcs,out,tag='t'):
     src='#include "common.h"\n'+decl+'\n'+''.join(b for a,b in funcs)
     cpp=f'{W}/{tag}.cpp'; open(cpp,'w').write(src)
     cc,base,asg=flags_for(funcs)
-    r=subprocess.run([cc]+base+['-I'+R+'/include','-Wa,-I'+R+'/include']+asg+['-c','-o',out,cpp],capture_output=True,text=True)
+    r=subprocess.run([cc,'-B'+SDKAS]+base+['-I'+R+'/include','-Wa,-I'+R+'/include']+asg+['-c','-o',out,cpp],capture_output=True,text=True)
     if r.returncode: raise CompileError(r.stderr)
     return read_obj(out)
 R_MIPS={4:'R_MIPS_26',5:'R_MIPS_HI16',6:'R_MIPS_LO16'}

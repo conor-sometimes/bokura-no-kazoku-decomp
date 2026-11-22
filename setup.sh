@@ -25,6 +25,8 @@ fi
 
 # The game compiler (EE-GCC 2.96) from decomp.me's mirror, SHA-256 pinned.
 scripts/fetch_compilers.sh
+# Its GNU as with the overlapping-memcpy fix (tools/as/as), which every compile uses.
+python3 -I scripts/fix_as.py
 
 if [[ ! -f disc/SCPS_150.88 ]]; then
     if [[ -z $ISO ]]; then
