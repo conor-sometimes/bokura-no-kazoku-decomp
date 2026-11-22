@@ -165,8 +165,11 @@ free, with three exceptions:
 
 ## Commands
 
+Setting up the toolchain (with or without Nix) and the assembler patch: README, "Setup".
+
 | what | command |
 |---|---|
+| setup | `./setup.sh path/to/bokura.iso` (inside bokura-env under Nix) |
 | per-function check | `tools/bk/bk utest SNIP` (the unit's own compiler and flags, relocations included); `tools/bk/ushow.py SNIP [ADDR]` for the side-by-side |
 | byte gate | `.bokura-env/bin/bokura-env -c 'make -j'` → `OK: build/SCPS_150.88 matches (…)` |
 | data gate | `python3 -I tools/bk/rocheck.py`, `python3 -I tools/bk/imgdiff.py` |

@@ -52,25 +52,70 @@ The boot executable inside it, `SCPS_150.88`: SHA-1 `621ffd58de52794eaa3d33885ba
 
 `.text` starts at 0x100000 (~1.6 MB of code); no debug info is left (`.mdebug.eabi64` is empty).
 
-## Environment
+## Setup
 
-`bokura-env` from [workbench](https://github.com/conor-sometimes/workbench):
-[projects/bokura-no-kazoku/default.nix](https://github.com/conor-sometimes/workbench/blob/main/projects/bokura-no-kazoku/default.nix),
-built on the shared [lib/mkDecompEnv.nix](https://github.com/conor-sometimes/workbench/blob/main/lib/mkDecompEnv.nix):
-an FHS environment with gcc multilib, Python and the permuter's packages.
+You need your own disc image (see "Disc image" above for the hashes); nothing from it is committed.
+The toolchain is x86-64 Linux only (the EE-GCC binaries are 32-bit Linux programs), so on Windows
+use WSL2 and on a Mac a Linux VM. There are two ways to get it.
+
+### With Nix (workbench)
+
+[workbench](https://github.com/conor-sometimes/workbench) has a ready environment,
+`bokura-env`, with everything below pinned
+([projects/bokura-no-kazoku/default.nix](https://github.com/conor-sometimes/workbench/blob/main/projects/bokura-no-kazoku/default.nix)):
+
+```sh
+nix build github:conor-sometimes/workbench#bokura-no-kazoku -o .bokura-env
+.bokura-env/bin/bokura-env -c './setup.sh path/to/bokura.iso'
+.bokura-env/bin/bokura-env -c 'make -j'
+```
+
+### Without Nix (Debian, Ubuntu, WSL2)
+
+Tested on a clean Ubuntu 24.04:
+
+```sh
+sudo dpkg --add-architecture i386 && sudo apt update
+sudo apt install make python3 python3-venv curl xz-utils ca-certificates libc6:i386 libzstd1 zlib1g
+
+# R5900 binutils (decompals v0.10): mips-ps2-decompals-as, -ld, -objdump, ...
+curl -fsSLO https://github.com/decompals/binutils-mips-ps2-decompals/releases/download/v0.10/binutils-mips-ps2-decompals-linux-x86-64.tar.gz
+echo "9fe31ea3ee1a37536f9f0e2e12c668e7c3cb99e59f5154bd2f1fc4762473094c  binutils-mips-ps2-decompals-linux-x86-64.tar.gz" | sha256sum -c
+mkdir -p ~/.local/bin && tar -xzf binutils-mips-ps2-decompals-linux-x86-64.tar.gz -C ~/.local/bin   # must be on PATH
+
+./setup.sh path/to/bokura.iso
+make -j
+```
+
+### What setup.sh does
+
+| Step | What | Pinned by |
+|---|---|---|
+| Python tools | a `.venv` with splat, spimdisasm and friends | `requirements.txt` (exact versions) |
+| Compilers | EE-GCC 2.96 from [decomp.me's compiler mirror](https://github.com/decompme/compilers) into `tools/compilers/`; `make` fetches the two ee-gcc 2.9-991111 SDK compilers the same way when it needs them | SHA-256 in `scripts/fetch_compilers.sh` |
+| Assembler patch | `tools/as/as`: EE-GCC 2.96's GNU as 2.10-ee with one bug fixed (below); every compile uses it | SHA-256 of input and output in `scripts/fix_as.py` |
+| Your executable | `SCPS_150.88` extracted from your ISO into `disc/` | SHA-1 checked |
+
+**The assembler patch.** GNU as 2.10-ee moves bytes in `md_convert_frag` with an overlapping
+`memcpy`, so depending on the host (CPU, glibc) a `lui` can come out as a copy of the next
+instruction and the build no longer matches. `scripts/fix_as.py` replaces that one call with an
+overlap-safe copy of the same length; nothing else in the binary changes
+([docs/compiler.md](docs/compiler.md), [docs/lessons.md](docs/lessons.md) "## as"). The per-unit
+compilers and flags are in [docs/compiler.md](docs/compiler.md).
+
+Everything setup.sh writes (`.venv/`, `tools/compilers/`, `tools/as/`, `disc/`, `build/`) is
+gitignored.
 
 ## Build
 
-You need your own disc image; nothing from it is committed.
-
 ```sh
-.bokura-env/bin/bokura-env -c './setup.sh path/to/bokura.iso'   # venv, ELF from the ISO (SHA-1 checked)
-.bokura-env/bin/bokura-env -c 'make -j'                          # split, assemble, link, compare
+make -j          # split, compile, assemble, link, compare (prefix with the bokura-env command under Nix)
 ```
 
-`make` ends with `OK: build/SCPS_150.88 matches (...)` or a `FAIL:` line. Python tools are pinned
-in `requirements.txt`; the R5900 binutils (decompals v0.10) come from bokura-env. The flat image
-from the linker is wrapped in the retail ELF container by `scripts/mkelf.py`.
+`make` ends with `OK: build/SCPS_150.88 matches (621ffd58...)` or a `FAIL:` line. The flat image
+from the linker is wrapped in the retail ELF container by `scripts/mkelf.py`. For matching work,
+`tools/bk/mk.sh` builds and also writes what the matching tools need ([tools/bk/README.md](tools/bk/README.md)).
+Contributing with an AI agent: [AGENTS.md](AGENTS.md) is the project profile it should read first.
 
 ## Two builds
 
