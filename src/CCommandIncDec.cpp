@@ -4,7 +4,6 @@
 #include "CMenuProcess.h"
 #include "CFlagWork.h"
 #include "CCommandBase.h"
-extern CFlagWork *D_002A5358;
 class CUnk1A4298 {
 public:
     int Func1A4298();
@@ -69,7 +68,6 @@ public:
 
 #include "CCommandBase.h"
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 extern "C" void func_00196B50(void *p);
 // A selection rectangle and its colour (two of them at 0x4F0).
 struct CCsRect {
@@ -123,7 +121,6 @@ public:
 };
 #include "CMenuRecordWin.h"
 
-extern CFlagWork *D_002A5358;
 extern "C" void func_00196938(void *p, s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
 class CSePlayer {
 public:

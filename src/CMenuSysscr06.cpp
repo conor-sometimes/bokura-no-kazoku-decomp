@@ -34,7 +34,6 @@ public:
 };
 
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern char D_002DF6A8[];
 CMenuInputKanji *CreateStatusWinSub1A4F20(u32 kind);
 // @decl-end

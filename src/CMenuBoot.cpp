@@ -14,9 +14,7 @@ public:
 };
 
 #include "CMenuMgrSub1B6BA8.h"
-extern CMenuMgrSub1B6BA8 *D_002A55AC;
 #include "CUnk2A55B0.h"
-extern CUnk2A55B0 *D_002A55B0;
 extern void *D_002A5538;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" int func_001B7EF8(CUnk2A55B0 *p);

@@ -49,7 +49,6 @@ void *Func237C30(void *p);
 void Func238158(void *p, int v);
 void Func225240(int v);
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern char D_002DBB08[];
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuGetMoney.
@@ -108,7 +107,6 @@ public:
     virtual void Stop(s32 v);
 };
 extern CSndIf *D_002A5468;
-extern CFlagWork *D_002A4B60;
 class CMenuGetMoneyPart {
 public:
     void SetRate(f32 t);

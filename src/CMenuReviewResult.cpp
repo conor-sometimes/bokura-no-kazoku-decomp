@@ -45,7 +45,6 @@ void *Func237C30(void *p);
 void Func238158(void *p, int v);
 void Func225240(int v);
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern char D_002DBB90[];
 
 // Vtable and typeinfo name come from this unit (docs/units.md): key method ~CMenuReviewResult.

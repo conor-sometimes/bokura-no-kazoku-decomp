@@ -48,7 +48,6 @@ extern "C" void func_00159850(void *p, s32 a, s32 b);
 
 int CompareSeasonPostIds(const s32 *a, const s32 *b);
 int CheckSeasonPostId(int v);
-extern CFlagWork *D_002A5358;
 extern "C" void func_0028A140(void *base, u32 n, u32 size, int (*cmp)(const void *, const void *));
 struct CSeasonPostEnt {
     s32 m_key;                // 0x0

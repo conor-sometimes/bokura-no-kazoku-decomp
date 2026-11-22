@@ -41,7 +41,6 @@ public:
 extern CMenuMgrSub1B4768 *D_002A5530;
 extern "C" int func_001B50B0(CMenuMgrSub1B4768 *p, int k);
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern char D_002DA470[];
 void *Func237570(int size);
@@ -106,7 +105,6 @@ public:
     virtual void Stop(s32 v);
 };
 extern CSndIf *D_002A5468;
-extern CFlagWork *D_002A4B60;
 class CMenuExGetMoneyPart {
 public:
     void SetRate(f32 t);

@@ -49,7 +49,6 @@ public:
     void SetUnk4C(s32 v);
 };
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern CStatusWinSub1A0A10 *D_002A5408;
 extern "C" void func_001A73B0(void *p);

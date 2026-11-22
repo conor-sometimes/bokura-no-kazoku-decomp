@@ -30,6 +30,10 @@ public:
     // vptr 0x1C
 };
 
+// Flag stores every menu and game unit reads (which unit owns each is not known yet).
+extern CFlagWork *D_002A5358;
+extern CFlagWork *D_002A4B60;
+
 class ICurFlag;
 // The current game's flags (set by ICurFlag's constructor).
 extern ICurFlag *D_002A26E4;

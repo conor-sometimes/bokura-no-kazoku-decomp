@@ -93,8 +93,6 @@ public:
 };
 extern CSndIf *D_002A5468;
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
-extern CFlagWork *D_002A4B60;
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 inline void SetVar(CStateMachine *sm, s32 k, s32 v) { sm->Var(k) = v; }
 #define W(p) ((CStatusItem *)(p))

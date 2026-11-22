@@ -150,9 +150,7 @@ public:
 void *operator new(unsigned int n);
 int Func235DE0(const char *fmt, ...) throw();
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 #include "CChrBodyWin.h"
-extern CChrBodyWin *D_002A4308;
 extern void (*D_002B91B0)(void *p);
 extern char D_002DDCE8[], D_002DDAE8[], D_002DDD10[], D_002DDB18[], D_002DDAB8[], D_002DDD30[], D_002DDD50[];
 void Func270C50(CVec4 *dst, const CVec4 *src);

@@ -201,7 +201,6 @@ public:
 extern "C" int sprintf(char *buf, const char *fmt, ...);
 extern char D_002DD800[], D_002DD810[], D_002DD928[];
 #include "CFlagWork.h"
-extern CFlagWork *D_002A5358;
 extern "C" void func_00196938(CMenuRecordList *p, s32 i, s32 a, s32 b, s32 c, s32 d, s32 e);
 #include "CMenuMgrSub1B5BF8.h"
 extern "C" int func_001B5FE0(CMenuMgrSub1B5BF8 *p, const char *s, f32 x, f32 y);

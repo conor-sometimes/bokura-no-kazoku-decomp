@@ -35,7 +35,6 @@ void Func225240(int v);
 
 // CMenuSysscr31's constructor (CMenuSysscr31.cpp); this factory is the start of its unit.
 #include "CChrBodyWin.h"
-extern CChrBodyWin *D_002A4308;
 extern "C" int func_00245818(void *p, s32 v);
 extern "C" void func_00189270(void *p, s32 v);
 class CMenuSysscr31 {
@@ -169,7 +168,6 @@ extern void (*D_002B91B0)(void *p);
 //@sym Func1A7038__14CMenuSub1A7658 0x1A7038
 
 #include "CFlagWork.h"
-extern CFlagWork *D_002A4B60;
 // Sound player (global D_002A5468, as in CMenuAsksavequit.cpp); slot 14 plays a system sound.
 class CSePlayer {
 public:

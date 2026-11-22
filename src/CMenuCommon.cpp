@@ -214,7 +214,6 @@ extern "C" void func_002491A8(char *buf, const char *name, const char *a, const 
 extern "C" int func_00249248(const char *path);
 extern "C" void func_00249348();
 extern "C" void *func_0024A4C0(const char *name);
-extern CFlagWork *D_002A5358;
 class CMenuCommonRes {
 public:
     int Load18BDF0();
@@ -285,7 +284,6 @@ public:
 };
 #include "CStatusWinSub1A40B8.h"
 
-extern CFlagWork *D_002A4B60;
 extern "C" void func_001B6570(CMenuMgrSub1B6418 *p);
 inline f32 FracVu0(f32 x) {
     f32 r;

@@ -74,6 +74,11 @@ Units whose data comes from their object (docs/units.md "Data: vtables and .roda
   finding as `file:line: rule [tier] function: text` (`--rule R17` for one rule, `--match-only` without
   the advisory rows); `--json FILE` writes everything; `--md` the summary as Markdown.
   `--selftest` runs each row against built-in cases: fakes that must fire, era idioms that must not.
+- `python3 -I tools/bk/sgate.py [BASE [NEW]] [-u UNIT ...]` (inside bokura-env): the compiler-output gate
+  for changes that must not change code (a declaration moved into a header, a rename that reaches no
+  symbol, a reformatted function). Compiles every unit of both revisions to assembly with the unit's own
+  compiler and flags and compares the compiler's output; identical text means an identical object. It
+  needs the compilers only, not the disc. `make` stays the gate of record.
 - Before porting a snippet, run `rules.py --pending UNIT` and leave the unit with no new entry: no new
   `extern` in the unit, no new copy of a class, no `pad`, no offset cast (AGENTS.md, "Working order").
 - `.github/workflows/progress.yml` runs the self-test and the checker on every push and pull request,
