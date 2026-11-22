@@ -1,19 +1,25 @@
 # Bokura no Kazoku decomp
 
 <!-- status:begin -->
-![functions](https://img.shields.io/badge/functions-6404%2F7223-blue) ![bytes](https://img.shields.io/badge/bytes-50.1%25-orange) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
+![matched under the rules](https://img.shields.io/badge/matched%20under%20the%20rules-1691%2F7219-blue) ![bytes matched](https://img.shields.io/badge/bytes%20matched-6429%2F7219-lightgrey) ![build](https://img.shields.io/badge/build-byte--for--byte-brightgreen)
 
-Progress, 2026-10-16 (functions in C; the rest is still INCLUDE_ASM):
+Progress, 2026-11-22. Two numbers: **matched under the rules** (the headline) means the function
+rebuilds retail's bytes *and* passes the [match] rules of [docs/code-rules.md](docs/code-rules.md) (one declaration per
+type and global, typed members, real vtables, no fake code, no assembly bodies); **bytes matched** means it is written
+in C and `make` proves its bytes. The rest is still INCLUDE_ASM.
 
-| | Progress | |
-|---|---|---|
-| **Functions** | `██████████████████████░░░` | 6,404 / 7,223 (88.7%) |
-| **Code bytes** (`.text`, 1.70 MB) | `█████████████░░░░░░░░░░░░` | 851.6 KB / 1700.4 KB (50.1%) |
-| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `██████████░░░░░░░░░░░░░░░` | 1,979 / 2,303 functions, 40.3% of bytes |
-| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `█████████████░░░░░░░░░░░░` | 1,960 / 2,264 functions, 52.2% of bytes |
-| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `████████████████░░░░░░░░░` | 1,318 / 1,483 functions, 65.4% of bytes |
-| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `███████████████████████░░` | 1,147 / 1,169 functions, 91.2% of bytes |
-| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 819 |
+| | Matched under the rules | | Bytes matched |
+|---|---|---|---|
+| **Functions** | `█████░░░░░░░░░░░░░░░` | **1,691 / 7,219 (23.4%)** | 6,429 (89.1%) |
+| **Code** (`.text`, 1.70 MB) | `██░░░░░░░░░░░░░░░░░░` | **130.6 KB (7.7%)** | 857.7 KB (50.4%) |
+| &nbsp;&nbsp;Game code, C++ units (954 KB, classes found from vtables and RTTI) | `░░░░░░░░░░░░░░░░░░░░` | 166 / 2,303 functions, 1.4% of code | 1,995 functions, 40.8% |
+| &nbsp;&nbsp;Game code, C-style units (378 KB, CAppMain on: renderer, files, sound, IOP) | `██░░░░░░░░░░░░░░░░░░` | 550 / 2,264 functions, 8.2% of code | 1,969 functions, 52.6% |
+| &nbsp;&nbsp;dklib engine library (254 KB, heap, tasks, resources, scripts; part Sony SDK) | `████░░░░░░░░░░░░░░░░` | 590 / 1,483 functions, 18.1% of code | 1,318 functions, 65.4% |
+| &nbsp;&nbsp;Libraries (113 KB, libgcc, newlib, Sony SDK, linkonce code) | `███████░░░░░░░░░░░░░` | 406 / 1,169 functions, 35.7% of code | 1,147 functions, 91.2% |
+| Stuck ([HARD.md](HARD.md), with their exact diffs) | | 790 | |
+
+Refresh with `python3 -I tools/bk/status.py` (tree only). What holds functions back, rule by rule:
+`python3 -I tools/bk/rules.py`, and [docs/code-rules-status.md](docs/code-rules-status.md) for the order of work.
 
 Build: Sony EE-GCC 2.96 for the game; parts of dklib and the Sony SDK were built with older
 SDK compilers (ee-gcc 2.9-991111 and -01), set per unit ([docs/compiler.md](docs/compiler.md)).
@@ -94,10 +100,8 @@ fails one is MATCH-PENDING. The project's own choices are in [AGENTS.md](AGENTS.
 python3 -I tools/bk/rules.py    # no build needed
 ```
 
-On 2026-11-20: 6,429 functions match byte for byte, **1,691 of them under the rules** (23.4% of
-7,219). Most of the gap is declarations, not code: globals and classes declared per unit instead of
-once in a header. [docs/code-rules-status.md](docs/code-rules-status.md) has the breakdown and the order of
-work.
+The current numbers are in the status table at the top. [docs/code-rules-status.md](docs/code-rules-status.md)
+has the breakdown and the order of work.
 
 ## Lessons learned
 
